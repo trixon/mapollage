@@ -89,6 +89,7 @@ public class PhotoKml {
         System.setOut(ps);
 
         HelpFormatter formatter = new HelpFormatter();
+        formatter.setWidth(79);
         formatter.setOptionComparator(null);
         formatter.printHelp("xxx", mOptions, false);
         System.out.flush();
@@ -128,6 +129,7 @@ public class PhotoKml {
                 .longOpt("root-name")
                 .desc(mBundle.getString("opt_root_name_desc"))
                 .hasArg()
+                //.required()
                 .optionalArg(false)
                 .build();
 
@@ -160,7 +162,7 @@ public class PhotoKml {
                 .build();
 
         Option placemarkDesc = Option.builder("pd")
-                .longOpt("placemark-description")
+                .longOpt("placemark-desc")
                 .desc(mBundle.getString("opt_placemark_desc_desc"))
                 .hasArg()
                 .optionalArg(false)
@@ -172,7 +174,7 @@ public class PhotoKml {
                 .desc(mBundle.getString("opt_coordinate_desc"))
                 .hasArg()
                 .optionalArg(false)
-                .argName("lon,lat")
+                .argName("LAT,LON")
                 .build();
 
         Option maxHeight = Option.builder("h")
@@ -180,6 +182,7 @@ public class PhotoKml {
                 .desc(mBundle.getString("opt_max_height_desc"))
                 .hasArg()
                 .optionalArg(false)
+                .argName("NUM")
                 .build();
 
         Option maxWidth = Option.builder("w")
@@ -187,6 +190,7 @@ public class PhotoKml {
                 .desc(mBundle.getString("opt_max_width_desc"))
                 .hasArg()
                 .optionalArg(false)
+                .argName("NUM")
                 .build();
 
         Option lowerCaseExt = Option.builder("e")
@@ -199,6 +203,7 @@ public class PhotoKml {
                 .desc(mBundle.getString("opt_absolute_path_desc"))
                 .hasArg()
                 .optionalArg(false)
+                .argName("PATH")
                 .build();
 
         mOptions = new Options();
