@@ -39,6 +39,22 @@ public class PhotoKml {
     private final ResourceBundle mBundle = BundleHelper.getBundle(PhotoKml.class, "Bundle");
     private Options mOptions;
 
+    public static final String ABSOLUTE_PATH = "absolute-path";
+    public static final String COORDINATE = "coordinate";
+    public static final String FOLDER_DESC = "folder-desc";
+    public static final String FOLDER_NAME = "folder-name";
+    public static final String HELP = "help";
+    public static final String LINKS = "links";
+    public static final String LOWER_CASE_EXT = "lower-case-ext";
+    public static final String MAX_HEIGHT = "max-height";
+    public static final String MAX_WIDTH = "max-width";
+    public static final String PLACEMARK_DESC = "placemark-desc";
+    public static final String PLACEMARK_NAME = "placemark-name";
+    public static final String RECURSIVE = "recursive";
+    public static final String ROOT_DESC = "root-desc";
+    public static final String ROOT_NAME = "root-name";
+    public static final String VERSION = "version";
+
     /**
      * @param args the command line arguments
      */
@@ -55,10 +71,10 @@ public class PhotoKml {
                 CommandLineParser commandLineParser = new DefaultParser();
                 CommandLine commandLine = commandLineParser.parse(mOptions, args);
 
-                if (commandLine.hasOption("help")) {
+                if (commandLine.hasOption(HELP)) {
                     displayHelp();
                     System.exit(0);
-                } else if (commandLine.hasOption("version")) {
+                } else if (commandLine.hasOption(VERSION)) {
                     displayVersion();
                     System.exit(0);
                 } else {
@@ -71,6 +87,7 @@ public class PhotoKml {
                         System.out.println(optionsHolder.getValidationError());
                         System.out.println(Dict.ABORTING.toString());
                     }
+                    System.out.println(optionsHolder.toString());
                 }
             } catch (ParseException ex) {
                 System.out.println(ex.getMessage());
@@ -106,79 +123,74 @@ public class PhotoKml {
 
     private void initOptions() {
         Option help = Option.builder("?")
-                .longOpt("help")
+                .longOpt(HELP)
                 .desc(mBundle.getString("opt_help_desc"))
                 .build();
 
         Option version = Option.builder("v")
-                .longOpt("version")
+                .longOpt(VERSION)
                 .desc(mBundle.getString("opt_version_desc"))
                 .build();
 
         Option recursive = Option.builder("r")
-                .longOpt("recursive")
+                .longOpt(RECURSIVE)
                 .desc(mBundle.getString("opt_recursive_desc"))
                 .build();
 
         Option links = Option.builder("l")
-                .longOpt("links")
+                .longOpt(LINKS)
                 .desc(mBundle.getString("opt_links_desc"))
                 .build();
 
         Option rootName = Option.builder("rn")
-                .longOpt("root-name")
+                .longOpt(ROOT_NAME)
                 .desc(mBundle.getString("opt_root_name_desc"))
                 .hasArg()
-                //.required()
-                .optionalArg(false)
                 .build();
 
         Option rootDesc = Option.builder("rd")
-                .longOpt("root-desc")
+                .longOpt(ROOT_DESC)
                 .desc(mBundle.getString("opt_root_desc_desc"))
                 .hasArg()
-                .optionalArg(false)
                 .build();
 
         Option folderName = Option.builder("fn")
-                .longOpt("folder-name")
+                .longOpt(FOLDER_NAME)
                 .desc(mBundle.getString("opt_folder_name_desc"))
                 .hasArg()
                 .optionalArg(true)
                 .build();
 
         Option folderDesc = Option.builder("fd")
-                .longOpt("folder-desc")
+                .longOpt(FOLDER_DESC)
                 .desc(mBundle.getString("opt_folder_desc_desc"))
                 .hasArg()
-                .optionalArg(false)
                 .build();
 
         Option placemarkName = Option.builder("pn")
-                .longOpt("placemark-name")
+                .longOpt(PLACEMARK_NAME)
                 .desc(mBundle.getString("opt_placemark_name_desc"))
                 .hasArg()
                 .optionalArg(true)
                 .build();
 
         Option placemarkDesc = Option.builder("pd")
-                .longOpt("placemark-desc")
+                .longOpt(PLACEMARK_DESC)
                 .desc(mBundle.getString("opt_placemark_desc_desc"))
                 .hasArg()
-                .optionalArg(false)
                 .argName("html")
                 .build();
 
         Option coordinate = Option.builder("c")
-                .longOpt("coordinate")
+                .longOpt(COORDINATE)
                 .desc(mBundle.getString("opt_coordinate_desc"))
-                .hasArg()
-                .optionalArg(false)
-                .argName("LAT,LON")
+                .hasArgs()
+                .numberOfArgs(2)
+                .argName("LAT LON")
                 .build();
 
         Option maxHeight = Option.builder("h")
-                .longOpt("max-height")
+                .longOpt(MAX_HEIGHT)
                 .desc(mBundle.getString("opt_max_height_desc"))
                 .hasArg()
                 .optionalArg(false)
@@ -186,7 +198,7 @@ public class PhotoKml {
                 .build();
 
         Option maxWidth = Option.builder("w")
-                .longOpt("max-width")
+                .longOpt(MAX_WIDTH)
                 .desc(mBundle.getString("opt_max_width_desc"))
                 .hasArg()
                 .optionalArg(false)
@@ -194,12 +206,12 @@ public class PhotoKml {
                 .build();
 
         Option lowerCaseExt = Option.builder("e")
-                .longOpt("lower-case-ext")
+                .longOpt(LOWER_CASE_EXT)
                 .desc(mBundle.getString("opt_lower_case_ext_desc"))
                 .build();
 
         Option absolutePath = Option.builder("a")
-                .longOpt("absolute-path")
+                .longOpt(ABSOLUTE_PATH)
                 .desc(mBundle.getString("opt_absolute_path_desc"))
                 .hasArg()
                 .optionalArg(false)

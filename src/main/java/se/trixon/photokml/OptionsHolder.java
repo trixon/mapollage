@@ -22,6 +22,7 @@ import java.text.SimpleDateFormat;
 import java.util.ResourceBundle;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import se.trixon.util.BundleHelper;
 
 /**
@@ -30,27 +31,76 @@ import se.trixon.util.BundleHelper;
  */
 public class OptionsHolder {
 
+    private String mAbsolutePath;
+
     private final ResourceBundle mBundle = BundleHelper.getBundle(OptionsHolder.class, "Bundle");
+    private final String[] mCoordinate;
     private File mDestDir;
     private String mFilePattern;
+    private boolean mFolderByDate;
+    private boolean mFolderByDir;
+    private SimpleDateFormat mFolderDateFormat;
+    private String mFolderDatePattern;
+    private String mFolderDesc;
     private boolean mFollowLinks;
+    private Double mLat;
+    private Double mLon;
+    private boolean mLowerCaseExt;
+    private Integer mMaxHeight;
+    private final String mMaxHeightString;
+    private Integer mMaxWidth;
+    private final String mMaxWidthString;
     private PathMatcher mPathMatcher;
+    private boolean mPlacemarkByDate;
+    private boolean mPlacemarkByFilename;
+    private SimpleDateFormat mPlacemarkDateFormat;
+    private String mPlacemarkDatePattern;
+    private String mPlacemarkDesc;
     private boolean mRecursive;
     private String mRootDesc;
     private String mRootName;
     private File mSourceDir;
     private final StringBuilder mValidationErrorBuilder = new StringBuilder();
-    private SimpleDateFormat mFolderDateFormat;
-    private String mFolderDatePattern;
 
     public OptionsHolder(CommandLine commandLine) {
-        mRootName = commandLine.getOptionValue("root-name");
-        mRootDesc = commandLine.getOptionValue("root-desc");
+        mRootName = commandLine.getOptionValue(PhotoKml.ROOT_NAME);
+        mRootDesc = commandLine.getOptionValue(PhotoKml.ROOT_DESC);
 
-        mFollowLinks = commandLine.hasOption("links");
-        mRecursive = commandLine.hasOption("recursive");
+        if (commandLine.hasOption(PhotoKml.FOLDER_NAME)) {
+            mFolderDatePattern = commandLine.getOptionValue(PhotoKml.FOLDER_NAME);
+            mFolderByDate = mFolderDatePattern != null;
+            mFolderByDir = !mFolderByDate;
+        }
+        mFolderDesc = commandLine.getOptionValue(PhotoKml.FOLDER_DESC);
+
+        if (commandLine.hasOption(PhotoKml.PLACEMARK_NAME)) {
+            mPlacemarkDatePattern = commandLine.getOptionValue(PhotoKml.PLACEMARK_NAME);
+            mPlacemarkByDate = mPlacemarkDatePattern != null;
+            mPlacemarkByFilename = !mPlacemarkByDate;
+        }
+
+        mPlacemarkDesc = commandLine.getOptionValue(PhotoKml.PLACEMARK_DESC);
+
+        mMaxHeightString = commandLine.getOptionValue(PhotoKml.MAX_HEIGHT);
+        mMaxWidthString = commandLine.getOptionValue(PhotoKml.MAX_WIDTH);
+
+        mCoordinate = commandLine.getOptionValues(PhotoKml.COORDINATE);
+
+        mLowerCaseExt = commandLine.hasOption(PhotoKml.LOWER_CASE_EXT);
+        mAbsolutePath = commandLine.getOptionValue(PhotoKml.ABSOLUTE_PATH);
+
+        mFollowLinks = commandLine.hasOption(PhotoKml.LINKS);
+        mRecursive = commandLine.hasOption(PhotoKml.RECURSIVE);
 
         setSourceAndDest(commandLine.getArgs());
+    }
+
+    public Integer geMaxtHeight() {
+        return mMaxHeight;
+    }
+
+    public String getAbsolutePath() {
+        return mAbsolutePath;
     }
 
     public File getDestDir() {
@@ -61,8 +111,40 @@ public class OptionsHolder {
         return mFilePattern;
     }
 
+    public SimpleDateFormat getFolderDateFormat() {
+        return mFolderDateFormat;
+    }
+
+    public String getFolderDesc() {
+        return mFolderDesc;
+    }
+
+    public Double getLat() {
+        return mLat;
+    }
+
+    public Double getLon() {
+        return mLon;
+    }
+
+    public Integer getMaxWidth() {
+        return mMaxWidth;
+    }
+
     public PathMatcher getPathMatcher() {
         return mPathMatcher;
+    }
+
+    public SimpleDateFormat getPlacemarkDateFormat() {
+        return mPlacemarkDateFormat;
+    }
+
+    public String getPlacemarkDatePattern() {
+        return mPlacemarkDatePattern;
+    }
+
+    public String getPlacemarkDesc() {
+        return mPlacemarkDesc;
     }
 
     public String getRootDesc() {
@@ -81,8 +163,28 @@ public class OptionsHolder {
         return mValidationErrorBuilder.toString();
     }
 
+    public boolean isFolderByDate() {
+        return mFolderByDate;
+    }
+
+    public boolean isFolderByDir() {
+        return mFolderByDir;
+    }
+
     public boolean isFollowLinks() {
         return mFollowLinks;
+    }
+
+    public boolean isLowerCaseExt() {
+        return mLowerCaseExt;
+    }
+
+    public boolean isPlacemarkByDate() {
+        return mPlacemarkByDate;
+    }
+
+    public boolean isPlacemarkByFilename() {
+        return mPlacemarkByFilename;
     }
 
     public boolean isRecursive() {
@@ -90,19 +192,67 @@ public class OptionsHolder {
     }
 
     public boolean isValid() {
+        if (mRootName == null) {
+            addValidationError(String.format(mBundle.getString("invalid_value"), PhotoKml.ROOT_NAME, mRootName));
+        }
+
+        if (mFolderByDate) {
+            try {
+                mFolderDateFormat = new SimpleDateFormat(mFolderDatePattern);
+            } catch (Exception e) {
+                addValidationError(String.format(mBundle.getString("invalid_value"), PhotoKml.FOLDER_NAME, mFolderDatePattern));
+
+            }
+        }
+
+        if (mPlacemarkByDate) {
+            try {
+                mPlacemarkDateFormat = new SimpleDateFormat(mPlacemarkDatePattern);
+            } catch (Exception e) {
+                addValidationError(String.format(mBundle.getString("invalid_value"), PhotoKml.PLACEMARK_NAME, mPlacemarkDatePattern));
+
+            }
+        }
+
+        if (mMaxHeightString != null) {
+            try {
+                mMaxHeight = NumberUtils.createInteger(mMaxHeightString);
+            } catch (NumberFormatException e) {
+                addValidationError(String.format(mBundle.getString("invalid_value"), PhotoKml.MAX_HEIGHT, mMaxHeightString));
+            }
+        }
+
+        if (mMaxWidthString != null) {
+            try {
+                mMaxWidth = NumberUtils.createInteger(mMaxWidthString);
+            } catch (NumberFormatException e) {
+                addValidationError(String.format(mBundle.getString("invalid_value"), PhotoKml.MAX_WIDTH, mMaxWidthString));
+            }
+        }
+
+        try {
+            mLat = NumberUtils.createDouble(mCoordinate[0]);
+        } catch (NumberFormatException e) {
+            addValidationError(String.format(mBundle.getString("invalid_value"), PhotoKml.COORDINATE, mCoordinate[0]));
+        }
+
+        try {
+            mLon = NumberUtils.createDouble(mCoordinate[1]);
+        } catch (NumberFormatException e) {
+            addValidationError(String.format(mBundle.getString("invalid_value"), PhotoKml.COORDINATE, mCoordinate[1]));
+        }
+
         try {
             mPathMatcher = FileSystems.getDefault().getPathMatcher("glob:" + mFilePattern);
         } catch (Exception e) {
             addValidationError("invalid file pattern: " + mFilePattern);
         }
 
-        try {
-            mFolderDateFormat = new SimpleDateFormat(mFolderDatePattern);
-        } catch (Exception e) {
-            addValidationError(String.format(mBundle.getString("invalid_date_pattern"), mFolderDatePattern));
-        }
-
         return mValidationErrorBuilder.length() == 0;
+    }
+
+    public void setAbsolutePath(String absolutePath) {
+        mAbsolutePath = absolutePath;
     }
 
     public void setDestDir(File dest) {
@@ -113,12 +263,56 @@ public class OptionsHolder {
         mFilePattern = filePattern;
     }
 
+    public void setFolderDesc(String folderDesc) {
+        mFolderDesc = folderDesc;
+    }
+
     public void setFollowLinks(boolean followLinks) {
         mFollowLinks = followLinks;
     }
 
+    public void setLat(Double lat) {
+        mLat = lat;
+    }
+
+    public void setLon(Double lon) {
+        mLon = lon;
+    }
+
+    public void setLowerCaseExt(boolean lowerCaseExt) {
+        mLowerCaseExt = lowerCaseExt;
+    }
+
+    public void setMaxHeight(Integer height) {
+        mMaxHeight = height;
+    }
+
+    public void setMaxWidth(Integer width) {
+        mMaxWidth = width;
+    }
+
     public void setPathMatcher(PathMatcher pathMatcher) {
         mPathMatcher = pathMatcher;
+    }
+
+    public void setPlacemarkByDate(boolean placemarkByDate) {
+        mPlacemarkByDate = placemarkByDate;
+    }
+
+    public void setPlacemarkByFilename(boolean placemarkByFilename) {
+        mPlacemarkByFilename = placemarkByFilename;
+    }
+
+    public void setPlacemarkDateFormat(SimpleDateFormat placemarkDateFormat) {
+        mPlacemarkDateFormat = placemarkDateFormat;
+    }
+
+    public void setPlacemarkDatePattern(String placemarkDatePattern) {
+        mPlacemarkDatePattern = placemarkDatePattern;
+    }
+
+    public void setPlacemarkDesc(String placemarkDesc) {
+        mPlacemarkDesc = placemarkDesc;
     }
 
     public void setRecursive(boolean recursive) {
@@ -151,6 +345,40 @@ public class OptionsHolder {
         } else {
             addValidationError(mBundle.getString("invalid_arg_count"));
         }
+    }
+
+    @Override
+    public String toString() {
+        return "OptionsHolder {"
+                + "\n RootName=" + mRootName
+                + "\n RootDesc=" + mRootDesc
+                + "\n"
+                + "\n FolderByDate=" + mFolderByDate
+                + "\n FolderByDir=" + mFolderByDir
+                + "\n FolderDatePattern=" + mFolderDatePattern
+                + "\n FolderDesc=" + mFolderDesc
+                + "\n"
+                + "\n PlacemarkByDate=" + mPlacemarkByDate
+                + "\n PlacemarkByFilename=" + mPlacemarkByFilename
+                + "\n PlacemarkDatePattern=" + mPlacemarkDatePattern
+                + "\n PlacemarkDesc=" + mPlacemarkDesc
+                + "\n"
+                + "\n MaxHeight=" + mMaxHeight
+                + "\n MaxWidth=" + mMaxWidth
+                + "\n"
+                + "\n Lat=" + mLat
+                + "\n Lon=" + mLon
+                + "\n"
+                + "\n LowerCaseExt=" + mLowerCaseExt
+                + "\n AbsolutePath=" + mAbsolutePath
+                + "\n"
+                + "\n Links=" + mFollowLinks
+                + "\n Recursive=" + mRecursive
+                + "\n"
+                + "\n Source=" + mSourceDir
+                + "\n FilePattern=" + mFilePattern
+                + "\n Dest=" + mDestDir
+                + "\n}";
     }
 
     private void addValidationError(String string) {
