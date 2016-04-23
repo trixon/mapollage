@@ -230,16 +230,18 @@ public class OptionsHolder {
             }
         }
 
-        try {
-            mLat = NumberUtils.createDouble(mCoordinate[0]);
-        } catch (NumberFormatException e) {
-            addValidationError(String.format(mBundle.getString("invalid_value"), PhotoKml.COORDINATE, mCoordinate[0]));
-        }
+        if (mCoordinate != null) {
+            try {
+                mLat = NumberUtils.createDouble(mCoordinate[0]);
+            } catch (NumberFormatException e) {
+                addValidationError(String.format(mBundle.getString("invalid_value"), PhotoKml.COORDINATE, mCoordinate[0]));
+            }
 
-        try {
-            mLon = NumberUtils.createDouble(mCoordinate[1]);
-        } catch (NumberFormatException e) {
-            addValidationError(String.format(mBundle.getString("invalid_value"), PhotoKml.COORDINATE, mCoordinate[1]));
+            try {
+                mLon = NumberUtils.createDouble(mCoordinate[1]);
+            } catch (NumberFormatException e) {
+                addValidationError(String.format(mBundle.getString("invalid_value"), PhotoKml.COORDINATE, mCoordinate[1]));
+            }
         }
 
         try {
