@@ -21,6 +21,8 @@ package se.trixon.photokml;
  */
 public interface OperationListener {
 
+    void onOperationError(String message);
+
     void onOperationFailed(String message);
 
     void onOperationFinished(String message);

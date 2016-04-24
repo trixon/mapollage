@@ -21,10 +21,10 @@ package se.trixon.photokml;
  */
 public class Desc {
 
-    public static final String ALTITUDE = "$altitude";
-    public static final String BEARING = "$bearing";
-    public static final String COORDINATE = "$coordinate";
-    public static final String DATE = "$date";
-    public static final String FILENAME = "$filename";
-    public static final String PHOTO = "$photo";
+    public static final String ALTITUDE = "+altitude";
+    public static final String BEARING = "+bearing";
+    public static final String COORDINATE = "+coordinate";
+    public static final String DATE = "+date";
+    public static final String FILENAME = "+filename";
+    public static final String PHOTO = "+photo";
 }

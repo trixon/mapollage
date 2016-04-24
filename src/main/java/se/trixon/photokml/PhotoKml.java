@@ -97,33 +97,38 @@ public class PhotoKml implements OperationListener {
     }
 
     @Override
+    public void onOperationError(String message) {
+        System.err.println(message);
+    }
+
+    @Override
     public void onOperationFailed(String message) {
-        System.out.println("onOperationFailed "+message);
+        System.err.println(message);
     }
 
     @Override
     public void onOperationFinished(String message) {
-        System.out.println("onOperationFinished "+message);
+        // nvm
     }
 
     @Override
     public void onOperationInterrupted() {
-        System.out.println("onOperationInterrupted");
+        // nvm
     }
 
     @Override
     public void onOperationLog(String message) {
-        System.out.println("onOperationLog "+message);
+        System.out.println(message);
     }
 
     @Override
     public void onOperationProcessingStarted() {
-        System.out.println("onOperationProcessingStarted");
+        System.out.println("Adding photos");
     }
 
     @Override
     public void onOperationStarted() {
-        System.out.println("onOperationStarted");
+        // nvm
     }
 
     private void displayHelp() {

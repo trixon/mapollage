@@ -32,7 +32,6 @@ import se.trixon.util.BundleHelper;
 public class OptionsHolder {
 
     private String mAbsolutePath;
-
     private final ResourceBundle mBundle = BundleHelper.getBundle(OptionsHolder.class, "Bundle");
     private final String[] mCoordinate;
     private File mDestFile;
@@ -55,7 +54,7 @@ public class OptionsHolder {
     private boolean mPlacemarkByFilename;
     private SimpleDateFormat mPlacemarkDateFormat;
     private String mPlacemarkDatePattern;
-    private String mPlacemarkDesc;
+    private String mPlacemarkDesc = "";
     private boolean mRecursive;
     private String mRootDesc;
     private String mRootName;
