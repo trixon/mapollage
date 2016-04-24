@@ -35,7 +35,7 @@ public class OptionsHolder {
 
     private final ResourceBundle mBundle = BundleHelper.getBundle(OptionsHolder.class, "Bundle");
     private final String[] mCoordinate;
-    private File mDestDir;
+    private File mDestFile;
     private String mFilePattern;
     private boolean mFolderByDate;
     private boolean mFolderByDir;
@@ -95,16 +95,12 @@ public class OptionsHolder {
         setSourceAndDest(commandLine.getArgs());
     }
 
-    public Integer geMaxtHeight() {
-        return mMaxHeight;
-    }
-
     public String getAbsolutePath() {
         return mAbsolutePath;
     }
 
-    public File getDestDir() {
-        return mDestDir;
+    public File getDestFile() {
+        return mDestFile;
     }
 
     public String getFilePattern() {
@@ -125,6 +121,10 @@ public class OptionsHolder {
 
     public Double getLon() {
         return mLon;
+    }
+
+    public Integer getMaxHeight() {
+        return mMaxHeight;
     }
 
     public Integer getMaxWidth() {
@@ -161,6 +161,10 @@ public class OptionsHolder {
 
     public String getValidationError() {
         return mValidationErrorBuilder.toString();
+    }
+
+    public boolean hasCoordinate() {
+        return mLat != null && mLon != null;
     }
 
     public boolean isFolderByDate() {
@@ -257,8 +261,8 @@ public class OptionsHolder {
         mAbsolutePath = absolutePath;
     }
 
-    public void setDestDir(File dest) {
-        mDestDir = dest;
+    public void setDestFile(File dest) {
+        mDestFile = dest;
     }
 
     public void setFilePattern(String filePattern) {
@@ -343,7 +347,7 @@ public class OptionsHolder {
                 mFilePattern = FilenameUtils.getName(source);
             }
 
-            setDestDir(new File(args[1]));
+            setDestFile(new File(args[1]));
         } else {
             addValidationError(mBundle.getString("invalid_arg_count"));
         }
@@ -379,7 +383,7 @@ public class OptionsHolder {
                 + "\n"
                 + "\n Source=" + mSourceDir
                 + "\n FilePattern=" + mFilePattern
-                + "\n Dest=" + mDestDir
+                + "\n Dest=" + mDestFile
                 + "\n}";
     }
 

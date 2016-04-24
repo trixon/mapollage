@@ -60,7 +60,12 @@
         <dependency>
             <groupId>com.drewnoakes</groupId>
             <artifactId>metadata-extractor</artifactId>
-            <version>2.9.0</version>
+            <version>2.9.1</version>
+        </dependency>
+        <dependency>
+            <groupId>de.micromata.jak</groupId>
+            <artifactId>JavaAPIforKml</artifactId>
+            <version>2.2.1</version>
         </dependency>
     </dependencies>
     <build>
@@ -68,7 +73,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>2.4</version>
+                <version>2.6</version>
                 <configuration>
                     <archive>
                         <manifest>
@@ -80,7 +85,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>2.4.2</version>
+                <version>2.4.3</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -97,6 +102,18 @@
                                         <exclude>se/trixon/util/icons/**</exclude>
                                         <exclude>se/trixon/util/swing/**</exclude>
                                     </excludes>
+                                </filter>
+                                <filter>
+                                    <artifact>de.micromata.jak:JavaAPIforKml</artifact>
+                                    <includes>
+                                        <include>de/micromata/**</include>
+                                    </includes>
+                                </filter>
+                                <filter>
+                                    <artifact>com.sun.xml.bind:jaxb-impl</artifact>
+                                    <includes>
+                                        <include>*/**</include>
+                                    </includes>
                                 </filter>
                             </filters>
                         </configuration>

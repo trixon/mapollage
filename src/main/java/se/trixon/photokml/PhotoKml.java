@@ -34,7 +34,7 @@ import se.trixon.util.dictionary.Dict;
  *
  * @author Patrik Karlsson
  */
-public class PhotoKml {
+public class PhotoKml implements OperationListener {
 
     private final ResourceBundle mBundle = BundleHelper.getBundle(PhotoKml.class, "Bundle");
     private Options mOptions;
@@ -87,13 +87,43 @@ public class PhotoKml {
                         System.out.println(optionsHolder.getValidationError());
                         System.out.println(Dict.ABORTING.toString());
                     }
-                    System.out.println(optionsHolder.toString());
+                    //System.out.println(optionsHolder.toString());
                 }
             } catch (ParseException ex) {
                 System.out.println(ex.getMessage());
                 System.out.println(mBundle.getString("parse_help"));
             }
         }
+    }
+
+    @Override
+    public void onOperationFailed(String message) {
+        System.out.println("onOperationFailed "+message);
+    }
+
+    @Override
+    public void onOperationFinished(String message) {
+        System.out.println("onOperationFinished "+message);
+    }
+
+    @Override
+    public void onOperationInterrupted() {
+        System.out.println("onOperationInterrupted");
+    }
+
+    @Override
+    public void onOperationLog(String message) {
+        System.out.println("onOperationLog "+message);
+    }
+
+    @Override
+    public void onOperationProcessingStarted() {
+        System.out.println("onOperationProcessingStarted");
+    }
+
+    @Override
+    public void onOperationStarted() {
+        System.out.println("onOperationStarted");
     }
 
     private void displayHelp() {
