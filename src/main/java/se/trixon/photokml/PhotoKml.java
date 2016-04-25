@@ -79,6 +79,7 @@ public class PhotoKml implements OperationListener {
                     System.exit(0);
                 } else {
                     OptionsHolder optionsHolder = new OptionsHolder(commandLine);
+                    System.out.println(optionsHolder.toString());
 
                     if (optionsHolder.isValid()) {
                         Operation operation = new Operation(this, optionsHolder);
@@ -87,7 +88,6 @@ public class PhotoKml implements OperationListener {
                         System.out.println(optionsHolder.getValidationError());
                         System.out.println(Dict.ABORTING.toString());
                     }
-                    //System.out.println(optionsHolder.toString());
                 }
             } catch (ParseException ex) {
                 System.out.println(ex.getMessage());
