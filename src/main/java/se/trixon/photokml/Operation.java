@@ -68,6 +68,7 @@ class Operation {
     private int mNumOfGps;
     private final OptionsHolder mOptionsHolder;
     private Folder mRootFolder;
+    private long mStartTime;
 
     public Operation(OperationListener operationListener, OptionsHolder optionsHolder) {
         mListener = operationListener;
@@ -76,6 +77,7 @@ class Operation {
     }
 
     public void start() {
+        mStartTime = System.currentTimeMillis();
         mListener.onOperationStarted();
         String status;
         mDestinationFile = mOptionsHolder.getDestFile();
@@ -359,6 +361,34 @@ class Operation {
             if (mOptionsHolder.getAbsolutePath() == null) {
                 mListener.onOperationLog(mBundle.getString("operationNote"));
             }
+
+            String files = mBundle.getString("status_files");
+            String exif = mBundle.getString("status_exif");
+            String coordinate = mBundle.getString("status_coordinate");
+            String time = mBundle.getString("status_time");
+
+            int rightPad = files.length();
+            rightPad = Math.max(rightPad, exif.length());
+            rightPad = Math.max(rightPad, coordinate.length());
+            rightPad = Math.max(rightPad, time.length());
+            rightPad++;
+
+            int leftPad = 8;
+            StringBuilder summaryBuilder = new StringBuilder("\n");
+
+            String filesValue = String.valueOf(mFiles.size());
+            summaryBuilder.append(StringUtils.rightPad(files, rightPad)).append(":").append(StringUtils.leftPad(filesValue, leftPad)).append("\n");
+
+            String exifValue = String.valueOf(mNumOfExif);
+            summaryBuilder.append(StringUtils.rightPad(exif, rightPad)).append(":").append(StringUtils.leftPad(exifValue, leftPad)).append("\n");
+
+            String coordinateValue = String.valueOf(mNumOfGps);
+            summaryBuilder.append(StringUtils.rightPad(coordinate, rightPad)).append(":").append(StringUtils.leftPad(coordinateValue, leftPad)).append("\n");
+
+            String timeValue = String.format("%.3f", (System.currentTimeMillis() - mStartTime) / 1000.0).trim();
+            summaryBuilder.append(StringUtils.rightPad(time, rightPad)).append(":").append(StringUtils.leftPad(timeValue, leftPad)).append(" ").append(Dict.TIME_SECONDS).append("\n");
+
+            mListener.onOperationLog(summaryBuilder.toString());
 
             mListener.onOperationFinished("");
         } catch (FileNotFoundException ex) {
