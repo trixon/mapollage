@@ -66,6 +66,8 @@ class Operation {
     private final OperationListener mListener;
     private int mNumOfExif;
     private int mNumOfGps;
+    private int mNumOfInvalidFormat;
+    private int mNumOfPlacemarks;
     private final OptionsHolder mOptionsHolder;
     private Folder mRootFolder;
     private long mStartTime;
@@ -93,7 +95,10 @@ class Operation {
                 try {
                     addFileToKml(file);
                 } catch (ImageProcessingException | IOException ex) {
-                    mListener.onOperationError(ex.getMessage());
+                    if (ex.getMessage().equalsIgnoreCase("File format is not supported")) {
+                        mNumOfInvalidFormat++;
+                    }
+                    mListener.onOperationError(ex.getMessage() + "<<<");
                 }
 
                 if (Thread.interrupted()) {
@@ -104,7 +109,7 @@ class Operation {
         }
 
         if (mInterrupted) {
-            status = Dict.TASK_ABORTED.getString();
+            status = Dict.TASK_ABORTED.toString();
             mListener.onOperationLog("\n" + status);
         } else if (!mFiles.isEmpty()) {
             saveToFile();
@@ -124,7 +129,7 @@ class Operation {
 
         if (exifDirectory != null) {
             mNumOfExif++;
-            if (gpsDirectory != null || mOptionsHolder.getLat() != null) {
+            if (gpsDirectory != null) {
                 mNumOfGps++;
             }
         } else {
@@ -155,7 +160,11 @@ class Operation {
         desc = StringUtils.replace(desc, Desc.FILENAME, file.getName());
         desc = StringUtils.replace(desc, Desc.DATE, mDateFormatDate.format(exifDate));
 
-        GeoLocation geoLocation = new GeoLocation(mOptionsHolder.getLat(), mOptionsHolder.getLon());
+        GeoLocation geoLocation = null;
+        if (mOptionsHolder.hasCoordinate()) {
+            geoLocation = new GeoLocation(mOptionsHolder.getLat(), mOptionsHolder.getLon());
+        }
+
         if (gpsDirectory != null) {
             geoLocation = gpsDirectory.getGeoLocation();
             if (geoLocation == null) {
@@ -192,6 +201,8 @@ class Operation {
                     .withDescription(desc)
                     .createAndSetPoint()
                     .addToCoordinates(lonInt / format, latInt / format);
+            
+            mNumOfPlacemarks++;
         } else {
             mListener.onOperationError(Dict.FAILED.toString());
         }
@@ -366,11 +377,15 @@ class Operation {
             String exif = mBundle.getString("status_exif");
             String coordinate = mBundle.getString("status_coordinate");
             String time = mBundle.getString("status_time");
+            String invalidFormat = mBundle.getString("status_invalid_format");
+            String placemarks = mBundle.getString("status_placemarks");
 
             int rightPad = files.length();
             rightPad = Math.max(rightPad, exif.length());
             rightPad = Math.max(rightPad, coordinate.length());
             rightPad = Math.max(rightPad, time.length());
+            rightPad = Math.max(rightPad, invalidFormat.length());
+            rightPad = Math.max(rightPad, placemarks.length());
             rightPad++;
 
             int leftPad = 8;
@@ -384,6 +399,12 @@ class Operation {
 
             String coordinateValue = String.valueOf(mNumOfGps);
             summaryBuilder.append(StringUtils.rightPad(coordinate, rightPad)).append(":").append(StringUtils.leftPad(coordinateValue, leftPad)).append("\n");
+
+            String invalidFormatValue = String.valueOf(mNumOfInvalidFormat);
+            summaryBuilder.append(StringUtils.rightPad(invalidFormat, rightPad)).append(":").append(StringUtils.leftPad(invalidFormatValue, leftPad)).append("\n");
+
+            String placemarksValue = String.valueOf(mNumOfPlacemarks);
+            summaryBuilder.append(StringUtils.rightPad(placemarks, rightPad)).append(":").append(StringUtils.leftPad(placemarksValue, leftPad)).append("\n");
 
             String timeValue = String.format("%.3f", (System.currentTimeMillis() - mStartTime) / 1000.0).trim();
             summaryBuilder.append(StringUtils.rightPad(time, rightPad)).append(":").append(StringUtils.leftPad(timeValue, leftPad)).append(" ").append(Dict.TIME_SECONDS).append("\n");
