@@ -23,7 +23,7 @@ import java.util.ResourceBundle;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.math.NumberUtils;
-import se.trixon.util.BundleHelper;
+import se.trixon.almond.util.BundleHelper;
 
 /**
  *

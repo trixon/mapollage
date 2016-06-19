@@ -26,9 +26,9 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang3.SystemUtils;
-import se.trixon.util.BundleHelper;
-import se.trixon.util.SystemHelper;
-import se.trixon.util.dictionary.Dict;
+import se.trixon.almond.util.BundleHelper;
+import se.trixon.almond.util.SystemHelper;
+import se.trixon.almond.util.Dict;
 
 /**
  *

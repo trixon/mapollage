@@ -52,9 +52,9 @@
             <type>jar</type>
         </dependency>
         <dependency>
-            <groupId>se.trixon.util</groupId>
-            <artifactId>trixon-util</artifactId>
-            <version>1.1.6-SNAPSHOT</version>
+            <groupId>se.trixon.almond</groupId>
+            <artifactId>almond-util</artifactId>
+            <version>1.1.7-SNAPSHOT</version>
             <type>jar</type>
         </dependency>
         <dependency>

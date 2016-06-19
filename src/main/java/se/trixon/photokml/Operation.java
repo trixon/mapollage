@@ -45,10 +45,10 @@ import java.util.ResourceBundle;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
-import se.trixon.util.BundleHelper;
-import se.trixon.util.GraphicsHelper;
-import se.trixon.util.Scaler;
-import se.trixon.util.dictionary.Dict;
+import se.trixon.almond.util.BundleHelper;
+import se.trixon.almond.util.GraphicsHelper;
+import se.trixon.almond.util.Scaler;
+import se.trixon.almond.util.Dict;
 
 /**
  *
@@ -171,7 +171,7 @@ class Operation {
                 throw new ImageProcessingException(file.getAbsolutePath());
             }
 
-            if (geoLocation.getLatitude() == 0 && geoLocation.getLongitude() == 0) {
+            if (geoLocation.isZero()) {
                 geoLocation = new GeoLocation(mOptionsHolder.getLat(), mOptionsHolder.getLon());
                 gpsDirectory = null;
             }
