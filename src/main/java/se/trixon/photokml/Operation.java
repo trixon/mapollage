@@ -68,11 +68,11 @@ public class Operation {
     private int mNumOfGps;
     private int mNumOfInvalidFormat;
     private int mNumOfPlacemarks;
-    private final OptionsHolder mOptionsHolder;
+    private final Profile mOptionsHolder;
     private Folder mRootFolder;
     private long mStartTime;
 
-    public Operation(OperationListener operationListener, OptionsHolder optionsHolder) {
+    public Operation(OperationListener operationListener, Profile optionsHolder) {
         mListener = operationListener;
         mOptionsHolder = optionsHolder;
         mBundle = BundleHelper.getBundle(Operation.class, "Bundle");

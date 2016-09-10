@@ -67,6 +67,17 @@
             <artifactId>JavaAPIforKml</artifactId>
             <version>2.2.1</version>
         </dependency>
+        <dependency>
+            <groupId>com.googlecode.json-simple</groupId>
+            <artifactId>json-simple</artifactId>
+            <version>1.1.1</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>com.bulenkov</groupId>
+            <artifactId>darcula</artifactId>
+            <version>1.0</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -95,13 +106,19 @@
                         <configuration>
                             <minimizeJar>true</minimizeJar>
                             <filters>
-                                <filter>                
+                                <filter>
                                     <artifact>se.trixon.util:trixon-util</artifact>
                                     <excludes>
                                         <exclude>se/trixon/util/icon/**</exclude>
                                         <exclude>se/trixon/util/icons/**</exclude>
                                         <exclude>se/trixon/util/swing/**</exclude>
                                     </excludes>
+                                </filter>
+                                <filter>
+                                    <artifact>com.bulenkov:darcula</artifact>
+                                    <includes>
+                                        <include>com/bulenkov/**</include>
+                                    </includes>
                                 </filter>
                                 <filter>
                                     <artifact>de.micromata.jak:JavaAPIforKml</artifact>

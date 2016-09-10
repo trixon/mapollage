@@ -20,6 +20,8 @@ import java.nio.file.FileSystems;
 import java.nio.file.PathMatcher;
 import java.text.SimpleDateFormat;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -29,10 +31,10 @@ import se.trixon.almond.util.BundleHelper;
  *
  * @author Patrik Karlsson
  */
-public class OptionsHolder {
+public class Profile implements Comparable<Profile>, Cloneable {
 
     private String mAbsolutePath;
-    private final ResourceBundle mBundle = BundleHelper.getBundle(OptionsHolder.class, "Bundle");
+    private final ResourceBundle mBundle = BundleHelper.getBundle(Profile.class, "Bundle");
     private String[] mCoordinate;
     private File mDestFile;
     private String mFilePattern;
@@ -49,6 +51,7 @@ public class OptionsHolder {
     private String mMaxHeightString;
     private Integer mMaxWidth;
     private String mMaxWidthString;
+    private String mName;
     private PathMatcher mPathMatcher;
     private boolean mPlacemarkByDate;
     private boolean mPlacemarkByFilename;
@@ -61,11 +64,11 @@ public class OptionsHolder {
     private File mSourceDir;
     private final StringBuilder mValidationErrorBuilder = new StringBuilder();
 
-    public OptionsHolder() {
+    public Profile() {
 
     }
 
-    public OptionsHolder(CommandLine commandLine) {
+    public Profile(CommandLine commandLine) {
         mRootName = commandLine.getOptionValue(PhotoKml.ROOT_NAME);
         mRootDesc = commandLine.getOptionValue(PhotoKml.ROOT_DESC);
 
@@ -96,6 +99,21 @@ public class OptionsHolder {
         mRecursive = commandLine.hasOption(PhotoKml.RECURSIVE);
 
         setSourceAndDest(commandLine.getArgs());
+    }
+
+    @Override
+    public Profile clone() {
+        try {
+            return (Profile) super.clone();
+        } catch (CloneNotSupportedException ex) {
+            Logger.getLogger(Profile.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+    }
+
+    @Override
+    public int compareTo(Profile o) {
+        return mName.compareTo(o.getName());
     }
 
     public String getAbsolutePath() {
@@ -132,6 +150,10 @@ public class OptionsHolder {
 
     public Integer getMaxWidth() {
         return mMaxWidth;
+    }
+
+    public String getName() {
+        return mName;
     }
 
     public PathMatcher getPathMatcher() {
@@ -300,6 +322,10 @@ public class OptionsHolder {
         mMaxWidth = width;
     }
 
+    public void setName(String name) {
+        this.mName = name;
+    }
+
     public void setPathMatcher(PathMatcher pathMatcher) {
         mPathMatcher = pathMatcher;
     }
@@ -356,8 +382,7 @@ public class OptionsHolder {
         }
     }
 
-    @Override
-    public String toString() {
+    public String toDebugString() {
         return "OptionsHolder {"
                 + "\n RootName=" + mRootName
                 + "\n RootDesc=" + mRootDesc
@@ -388,6 +413,11 @@ public class OptionsHolder {
                 + "\n FilePattern=" + mFilePattern
                 + "\n Dest=" + mDestFile
                 + "\n}";
+    }
+
+    @Override
+    public String toString() {
+        return mName;
     }
 
     private void addValidationError(String string) {

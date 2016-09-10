@@ -84,7 +84,7 @@ public class PhotoKml implements OperationListener {
                     displayVersion();
                     System.exit(0);
                 } else {
-                    OptionsHolder optionsHolder = new OptionsHolder(commandLine);
+                    Profile optionsHolder = new Profile(commandLine);
                     System.out.println(optionsHolder.toString());
 
                     if (optionsHolder.isValid()) {
