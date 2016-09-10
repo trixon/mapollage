@@ -46,15 +46,15 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import se.trixon.almond.util.BundleHelper;
+import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.GraphicsHelper;
 import se.trixon.almond.util.Scaler;
-import se.trixon.almond.util.Dict;
 
 /**
  *
  * @author Patrik Karlsson
  */
-class Operation {
+public class Operation {
 
     private final ResourceBundle mBundle;
     private final DateFormat mDateFormatDate = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM);
@@ -201,7 +201,7 @@ class Operation {
                     .withDescription(desc)
                     .createAndSetPoint()
                     .addToCoordinates(lonInt / format, latInt / format);
-            
+
             mNumOfPlacemarks++;
         } else {
             mListener.onOperationError(Dict.FAILED.toString());

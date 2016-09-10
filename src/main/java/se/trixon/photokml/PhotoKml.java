@@ -15,6 +15,7 @@
  */
 package se.trixon.photokml;
 
+import java.awt.GraphicsEnvironment;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.ResourceBundle;
@@ -26,18 +27,18 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang3.SystemUtils;
+import se.trixon.almond.util.AlmondUI;
 import se.trixon.almond.util.BundleHelper;
-import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.SystemHelper;
+import se.trixon.almond.util.Xlog;
+import se.trixon.photokml.ui.MainFrame;
 
 /**
  *
  * @author Patrik Karlsson
  */
 public class PhotoKml implements OperationListener {
-
-    private final ResourceBundle mBundle = BundleHelper.getBundle(PhotoKml.class, "Bundle");
-    private Options mOptions;
 
     public static final String ABSOLUTE_PATH = "absolute-path";
     public static final String COORDINATE = "coordinate";
@@ -54,6 +55,10 @@ public class PhotoKml implements OperationListener {
     public static final String ROOT_DESC = "root-desc";
     public static final String ROOT_NAME = "root-name";
     public static final String VERSION = "version";
+    private final AlmondUI mAlmondUI = AlmondUI.getInstance();
+    private final ResourceBundle mBundle = BundleHelper.getBundle(PhotoKml.class, "Bundle");
+    private MainFrame mMainFrame = null;
+    private Options mOptions;
 
     /**
      * @param args the command line arguments
@@ -65,7 +70,8 @@ public class PhotoKml implements OperationListener {
     public PhotoKml(String[] args) {
         initOptions();
         if (args.length == 0) {
-            displayHelp();
+            System.out.println(mBundle.getString("hint_tui"));
+            displayGui();
         } else {
             try {
                 CommandLineParser commandLineParser = new DefaultParser();
@@ -129,6 +135,23 @@ public class PhotoKml implements OperationListener {
     @Override
     public void onOperationStarted() {
         // nvm
+    }
+
+    private void displayGui() {
+        if (GraphicsEnvironment.isHeadless()) {
+            Xlog.timedErr(mBundle.getString("headless"));
+            System.exit(1);
+
+            return;
+        }
+
+        mAlmondUI.installDarcula();
+        mAlmondUI.initLookAndFeel();
+
+        java.awt.EventQueue.invokeLater(() -> {
+            mMainFrame = new MainFrame();
+            mMainFrame.setVisible(true);
+        });
     }
 
     private void displayHelp() {

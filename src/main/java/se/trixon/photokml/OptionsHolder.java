@@ -33,7 +33,7 @@ public class OptionsHolder {
 
     private String mAbsolutePath;
     private final ResourceBundle mBundle = BundleHelper.getBundle(OptionsHolder.class, "Bundle");
-    private final String[] mCoordinate;
+    private String[] mCoordinate;
     private File mDestFile;
     private String mFilePattern;
     private boolean mFolderByDate;
@@ -46,9 +46,9 @@ public class OptionsHolder {
     private Double mLon;
     private boolean mLowerCaseExt;
     private Integer mMaxHeight;
-    private final String mMaxHeightString;
+    private String mMaxHeightString;
     private Integer mMaxWidth;
-    private final String mMaxWidthString;
+    private String mMaxWidthString;
     private PathMatcher mPathMatcher;
     private boolean mPlacemarkByDate;
     private boolean mPlacemarkByFilename;
@@ -60,6 +60,10 @@ public class OptionsHolder {
     private String mRootName;
     private File mSourceDir;
     private final StringBuilder mValidationErrorBuilder = new StringBuilder();
+
+    public OptionsHolder() {
+
+    }
 
     public OptionsHolder(CommandLine commandLine) {
         mRootName = commandLine.getOptionValue(PhotoKml.ROOT_NAME);
