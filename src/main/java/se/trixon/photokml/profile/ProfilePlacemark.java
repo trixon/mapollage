@@ -26,98 +26,23 @@ import se.trixon.photokml.PhotoKml;
  */
 public class ProfilePlacemark extends ProfileBase {
 
-    public boolean isIncludeNullCoordinate() {
-        return mIncludeNullCoordinate;
-    }
+    public static final String KEY_DATE_PATTERN = "datePattern";
+    public static final String KEY_INCLUDE_NULL_COORDINATE = "includeNullCoordinate";
+    public static final String KEY_LAT = "lat";
+    public static final String KEY_LON = "lon";
+    public static final String KEY_NAME_BY = "nameBy";
 
-    public void setIncludeNullCoordinate(boolean includeNullCoordinate) {
-        this.mIncludeNullCoordinate = includeNullCoordinate;
-    }
-
-    private boolean mIncludeNullCoordinate;
     private boolean mByDate;
     private boolean mByFilename;
+    private String[] mCoordinate;
     private SimpleDateFormat mDateFormat;
     private String mDatePattern = "yyyy-MM-dd HH.mm";
-    ;
     private String mDesccription = "";
-    private final Profile mProfile;
+    private boolean mIncludeNullCoordinate;
     private Double mLat = 57.6;
     private Double mLon = 11.3;
-    private String[] mCoordinate;
+    private final Profile mProfile;
     private int nameBy;
-
-    public int getNameBy() {
-        return nameBy;
-    }
-
-    public void setNameBy(int nameBy) {
-        this.nameBy = nameBy;
-    }
-
-    public boolean isByDate() {
-        return mByDate;
-    }
-
-    public void setByDate(boolean byDate) {
-        this.mByDate = byDate;
-    }
-
-    public boolean isByFilename() {
-        return mByFilename;
-    }
-
-    public void setByFilename(boolean byFilename) {
-        this.mByFilename = byFilename;
-    }
-
-    public SimpleDateFormat getDateFormat() {
-        return mDateFormat;
-    }
-
-    public void setDateFormat(SimpleDateFormat dateFormat) {
-        this.mDateFormat = dateFormat;
-    }
-
-    public String getDatePattern() {
-        return mDatePattern;
-    }
-
-    public void setDatePattern(String datePattern) {
-        this.mDatePattern = datePattern;
-    }
-
-    public String getDesccription() {
-        return mDesccription;
-    }
-
-    public void setDesccription(String desccription) {
-        this.mDesccription = desccription;
-    }
-
-    public Double getLat() {
-        return mLat;
-    }
-
-    public void setLat(Double lat) {
-        this.mLat = lat;
-    }
-
-    public Double getLon() {
-        return mLon;
-    }
-
-    public void setLon(Double lon) {
-        this.mLon = lon;
-    }
-
-    public String[] getCoordinate() {
-        return mCoordinate;
-    }
-
-    public void setCoordinate(String[] coordinate) {
-        this.mCoordinate = coordinate;
-    }
 
     public ProfilePlacemark(final Profile profile) {
         mProfile = profile;
@@ -135,8 +60,48 @@ public class ProfilePlacemark extends ProfileBase {
         mDesccription = commandLine.getOptionValue(PhotoKml.PLACEMARK_DESC);
     }
 
+    public String[] getCoordinate() {
+        return mCoordinate;
+    }
+
+    public SimpleDateFormat getDateFormat() {
+        return mDateFormat;
+    }
+
+    public String getDatePattern() {
+        return mDatePattern;
+    }
+
+    public String getDesccription() {
+        return mDesccription;
+    }
+
+    public Double getLat() {
+        return mLat;
+    }
+
+    public Double getLon() {
+        return mLon;
+    }
+
+    public int getNameBy() {
+        return nameBy;
+    }
+
     public boolean hasCoordinate() {
         return mLat != null && mLon != null;
+    }
+
+    public boolean isByDate() {
+        return mByDate;
+    }
+
+    public boolean isByFilename() {
+        return mByFilename;
+    }
+
+    public boolean isIncludeNullCoordinate() {
+        return mIncludeNullCoordinate;
     }
 
     @Override
@@ -167,6 +132,46 @@ public class ProfilePlacemark extends ProfileBase {
         return true;
     }
 
+    public void setByDate(boolean byDate) {
+        mByDate = byDate;
+    }
+
+    public void setByFilename(boolean byFilename) {
+        mByFilename = byFilename;
+    }
+
+    public void setCoordinate(String[] coordinate) {
+        mCoordinate = coordinate;
+    }
+
+    public void setDateFormat(SimpleDateFormat dateFormat) {
+        mDateFormat = dateFormat;
+    }
+
+    public void setDatePattern(String datePattern) {
+        mDatePattern = datePattern;
+    }
+
+    public void setDesccription(String desccription) {
+        mDesccription = desccription;
+    }
+
+    public void setIncludeNullCoordinate(boolean includeNullCoordinate) {
+        mIncludeNullCoordinate = includeNullCoordinate;
+    }
+
+    public void setLat(Double lat) {
+        mLat = lat;
+    }
+
+    public void setLon(Double lon) {
+        mLon = lon;
+    }
+
+    public void setNameBy(int nameBy) {
+        nameBy = nameBy;
+    }
+
     @Override
     public String toDebugString() {
         return "\n PlacemarkByDate=" + mByDate
@@ -174,5 +179,10 @@ public class ProfilePlacemark extends ProfileBase {
                 + "\n PlacemarkDatePattern=" + mDatePattern
                 + "\n PlacemarkDesc=" + mDesccription
                 + "\n";
+    }
+
+    @Override
+    public String toString() {
+        return "ProfilePlacemark{" + "mIncludeNullCoordinate=" + mIncludeNullCoordinate + ", mByDate=" + mByDate + ", mByFilename=" + mByFilename + ", mDateFormat=" + mDateFormat + ", mDatePattern=" + mDatePattern + ", mDesccription=" + mDesccription + ", mProfile=" + mProfile + ", mLat=" + mLat + ", mLon=" + mLon + ", mCoordinate=" + mCoordinate + ", nameBy=" + nameBy + '}';
     }
 }

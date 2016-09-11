@@ -27,6 +27,7 @@ import org.json.simple.JSONValue;
 import se.trixon.almond.util.Xlog;
 import se.trixon.photokml.profile.Profile;
 import se.trixon.photokml.profile.ProfileFolder;
+import se.trixon.photokml.profile.ProfilePlacemark;
 import se.trixon.photokml.profile.ProfileSource;
 
 /**
@@ -35,10 +36,11 @@ import se.trixon.photokml.profile.ProfileSource;
  */
 public class ProfileManager {
 
+    private static final String KEY_FOLDER = "folder";
     private static final String KEY_NAME = "name";
+    private static final String KEY_PLACEMARK = "placemark";
     private static final String KEY_PROFILES = "profiles";
     private static final String KEY_SOURCE = "source";
-    private static final String KEY_FOLDER = "folder";
     private static final String KEY_VERSION = "version";
     private static final int sVersion = 1;
     private final File mDirectory;
@@ -86,6 +88,15 @@ public class ProfileManager {
             folderObject.put(ProfileFolder.KEY_REGEX, profileFolder.getRegex());
             folderObject.put(ProfileFolder.KEY_REGEX_DEFAULT, profileFolder.getRegexDefault());
             object.put(KEY_FOLDER, folderObject);
+
+            ProfilePlacemark profilePlacemark = profile.getPlacemark();
+            JSONObject placemarkObject = new JSONObject();
+            placemarkObject.put(ProfilePlacemark.KEY_LAT, profilePlacemark.getLat());
+            placemarkObject.put(ProfilePlacemark.KEY_LON, profilePlacemark.getLon());
+            placemarkObject.put(ProfilePlacemark.KEY_NAME_BY, profilePlacemark.getNameBy());
+            placemarkObject.put(ProfilePlacemark.KEY_INCLUDE_NULL_COORDINATE, profilePlacemark.isIncludeNullCoordinate());
+            placemarkObject.put(ProfilePlacemark.KEY_DATE_PATTERN, profilePlacemark.getDatePattern());
+            object.put(KEY_PLACEMARK, placemarkObject);
 
             array.add(object);
         }
@@ -176,20 +187,14 @@ public class ProfileManager {
             profileFolder.setRegex((String) folderObject.get(ProfileFolder.KEY_REGEX));
             profileFolder.setRegexDefault((String) folderObject.get(ProfileFolder.KEY_REGEX_DEFAULT));
 
-//            profile.setSourceDir(getFileObject(object, KEY_SOURCE));
-//            profile.setDestDir(getFileObject(object, KEY_DEST));
-//            profile.setFilePattern((String) object.get(KEY_FILE_PATTERN));
-//            DateSource dateSource = DateSource.valueOf((String) object.get(KEY_DATE_SOURCE));
-//            profile.setDateSource(dateSource);
-//            profile.setDatePattern((String) object.get(KEY_DATE_PATTERN));
-//            profile.setOperation(getInt(object, KEY_OPERATION));
-//            profile.setFollowLinks(getBoolean(object, KEY_FOLLOW_LINKS));
-//            profile.setRecursive(getBoolean(object, KEY_RECURSIVE));
-//            profile.setReplaceExisting(getBoolean(object, KEY_OVERWRITE));
-//            NameCase nameCase = NameCase.valueOf((String) object.get(KEY_CASE_BASE));
-//            profile.setBaseNameCase(nameCase);
-//            nameCase = NameCase.valueOf((String) object.get(KEY_CASE_SUFFIX));
-//            profile.setExtNameCase(nameCase);
+            ProfilePlacemark profilePlacemark = profile.getPlacemark();
+            JSONObject placemarkObject = (JSONObject) object.get(KEY_PLACEMARK);
+            profilePlacemark.setLat((Double) placemarkObject.get(ProfilePlacemark.KEY_LAT));
+            profilePlacemark.setLon((Double) placemarkObject.get(ProfilePlacemark.KEY_LON));
+            profilePlacemark.setNameBy(getInt(placemarkObject, ProfilePlacemark.KEY_NAME_BY));
+            profilePlacemark.setIncludeNullCoordinate(getBoolean(placemarkObject, ProfilePlacemark.KEY_INCLUDE_NULL_COORDINATE));
+            profilePlacemark.setDatePattern((String) placemarkObject.get(ProfilePlacemark.KEY_DATE_PATTERN));
+
             mProfiles.add(profile);
         }
 

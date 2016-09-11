@@ -114,54 +114,6 @@ public class ModulePlacemarkPanel extends ModulePanel {
                 mPlacemark.setDatePattern(dateFormatTextField.getText());
             }
         });
-
-        latNumericField.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                saveOption();
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                saveOption();
-            }
-
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                saveOption();
-            }
-
-            private void saveOption() {
-                try {
-                    mPlacemark.setLat(Double.valueOf(latNumericField.getText().replace(",", ".")));
-                } catch (NumberFormatException e) {
-                }
-            }
-        });
-
-        lonNumericField.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                saveOption();
-            }
-
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                saveOption();
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                saveOption();
-            }
-
-            private void saveOption() {
-                try {
-                    mPlacemark.setLon(Double.valueOf(lonNumericField.getText().replace(",", ".")));
-                } catch (NumberFormatException e) {
-                }
-            }
-        });
     }
 
     private void saveNameBy() {
@@ -197,10 +149,10 @@ public class ModulePlacemarkPanel extends ModulePanel {
         nullCoordinatePanel = new javax.swing.JPanel();
         includeNullCoordinateCheckBox = new javax.swing.JCheckBox();
         latLabel = new javax.swing.JLabel();
-        latNumericField = new se.trixon.almond.util.swing.ANumericField();
         lonLabel = new javax.swing.JLabel();
-        lonNumericField = new se.trixon.almond.util.swing.ANumericField();
         filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
+        latSpinner = new javax.swing.JSpinner();
+        lonSpinner = new javax.swing.JSpinner();
 
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("se/trixon/photokml/ui/config/Bundle"); // NOI18N
         nameByLabel.setText(bundle.getString("ModulePlacemarkPanel.nameByLabel.text")); // NOI18N
@@ -260,13 +212,6 @@ public class ModulePlacemarkPanel extends ModulePanel {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 20, 0, 0);
         nullCoordinatePanel.add(latLabel, gridBagConstraints);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
-        gridBagConstraints.insets = new java.awt.Insets(0, 20, 0, 0);
-        nullCoordinatePanel.add(latNumericField, gridBagConstraints);
 
         lonLabel.setText(Dict.LONGITUDE.getString());
         lonLabel.setPreferredSize(new java.awt.Dimension(100, 15));
@@ -276,17 +221,35 @@ public class ModulePlacemarkPanel extends ModulePanel {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         nullCoordinatePanel.add(lonLabel, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
-        nullCoordinatePanel.add(lonNumericField, gridBagConstraints);
-        gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 1.0;
         nullCoordinatePanel.add(filler1, gridBagConstraints);
+
+        latSpinner.setModel(new javax.swing.SpinnerNumberModel(0.0d, -90.0d, 90.0d, 0.01d));
+        latSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                latSpinnerStateChanged(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        nullCoordinatePanel.add(latSpinner, gridBagConstraints);
+
+        lonSpinner.setModel(new javax.swing.SpinnerNumberModel(0.0d, -180.0d, 180.0d, 0.01d));
+        lonSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                lonSpinnerStateChanged(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        nullCoordinatePanel.add(lonSpinner, gridBagConstraints);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -300,7 +263,7 @@ public class ModulePlacemarkPanel extends ModulePanel {
                 .addComponent(dateFormatTextField))
             .addComponent(nameByNoRadioButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addComponent(nullCoordinatePanel, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                .addComponent(nullCoordinatePanel, javax.swing.GroupLayout.DEFAULT_SIZE, 523, Short.MAX_VALUE)
                 .addGap(12, 12, 12))
         );
         layout.setVerticalGroup(
@@ -317,7 +280,7 @@ public class ModulePlacemarkPanel extends ModulePanel {
                 .addComponent(nameByNoRadioButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(nullCoordinatePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(143, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -339,19 +302,27 @@ public class ModulePlacemarkPanel extends ModulePanel {
 
     private void includeNullCoordinateCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_includeNullCoordinateCheckBoxActionPerformed
         boolean state = includeNullCoordinateCheckBox.isSelected();
-        latNumericField.setEnabled(state);
-        lonNumericField.setEnabled(state);
+        latSpinner.setEnabled(state);
+        lonSpinner.setEnabled(state);
         mPlacemark.setIncludeNullCoordinate(includeNullCoordinateCheckBox.isSelected());
     }//GEN-LAST:event_includeNullCoordinateCheckBoxActionPerformed
+
+    private void latSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_latSpinnerStateChanged
+        mPlacemark.setLat((Double) latSpinner.getModel().getValue());
+    }//GEN-LAST:event_latSpinnerStateChanged
+
+    private void lonSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_lonSpinnerStateChanged
+        mPlacemark.setLon((Double) lonSpinner.getModel().getValue());
+    }//GEN-LAST:event_lonSpinnerStateChanged
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField dateFormatTextField;
     private javax.swing.Box.Filler filler1;
     private javax.swing.JCheckBox includeNullCoordinateCheckBox;
     private javax.swing.JLabel latLabel;
-    private se.trixon.almond.util.swing.ANumericField latNumericField;
+    private javax.swing.JSpinner latSpinner;
     private javax.swing.JLabel lonLabel;
-    private se.trixon.almond.util.swing.ANumericField lonNumericField;
+    private javax.swing.JSpinner lonSpinner;
     private javax.swing.ButtonGroup nameButtonGroup;
     private javax.swing.JRadioButton nameByDateRadioButton;
     private javax.swing.JRadioButton nameByFileRadioButton;
@@ -380,8 +351,8 @@ public class ModulePlacemarkPanel extends ModulePanel {
         }
 
         includeNullCoordinateCheckBox.setSelected(mPlacemark.isIncludeNullCoordinate());
-        latNumericField.setText(String.valueOf(mPlacemark.getLat()));
-        lonNumericField.setText(String.valueOf(mPlacemark.getLon()));
+        latSpinner.setValue(mPlacemark.getLat());
+        lonSpinner.setValue(mPlacemark.getLon());
 
         restoreEnabledStates();
     }
