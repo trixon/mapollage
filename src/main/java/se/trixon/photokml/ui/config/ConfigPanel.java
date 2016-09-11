@@ -21,6 +21,7 @@ import javax.swing.border.EmptyBorder;
 import se.trixon.almond.util.swing.SwingHelper;
 import se.trixon.almond.util.swing.dialogs.FileChooserPanel;
 import se.trixon.photokml.Options;
+import se.trixon.photokml.Profile;
 
 /**
  *
@@ -40,6 +41,15 @@ public class ConfigPanel extends javax.swing.JPanel {
     public ConfigPanel() {
         initComponents();
         init();
+    }
+
+    public void loadProfile(Profile profile) {
+        for (Component component : tabbedPane.getComponents()) {
+            if (component instanceof ModulePanel) {
+                ModulePanel modulePanel = (ModulePanel) component;
+                modulePanel.load(profile);
+            }
+        }
     }
 
     public FileChooserPanel getSourceChooserPanel() {
@@ -73,15 +83,6 @@ public class ConfigPanel extends javax.swing.JPanel {
         return validSettings;
     }
 
-    public void save() {
-        for (Component component : tabbedPane.getComponents()) {
-            if (component instanceof ModulePanel) {
-                ModulePanel modulePanel = (ModulePanel) component;
-                modulePanel.save();
-            }
-        }
-    }
-
     @Override
     public void setEnabled(boolean enabled) {
         super.setEnabled(enabled);
@@ -98,7 +99,6 @@ public class ConfigPanel extends javax.swing.JPanel {
     }
 
     private Component addModulePanel(ModulePanel modulePanel) {
-        modulePanel.load();
         return tabbedPane.add(modulePanel.getTitle(), modulePanel);
     }
 

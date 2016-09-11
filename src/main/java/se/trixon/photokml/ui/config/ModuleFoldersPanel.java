@@ -23,6 +23,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import org.apache.commons.lang3.StringUtils;
 import se.trixon.almond.util.Dict;
+import se.trixon.photokml.Profile;
 
 /**
  *
@@ -465,7 +466,7 @@ public class ModuleFoldersPanel extends ModulePanel {
     // End of variables declaration//GEN-END:variables
 
     @Override
-    public void load() {
+    public void load(Profile profile) {
         rootNameTextField.setText(mOptions.getFoldersRootName());
         rootDescriptionTextArea.setText(mOptions.getFoldersRootDescription());
         subFoldersCheckBox.setSelected(mOptions.isFoldersSubFolders());
@@ -486,6 +487,6 @@ public class ModuleFoldersPanel extends ModulePanel {
     }
 
     @Override
-    public void save() {
+    public void save(Profile profile) {
     }
 }

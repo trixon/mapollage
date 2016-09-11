@@ -359,6 +359,12 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
         });
 
         topPanel.setLayout(new java.awt.GridBagLayout());
+
+        profileComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                profileComboBoxActionPerformed(evt);
+            }
+        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -431,6 +437,14 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         saveProfiles();
     }//GEN-LAST:event_formWindowClosing
+
+    private void profileComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_profileComboBoxActionPerformed
+        Profile p = getSelectedProfile();
+        if (p != null) {
+            configPanel1.loadProfile(p);
+        }
+
+    }//GEN-LAST:event_profileComboBoxActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem;

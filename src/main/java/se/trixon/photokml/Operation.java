@@ -68,13 +68,13 @@ public class Operation {
     private int mNumOfGps;
     private int mNumOfInvalidFormat;
     private int mNumOfPlacemarks;
-    private final Profile mOptionsHolder;
+    private final Profile mProfile;
     private Folder mRootFolder;
     private long mStartTime;
 
-    public Operation(OperationListener operationListener, Profile optionsHolder) {
+    public Operation(OperationListener operationListener, Profile profile) {
         mListener = operationListener;
-        mOptionsHolder = optionsHolder;
+        mProfile = profile;
         mBundle = BundleHelper.getBundle(Operation.class, "Bundle");
     }
 
@@ -82,9 +82,9 @@ public class Operation {
         mStartTime = System.currentTimeMillis();
         mListener.onOperationStarted();
         String status;
-        mDestinationFile = mOptionsHolder.getDestFile();
-        mRootFolder = mKml.createAndSetFolder().withName(mOptionsHolder.getRootName());
-        mRootFolder.setDescription(mOptionsHolder.getRootDesc());
+        mDestinationFile = mProfile.getDestFile();
+        mRootFolder = mKml.createAndSetFolder().withName(mProfile.getRootName());
+        mRootFolder.setDescription(mProfile.getRootDesc());
 
         mInterrupted = !generateFileList();
 
@@ -139,11 +139,11 @@ public class Operation {
         Date exifDate = getImageDate(file, exifDirectory);
         String name;
 
-        if (mOptionsHolder.isPlacemarkByFilename()) {
+        if (mProfile.isPlacemarkByFilename()) {
             name = FilenameUtils.getBaseName(file.getAbsolutePath());
-        } else if (mOptionsHolder.isPlacemarkByDate()) {
+        } else if (mProfile.isPlacemarkByDate()) {
             try {
-                name = mOptionsHolder.getPlacemarkDateFormat().format(exifDate);
+                name = mProfile.getPlacemarkDateFormat().format(exifDate);
             } catch (IllegalArgumentException ex) {
                 name = "invalid exif date";
             } catch (NullPointerException ex) {
@@ -155,14 +155,14 @@ public class Operation {
             name = "";
         }
 
-        String desc = mOptionsHolder.getPlacemarkDesc();
+        String desc = mProfile.getPlacemarkDesc();
         desc = StringUtils.replace(desc, Desc.PHOTO, getDescPhoto(file));
         desc = StringUtils.replace(desc, Desc.FILENAME, file.getName());
         desc = StringUtils.replace(desc, Desc.DATE, mDateFormatDate.format(exifDate));
 
         GeoLocation geoLocation = null;
-        if (mOptionsHolder.hasCoordinate()) {
-            geoLocation = new GeoLocation(mOptionsHolder.getLat(), mOptionsHolder.getLon());
+        if (mProfile.hasCoordinate()) {
+            geoLocation = new GeoLocation(mProfile.getLat(), mProfile.getLon());
         }
 
         if (gpsDirectory != null) {
@@ -172,7 +172,7 @@ public class Operation {
             }
 
             if (geoLocation.isZero()) {
-                geoLocation = new GeoLocation(mOptionsHolder.getLat(), mOptionsHolder.getLon());
+                geoLocation = new GeoLocation(mProfile.getLat(), mProfile.getLon());
                 gpsDirectory = null;
             }
 
@@ -188,7 +188,7 @@ public class Operation {
         }
 
 //            descriptionBuilder.append("]]>");
-        boolean shouldAppendToKml = gpsDirectory != null || mOptionsHolder.hasCoordinate();
+        boolean shouldAppendToKml = gpsDirectory != null || mProfile.hasCoordinate();
 
         if (shouldAppendToKml) {
             double format = 1000000;
@@ -210,20 +210,20 @@ public class Operation {
 
     private boolean generateFileList() {
         mListener.onOperationLog(Dict.GENERATING_FILELIST.toString());
-        PathMatcher pathMatcher = mOptionsHolder.getPathMatcher();
+        PathMatcher pathMatcher = mProfile.getPathMatcher();
 
         EnumSet<FileVisitOption> fileVisitOptions = EnumSet.noneOf(FileVisitOption.class);
-        if (mOptionsHolder.isFollowLinks()) {
+        if (mProfile.getSource().isFollowLinks()) {
             fileVisitOptions = EnumSet.of(FileVisitOption.FOLLOW_LINKS);
         } else {
             fileVisitOptions = EnumSet.noneOf(FileVisitOption.class);
         }
 
-        File file = mOptionsHolder.getSourceDir();
+        File file = mProfile.getSource().getDir();
         if (file.isDirectory()) {
             FileVisitor fileVisitor = new FileVisitor(pathMatcher, mFiles);
             try {
-                if (mOptionsHolder.isRecursive()) {
+                if (mProfile.getSource().isRecursive()) {
                     Files.walkFileTree(file.toPath(), fileVisitOptions, Integer.MAX_VALUE, fileVisitor);
                 } else {
                     Files.walkFileTree(file.toPath(), fileVisitOptions, 1, fileVisitor);
@@ -263,12 +263,12 @@ public class Operation {
 
         Scaler scaler = new Scaler(new Dimension(originalDimension));
 
-        if (mOptionsHolder.getMaxWidth() != null) {
-            scaler.setWidth(mOptionsHolder.getMaxWidth());
+        if (mProfile.getMaxWidth() != null) {
+            scaler.setWidth(mProfile.getMaxWidth());
         }
 
-        if (mOptionsHolder.getMaxHeight() != null) {
-            scaler.setHeight(mOptionsHolder.getMaxHeight());
+        if (mProfile.getMaxHeight() != null) {
+            scaler.setHeight(mProfile.getMaxHeight());
         }
 
         Dimension newDimension = scaler.getDimension();
@@ -282,11 +282,11 @@ public class Operation {
         String key;
         Folder folder;
 
-        if (mOptionsHolder.isFolderByDir()) {
+        if (mProfile.isFolderByDir()) {
             key = file.getParentFile().getName();
             folder = getFolder(key);
-        } else if (mOptionsHolder.isFolderByDate()) {
-            key = mOptionsHolder.getFolderDateFormat().format(date);
+        } else if (mProfile.isFolderByDate()) {
+            key = mProfile.getFolderDateFormat().format(date);
             folder = getFolder(key);
         } else {
             folder = mRootFolder;
@@ -329,8 +329,8 @@ public class Operation {
     private String getImagePath(File file) {
         String imageSrc;
 
-        if (mOptionsHolder.getAbsolutePath() != null) {
-            imageSrc = mOptionsHolder.getAbsolutePath() + file.getName();
+        if (mProfile.getAbsolutePath() != null) {
+            imageSrc = mProfile.getAbsolutePath() + file.getName();
         } else {
             Path relativePath = mDestinationFile.toPath().relativize(file.toPath());
 
@@ -346,7 +346,7 @@ public class Operation {
             }
         }
 
-        if (mOptionsHolder.isLowerCaseExt()) {
+        if (mProfile.isLowerCaseExt()) {
             String ext = FilenameUtils.getExtension(imageSrc);
             if (!StringUtils.isBlank(ext) && !StringUtils.isAllLowerCase(ext)) {
                 String noExt = FilenameUtils.removeExtension(imageSrc);
@@ -369,7 +369,7 @@ public class Operation {
 
         try {
             mKml.marshal(mDestinationFile);
-            if (mOptionsHolder.getAbsolutePath() == null) {
+            if (mProfile.getAbsolutePath() == null) {
                 mListener.onOperationLog(mBundle.getString("operationNote"));
             }
 

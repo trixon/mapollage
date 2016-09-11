@@ -25,6 +25,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import se.trixon.almond.util.Xlog;
+import se.trixon.photokml.Profile.Source;
 
 /**
  *
@@ -32,18 +33,8 @@ import se.trixon.almond.util.Xlog;
  */
 public class ProfileManager {
 
-    private static final String KEY_CASE_BASE = "case_base";
-    private static final String KEY_CASE_SUFFIX = "case_suffix";
-    private static final String KEY_DATE_PATTERN = "date_pattern";
-    private static final String KEY_DATE_SOURCE = "date_source";
-    private static final String KEY_DEST = "dest";
-    private static final String KEY_FILE_PATTERN = "file_pattern";
-    private static final String KEY_FOLLOW_LINKS = "follow_links";
     private static final String KEY_NAME = "name";
-    private static final String KEY_OPERATION = "operation";
-    private static final String KEY_OVERWRITE = "overwrite";
     private static final String KEY_PROFILES = "profiles";
-    private static final String KEY_RECURSIVE = "recursive";
     private static final String KEY_SOURCE = "source";
     private static final String KEY_VERSION = "version";
     private static final int sVersion = 1;
@@ -71,20 +62,17 @@ public class ProfileManager {
         JSONArray array = new JSONArray();
 
         for (Profile profile : mProfiles) {
+            Source source = profile.getSource();
             JSONObject object = new JSONObject();
             object.put(KEY_NAME, profile.getName());
-//            object.put(KEY_SOURCE, profile.getSourceDirAsString());
-//            object.put(KEY_DEST, profile.getDestDirAsString());
-//            object.put(KEY_FILE_PATTERN, profile.getFilePattern());
-//            object.put(KEY_DATE_SOURCE, profile.getDateSource().name());
-//            object.put(KEY_DATE_PATTERN, profile.getDatePattern());
-//            object.put(KEY_OPERATION, profile.getOperation());
-//            object.put(KEY_FOLLOW_LINKS, profile.isFollowLinks());
-//            object.put(KEY_RECURSIVE, profile.isRecursive());
-//            object.put(KEY_OVERWRITE, profile.isReplaceExisting());
-//            object.put(KEY_CASE_BASE, profile.getBaseNameCase().name());
-//            object.put(KEY_CASE_SUFFIX, profile.getExtNameCase().name());
 
+            JSONObject sourceObject = new JSONObject();
+            sourceObject.put(Source.KEY_PATH, source.getDir().getAbsolutePath());
+            sourceObject.put(Source.KEY_PATTERN, source.getFilePattern());
+            sourceObject.put(Source.KEY_FOLLOW_LINKS, source.isFollowLinks());
+            sourceObject.put(Source.KEY_RECURSIVE, source.isRecursive());
+
+            object.put(KEY_SOURCE, sourceObject);
             array.add(object);
         }
 
@@ -154,7 +142,16 @@ public class ProfileManager {
         for (Object arrayItem : array) {
             JSONObject object = (JSONObject) arrayItem;
             Profile profile = new Profile();
+            Source source = profile.getSource();
+
             profile.setName((String) object.get(KEY_NAME));
+            JSONObject sourceObject = (JSONObject) object.get(KEY_SOURCE);
+
+            source.setDir(getFileObject(sourceObject, Source.KEY_PATH));
+            source.setFilePattern((String) sourceObject.get(Source.KEY_PATTERN));
+            source.setRecursive(getBoolean(sourceObject, Source.KEY_RECURSIVE));
+            source.setFollowLinks(getBoolean(sourceObject, Source.KEY_FOLLOW_LINKS));
+
 //            profile.setSourceDir(getFileObject(object, KEY_SOURCE));
 //            profile.setDestDir(getFileObject(object, KEY_DEST));
 //            profile.setFilePattern((String) object.get(KEY_FILE_PATTERN));
@@ -169,7 +166,6 @@ public class ProfileManager {
 //            profile.setBaseNameCase(nameCase);
 //            nameCase = NameCase.valueOf((String) object.get(KEY_CASE_SUFFIX));
 //            profile.setExtNameCase(nameCase);
-
             mProfiles.add(profile);
         }
 

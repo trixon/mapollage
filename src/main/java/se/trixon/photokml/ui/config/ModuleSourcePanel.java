@@ -24,6 +24,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.swing.dialogs.FileChooserPanel;
+import se.trixon.photokml.Profile;
 
 /**
  *
@@ -37,18 +38,18 @@ public class ModuleSourcePanel extends ModulePanel implements FileChooserPanel.F
     public ModuleSourcePanel() {
         initComponents();
         init();
-        mTitle = Dict.SOURCE.getString();
+        mTitle = Dict.SOURCE.toString();
     }
 
     @Override
     public StringBuilder getHeaderBuilder() {
         StringBuilder sb = new StringBuilder();
 
-        sb.append(Dict.SOURCE.getString().toUpperCase()).append("\n");
-        sb.append(" ").append(mOptions.getSourcePaths()).append("\n");
-        sb.append(mHeaderPrefix).append(Dict.FILE_PATTERN.getString()).append(": ").append(mOptions.getSourcePattern()).append("\n");
-        optAppend(sb, mOptions.isSourceRecursive(), Dict.RECURSIVE.getString());
-        optAppend(sb, mOptions.isSourceFollowLinks(), Dict.FOLLOW_LINKS.getString());
+        sb.append(Dict.SOURCE.toString().toUpperCase()).append("\n");
+        sb.append(" ").append(mProfile.getSource().getDir()).append("\n");
+        sb.append(mHeaderPrefix).append(Dict.FILE_PATTERN.toString()).append(": ").append(mProfile.getSource().getFilePattern()).append("\n");
+        optAppend(sb, mProfile.getSource().isRecursive(), Dict.RECURSIVE.toString());
+        optAppend(sb, mProfile.getSource().isFollowLinks(), Dict.FOLLOW_LINKS.toString());
         sb.append("\n");
 
         return sb;
@@ -65,7 +66,7 @@ public class ModuleSourcePanel extends ModulePanel implements FileChooserPanel.F
         }
 
         if (sourceChooserPanel.getTextField().getText().isEmpty()) {
-            invalidSettings(Dict.INVALID_SOURCE.getString());
+            invalidSettings(Dict.INVALID_SOURCE.toString());
             return false;
         }
 
@@ -123,13 +124,13 @@ public class ModuleSourcePanel extends ModulePanel implements FileChooserPanel.F
             }
 
             private void saveOption() {
-                mOptions.setSourcePattern(patternTextField.getText());
+                mProfile.getSource().setFilePattern(patternTextField.getText());
             }
         });
     }
 
     private void saveSourcePath() {
-        mOptions.setSourcePaths(sourceChooserPanel.getPath());
+        mProfile.getSource().setDir(new File(sourceChooserPanel.getPath()));
     }
 
     /**
@@ -152,12 +153,6 @@ public class ModuleSourcePanel extends ModulePanel implements FileChooserPanel.F
         sourceChooserPanel.setHeader(bundle.getString("ModuleSourcePanel.sourceChooserPanel.header")); // NOI18N
 
         patternLabel.setText(Dict.FILE_PATTERN.getString());
-
-        patternTextField.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                patternTextFieldFocusLost(evt);
-            }
-        });
 
         javax.swing.GroupLayout patternPanelLayout = new javax.swing.GroupLayout(patternPanel);
         patternPanel.setLayout(patternPanelLayout);
@@ -226,16 +221,12 @@ public class ModuleSourcePanel extends ModulePanel implements FileChooserPanel.F
     }// </editor-fold>//GEN-END:initComponents
 
     private void recursiveCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_recursiveCheckBoxActionPerformed
-        mOptions.setSourceRecursive(recursiveCheckBox.isSelected());
+        mProfile.getSource().setRecursive(recursiveCheckBox.isSelected());
     }//GEN-LAST:event_recursiveCheckBoxActionPerformed
 
     private void followLinksCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_followLinksCheckBoxActionPerformed
-        mOptions.setSourceFollowLinks(followLinksCheckBox.isSelected());
+        mProfile.getSource().setFollowLinks(followLinksCheckBox.isSelected());
     }//GEN-LAST:event_followLinksCheckBoxActionPerformed
-
-    private void patternTextFieldFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_patternTextFieldFocusLost
-        mOptions.setSourcePattern(patternTextField.getText());
-    }//GEN-LAST:event_patternTextFieldFocusLost
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBox followLinksCheckBox;
@@ -247,11 +238,15 @@ public class ModuleSourcePanel extends ModulePanel implements FileChooserPanel.F
     // End of variables declaration//GEN-END:variables
 
     @Override
-    public void load() {
-        sourceChooserPanel.setPath(mOptions.getSourcePaths());
-        patternTextField.setText(mOptions.getSourcePattern());
-        recursiveCheckBox.setSelected(mOptions.isSourceRecursive());
-        followLinksCheckBox.setSelected(mOptions.isSourceFollowLinks());
+    public void load(Profile profile) {
+        mProfile = profile;
+        try {
+            sourceChooserPanel.setPath(profile.getSource().getDir().getAbsolutePath());
+        } catch (NullPointerException e) {
+        }
+        patternTextField.setText(profile.getSource().getFilePattern());
+        recursiveCheckBox.setSelected(profile.getSource().isRecursive());
+        followLinksCheckBox.setSelected(profile.getSource().isFollowLinks());
     }
 
     @Override
@@ -300,6 +295,6 @@ public class ModuleSourcePanel extends ModulePanel implements FileChooserPanel.F
     }
 
     @Override
-    public void save() {
+    public void save(Profile profile) {
     }
 }

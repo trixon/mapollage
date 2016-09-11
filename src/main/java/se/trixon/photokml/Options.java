@@ -16,7 +16,6 @@
 package se.trixon.photokml;
 
 import java.util.prefs.Preferences;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
 
 /**
@@ -59,11 +58,6 @@ public enum Options {
     public static final String KEY_PLACEMARK_LON = "placemarkLon";
     public static final String KEY_PLACEMARK_NAME_BY = "placemarkNameBy";
 
-    public static final String KEY_SOURCE_FOLLOW_LINKS = "sourceFollowLinks";
-    public static final String KEY_SOURCE_PATHS = "sourcePaths";
-    public static final String KEY_SOURCE_PATTERN = "sourcePattern";
-    public static final String KEY_SOURCE_RECURSIVE = "sourceRecursive";
-
     private static final boolean DEFAULT_DESCRIPTION_ALTITUDE = false;
     private static final boolean DEFAULT_DESCRIPTION_BEARING = false;
     private static final boolean DEFAULT_DESCRIPTION_COORDINATE = true;
@@ -96,11 +90,6 @@ public enum Options {
     private static final double DEFAULT_PLACEMARK_LAT = 57.6;
     private static final double DEFAULT_PLACEMARK_LON = 11.3;
     private static final int DEFAULT_PLACEMARK_NAME_BY = 0;
-
-    private static final boolean DEFAULT_SOURCE_FOLLOW_LINKS = false;
-    private static final String DEFAULT_SOURCE_PATHS = FileUtils.getUserDirectoryPath();
-    private static final String DEFAULT_SOURCE_PATTERN = "{*.jpg,*.JPG}";
-    private static final boolean DEFAULT_SOURCE_RECURSIVE = true;
 
     private static final Preferences mPreferences = Preferences.userNodeForPackage(Options.class);
 
@@ -172,14 +161,6 @@ public enum Options {
         return mPreferences.getInt(KEY_PLACEMARK_NAME_BY, DEFAULT_PLACEMARK_NAME_BY);
     }
 
-    public String getSourcePaths() {
-        return mPreferences.get(KEY_SOURCE_PATHS, DEFAULT_SOURCE_PATHS);
-    }
-
-    public String getSourcePattern() {
-        return mPreferences.get(KEY_SOURCE_PATTERN, DEFAULT_SOURCE_PATTERN);
-    }
-
     public boolean isDescriptionAltitude() {
         return mPreferences.getBoolean(KEY_DESCRIPTION_ALTITUDE, DEFAULT_DESCRIPTION_ALTITUDE);
     }
@@ -234,14 +215,6 @@ public enum Options {
 
     public boolean isPlacemarkIncludeNullCoordinate() {
         return mPreferences.getBoolean(KEY_PLACEMARK_INCLUDE_NULL_COORDINATE, DEFAULT_PLACEMARK_INCLUDE_NULL_COORDINATE);
-    }
-
-    public boolean isSourceFollowLinks() {
-        return mPreferences.getBoolean(KEY_SOURCE_FOLLOW_LINKS, DEFAULT_SOURCE_FOLLOW_LINKS);
-    }
-
-    public boolean isSourceRecursive() {
-        return mPreferences.getBoolean(KEY_SOURCE_RECURSIVE, DEFAULT_SOURCE_RECURSIVE);
     }
 
     public void setDescriptionAltitude(boolean value) {
@@ -358,22 +331,6 @@ public enum Options {
 
     public void setPlacemarkNameBy(int value) {
         mPreferences.putInt(KEY_PLACEMARK_NAME_BY, value);
-    }
-
-    public void setSourceFollowLinks(boolean value) {
-        mPreferences.putBoolean(KEY_SOURCE_FOLLOW_LINKS, value);
-    }
-
-    public void setSourcePaths(String value) {
-        mPreferences.put(KEY_SOURCE_PATHS, value);
-    }
-
-    public void setSourcePattern(String value) {
-        mPreferences.put(KEY_SOURCE_PATTERN, value);
-    }
-
-    public void setSourceRecursive(boolean value) {
-        mPreferences.putBoolean(KEY_SOURCE_RECURSIVE, value);
     }
 
     private void init() {

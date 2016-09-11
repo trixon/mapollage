@@ -20,6 +20,7 @@ import java.util.Date;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import se.trixon.almond.util.Dict;
+import se.trixon.photokml.Profile;
 
 /**
  *
@@ -357,7 +358,7 @@ public class ModulePlacemarkPanel extends ModulePanel {
     // End of variables declaration//GEN-END:variables
 
     @Override
-    public void load() {
+    public void load(Profile profile) {
         dateFormatTextField.setText(mOptions.getPlacemarkDatePattern());
 
         int value = mOptions.getPlacemarkNameBy();
@@ -380,6 +381,6 @@ public class ModulePlacemarkPanel extends ModulePanel {
     }
 
     @Override
-    public void save() {
+    public void save(Profile profile) {
     }
 }

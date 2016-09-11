@@ -24,6 +24,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import se.trixon.almond.util.BundleHelper;
 
@@ -37,13 +38,11 @@ public class Profile implements Comparable<Profile>, Cloneable {
     private final ResourceBundle mBundle = BundleHelper.getBundle(Profile.class, "Bundle");
     private String[] mCoordinate;
     private File mDestFile;
-    private String mFilePattern;
     private boolean mFolderByDate;
     private boolean mFolderByDir;
     private SimpleDateFormat mFolderDateFormat;
     private String mFolderDatePattern;
     private String mFolderDesc;
-    private boolean mFollowLinks;
     private Double mLat;
     private Double mLon;
     private boolean mLowerCaseExt;
@@ -58,10 +57,9 @@ public class Profile implements Comparable<Profile>, Cloneable {
     private SimpleDateFormat mPlacemarkDateFormat;
     private String mPlacemarkDatePattern;
     private String mPlacemarkDesc = "";
-    private boolean mRecursive;
     private String mRootDesc;
     private String mRootName;
-    private File mSourceDir;
+    private Source mSource = new Source();
     private final StringBuilder mValidationErrorBuilder = new StringBuilder();
 
     public Profile() {
@@ -95,9 +93,8 @@ public class Profile implements Comparable<Profile>, Cloneable {
         mLowerCaseExt = commandLine.hasOption(PhotoKml.LOWER_CASE_EXT);
         mAbsolutePath = commandLine.getOptionValue(PhotoKml.ABSOLUTE_PATH);
 
-        mFollowLinks = commandLine.hasOption(PhotoKml.LINKS);
-        mRecursive = commandLine.hasOption(PhotoKml.RECURSIVE);
-
+        mSource.setFollowLinks(commandLine.hasOption(PhotoKml.LINKS));
+        mSource.setRecursive(commandLine.hasOption(PhotoKml.RECURSIVE));
         setSourceAndDest(commandLine.getArgs());
     }
 
@@ -122,10 +119,6 @@ public class Profile implements Comparable<Profile>, Cloneable {
 
     public File getDestFile() {
         return mDestFile;
-    }
-
-    public String getFilePattern() {
-        return mFilePattern;
     }
 
     public SimpleDateFormat getFolderDateFormat() {
@@ -180,8 +173,8 @@ public class Profile implements Comparable<Profile>, Cloneable {
         return mRootName;
     }
 
-    public File getSourceDir() {
-        return mSourceDir;
+    public Source getSource() {
+        return mSource;
     }
 
     public String getValidationError() {
@@ -200,10 +193,6 @@ public class Profile implements Comparable<Profile>, Cloneable {
         return mFolderByDir;
     }
 
-    public boolean isFollowLinks() {
-        return mFollowLinks;
-    }
-
     public boolean isLowerCaseExt() {
         return mLowerCaseExt;
     }
@@ -214,10 +203,6 @@ public class Profile implements Comparable<Profile>, Cloneable {
 
     public boolean isPlacemarkByFilename() {
         return mPlacemarkByFilename;
-    }
-
-    public boolean isRecursive() {
-        return mRecursive;
     }
 
     public boolean isValid() {
@@ -274,9 +259,9 @@ public class Profile implements Comparable<Profile>, Cloneable {
         }
 
         try {
-            mPathMatcher = FileSystems.getDefault().getPathMatcher("glob:" + mFilePattern);
+            mPathMatcher = FileSystems.getDefault().getPathMatcher("glob:" + mSource.getFilePattern());
         } catch (Exception e) {
-            addValidationError("invalid file pattern: " + mFilePattern);
+            addValidationError("invalid file pattern: " + mSource.getFilePattern());
         }
 
         return mValidationErrorBuilder.length() == 0;
@@ -290,16 +275,8 @@ public class Profile implements Comparable<Profile>, Cloneable {
         mDestFile = dest;
     }
 
-    public void setFilePattern(String filePattern) {
-        mFilePattern = filePattern;
-    }
-
     public void setFolderDesc(String folderDesc) {
         mFolderDesc = folderDesc;
-    }
-
-    public void setFollowLinks(boolean followLinks) {
-        mFollowLinks = followLinks;
     }
 
     public void setLat(Double lat) {
@@ -323,7 +300,7 @@ public class Profile implements Comparable<Profile>, Cloneable {
     }
 
     public void setName(String name) {
-        this.mName = name;
+        mName = name;
     }
 
     public void setPathMatcher(PathMatcher pathMatcher) {
@@ -350,10 +327,6 @@ public class Profile implements Comparable<Profile>, Cloneable {
         mPlacemarkDesc = placemarkDesc;
     }
 
-    public void setRecursive(boolean recursive) {
-        mRecursive = recursive;
-    }
-
     public void setRootDesc(String rootDesc) {
         mRootDesc = rootDesc;
     }
@@ -368,12 +341,12 @@ public class Profile implements Comparable<Profile>, Cloneable {
             File sourceFile = new File(source);
 
             if (sourceFile.isDirectory()) {
-                mSourceDir = sourceFile;
-                mFilePattern = "*";
+                mSource.setDir(sourceFile);
+                mSource.setFilePattern("*");
             } else {
                 String sourceDir = FilenameUtils.getFullPathNoEndSeparator(source);
-                mSourceDir = new File(sourceDir);
-                mFilePattern = FilenameUtils.getName(source);
+                mSource.setDir(new File(sourceDir));
+                mSource.setFilePattern(FilenameUtils.getName(source));
             }
 
             setDestFile(new File(args[1]));
@@ -383,7 +356,12 @@ public class Profile implements Comparable<Profile>, Cloneable {
     }
 
     public String toDebugString() {
-        return "OptionsHolder {"
+        return "Profile summary { " + mName
+                + "\n Source=" + mSource.getDir()
+                + "\n FilePattern=" + mSource.getFilePattern()
+                + "\n Links=" + mSource.isFollowLinks()
+                + "\n Recursive=" + mSource.isRecursive()
+                + "\n"
                 + "\n RootName=" + mRootName
                 + "\n RootDesc=" + mRootDesc
                 + "\n"
@@ -406,11 +384,6 @@ public class Profile implements Comparable<Profile>, Cloneable {
                 + "\n LowerCaseExt=" + mLowerCaseExt
                 + "\n AbsolutePath=" + mAbsolutePath
                 + "\n"
-                + "\n Links=" + mFollowLinks
-                + "\n Recursive=" + mRecursive
-                + "\n"
-                + "\n Source=" + mSourceDir
-                + "\n FilePattern=" + mFilePattern
                 + "\n Dest=" + mDestFile
                 + "\n}";
     }
@@ -424,4 +397,52 @@ public class Profile implements Comparable<Profile>, Cloneable {
         mValidationErrorBuilder.append(string).append("\n");
     }
 
+    public class Source {
+
+        public static final String KEY_FOLLOW_LINKS = "follow_links";
+        public static final String KEY_PATH = "path";
+        public static final String KEY_PATTERN = "pattern";
+        public static final String KEY_RECURSIVE = "recursive";
+
+        private File mDir = SystemUtils.getUserHome();
+        private String mFilePattern = "{*.jpg,*.JPG}";
+        private boolean mFollowLinks;
+        private boolean mRecursive;
+
+        public Source() {
+        }
+
+        public File getDir() {
+            return mDir;
+        }
+
+        public String getFilePattern() {
+            return mFilePattern;
+        }
+
+        public boolean isFollowLinks() {
+            return mFollowLinks;
+        }
+
+        public boolean isRecursive() {
+            return mRecursive;
+        }
+
+        public void setDir(File dir) {
+            mDir = dir;
+        }
+
+        public void setFilePattern(String filePattern) {
+            mFilePattern = filePattern;
+        }
+
+        public void setFollowLinks(boolean followLinks) {
+            mFollowLinks = followLinks;
+        }
+
+        public void setRecursive(boolean recursive) {
+            mRecursive = recursive;
+        }
+
+    }
 }

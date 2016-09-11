@@ -18,6 +18,7 @@ package se.trixon.photokml.ui.config;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import se.trixon.almond.util.Dict;
+import se.trixon.photokml.Profile;
 
 /**
  *
@@ -284,7 +285,7 @@ public class ModulePhotoPanel extends ModulePanel {
     // End of variables declaration//GEN-END:variables
 
     @Override
-    public void load() {
+    public void load(Profile profile) {
         maxHeightCheckBox.setSelected(mOptions.isPhotoBalloonMaxHeight());
         maxHeightNumericField.setText(String.valueOf(mOptions.getPhotoBalloonMaxHeightValue()));
 
@@ -300,6 +301,6 @@ public class ModulePhotoPanel extends ModulePanel {
     }
 
     @Override
-    public void save() {
+    public void save(Profile profile) {
     }
 }

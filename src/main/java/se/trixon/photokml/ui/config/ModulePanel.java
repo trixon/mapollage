@@ -20,6 +20,7 @@ import se.trixon.almond.util.BundleHelper;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.swing.dialogs.Message;
 import se.trixon.photokml.Options;
+import se.trixon.photokml.Profile;
 
 /**
  *
@@ -33,6 +34,7 @@ public abstract class ModulePanel extends javax.swing.JPanel {
     protected final String mHeaderPrefix = " + ";
     protected String mTitle;
     protected final ResourceBundle mBundle = BundleHelper.getBundle(ModulePanel.class, "Bundle");
+    protected Profile mProfile;
 
     /**
      * Creates new form ModulePanel
@@ -49,11 +51,11 @@ public abstract class ModulePanel extends javax.swing.JPanel {
 
     public abstract boolean hasValidSettings();
 
-    public abstract void load();
+    public abstract void load(Profile profile);
 
     public abstract void restoreEnabledStates();
 
-    public abstract void save();
+    public abstract void save(Profile profile);
 
     public void setTitle(String title) {
         mTitle = title;

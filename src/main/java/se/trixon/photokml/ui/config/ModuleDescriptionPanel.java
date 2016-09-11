@@ -19,6 +19,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import org.apache.commons.lang3.StringUtils;
 import se.trixon.almond.util.Dict;
+import se.trixon.photokml.Profile;
 
 /**
  *
@@ -320,7 +321,7 @@ public class ModuleDescriptionPanel extends ModulePanel {
     // End of variables declaration//GEN-END:variables
 
     @Override
-    public void load() {
+    public void load(Profile profile) {
         altitudeCheckBox.setSelected(mOptions.isDescriptionAltitude());
         bearingCheckBox.setSelected(mOptions.isDescriptionBearing());
         coordinateCheckBox.setSelected(mOptions.isDescriptionCoordinate());
@@ -336,6 +337,6 @@ public class ModuleDescriptionPanel extends ModulePanel {
     }
 
     @Override
-    public void save() {
+    public void save(Profile profile) {
     }
 }
