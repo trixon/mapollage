@@ -222,7 +222,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
         removeButton = new javax.swing.JButton();
         menuButton = new javax.swing.JButton();
         mainPanel = new javax.swing.JPanel();
-        profilePane2 = new se.trixon.photokml.ui.ProfilePane();
+        configPanel1 = new se.trixon.photokml.ui.config.ConfigPanel();
         logPanel = new se.trixon.almond.util.swing.LogPanel();
 
         mPopupMenu.add(renameMenuItem);
@@ -286,7 +286,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
         getContentPane().add(topPanel, java.awt.BorderLayout.PAGE_START);
 
         mainPanel.setLayout(new java.awt.BorderLayout());
-        mainPanel.add(profilePane2, java.awt.BorderLayout.PAGE_START);
+        mainPanel.add(configPanel1, java.awt.BorderLayout.PAGE_START);
         mainPanel.add(logPanel, java.awt.BorderLayout.CENTER);
 
         getContentPane().add(mainPanel, java.awt.BorderLayout.CENTER);
@@ -313,6 +313,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
     private javax.swing.JMenuItem aboutMenuItem;
     private javax.swing.JButton addButton;
     private javax.swing.JMenuItem cloneMenuItem;
+    private se.trixon.photokml.ui.config.ConfigPanel configPanel1;
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JPopupMenu.Separator jSeparator2;
     private javax.swing.JPopupMenu.Separator jSeparator6;
@@ -322,7 +323,6 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
     private javax.swing.JButton menuButton;
     private javax.swing.JMenuItem optionsMenuItem;
     private javax.swing.JComboBox<Profile> profileComboBox;
-    private se.trixon.photokml.ui.ProfilePane profilePane2;
     private javax.swing.JMenuItem quitMenuItem;
     private javax.swing.JMenuItem removeAllProfilesMenuItem;
     private javax.swing.JButton removeButton;
