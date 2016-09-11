@@ -27,4 +27,6 @@ public abstract class ProfileBase {
     protected final ResourceBundle mBundle = BundleHelper.getBundle(Profile.class, "Bundle");
 
     public abstract String toDebugString();
+
+    public abstract boolean isValid();
 }

@@ -50,6 +50,7 @@ import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.GraphicsHelper;
 import se.trixon.almond.util.Scaler;
 import se.trixon.photokml.profile.Profile;
+import se.trixon.photokml.profile.ProfilePlacemark;
 
 /**
  *
@@ -72,10 +73,12 @@ public class Operation {
     private final Profile mProfile;
     private Folder mRootFolder;
     private long mStartTime;
+    private final ProfilePlacemark mProfilePlacemark;
 
     public Operation(OperationListener operationListener, Profile profile) {
         mListener = operationListener;
         mProfile = profile;
+        mProfilePlacemark = mProfile.getPlacemark();
         mBundle = BundleHelper.getBundle(Operation.class, "Bundle");
     }
 
@@ -140,11 +143,11 @@ public class Operation {
         Date exifDate = getImageDate(file, exifDirectory);
         String name;
 
-        if (mProfile.isPlacemarkByFilename()) {
+        if (mProfilePlacemark.isByFilename()) {
             name = FilenameUtils.getBaseName(file.getAbsolutePath());
-        } else if (mProfile.isPlacemarkByDate()) {
+        } else if (mProfilePlacemark.isByDate()) {
             try {
-                name = mProfile.getPlacemarkDateFormat().format(exifDate);
+                name = mProfilePlacemark.getDateFormat().format(exifDate);
             } catch (IllegalArgumentException ex) {
                 name = "invalid exif date";
             } catch (NullPointerException ex) {
@@ -156,14 +159,14 @@ public class Operation {
             name = "";
         }
 
-        String desc = mProfile.getPlacemarkDesc();
+        String desc = mProfilePlacemark.getDesccription();
         desc = StringUtils.replace(desc, Desc.PHOTO, getDescPhoto(file));
         desc = StringUtils.replace(desc, Desc.FILENAME, file.getName());
         desc = StringUtils.replace(desc, Desc.DATE, mDateFormatDate.format(exifDate));
 
         GeoLocation geoLocation = null;
-        if (mProfile.hasCoordinate()) {
-            geoLocation = new GeoLocation(mProfile.getLat(), mProfile.getLon());
+        if (mProfilePlacemark.hasCoordinate()) {
+            geoLocation = new GeoLocation(mProfilePlacemark.getLat(), mProfilePlacemark.getLon());
         }
 
         if (gpsDirectory != null) {
@@ -173,7 +176,7 @@ public class Operation {
             }
 
             if (geoLocation.isZero()) {
-                geoLocation = new GeoLocation(mProfile.getLat(), mProfile.getLon());
+                geoLocation = new GeoLocation(mProfilePlacemark.getLat(), mProfilePlacemark.getLon());
                 gpsDirectory = null;
             }
 
@@ -189,7 +192,7 @@ public class Operation {
         }
 
 //            descriptionBuilder.append("]]>");
-        boolean shouldAppendToKml = gpsDirectory != null || mProfile.hasCoordinate();
+        boolean shouldAppendToKml = gpsDirectory != null || mProfilePlacemark.hasCoordinate();
 
         if (shouldAppendToKml) {
             double format = 1000000;

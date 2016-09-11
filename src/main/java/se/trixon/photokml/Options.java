@@ -44,12 +44,6 @@ public enum Options {
     public static final String KEY_PHOTO_BASE_URL_VALUE = "photoBaseUrlValue";
     public static final String KEY_PHOTO_FORCE_LOWER_CASE_EXTENSION = "photoForceLowerCaseExtension";
 
-    public static final String KEY_PLACEMARK_DATE_PATTERN = "placemarkDatePattern";
-    public static final String KEY_PLACEMARK_INCLUDE_NULL_COORDINATE = "placemarkIncludeNullCoordinate";
-    public static final String KEY_PLACEMARK_LAT = "placemarkLat";
-    public static final String KEY_PLACEMARK_LON = "placemarkLon";
-    public static final String KEY_PLACEMARK_NAME_BY = "placemarkNameBy";
-
     private static final boolean DEFAULT_DESCRIPTION_ALTITUDE = false;
     private static final boolean DEFAULT_DESCRIPTION_BEARING = false;
     private static final boolean DEFAULT_DESCRIPTION_COORDINATE = true;
@@ -61,10 +55,6 @@ public enum Options {
     private static final boolean DEFAULT_DESCRIPTION_FILENAME = true;
     private static final boolean DEFAULT_DESCRIPTION_PHOTO = true;
 
-    private static final String DEFAULT_FOLDERS_DATE_PATTERN = "yyyy-ww";
-    private static final String DEFAULT_FOLDERS_REGEX = "\\d{8}";
-    private static final String DEFAULT_FOLDERS_REGEX_DEFAULT = "12345678";
-
     private static final boolean DEFAULT_PHOTO_BALLOON_MAX_HEIGHT = true;
     private static final int DEFAULT_PHOTO_BALLOON_MAX_HEIGHT_VALUE = 400;
     private static final boolean DEFAULT_PHOTO_BALLOON_MAX_WIDTH = true;
@@ -72,12 +62,6 @@ public enum Options {
     private static final boolean DEFAULT_PHOTO_BASE_URL = false;
     private static final String DEFAULT_PHOTO_BASE_URL_VALUE = "http://www.domain.com/img/";
     private static final boolean DEFAULT_PHOTO_FORCE_LOWER_CASE_EXTENSION = SystemUtils.IS_OS_WINDOWS;
-
-    private static final String DEFAULT_PLACEMARK_DATE_PATTERN = "yyyy-MM-dd HH.mm";
-    private static final boolean DEFAULT_PLACEMARK_INCLUDE_NULL_COORDINATE = false;
-    private static final double DEFAULT_PLACEMARK_LAT = 57.6;
-    private static final double DEFAULT_PLACEMARK_LON = 11.3;
-    private static final int DEFAULT_PLACEMARK_NAME_BY = 0;
 
     private static final Preferences mPreferences = Preferences.userNodeForPackage(Options.class);
 
@@ -107,22 +91,6 @@ public enum Options {
 
     public String getPhotoBaseUrlValue() {
         return mPreferences.get(KEY_PHOTO_BASE_URL_VALUE, DEFAULT_PHOTO_BASE_URL_VALUE);
-    }
-
-    public String getPlacemarkDatePattern() {
-        return mPreferences.get(KEY_PLACEMARK_DATE_PATTERN, DEFAULT_PLACEMARK_DATE_PATTERN);
-    }
-
-    public double getPlacemarkLat() {
-        return mPreferences.getDouble(KEY_PLACEMARK_LAT, DEFAULT_PLACEMARK_LAT);
-    }
-
-    public double getPlacemarkLon() {
-        return mPreferences.getDouble(KEY_PLACEMARK_LON, DEFAULT_PLACEMARK_LON);
-    }
-
-    public int getPlacemarkNameBy() {
-        return mPreferences.getInt(KEY_PLACEMARK_NAME_BY, DEFAULT_PLACEMARK_NAME_BY);
     }
 
     public boolean isDescriptionAltitude() {
@@ -171,10 +139,6 @@ public enum Options {
 
     public boolean isPhotoForceLowerCaseExtension() {
         return mPreferences.getBoolean(KEY_PHOTO_FORCE_LOWER_CASE_EXTENSION, DEFAULT_PHOTO_FORCE_LOWER_CASE_EXTENSION);
-    }
-
-    public boolean isPlacemarkIncludeNullCoordinate() {
-        return mPreferences.getBoolean(KEY_PLACEMARK_INCLUDE_NULL_COORDINATE, DEFAULT_PLACEMARK_INCLUDE_NULL_COORDINATE);
     }
 
     public void setDescriptionAltitude(boolean value) {
@@ -243,26 +207,6 @@ public enum Options {
 
     public void setPhotoForceLowerCaseExtension(boolean value) {
         mPreferences.putBoolean(KEY_PHOTO_FORCE_LOWER_CASE_EXTENSION, value);
-    }
-
-    public void setPlacemarkDatePattern(String value) {
-        mPreferences.put(KEY_PLACEMARK_DATE_PATTERN, value);
-    }
-
-    public void setPlacemarkIncludeNullCoordinate(boolean value) {
-        mPreferences.putBoolean(KEY_PLACEMARK_INCLUDE_NULL_COORDINATE, value);
-    }
-
-    public void setPlacemarkLat(double value) {
-        mPreferences.putDouble(KEY_PLACEMARK_LAT, value);
-    }
-
-    public void setPlacemarkLon(double value) {
-        mPreferences.putDouble(KEY_PLACEMARK_LON, value);
-    }
-
-    public void setPlacemarkNameBy(int value) {
-        mPreferences.putInt(KEY_PLACEMARK_NAME_BY, value);
     }
 
     private void init() {

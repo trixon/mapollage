@@ -34,15 +34,15 @@ public class ProfileFolder extends ProfileBase {
     public static final String KEY_REGEX_DEFAULT = "regexDefault";
 
     private boolean mCreateFolders;
-    private String mDatePattern;
+    private String mDatePattern = "yyyy-ww";
     private boolean mFolderByDate;
     private boolean mFolderByDir;
     private SimpleDateFormat mFolderDateFormat;
     private String mFolderDatePattern;
     private int mFoldersBy;
     private final Profile mProfile;
-    private String mRegex;
-    private String mRegexDefault;
+    private String mRegex = "\\d{8}";
+    private String mRegexDefault = "12345678  ";
     private String mRootDescription;
     private String mRootName;
 

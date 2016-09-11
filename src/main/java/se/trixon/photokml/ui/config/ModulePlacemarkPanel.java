@@ -21,6 +21,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import se.trixon.almond.util.Dict;
 import se.trixon.photokml.profile.Profile;
+import se.trixon.photokml.profile.ProfilePlacemark;
 
 /**
  *
@@ -29,13 +30,14 @@ import se.trixon.photokml.profile.Profile;
 public class ModulePlacemarkPanel extends ModulePanel {
 
     private boolean mInvalidDateFormat;
+    private ProfilePlacemark mPlacemark = new ProfilePlacemark(mProfile);
 
     /**
      * Creates new form ModulePlacemarkPanel
      */
     public ModulePlacemarkPanel() {
         initComponents();
-        mTitle = Dict.PLACEMARK.getString();
+        mTitle = Dict.PLACEMARK.toString();
         init();
     }
 
@@ -43,13 +45,14 @@ public class ModulePlacemarkPanel extends ModulePanel {
     public StringBuilder getHeaderBuilder() {
         StringBuilder sb = new StringBuilder();
 
-        sb.append(Dict.PLACEMARK.getString().toUpperCase()).append("\n");
+        sb.append(Dict.PLACEMARK.toString().toUpperCase()).append("\n");
         String nameBy = "";
-        if (mOptions.getPlacemarkNameBy() == 0) {
+        int value = mPlacemark.getNameBy();
+        if (value == 0) {
             nameBy = nameByFileRadioButton.getText();
-        } else if (mOptions.getPlacemarkNameBy() == 1) {
+        } else if (value == 1) {
             nameBy = nameByDateRadioButton.getText();
-        } else if (mOptions.getPlacemarkNameBy() == 2) {
+        } else if (value == 2) {
             nameBy = nameByNoRadioButton.getText();
         }
 
@@ -62,8 +65,8 @@ public class ModulePlacemarkPanel extends ModulePanel {
 
     @Override
     public boolean hasValidSettings() {
-        if (mInvalidDateFormat && mOptions.getPlacemarkNameBy() == 1) {
-            invalidSettings(Dict.INVALID_DATE_PATTERN.getString());
+        if (mInvalidDateFormat && mPlacemark.getNameBy() == 1) {
+            invalidSettings(Dict.INVALID_DATE_PATTERN.toString());
 
             return false;
         }
@@ -102,13 +105,13 @@ public class ModulePlacemarkPanel extends ModulePanel {
                     datePreview = simpleDateFormat.format(new Date(System.currentTimeMillis()));
                     mInvalidDateFormat = false;
                 } catch (IllegalArgumentException ex) {
-                    datePreview = Dict.ERROR.getString();
+                    datePreview = Dict.ERROR.toString();
                     mInvalidDateFormat = true;
                 }
 
-                String dateLabel = String.format("%s (%s)", Dict.DATE_PATTERN.getString(), datePreview);
+                String dateLabel = String.format("%s (%s)", Dict.DATE_PATTERN.toString(), datePreview);
                 nameByDateRadioButton.setText(dateLabel);
-                mOptions.setPlacemarkDatePattern(dateFormatTextField.getText());
+                mPlacemark.setDatePattern(dateFormatTextField.getText());
             }
         });
 
@@ -130,7 +133,7 @@ public class ModulePlacemarkPanel extends ModulePanel {
 
             private void saveOption() {
                 try {
-                    mOptions.setPlacemarkLat(Double.valueOf(latNumericField.getText().replace(",", ".")));
+                    mPlacemark.setLat(Double.valueOf(latNumericField.getText().replace(",", ".")));
                 } catch (NumberFormatException e) {
                 }
             }
@@ -154,7 +157,7 @@ public class ModulePlacemarkPanel extends ModulePanel {
 
             private void saveOption() {
                 try {
-                    mOptions.setPlacemarkLon(Double.valueOf(lonNumericField.getText().replace(",", ".")));
+                    mPlacemark.setLon(Double.valueOf(lonNumericField.getText().replace(",", ".")));
                 } catch (NumberFormatException e) {
                 }
             }
@@ -171,7 +174,7 @@ public class ModulePlacemarkPanel extends ModulePanel {
             value = 2;
         }
 
-        mOptions.setPlacemarkNameBy(value);
+        mPlacemark.setNameBy(value);
         dateFormatTextField.setEnabled(nameByDateRadioButton.isSelected());
     }
 
@@ -319,7 +322,7 @@ public class ModulePlacemarkPanel extends ModulePanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void dateFormatTextFieldFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_dateFormatTextFieldFocusLost
-        mOptions.setPlacemarkDatePattern(dateFormatTextField.getText());
+        mPlacemark.setDatePattern(dateFormatTextField.getText());
     }//GEN-LAST:event_dateFormatTextFieldFocusLost
 
     private void nameByFileRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nameByFileRadioButtonActionPerformed
@@ -338,7 +341,7 @@ public class ModulePlacemarkPanel extends ModulePanel {
         boolean state = includeNullCoordinateCheckBox.isSelected();
         latNumericField.setEnabled(state);
         lonNumericField.setEnabled(state);
-        mOptions.setPlacemarkIncludeNullCoordinate(includeNullCoordinateCheckBox.isSelected());
+        mPlacemark.setIncludeNullCoordinate(includeNullCoordinateCheckBox.isSelected());
     }//GEN-LAST:event_includeNullCoordinateCheckBoxActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -359,9 +362,12 @@ public class ModulePlacemarkPanel extends ModulePanel {
 
     @Override
     public void load(Profile profile) {
-        dateFormatTextField.setText(mOptions.getPlacemarkDatePattern());
+        mProfile = profile;
+        mPlacemark = mProfile.getPlacemark();
 
-        int value = mOptions.getPlacemarkNameBy();
+        dateFormatTextField.setText(mPlacemark.getDatePattern());
+
+        int value = mPlacemark.getNameBy();
         if (value == 0) {
             nameByFileRadioButton.setSelected(true);
             nameByFileRadioButtonActionPerformed(null);
@@ -373,9 +379,9 @@ public class ModulePlacemarkPanel extends ModulePanel {
             nameByNoRadioButtonActionPerformed(null);
         }
 
-        includeNullCoordinateCheckBox.setSelected(mOptions.isPlacemarkIncludeNullCoordinate());
-        latNumericField.setText(String.valueOf(mOptions.getPlacemarkLat()));
-        lonNumericField.setText(String.valueOf(mOptions.getPlacemarkLon()));
+        includeNullCoordinateCheckBox.setSelected(mPlacemark.isIncludeNullCoordinate());
+        latNumericField.setText(String.valueOf(mPlacemark.getLat()));
+        lonNumericField.setText(String.valueOf(mPlacemark.getLon()));
 
         restoreEnabledStates();
     }

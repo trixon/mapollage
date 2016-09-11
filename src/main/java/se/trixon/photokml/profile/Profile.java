@@ -16,14 +16,11 @@
 package se.trixon.photokml.profile;
 
 import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.math.NumberUtils;
-import se.trixon.almond.util.BundleHelper;
 import se.trixon.photokml.PhotoKml;
 
 /**
@@ -33,47 +30,35 @@ import se.trixon.photokml.PhotoKml;
 public class Profile extends ProfileBase implements Comparable<Profile>, Cloneable {
 
     private String mAbsolutePath;
-    private final ResourceBundle mBundle = BundleHelper.getBundle(Profile.class, "Bundle");
-    private String[] mCoordinate;
     private File mDestFile;
     private ProfileFolder mFolder = new ProfileFolder(this);
     private String mFolderDesc;
-    private Double mLat;
-    private Double mLon;
     private boolean mLowerCaseExt;
     private Integer mMaxHeight;
     private String mMaxHeightString;
     private Integer mMaxWidth;
     private String mMaxWidthString;
     private String mName;
-    private boolean mPlacemarkByDate;
-    private boolean mPlacemarkByFilename;
-    private SimpleDateFormat mPlacemarkDateFormat;
-    private String mPlacemarkDatePattern;
-    private String mPlacemarkDesc = "";
     private ProfileSource mSource = new ProfileSource(this);
     private StringBuilder mValidationErrorBuilder;
+    private ProfilePlacemark mPlacemark = new ProfilePlacemark(this);
 
     public Profile() {
 
+    }
+
+    public ProfilePlacemark getPlacemark() {
+        return mPlacemark;
     }
 
     public Profile(CommandLine commandLine) {
         mFolder = new ProfileFolder(commandLine, this);
         mFolderDesc = commandLine.getOptionValue(PhotoKml.FOLDER_DESC);
 
-        if (commandLine.hasOption(PhotoKml.PLACEMARK_NAME)) {
-            mPlacemarkDatePattern = commandLine.getOptionValue(PhotoKml.PLACEMARK_NAME);
-            mPlacemarkByDate = mPlacemarkDatePattern != null;
-            mPlacemarkByFilename = !mPlacemarkByDate;
-        }
-
-        mPlacemarkDesc = commandLine.getOptionValue(PhotoKml.PLACEMARK_DESC);
+        mPlacemark = new ProfilePlacemark(commandLine, this);
 
         mMaxHeightString = commandLine.getOptionValue(PhotoKml.MAX_HEIGHT);
         mMaxWidthString = commandLine.getOptionValue(PhotoKml.MAX_WIDTH);
-
-        mCoordinate = commandLine.getOptionValues(PhotoKml.COORDINATE);
 
         mLowerCaseExt = commandLine.hasOption(PhotoKml.LOWER_CASE_EXT);
         mAbsolutePath = commandLine.getOptionValue(PhotoKml.ABSOLUTE_PATH);
@@ -114,14 +99,6 @@ public class Profile extends ProfileBase implements Comparable<Profile>, Cloneab
         return mFolderDesc;
     }
 
-    public Double getLat() {
-        return mLat;
-    }
-
-    public Double getLon() {
-        return mLon;
-    }
-
     public Integer getMaxHeight() {
         return mMaxHeight;
     }
@@ -134,18 +111,6 @@ public class Profile extends ProfileBase implements Comparable<Profile>, Cloneab
         return mName;
     }
 
-    public SimpleDateFormat getPlacemarkDateFormat() {
-        return mPlacemarkDateFormat;
-    }
-
-    public String getPlacemarkDatePattern() {
-        return mPlacemarkDatePattern;
-    }
-
-    public String getPlacemarkDesc() {
-        return mPlacemarkDesc;
-    }
-
     public ProfileSource getSource() {
         return mSource;
     }
@@ -154,34 +119,15 @@ public class Profile extends ProfileBase implements Comparable<Profile>, Cloneab
         return mValidationErrorBuilder.toString();
     }
 
-    public boolean hasCoordinate() {
-        return mLat != null && mLon != null;
-    }
-
     public boolean isLowerCaseExt() {
         return mLowerCaseExt;
     }
 
-    public boolean isPlacemarkByDate() {
-        return mPlacemarkByDate;
-    }
-
-    public boolean isPlacemarkByFilename() {
-        return mPlacemarkByFilename;
-    }
-
+    @Override
     public boolean isValid() {
         mValidationErrorBuilder = new StringBuilder();
         mFolder.isValid();
-
-        if (mPlacemarkByDate) {
-            try {
-                mPlacemarkDateFormat = new SimpleDateFormat(mPlacemarkDatePattern);
-            } catch (Exception e) {
-                addValidationError(String.format(mBundle.getString("invalid_value"), PhotoKml.PLACEMARK_NAME, mPlacemarkDatePattern));
-
-            }
-        }
+        mPlacemark.isValid();
 
         if (mMaxHeightString != null) {
             try {
@@ -196,20 +142,6 @@ public class Profile extends ProfileBase implements Comparable<Profile>, Cloneab
                 mMaxWidth = NumberUtils.createInteger(mMaxWidthString);
             } catch (NumberFormatException e) {
                 addValidationError(String.format(mBundle.getString("invalid_value"), PhotoKml.MAX_WIDTH, mMaxWidthString));
-            }
-        }
-
-        if (mCoordinate != null) {
-            try {
-                mLat = NumberUtils.createDouble(mCoordinate[0]);
-            } catch (NumberFormatException e) {
-                addValidationError(String.format(mBundle.getString("invalid_value"), PhotoKml.COORDINATE, mCoordinate[0]));
-            }
-
-            try {
-                mLon = NumberUtils.createDouble(mCoordinate[1]);
-            } catch (NumberFormatException e) {
-                addValidationError(String.format(mBundle.getString("invalid_value"), PhotoKml.COORDINATE, mCoordinate[1]));
             }
         }
 
@@ -230,14 +162,6 @@ public class Profile extends ProfileBase implements Comparable<Profile>, Cloneab
         mFolderDesc = folderDesc;
     }
 
-    public void setLat(Double lat) {
-        mLat = lat;
-    }
-
-    public void setLon(Double lon) {
-        mLon = lon;
-    }
-
     public void setLowerCaseExt(boolean lowerCaseExt) {
         mLowerCaseExt = lowerCaseExt;
     }
@@ -252,26 +176,6 @@ public class Profile extends ProfileBase implements Comparable<Profile>, Cloneab
 
     public void setName(String name) {
         mName = name;
-    }
-
-    public void setPlacemarkByDate(boolean placemarkByDate) {
-        mPlacemarkByDate = placemarkByDate;
-    }
-
-    public void setPlacemarkByFilename(boolean placemarkByFilename) {
-        mPlacemarkByFilename = placemarkByFilename;
-    }
-
-    public void setPlacemarkDateFormat(SimpleDateFormat placemarkDateFormat) {
-        mPlacemarkDateFormat = placemarkDateFormat;
-    }
-
-    public void setPlacemarkDatePattern(String placemarkDatePattern) {
-        mPlacemarkDatePattern = placemarkDatePattern;
-    }
-
-    public void setPlacemarkDesc(String placemarkDesc) {
-        mPlacemarkDesc = placemarkDesc;
     }
 
     public void setSourceAndDest(String[] args) {
@@ -299,6 +203,7 @@ public class Profile extends ProfileBase implements Comparable<Profile>, Cloneab
         StringBuilder builder = new StringBuilder("Profile summary { ").append(mName)
                 .append(mSource.toDebugString())
                 .append(mFolder.toDebugString())
+                .append(mPlacemark.toDebugString())
                 .append("}");
 
         return builder.toString();
