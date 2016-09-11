@@ -19,7 +19,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import org.apache.commons.lang3.StringUtils;
 import se.trixon.almond.util.Dict;
-import se.trixon.photokml.Profile;
+import se.trixon.photokml.profile.Profile;
 
 /**
  *

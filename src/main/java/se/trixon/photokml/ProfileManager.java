@@ -25,7 +25,9 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import se.trixon.almond.util.Xlog;
-import se.trixon.photokml.Profile.Source;
+import se.trixon.photokml.profile.Profile;
+import se.trixon.photokml.profile.ProfileFolder;
+import se.trixon.photokml.profile.ProfileSource;
 
 /**
  *
@@ -36,6 +38,7 @@ public class ProfileManager {
     private static final String KEY_NAME = "name";
     private static final String KEY_PROFILES = "profiles";
     private static final String KEY_SOURCE = "source";
+    private static final String KEY_FOLDER = "folder";
     private static final String KEY_VERSION = "version";
     private static final int sVersion = 1;
     private final File mDirectory;
@@ -62,17 +65,28 @@ public class ProfileManager {
         JSONArray array = new JSONArray();
 
         for (Profile profile : mProfiles) {
-            Source source = profile.getSource();
             JSONObject object = new JSONObject();
             object.put(KEY_NAME, profile.getName());
 
+            ProfileSource source = profile.getSource();
             JSONObject sourceObject = new JSONObject();
-            sourceObject.put(Source.KEY_PATH, source.getDir().getAbsolutePath());
-            sourceObject.put(Source.KEY_PATTERN, source.getFilePattern());
-            sourceObject.put(Source.KEY_FOLLOW_LINKS, source.isFollowLinks());
-            sourceObject.put(Source.KEY_RECURSIVE, source.isRecursive());
-
+            sourceObject.put(ProfileSource.KEY_PATH, source.getDir().getAbsolutePath());
+            sourceObject.put(ProfileSource.KEY_PATTERN, source.getFilePattern());
+            sourceObject.put(ProfileSource.KEY_FOLLOW_LINKS, source.isFollowLinks());
+            sourceObject.put(ProfileSource.KEY_RECURSIVE, source.isRecursive());
             object.put(KEY_SOURCE, sourceObject);
+
+            ProfileFolder profileFolder = profile.getFolder();
+            JSONObject folderObject = new JSONObject();
+            folderObject.put(ProfileFolder.KEY_ROOT_NAME, profileFolder.getRootName());
+            folderObject.put(ProfileFolder.KEY_ROOT_DESCRIPTION, profileFolder.getRootDescription());
+            folderObject.put(ProfileFolder.KEY_FOLDERS_BY, profileFolder.getFoldersBy());
+            folderObject.put(ProfileFolder.KEY_CREATE_FOLDERS, profileFolder.isCreateFolders());
+            folderObject.put(ProfileFolder.KEY_DATE_PATTERN, profileFolder.getDatePattern());
+            folderObject.put(ProfileFolder.KEY_REGEX, profileFolder.getRegex());
+            folderObject.put(ProfileFolder.KEY_REGEX_DEFAULT, profileFolder.getRegexDefault());
+            object.put(KEY_FOLDER, folderObject);
+
             array.add(object);
         }
 
@@ -142,15 +156,25 @@ public class ProfileManager {
         for (Object arrayItem : array) {
             JSONObject object = (JSONObject) arrayItem;
             Profile profile = new Profile();
-            Source source = profile.getSource();
-
             profile.setName((String) object.get(KEY_NAME));
+
+            ProfileSource source = profile.getSource();
             JSONObject sourceObject = (JSONObject) object.get(KEY_SOURCE);
 
-            source.setDir(getFileObject(sourceObject, Source.KEY_PATH));
-            source.setFilePattern((String) sourceObject.get(Source.KEY_PATTERN));
-            source.setRecursive(getBoolean(sourceObject, Source.KEY_RECURSIVE));
-            source.setFollowLinks(getBoolean(sourceObject, Source.KEY_FOLLOW_LINKS));
+            source.setDir(getFileObject(sourceObject, ProfileSource.KEY_PATH));
+            source.setFilePattern((String) sourceObject.get(ProfileSource.KEY_PATTERN));
+            source.setRecursive(getBoolean(sourceObject, ProfileSource.KEY_RECURSIVE));
+            source.setFollowLinks(getBoolean(sourceObject, ProfileSource.KEY_FOLLOW_LINKS));
+
+            ProfileFolder profileFolder = profile.getFolder();
+            JSONObject folderObject = (JSONObject) object.get(KEY_FOLDER);
+            profileFolder.setRootName((String) folderObject.get(ProfileFolder.KEY_ROOT_NAME));
+            profileFolder.setRootDescription((String) folderObject.get(ProfileFolder.KEY_ROOT_DESCRIPTION));
+            profileFolder.setCreateFolders(getBoolean(folderObject, ProfileFolder.KEY_CREATE_FOLDERS));
+            profileFolder.setFoldersBy(getInt(folderObject, ProfileFolder.KEY_FOLDERS_BY));
+            profileFolder.setDatePattern((String) folderObject.get(ProfileFolder.KEY_DATE_PATTERN));
+            profileFolder.setRegex((String) folderObject.get(ProfileFolder.KEY_REGEX));
+            profileFolder.setRegexDefault((String) folderObject.get(ProfileFolder.KEY_REGEX_DEFAULT));
 
 //            profile.setSourceDir(getFileObject(object, KEY_SOURCE));
 //            profile.setDestDir(getFileObject(object, KEY_DEST));

@@ -20,7 +20,7 @@ import se.trixon.almond.util.BundleHelper;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.swing.dialogs.Message;
 import se.trixon.photokml.Options;
-import se.trixon.photokml.Profile;
+import se.trixon.photokml.profile.Profile;
 
 /**
  *

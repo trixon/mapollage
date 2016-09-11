@@ -36,14 +36,6 @@ public enum Options {
     public static final String KEY_DESCRIPTION_FILENAME = "descriptionFilename";
     public static final String KEY_DESCRIPTION_PHOTO = "descriptionPhoto";
 
-    public static final String KEY_FOLDERS_BY = "foldersBy";
-    public static final String KEY_FOLDERS_DATE_PATTERN = "foldersDatePattern";
-    public static final String KEY_FOLDERS_REGEX = "foldersRegex";
-    public static final String KEY_FOLDERS_REGEX_DEFAULT = "foldersRegexDefault";
-    public static final String KEY_FOLDERS_ROOT_DESCRIPTION = "foldersRootDescription";
-    public static final String KEY_FOLDERS_ROOT_NAME = "foldersRootName";
-    public static final String KEY_FOLDERS_SUB_FOLDERS = "foldersSubFolders";
-
     public static final String KEY_PHOTO_BALLOON_MAX_HEIGHT = "photoBalloonMaxHeight";
     public static final String KEY_PHOTO_BALLOON_MAX_HEIGHT_VALUE = "photoBalloonMaxHeighValuet";
     public static final String KEY_PHOTO_BALLOON_MAX_WIDTH = "photoBalloonMaxWidth";
@@ -69,13 +61,9 @@ public enum Options {
     private static final boolean DEFAULT_DESCRIPTION_FILENAME = true;
     private static final boolean DEFAULT_DESCRIPTION_PHOTO = true;
 
-    private static final int DEFAULT_FOLDERS_BY = 0;
     private static final String DEFAULT_FOLDERS_DATE_PATTERN = "yyyy-ww";
     private static final String DEFAULT_FOLDERS_REGEX = "\\d{8}";
     private static final String DEFAULT_FOLDERS_REGEX_DEFAULT = "12345678";
-    private static final String DEFAULT_FOLDERS_ROOT_DESCRIPTION = "";
-    private static final String DEFAULT_FOLDERS_ROOT_NAME = "root";
-    private static final boolean DEFAULT_FOLDERS_SUB_FOLDERS = false;
 
     private static final boolean DEFAULT_PHOTO_BALLOON_MAX_HEIGHT = true;
     private static final int DEFAULT_PHOTO_BALLOON_MAX_HEIGHT_VALUE = 400;
@@ -107,30 +95,6 @@ public enum Options {
 
     public String getDescriptionExternalFileValue() {
         return mPreferences.get(KEY_DESCRIPTION_EXTERNAL_FILE_VALUE, DEFAULT_DESCRIPTION_EXTERNAL_FILE_VALUE);
-    }
-
-    public int getFoldersBy() {
-        return mPreferences.getInt(KEY_FOLDERS_BY, DEFAULT_FOLDERS_BY);
-    }
-
-    public String getFoldersDatePattern() {
-        return mPreferences.get(KEY_FOLDERS_DATE_PATTERN, DEFAULT_FOLDERS_DATE_PATTERN);
-    }
-
-    public String getFoldersRegex() {
-        return mPreferences.get(KEY_FOLDERS_REGEX, DEFAULT_FOLDERS_REGEX);
-    }
-
-    public String getFoldersRegexDefault() {
-        return mPreferences.get(KEY_FOLDERS_REGEX_DEFAULT, DEFAULT_FOLDERS_REGEX_DEFAULT);
-    }
-
-    public String getFoldersRootDescription() {
-        return mPreferences.get(KEY_FOLDERS_ROOT_DESCRIPTION, DEFAULT_FOLDERS_ROOT_DESCRIPTION);
-    }
-
-    public String getFoldersRootName() {
-        return mPreferences.get(KEY_FOLDERS_ROOT_NAME, DEFAULT_FOLDERS_ROOT_NAME);
     }
 
     public int getPhotoBalloonMaxHeightValue() {
@@ -193,10 +157,6 @@ public enum Options {
         return mPreferences.getBoolean(KEY_DESCRIPTION_PHOTO, DEFAULT_DESCRIPTION_PHOTO);
     }
 
-    public boolean isFoldersSubFolders() {
-        return mPreferences.getBoolean(KEY_FOLDERS_SUB_FOLDERS, DEFAULT_FOLDERS_SUB_FOLDERS);
-    }
-
     public boolean isPhotoBalloonMaxHeight() {
         return mPreferences.getBoolean(KEY_PHOTO_BALLOON_MAX_HEIGHT, DEFAULT_PHOTO_BALLOON_MAX_HEIGHT);
     }
@@ -255,34 +215,6 @@ public enum Options {
 
     public void setDescriptionPhoto(boolean value) {
         mPreferences.putBoolean(KEY_DESCRIPTION_PHOTO, value);
-    }
-
-    public void setFoldersBy(int value) {
-        mPreferences.putInt(KEY_FOLDERS_BY, value);
-    }
-
-    public void setFoldersDatePattern(String value) {
-        mPreferences.put(KEY_FOLDERS_DATE_PATTERN, value);
-    }
-
-    public void setFoldersRegex(String value) {
-        mPreferences.put(KEY_FOLDERS_REGEX, value);
-    }
-
-    public void setFoldersRegexDefault(String value) {
-        mPreferences.put(KEY_FOLDERS_REGEX_DEFAULT, value);
-    }
-
-    public void setFoldersRootDescription(String value) {
-        mPreferences.put(KEY_FOLDERS_ROOT_DESCRIPTION, value);
-    }
-
-    public void setFoldersRootName(String value) {
-        mPreferences.put(KEY_FOLDERS_ROOT_NAME, value);
-    }
-
-    public void setFoldersSubFolders(boolean value) {
-        mPreferences.putBoolean(KEY_FOLDERS_SUB_FOLDERS, value);
     }
 
     public void setPhotoBalloonMaxHeight(boolean value) {

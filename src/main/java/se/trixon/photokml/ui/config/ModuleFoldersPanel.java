@@ -21,15 +21,19 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.text.Document;
 import org.apache.commons.lang3.StringUtils;
 import se.trixon.almond.util.Dict;
-import se.trixon.photokml.Profile;
+import se.trixon.photokml.profile.Profile;
+import se.trixon.photokml.profile.ProfileFolder;
 
 /**
  *
  * @author Patrik Karlsson <patrik@trixon.se>
  */
 public class ModuleFoldersPanel extends ModulePanel {
+
+    private ProfileFolder mProfileFolder;
 
     private boolean mInvalidDateFormat;
 
@@ -38,7 +42,7 @@ public class ModuleFoldersPanel extends ModulePanel {
      */
     public ModuleFoldersPanel() {
         initComponents();
-        mTitle = Dict.FOLDERS.getString();
+        mTitle = Dict.FOLDERS.toString();
         init();
     }
 
@@ -46,13 +50,13 @@ public class ModuleFoldersPanel extends ModulePanel {
     public StringBuilder getHeaderBuilder() {
         StringBuilder sb = new StringBuilder();
 
-        sb.append(Dict.FOLDERS.getString().toUpperCase()).append("\n");
+        sb.append(Dict.FOLDERS.toString().toUpperCase()).append("\n");
 
-        sb.append(mHeaderPrefix).append(rootNameLabel.getText()).append(": ").append(mOptions.getFoldersRootName()).append("\n");
-        if (!StringUtils.isEmpty(mOptions.getFoldersRootDescription())) {
+        sb.append(mHeaderPrefix).append(rootNameLabel.getText()).append(": ").append(mProfile.getFolder().getRootName()).append("\n");
+        if (!StringUtils.isEmpty(mProfile.getFolder().getRootDescription())) {
             optAppend(sb, true, rootDescriptionLabel.getText());
             sb.append(MULTILINE_DIVIDER).append("\n");
-            sb.append(mOptions.getFoldersRootDescription()).append("\n");
+            sb.append(mProfile.getFolder().getRootDescription()).append("\n");
             sb.append(MULTILINE_DIVIDER).append("\n");
         }
 
@@ -61,12 +65,12 @@ public class ModuleFoldersPanel extends ModulePanel {
         if (folderByDirectoryRadioButton.isSelected()) {
             folderBy = folderByDirectoryRadioButton.getText();
         } else if (folderByDateRadioButton.isSelected()) {
-            folderBy = Dict.DATE_PATTERN.getString();
+            folderBy = Dict.DATE_PATTERN.toString();
         } else if (folderByRegexRadioButton.isSelected()) {
-            folderBy = String.format("%s: %s", folderByRegexRadioButton.getText(), mOptions.getFoldersRegex());
+            folderBy = String.format("%s: %s", folderByRegexRadioButton.getText(), mProfileFolder.getRegex());
         }
 
-        optAppend(sb, mOptions.isFoldersSubFolders(), subFoldersCheckBox.getText() + ": " + folderBy);
+        optAppend(sb, mProfileFolder.isCreateFolders(), subFoldersCheckBox.getText() + ": " + folderBy);
 
         sb.append("\n");
 
@@ -75,15 +79,15 @@ public class ModuleFoldersPanel extends ModulePanel {
 
     @Override
     public boolean hasValidSettings() {
-        if (mInvalidDateFormat && mOptions.isFoldersSubFolders() && mOptions.getFoldersBy() == 1) {
-            invalidSettings(Dict.INVALID_DATE_PATTERN.getString());
+        if (mInvalidDateFormat && mProfileFolder.isCreateFolders() && mProfileFolder.getFoldersBy() == 1) {
+            invalidSettings(Dict.INVALID_DATE_PATTERN.toString());
 
             return false;
         }
 
-        if (mOptions.isFoldersSubFolders() && mOptions.getFoldersBy() == 2) {
+        if (mProfileFolder.isCreateFolders() && mProfileFolder.getFoldersBy() == 2) {
             try {
-                Pattern pattern = Pattern.compile(mOptions.getFoldersRegex());
+                Pattern pattern = Pattern.compile(mProfileFolder.getRegex());
             } catch (PatternSyntaxException e) {
                 String message = "PatternSyntaxException: " + e.getLocalizedMessage();
                 invalidSettings(message);
@@ -101,62 +105,37 @@ public class ModuleFoldersPanel extends ModulePanel {
     }
 
     private void init() {
-        rootNameTextField.getDocument().addDocumentListener(new DocumentListener() {
+        DocumentListener documentListener = new DocumentListener() {
             @Override
             public void changedUpdate(DocumentEvent e) {
-                saveOption();
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                saveOption();
+                saveOption(e.getDocument());
             }
 
             @Override
             public void insertUpdate(DocumentEvent e) {
-                saveOption();
-            }
-
-            private void saveOption() {
-                mOptions.setFoldersRootName(rootNameTextField.getText());
-            }
-        });
-
-        rootDescriptionTextArea.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                saveOption();
+                saveOption(e.getDocument());
             }
 
             @Override
             public void removeUpdate(DocumentEvent e) {
-                saveOption();
+                saveOption(e.getDocument());
             }
 
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                saveOption();
-            }
-
-            private void saveOption() {
-                mOptions.setFoldersRootDescription(rootDescriptionTextArea.getText());
-            }
-        });
-
-        dateFormatTextField.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                previewDateFormat();
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                previewDateFormat();
-            }
-
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                previewDateFormat();
+            private void saveOption(Document document) {
+                if (document == rootNameTextField.getDocument()) {
+                    mProfile.getFolder().setRootName(rootNameTextField.getText());
+                } else if (document == rootDescriptionTextArea.getDocument()) {
+                    mProfile.getFolder().setRootDescription(rootDescriptionTextArea.getText());
+                } else if (document == dateFormatTextField.getDocument()) {
+                    previewDateFormat();
+                } else if (document == regexTextField.getDocument()) {
+                    try {
+                        mProfileFolder.setRegex(regexTextField.getText());
+                    } catch (NumberFormatException e) {
+                    }
+                } else if (document == defaultRegexTextField.getDocument()) {
+                    mProfileFolder.setRegexDefault(defaultRegexTextField.getText());
+                }
             }
 
             private void previewDateFormat() {
@@ -167,70 +146,30 @@ public class ModuleFoldersPanel extends ModulePanel {
                     datePreview = simpleDateFormat.format(new Date(System.currentTimeMillis()));
                     mInvalidDateFormat = false;
                 } catch (IllegalArgumentException ex) {
-                    datePreview = Dict.ERROR.getString();
+                    datePreview = Dict.ERROR.toString();
                     mInvalidDateFormat = true;
                 }
 
-                String dateLabel = String.format("%s (%s)", Dict.DATE_PATTERN.getString(), datePreview);
+                String dateLabel = String.format("%s (%s)", Dict.DATE_PATTERN.toString(), datePreview);
                 folderByDateRadioButton.setText(dateLabel);
-                mOptions.setFoldersDatePattern(dateFormatTextField.getText());
+                mProfileFolder.setDatePattern(dateFormatTextField.getText());
             }
-        });
+        };
 
-        regexTextField.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                saveOption();
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                saveOption();
-            }
-
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                saveOption();
-            }
-
-            private void saveOption() {
-                try {
-                    mOptions.setFoldersRegex(regexTextField.getText());
-                } catch (NumberFormatException e) {
-                }
-            }
-        });
-
-        defaultRegexTextField.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                saveOption();
-            }
-
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                saveOption();
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                saveOption();
-            }
-
-            private void saveOption() {
-                mOptions.setFoldersRegexDefault(defaultRegexTextField.getText());
-            }
-        });
-
+        rootNameTextField.getDocument().addDocumentListener(documentListener);
+        rootDescriptionTextArea.getDocument().addDocumentListener(documentListener);
+        dateFormatTextField.getDocument().addDocumentListener(documentListener);
+        regexTextField.getDocument().addDocumentListener(documentListener);
+        defaultRegexTextField.getDocument().addDocumentListener(documentListener);
     }
 
     private void saveFolderNameBy() {
         if (folderByDirectoryRadioButton.isSelected()) {
-            mOptions.setFoldersBy(0);
+            mProfile.getFolder().setFoldersBy(0);
         } else if (folderByDateRadioButton.isSelected()) {
-            mOptions.setFoldersBy(1);
+            mProfile.getFolder().setFoldersBy(1);
         } else if (folderByRegexRadioButton.isSelected()) {
-            mOptions.setFoldersBy(2);
+            mProfile.getFolder().setFoldersBy(2);
         }
 
         dateFormatTextField.setEnabled(folderByDateRadioButton.isSelected());
@@ -428,7 +367,10 @@ public class ModuleFoldersPanel extends ModulePanel {
         regexTextField.setEnabled(state && folderByRegexRadioButton.isSelected());
         defaultRegexTextField.setEnabled(state && folderByRegexRadioButton.isSelected());
 
-        mOptions.setFoldersSubFolders(state);
+        try {
+            mProfileFolder.setCreateFolders(state);
+        } catch (Exception e) {
+        }
     }//GEN-LAST:event_subFoldersCheckBoxActionPerformed
 
     private void folderByDirectoryRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_folderByDirectoryRadioButtonActionPerformed
@@ -467,19 +409,23 @@ public class ModuleFoldersPanel extends ModulePanel {
 
     @Override
     public void load(Profile profile) {
-        rootNameTextField.setText(mOptions.getFoldersRootName());
-        rootDescriptionTextArea.setText(mOptions.getFoldersRootDescription());
-        subFoldersCheckBox.setSelected(mOptions.isFoldersSubFolders());
-        dateFormatTextField.setText(mOptions.getFoldersDatePattern());
-        regexTextField.setText(mOptions.getFoldersRegex());
-        defaultRegexTextField.setText(mOptions.getFoldersRegexDefault());
+        mProfile = profile;
+        mProfileFolder = profile.getFolder();
+
+        rootNameTextField.setText(mProfileFolder.getRootName());
+        rootDescriptionTextArea.setText(mProfileFolder.getRootDescription());
+        subFoldersCheckBox.setSelected(mProfileFolder.isCreateFolders());
+
+        dateFormatTextField.setText(mProfileFolder.getDatePattern());
+        regexTextField.setText(mProfileFolder.getRegex());
+        defaultRegexTextField.setText(mProfileFolder.getRegexDefault());
         subButtonGroup.setSelected(folderByDateRadioButton.getModel(), true);
 
-        if (mOptions.getFoldersBy() == 0) {
+        if (mProfileFolder.getFoldersBy() == 0) {
             folderByDirectoryRadioButton.setSelected(true);
-        } else if (mOptions.getFoldersBy() == 1) {
+        } else if (mProfileFolder.getFoldersBy() == 1) {
             folderByDateRadioButton.setSelected(true);
-        } else if (mOptions.getFoldersBy() == 2) {
+        } else if (mProfileFolder.getFoldersBy() == 2) {
             folderByRegexRadioButton.setSelected(true);
         }
 

@@ -18,7 +18,7 @@ package se.trixon.photokml.ui.config;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import se.trixon.almond.util.Dict;
-import se.trixon.photokml.Profile;
+import se.trixon.photokml.profile.Profile;
 
 /**
  *

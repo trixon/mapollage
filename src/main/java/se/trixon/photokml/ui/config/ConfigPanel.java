@@ -21,7 +21,7 @@ import javax.swing.border.EmptyBorder;
 import se.trixon.almond.util.swing.SwingHelper;
 import se.trixon.almond.util.swing.dialogs.FileChooserPanel;
 import se.trixon.photokml.Options;
-import se.trixon.photokml.Profile;
+import se.trixon.photokml.profile.Profile;
 
 /**
  *

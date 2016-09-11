@@ -49,6 +49,7 @@ import se.trixon.almond.util.BundleHelper;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.GraphicsHelper;
 import se.trixon.almond.util.Scaler;
+import se.trixon.photokml.profile.Profile;
 
 /**
  *
@@ -83,8 +84,8 @@ public class Operation {
         mListener.onOperationStarted();
         String status;
         mDestinationFile = mProfile.getDestFile();
-        mRootFolder = mKml.createAndSetFolder().withName(mProfile.getRootName());
-        mRootFolder.setDescription(mProfile.getRootDesc());
+        mRootFolder = mKml.createAndSetFolder().withName(mProfile.getFolder().getRootName());
+        mRootFolder.setDescription(mProfile.getFolder().getRootDescription());
 
         mInterrupted = !generateFileList();
 
@@ -210,7 +211,7 @@ public class Operation {
 
     private boolean generateFileList() {
         mListener.onOperationLog(Dict.GENERATING_FILELIST.toString());
-        PathMatcher pathMatcher = mProfile.getPathMatcher();
+        PathMatcher pathMatcher = mProfile.getSource().getPathMatcher();
 
         EnumSet<FileVisitOption> fileVisitOptions = EnumSet.noneOf(FileVisitOption.class);
         if (mProfile.getSource().isFollowLinks()) {
@@ -282,11 +283,11 @@ public class Operation {
         String key;
         Folder folder;
 
-        if (mProfile.isFolderByDir()) {
+        if (mProfile.getFolder().isFolderByDir()) {
             key = file.getParentFile().getName();
             folder = getFolder(key);
-        } else if (mProfile.isFolderByDate()) {
-            key = mProfile.getFolderDateFormat().format(date);
+        } else if (mProfile.getFolder().isFolderByDate()) {
+            key = mProfile.getFolder().getFolderDateFormat().format(date);
             folder = getFolder(key);
         } else {
             folder = mRootFolder;

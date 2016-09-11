@@ -24,7 +24,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.swing.dialogs.FileChooserPanel;
-import se.trixon.photokml.Profile;
+import se.trixon.photokml.profile.Profile;
 
 /**
  *

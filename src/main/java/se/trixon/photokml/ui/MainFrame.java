@@ -51,8 +51,8 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
 import se.trixon.almond.util.swing.SwingHelper;
 import se.trixon.almond.util.swing.dialogs.Message;
 import se.trixon.photokml.PhotoKml;
-import se.trixon.photokml.Profile;
 import se.trixon.photokml.ProfileManager;
+import se.trixon.photokml.profile.Profile;
 
 /**
  *
@@ -259,12 +259,18 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
     }
 
     private void profileRun() {
+        saveProfiles();
         Profile profile = getSelectedProfile().clone();
+        profile.isValid();
         Object[] options = {Dict.RUN.toString(), Dict.DRY_RUN.toString(), Dict.CANCEL.toString()};
         String message = String.format(Dict.Dialog.TITLE_PROFILE_RUN.toString(), profile.getName());
 
         logPanel.clear();
         logPanel.println(profile.toDebugString());
+        logPanel.println("->");
+        logPanel.println(profile.getValidationError());
+        logPanel.println("<-");
+
     }
 
     private String requestProfileName(String title, String value) {

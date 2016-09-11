@@ -15,6 +15,7 @@
  */
 package se.trixon.photokml;
 
+import se.trixon.photokml.profile.Profile;
 import java.awt.GraphicsEnvironment;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
