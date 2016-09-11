@@ -17,8 +17,11 @@ package se.trixon.photokml;
 
 import java.awt.GraphicsEnvironment;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -59,6 +62,7 @@ public class PhotoKml implements OperationListener {
     private final ResourceBundle mBundle = BundleHelper.getBundle(PhotoKml.class, "Bundle");
     private MainFrame mMainFrame = null;
     private Options mOptions;
+    private final ProfileManager mProfileManager = ProfileManager.getInstance();
 
     /**
      * @param args the command line arguments
@@ -83,15 +87,39 @@ public class PhotoKml implements OperationListener {
                 } else if (commandLine.hasOption(VERSION)) {
                     displayVersion();
                     System.exit(0);
+                } else if (commandLine.hasOption("list-profiles")) {
+                    displayProfiles();
+                } else if (commandLine.hasOption("view-profile")) {
+                    loadProfiles();
+                    Profile profile = mProfileManager.getProfile(commandLine.getOptionValue("view-profile"));
+                    if (profile == null) {
+                        System.err.println(Dict.Dialog.ERROR_PROFILE_NOT_FOUND.toString());
+                        System.exit(1);
+                    } else {
+                        profile.isValid();
+                        System.out.println(profile.toDebugString());
+                    }
+                } else if (commandLine.hasOption("gui")) {
+                    displayGui();
                 } else {
-                    Profile optionsHolder = new Profile(commandLine);
-                    System.out.println(optionsHolder.toString());
+                    Profile profile = null;
 
-                    if (optionsHolder.isValid()) {
-                        Operation operation = new Operation(this, optionsHolder);
+                    if (commandLine.hasOption("profile")) {
+                        loadProfiles();
+                        profile = mProfileManager.getProfile(commandLine.getOptionValue("profile"));
+                        if (profile == null) {
+                            System.err.println(Dict.Dialog.ERROR_PROFILE_NOT_FOUND.toString());
+                            System.exit(1);
+                        }
+                    } else {
+                        profile = new Profile(commandLine);
+                    }
+
+                    if (profile.isValid()) {
+                        Operation operation = new Operation(this, profile);
                         operation.start();
                     } else {
-                        System.out.println(optionsHolder.getValidationError());
+                        System.out.println(profile.getValidationError());
                         System.out.println(Dict.ABORTING.toString());
                     }
                 }
@@ -139,7 +167,7 @@ public class PhotoKml implements OperationListener {
 
     private void displayGui() {
         if (GraphicsEnvironment.isHeadless()) {
-            Xlog.timedErr(mBundle.getString("headless"));
+            Xlog.timedErr(Dict.Dialog.ERROR_NO_GUI_IN_HEADLESS.toString());
             System.exit(1);
 
             return;
@@ -173,6 +201,17 @@ public class PhotoKml implements OperationListener {
                 .append(mBundle.getString("help_footer"));
 
         System.out.println(sb.toString());
+    }
+
+    private void displayProfiles() {
+        loadProfiles();
+        if (mProfileManager.hasProfiles()) {
+            for (Profile profile : mProfileManager.getProfiles()) {
+                System.out.println(profile.getName());
+            }
+        } else {
+            System.out.println(Dict.Dialog.MESSAGE_NO_PROFILES_FOUND.toString());
+        }
     }
 
     private void displayVersion() {
@@ -276,6 +315,29 @@ public class PhotoKml implements OperationListener {
                 .argName("PATH")
                 .build();
 
+        Option gui = Option.builder("g")
+                .longOpt("gui")
+                .desc(mBundle.getString("opt_gui_desc"))
+                .build();
+
+        Option profile = Option.builder("p")
+                .longOpt("profile")
+                .hasArg()
+                .numberOfArgs(1)
+                .desc(mBundle.getString("opt_profile_desc"))
+                .build();
+
+        Option listProfiles = Option.builder("lp")
+                .longOpt("list-profiles")
+                .desc(mBundle.getString("opt_list_profiles_desc"))
+                .build();
+
+        Option viewProfile = Option.builder("vp")
+                .longOpt("view-profile")
+                .hasArg()
+                .numberOfArgs(1)
+                .desc(mBundle.getString("opt_view_profile_desc"))
+                .build();
         mOptions = new Options();
 
         mOptions.addOption(rootName);
@@ -295,7 +357,21 @@ public class PhotoKml implements OperationListener {
         mOptions.addOption(links);
         mOptions.addOption(recursive);
 
+        mOptions.addOption(listProfiles);
+        mOptions.addOption(viewProfile);
+        mOptions.addOption(profile);
+
+        mOptions.addOption(gui);
+
         mOptions.addOption(help);
         mOptions.addOption(version);
+    }
+
+    private void loadProfiles() {
+        try {
+            mProfileManager.load();
+        } catch (IOException ex) {
+            Logger.getLogger(PhotoKml.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }
