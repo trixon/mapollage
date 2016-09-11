@@ -110,6 +110,14 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
         }
     }
 
+    private Profile getSelectedProfile() {
+        if (mModel.getSize() == 0) {
+            return new Profile();
+        } else {
+            return (Profile) mModel.getSelectedItem();
+        }
+    }
+
     private void init() {
         String fileName = String.format("/%s/icon-1024px.png", getClass().getPackage().getName().replace(".", "/"));
         ImageIcon imageIcon = new ImageIcon(getClass().getResource(fileName));
@@ -172,6 +180,104 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
         }
     }
 
+    private void profileAdd(String defaultName) {
+        String s = requestProfileName(Dict.Dialog.TITLE_PROFILE_ADD.toString(), defaultName);
+        if (s != null) {
+            Profile existingProfile = mProfileManager.getProfile(s);
+            if (existingProfile == null) {
+                Profile p = new Profile();
+                p.setName(s);
+
+                mProfiles.add(p);
+                populateProfiles(p);
+            } else {
+                Message.error(this, Dict.ERROR.toString(), String.format(Dict.Dialog.ERROR_PROFILE_EXIST.toString(), s));
+                profileAdd(s);
+            }
+        }
+    }
+
+    private void profileClone() throws CloneNotSupportedException {
+        Profile original = getSelectedProfile();
+        Profile p = original.clone();
+        mProfiles.add(p);
+        populateProfiles(p);
+        String s = requestProfileName(Dict.Dialog.TITLE_PROFILE_CLONE.toString(), p.getName());
+        if (s != null) {
+            p.setName(s);
+            populateProfiles(getSelectedProfile());
+        } else {
+            mProfiles.remove(p);
+            populateProfiles(original);
+        }
+    }
+
+    private void profileRemove() {
+        if (!mProfiles.isEmpty()) {
+            String message = String.format(Dict.Dialog.MESSAGE_PROFILE_REMOVE.toString(), getSelectedProfile().getName());
+            int retval = JOptionPane.showConfirmDialog(this,
+                    message,
+                    Dict.Dialog.TITLE_PROFILE_REMOVE.toString(),
+                    JOptionPane.OK_CANCEL_OPTION,
+                    JOptionPane.WARNING_MESSAGE);
+
+            if (retval == JOptionPane.OK_OPTION) {
+                mProfiles.remove(getSelectedProfile());
+                populateProfiles(null);
+            }
+        }
+    }
+
+    private void profileRemoveAll() {
+        if (!mProfiles.isEmpty()) {
+            String message = String.format(Dict.Dialog.MESSAGE_PROFILE_REMOVE_ALL.toString(), getSelectedProfile().getName());
+            int retval = JOptionPane.showConfirmDialog(this,
+                    message,
+                    Dict.Dialog.TITLE_PROFILE_REMOVE_ALL.toString(),
+                    JOptionPane.OK_CANCEL_OPTION,
+                    JOptionPane.WARNING_MESSAGE);
+
+            if (retval == JOptionPane.OK_OPTION) {
+                mProfiles.clear();
+                populateProfiles(null);
+            }
+        }
+    }
+
+    private void profileRename(String defaultName) {
+        String s = requestProfileName(Dict.Dialog.TITLE_PROFILE_RENAME.toString(), defaultName);
+        if (s != null) {
+            Profile existingProfile = mProfileManager.getProfile(s);
+            if (existingProfile == null) {
+                getSelectedProfile().setName(s);
+                populateProfiles(getSelectedProfile());
+            } else if (existingProfile != getSelectedProfile()) {
+                Message.error(this, Dict.ERROR.toString(), String.format(Dict.Dialog.ERROR_PROFILE_EXIST.toString(), s));
+                profileRename(s);
+            }
+        }
+    }
+
+    private void profileRun() {
+        Profile profile = getSelectedProfile().clone();
+        Object[] options = {Dict.RUN.toString(), Dict.DRY_RUN.toString(), Dict.CANCEL.toString()};
+        String message = String.format(Dict.Dialog.TITLE_PROFILE_RUN.toString(), profile.getName());
+
+        logPanel.clear();
+        logPanel.println(profile.toDebugString());
+    }
+
+    private String requestProfileName(String title, String value) {
+        return (String) JOptionPane.showInputDialog(
+                this,
+                null,
+                title,
+                JOptionPane.PLAIN_MESSAGE,
+                null,
+                null,
+                value);
+    }
+
     private void showOptions() {
         OptionsPanel optionsPanel = new OptionsPanel();
         SwingHelper.makeWindowResizable(optionsPanel);
@@ -187,6 +293,14 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
 
         if (retval == JOptionPane.OK_OPTION) {
             optionsPanel.save();
+        }
+    }
+
+    private void saveProfiles() {
+        try {
+            mProfileManager.save();
+        } catch (IOException ex) {
+            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -238,6 +352,11 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("se/trixon/photokml/ui/Bundle"); // NOI18N
         setTitle(bundle.getString("MainFrame.title")); // NOI18N
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         topPanel.setLayout(new java.awt.GridBagLayout());
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -308,6 +427,10 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
             }
         }
     }//GEN-LAST:event_menuButtonMousePressed
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        saveProfiles();
+    }//GEN-LAST:event_formWindowClosing
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem;
@@ -415,7 +538,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     if (!mProfiles.isEmpty()) {
-//                        profileRun();
+                        profileRun();
                     }
                 }
             };
@@ -430,7 +553,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
 
                 @Override
                 public void actionPerformed(ActionEvent e) {
-//                    profileAdd(null);
+                    profileAdd(null);
                 }
             };
 
@@ -443,11 +566,11 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
 
                 @Override
                 public void actionPerformed(ActionEvent e) {
-//                    try {
-//                        profileClone();
-//                    } catch (CloneNotSupportedException ex) {
-//                        Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
-//                    }
+                    try {
+                        profileClone();
+                    } catch (CloneNotSupportedException ex) {
+                        Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
             };
 
@@ -460,7 +583,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
 
                 @Override
                 public void actionPerformed(ActionEvent e) {
-//                    profileRename(getSelectedProfile().getName());
+                    profileRename(getSelectedProfile().getName());
                 }
             };
 
@@ -473,7 +596,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
 
                 @Override
                 public void actionPerformed(ActionEvent e) {
-//                    profileRemove();
+                    profileRemove();
                 }
             };
 
@@ -486,7 +609,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
 
                 @Override
                 public void actionPerformed(ActionEvent e) {
-//                    profileRemoveAll();
+                    profileRemoveAll();
                 }
             };
 
@@ -533,5 +656,4 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
             }
         }
     }
-
 }
