@@ -16,11 +16,9 @@
 package se.trixon.photokml.ui.config;
 
 import java.awt.Component;
-import java.util.prefs.PreferenceChangeEvent;
 import javax.swing.border.EmptyBorder;
 import se.trixon.almond.util.swing.SwingHelper;
 import se.trixon.almond.util.swing.dialogs.FileChooserPanel;
-import se.trixon.photokml.Options;
 import se.trixon.photokml.profile.Profile;
 
 /**
@@ -126,17 +124,19 @@ public class ConfigPanel extends javax.swing.JPanel {
             }
         }
 
-        Options.getPreferences().addPreferenceChangeListener((PreferenceChangeEvent evt) -> {
-            if (evt.getKey().equalsIgnoreCase(Options.KEY_DESCRIPTION_PHOTO)) {
-                updatePhotoTabState();
-            }
-        });
+        //TODO Should this be implemented.
+//        Options.getPreferences().addPreferenceChangeListener((PreferenceChangeEvent evt) -> {
+//            if (evt.getKey().equalsIgnoreCase(Options.KEY_DESCRIPTION_PHOTO)) {
+//                updatePhotoTabState();
+//            }
+//        });
         updatePhotoTabState();
         setEnabled(true);
     }
 
     private void updatePhotoTabState() {
-        tabbedPane.setEnabledAt(tabbedPane.indexOfComponent(mModulePhotoPanel), Options.INSTANCE.isDescriptionPhoto());
+        //TODO Should this be implemented.
+//        tabbedPane.setEnabledAt(tabbedPane.indexOfComponent(mModulePhotoPanel), Options.INSTANCE.isDescriptionPhoto());
     }
 
     /**

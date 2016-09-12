@@ -15,7 +15,9 @@
  */
 package se.trixon.photokml.profile;
 
+import java.io.File;
 import java.util.ResourceBundle;
+import org.json.simple.JSONObject;
 import se.trixon.almond.util.BundleHelper;
 
 /**
@@ -26,7 +28,23 @@ public abstract class ProfileBase {
 
     protected final ResourceBundle mBundle = BundleHelper.getBundle(Profile.class, "Bundle");
 
+    public abstract boolean isValid();
+
     public abstract String toDebugString();
 
-    public abstract boolean isValid();
+    protected boolean getBoolean(JSONObject object, String key) {
+        return (boolean) object.get(key);
+    }
+
+    protected File getFileObject(JSONObject object, String key) {
+        try {
+            return new File((String) object.get(key));
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    protected int getInt(JSONObject object, String key) {
+        return ((Long) object.get(key)).intValue();
+    }
 }

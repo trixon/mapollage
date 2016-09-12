@@ -26,12 +26,12 @@ import se.trixon.photokml.PhotoKml;
 public class ProfileFolder extends ProfileBase {
 
     public static final String KEY_CREATE_FOLDERS = "createFolders";
-    public static final String KEY_FOLDERS_BY = "foldersBy";
-    public static final String KEY_ROOT_DESCRIPTION = "rootDescription";
-    public static final String KEY_ROOT_NAME = "rootName";
     public static final String KEY_DATE_PATTERN = "datePattern";
+    public static final String KEY_FOLDERS_BY = "foldersBy";
     public static final String KEY_REGEX = "regex";
     public static final String KEY_REGEX_DEFAULT = "regexDefault";
+    public static final String KEY_ROOT_DESCRIPTION = "rootDescription";
+    public static final String KEY_ROOT_NAME = "rootName";
 
     private boolean mCreateFolders;
     private String mDatePattern = "yyyy-ww";
@@ -105,6 +105,7 @@ public class ProfileFolder extends ProfileBase {
         return mFolderByDir;
     }
 
+    @Override
     public boolean isValid() {
         if (mRootName == null) {
             mProfile.addValidationError(String.format(mBundle.getString("invalid_value"), PhotoKml.ROOT_NAME, mRootName));

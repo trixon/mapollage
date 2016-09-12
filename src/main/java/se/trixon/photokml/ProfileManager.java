@@ -26,6 +26,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import se.trixon.almond.util.Xlog;
 import se.trixon.photokml.profile.Profile;
+import se.trixon.photokml.profile.ProfileDescription;
 import se.trixon.photokml.profile.ProfileFolder;
 import se.trixon.photokml.profile.ProfilePlacemark;
 import se.trixon.photokml.profile.ProfileSource;
@@ -36,6 +37,7 @@ import se.trixon.photokml.profile.ProfileSource;
  */
 public class ProfileManager {
 
+    private static final String KEY_DESCRIPTION = "description";
     private static final String KEY_FOLDER = "folder";
     private static final String KEY_NAME = "name";
     private static final String KEY_PLACEMARK = "placemark";
@@ -97,6 +99,8 @@ public class ProfileManager {
             placemarkObject.put(ProfilePlacemark.KEY_INCLUDE_NULL_COORDINATE, profilePlacemark.isIncludeNullCoordinate());
             placemarkObject.put(ProfilePlacemark.KEY_DATE_PATTERN, profilePlacemark.getDatePattern());
             object.put(KEY_PLACEMARK, placemarkObject);
+
+            object.put(KEY_DESCRIPTION, profile.getDescription().getJson());
 
             array.add(object);
         }
@@ -194,6 +198,9 @@ public class ProfileManager {
             profilePlacemark.setNameBy(getInt(placemarkObject, ProfilePlacemark.KEY_NAME_BY));
             profilePlacemark.setIncludeNullCoordinate(getBoolean(placemarkObject, ProfilePlacemark.KEY_INCLUDE_NULL_COORDINATE));
             profilePlacemark.setDatePattern((String) placemarkObject.get(ProfilePlacemark.KEY_DATE_PATTERN));
+
+            ProfileDescription profileDescription = new ProfileDescription(profile, (JSONObject) object.get(KEY_DESCRIPTION));
+            profile.setDescription(profileDescription);
 
             mProfiles.add(profile);
         }

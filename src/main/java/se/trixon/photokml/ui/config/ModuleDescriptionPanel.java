@@ -17,15 +17,19 @@ package se.trixon.photokml.ui.config;
 
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.text.Document;
 import org.apache.commons.lang3.StringUtils;
 import se.trixon.almond.util.Dict;
 import se.trixon.photokml.profile.Profile;
+import se.trixon.photokml.profile.ProfileDescription;
 
 /**
  *
  * @author Patrik Karlsson <patrik@trixon.se>
  */
 public class ModuleDescriptionPanel extends ModulePanel {
+
+    private ProfileDescription mDescription;
 
     /**
      * Creates new form ModuleDescriptionPanel
@@ -40,24 +44,24 @@ public class ModuleDescriptionPanel extends ModulePanel {
     public StringBuilder getHeaderBuilder() {
         StringBuilder sb = new StringBuilder();
 
-        sb.append(Dict.DESCRIPTION.getString().toUpperCase()).append("\n");
-        optAppend(sb, mOptions.isDescriptionPhoto(), Dict.PHOTO.getString());
-        optAppend(sb, mOptions.isDescriptionDate(), Dict.DATE.getString());
-        optAppend(sb, mOptions.isDescriptionCoordinate(), Dict.COORDINATE.getString());
-        optAppend(sb, mOptions.isDescriptionAltitude(), Dict.ALTITUDE.getString());
-        optAppend(sb, mOptions.isDescriptionBearing(), Dict.BEARING.getString());
-        optAppend(sb, mOptions.isDescriptionCustom(), Dict.CUSTOM_TEXT.getString());
+        sb.append(Dict.DESCRIPTION.toString().toUpperCase()).append("\n");
+        optAppend(sb, mDescription.isPhoto(), Dict.PHOTO.toString());
+        optAppend(sb, mDescription.isDate(), Dict.DATE.toString());
+        optAppend(sb, mDescription.isCoordinate(), Dict.COORDINATE.toString());
+        optAppend(sb, mDescription.isAltitude(), Dict.ALTITUDE.toString());
+        optAppend(sb, mDescription.isBearing(), Dict.BEARING.toString());
+        optAppend(sb, mDescription.isCustom(), Dict.CUSTOM_TEXT.toString());
 
-        if (mOptions.isDescriptionExternalFile() && !StringUtils.isEmpty(mOptions.getDescriptionExternalFileValue())) {
+        if (mDescription.isExternalFile() && !StringUtils.isEmpty(mDescription.getExternalFileValue())) {
             optAppend(sb, true, mBundle.getString("ModuleDescriptionPanel.externalFileCheckBox.text"));
             sb.deleteCharAt(sb.length() - 1);
             sb.append(": ");
-            sb.append(mOptions.getDescriptionCustomText()).append("\n");
+            sb.append(mDescription.getCustomValue()).append("\n"); //TODO Verify if this is ok
         }
 
-        if (mOptions.isDescriptionCustom() && !StringUtils.isEmpty(mOptions.getDescriptionCustomText())) {
+        if (mDescription.isCustom() && !StringUtils.isEmpty(mDescription.getCustomValue())) {
             sb.append(MULTILINE_DIVIDER).append("\n");
-            sb.append(mOptions.getDescriptionCustomText()).append("\n");
+            sb.append(mDescription.getCustomValue()).append("\n");
             sb.append(MULTILINE_DIVIDER);
         }
 
@@ -78,47 +82,33 @@ public class ModuleDescriptionPanel extends ModulePanel {
     }
 
     private void init() {
-        customTextArea.getDocument().addDocumentListener(new DocumentListener() {
+        DocumentListener documentListener = new DocumentListener() {
             @Override
             public void changedUpdate(DocumentEvent e) {
-                saveOption();
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                saveOption();
+                saveOption(e.getDocument());
             }
 
             @Override
             public void insertUpdate(DocumentEvent e) {
-                saveOption();
-            }
-
-            private void saveOption() {
-                mOptions.setDescriptionCustomText(customTextArea.getText());
-            }
-        });
-
-        externalFileTextField.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                saveOption();
+                saveOption(e.getDocument());
             }
 
             @Override
             public void removeUpdate(DocumentEvent e) {
-                saveOption();
+                saveOption(e.getDocument());
             }
 
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                saveOption();
+            private void saveOption(Document document) {
+                if (document == customTextArea.getDocument()) {
+                    mDescription.setCustomValue(customTextArea.getText());
+                } else if (document == externalFileTextField.getDocument()) {
+                    mDescription.setExternalFileValue(externalFileTextField.getText());
+                }
             }
+        };
 
-            private void saveOption() {
-                mOptions.setDescriptionExternalFileValue(externalFileTextField.getText());
-            }
-        });
+        customTextArea.getDocument().addDocumentListener(documentListener);
+        externalFileTextField.getDocument().addDocumentListener(documentListener);
     }
 
     /**
@@ -273,36 +263,36 @@ public class ModuleDescriptionPanel extends ModulePanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void customCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_customCheckBoxActionPerformed
-        mOptions.setDescriptionCustom(customCheckBox.isSelected());
+        mDescription.setCustom(customCheckBox.isSelected());
         customTextArea.setEnabled(customCheckBox.isSelected());
     }//GEN-LAST:event_customCheckBoxActionPerformed
 
     private void bearingCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bearingCheckBoxActionPerformed
-        mOptions.setDescriptionBearing(bearingCheckBox.isSelected());
+        mDescription.setBearing(bearingCheckBox.isSelected());
     }//GEN-LAST:event_bearingCheckBoxActionPerformed
 
     private void coordinateCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_coordinateCheckBoxActionPerformed
-        mOptions.setDescriptionCoordinate(coordinateCheckBox.isSelected());
+        mDescription.setCoordinate(coordinateCheckBox.isSelected());
     }//GEN-LAST:event_coordinateCheckBoxActionPerformed
 
     private void dateCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dateCheckBoxActionPerformed
-        mOptions.setDescriptionDate(dateCheckBox.isSelected());
+        mDescription.setDate(dateCheckBox.isSelected());
     }//GEN-LAST:event_dateCheckBoxActionPerformed
 
     private void photoCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_photoCheckBoxActionPerformed
-        mOptions.setDescriptionPhoto(photoCheckBox.isSelected());
+        mDescription.setPhoto(photoCheckBox.isSelected());
     }//GEN-LAST:event_photoCheckBoxActionPerformed
 
     private void altitudeCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_altitudeCheckBoxActionPerformed
-        mOptions.setDescriptionAltitude(altitudeCheckBox.isSelected());
+        mDescription.setAltitude(altitudeCheckBox.isSelected());
     }//GEN-LAST:event_altitudeCheckBoxActionPerformed
 
     private void filenameCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_filenameCheckBoxActionPerformed
-        mOptions.setDescriptionFilename(filenameCheckBox.isSelected());
+        mDescription.setFilename(filenameCheckBox.isSelected());
     }//GEN-LAST:event_filenameCheckBoxActionPerformed
 
     private void externalFileCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_externalFileCheckBoxActionPerformed
-        mOptions.setDescriptionExternalFile(externalFileCheckBox.isSelected());
+        mDescription.setExternalFile(externalFileCheckBox.isSelected());
         externalFileTextField.setEnabled(externalFileCheckBox.isSelected());
     }//GEN-LAST:event_externalFileCheckBoxActionPerformed
 
@@ -322,16 +312,19 @@ public class ModuleDescriptionPanel extends ModulePanel {
 
     @Override
     public void load(Profile profile) {
-        altitudeCheckBox.setSelected(mOptions.isDescriptionAltitude());
-        bearingCheckBox.setSelected(mOptions.isDescriptionBearing());
-        coordinateCheckBox.setSelected(mOptions.isDescriptionCoordinate());
-        customCheckBox.setSelected(mOptions.isDescriptionCustom());
-        dateCheckBox.setSelected(mOptions.isDescriptionDate());
-        photoCheckBox.setSelected(mOptions.isDescriptionPhoto());
-        filenameCheckBox.setSelected(mOptions.isDescriptionFilename());
-        externalFileCheckBox.setSelected(mOptions.isDescriptionExternalFile());
-        externalFileTextField.setText(mOptions.getDescriptionExternalFileValue());
-        customTextArea.setText(mOptions.getDescriptionCustomText());
+        mProfile = profile;
+        mDescription = mProfile.getDescription();
+
+        altitudeCheckBox.setSelected(mDescription.isAltitude());
+        bearingCheckBox.setSelected(mDescription.isBearing());
+        coordinateCheckBox.setSelected(mDescription.isCoordinate());
+        customCheckBox.setSelected(mDescription.isCustom());
+        dateCheckBox.setSelected(mDescription.isDate());
+        photoCheckBox.setSelected(mDescription.isPhoto());
+        filenameCheckBox.setSelected(mDescription.isFilename());
+        externalFileCheckBox.setSelected(mDescription.isExternalFile());
+        externalFileTextField.setText(mDescription.getExternalFileValue());
+        customTextArea.setText(mDescription.getCustomValue());
 
         restoreEnabledStates();
     }

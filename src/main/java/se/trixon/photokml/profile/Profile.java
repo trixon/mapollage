@@ -30,6 +30,7 @@ import se.trixon.photokml.PhotoKml;
 public class Profile extends ProfileBase implements Comparable<Profile>, Cloneable {
 
     private String mAbsolutePath;
+    private ProfileDescription mDescription = new ProfileDescription(this);
     private File mDestFile;
     private ProfileFolder mFolder = new ProfileFolder(this);
     private String mFolderDesc;
@@ -39,16 +40,12 @@ public class Profile extends ProfileBase implements Comparable<Profile>, Cloneab
     private Integer mMaxWidth;
     private String mMaxWidthString;
     private String mName;
+    private ProfilePlacemark mPlacemark = new ProfilePlacemark(this);
     private ProfileSource mSource = new ProfileSource(this);
     private StringBuilder mValidationErrorBuilder;
-    private ProfilePlacemark mPlacemark = new ProfilePlacemark(this);
 
     public Profile() {
 
-    }
-
-    public ProfilePlacemark getPlacemark() {
-        return mPlacemark;
     }
 
     public Profile(CommandLine commandLine) {
@@ -87,6 +84,10 @@ public class Profile extends ProfileBase implements Comparable<Profile>, Cloneab
         return mAbsolutePath;
     }
 
+    public ProfileDescription getDescription() {
+        return mDescription;
+    }
+
     public File getDestFile() {
         return mDestFile;
     }
@@ -109,6 +110,10 @@ public class Profile extends ProfileBase implements Comparable<Profile>, Cloneab
 
     public String getName() {
         return mName;
+    }
+
+    public ProfilePlacemark getPlacemark() {
+        return mPlacemark;
     }
 
     public ProfileSource getSource() {
@@ -152,6 +157,10 @@ public class Profile extends ProfileBase implements Comparable<Profile>, Cloneab
 
     public void setAbsolutePath(String absolutePath) {
         mAbsolutePath = absolutePath;
+    }
+
+    public void setDescription(ProfileDescription description) {
+        this.mDescription = description;
     }
 
     public void setDestFile(File dest) {
@@ -204,6 +213,7 @@ public class Profile extends ProfileBase implements Comparable<Profile>, Cloneab
                 .append(mSource.toDebugString())
                 .append(mFolder.toDebugString())
                 .append(mPlacemark.toDebugString())
+                .append(mDescription.toDebugString())
                 .append("}");
 
         return builder.toString();
