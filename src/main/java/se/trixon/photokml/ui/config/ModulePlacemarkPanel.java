@@ -105,7 +105,7 @@ public class ModulePlacemarkPanel extends ModulePanel {
                     datePreview = simpleDateFormat.format(new Date(System.currentTimeMillis()));
                     mInvalidDateFormat = false;
                 } catch (IllegalArgumentException ex) {
-                    datePreview = Dict.ERROR.toString();
+                    datePreview = Dict.Dialog.ERROR.toString();
                     mInvalidDateFormat = true;
                 }
 

@@ -191,7 +191,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
                 mProfiles.add(p);
                 populateProfiles(p);
             } else {
-                Message.error(this, Dict.ERROR.toString(), String.format(Dict.Dialog.ERROR_PROFILE_EXIST.toString(), s));
+                Message.error(this, Dict.Dialog.ERROR.toString(), String.format(Dict.Dialog.ERROR_PROFILE_EXIST.toString(), s));
                 profileAdd(s);
             }
         }
@@ -252,7 +252,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
                 getSelectedProfile().setName(s);
                 populateProfiles(getSelectedProfile());
             } else if (existingProfile != getSelectedProfile()) {
-                Message.error(this, Dict.ERROR.toString(), String.format(Dict.Dialog.ERROR_PROFILE_EXIST.toString(), s));
+                Message.error(this, Dict.Dialog.ERROR.toString(), String.format(Dict.Dialog.ERROR_PROFILE_EXIST.toString(), s));
                 profileRename(s);
             }
         }
