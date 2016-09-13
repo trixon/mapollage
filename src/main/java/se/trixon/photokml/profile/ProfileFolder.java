@@ -17,6 +17,7 @@ package se.trixon.photokml.profile;
 
 import java.text.SimpleDateFormat;
 import org.apache.commons.cli.CommandLine;
+import org.json.simple.JSONObject;
 import se.trixon.photokml.PhotoKml;
 
 /**
@@ -50,7 +51,18 @@ public class ProfileFolder extends ProfileBase {
         mProfile = profile;
     }
 
-    public ProfileFolder(CommandLine commandLine, final Profile profile) {
+    public ProfileFolder(final Profile profile, JSONObject json) {
+        mProfile = profile;
+        mRootName = (String) json.get(KEY_ROOT_NAME);
+        mRootDescription = (String) json.get(KEY_ROOT_DESCRIPTION);
+        mCreateFolders = getBoolean(json, KEY_CREATE_FOLDERS);
+        mFoldersBy = getInt(json, KEY_FOLDERS_BY);
+        mDatePattern = (String) json.get(KEY_DATE_PATTERN);
+        mRegex = (String) json.get(KEY_REGEX);
+        mRegexDefault = (String) json.get(KEY_REGEX_DEFAULT);
+    }
+
+    public ProfileFolder(final Profile profile, CommandLine commandLine) {
         mProfile = profile;
         mRootName = commandLine.getOptionValue(PhotoKml.ROOT_NAME);
         mRootDescription = commandLine.getOptionValue(PhotoKml.ROOT_DESC);
@@ -75,6 +87,21 @@ public class ProfileFolder extends ProfileBase {
 
     public int getFoldersBy() {
         return mFoldersBy;
+    }
+
+    @Override
+    public JSONObject getJson() {
+        JSONObject json = new JSONObject();
+
+        json.put(KEY_ROOT_NAME, mRootName);
+        json.put(KEY_ROOT_DESCRIPTION, mRootDescription);
+        json.put(KEY_FOLDERS_BY, mFoldersBy);
+        json.put(KEY_CREATE_FOLDERS, mCreateFolders);
+        json.put(KEY_DATE_PATTERN, mDatePattern);
+        json.put(KEY_REGEX, mRegex);
+        json.put(KEY_REGEX_DEFAULT, mRegexDefault);
+
+        return json;
     }
 
     public String getRegex() {

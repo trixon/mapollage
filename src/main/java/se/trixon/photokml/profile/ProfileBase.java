@@ -28,6 +28,8 @@ public abstract class ProfileBase {
 
     protected final ResourceBundle mBundle = BundleHelper.getBundle(Profile.class, "Bundle");
 
+    public abstract JSONObject getJson();
+
     public abstract boolean isValid();
 
     public abstract String toDebugString();

@@ -19,6 +19,7 @@ import java.io.File;
 import java.nio.file.FileSystems;
 import java.nio.file.PathMatcher;
 import org.apache.commons.lang3.SystemUtils;
+import org.json.simple.JSONObject;
 
 /**
  *
@@ -33,12 +34,20 @@ public class ProfileSource extends ProfileBase {
     private File mDir = SystemUtils.getUserHome();
     private String mFilePattern = "{*.jpg,*.JPG}";
     private boolean mFollowLinks;
-    private boolean mRecursive;
-    private final Profile mProfile;
     private PathMatcher mPathMatcher;
+    private final Profile mProfile;
+    private boolean mRecursive;
 
     public ProfileSource(final Profile profile) {
         mProfile = profile;
+    }
+
+    public ProfileSource(final Profile profile, JSONObject json) {
+        mProfile = profile;
+        mDir = getFileObject(json, KEY_PATH);
+        mFilePattern = (String) json.get(KEY_PATTERN);
+        mRecursive = getBoolean(json, KEY_RECURSIVE);
+        mFollowLinks = getBoolean(json, KEY_FOLLOW_LINKS);
     }
 
     public File getDir() {
@@ -49,8 +58,27 @@ public class ProfileSource extends ProfileBase {
         return mFilePattern;
     }
 
+    @Override
+    public JSONObject getJson() {
+        JSONObject json = new JSONObject();
+        json.put(KEY_PATH, mDir.getAbsolutePath());
+        json.put(KEY_PATTERN, mFilePattern);
+        json.put(KEY_FOLLOW_LINKS, mFollowLinks);
+        json.put(KEY_RECURSIVE, mRecursive);
+
+        return json;
+    }
+
+    public PathMatcher getPathMatcher() {
+        return mPathMatcher;
+    }
+
     public boolean isFollowLinks() {
         return mFollowLinks;
+    }
+
+    public boolean isRecursive() {
+        return mRecursive;
     }
 
     public boolean isValid() {
@@ -61,14 +89,6 @@ public class ProfileSource extends ProfileBase {
             mProfile.addValidationError("invalid file pattern: " + mFilePattern);
         }
         return true;
-    }
-
-    public PathMatcher getPathMatcher() {
-        return mPathMatcher;
-    }
-
-    public boolean isRecursive() {
-        return mRecursive;
     }
 
     public void setDir(File dir) {

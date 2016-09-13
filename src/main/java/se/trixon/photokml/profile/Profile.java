@@ -21,6 +21,7 @@ import java.util.logging.Logger;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.json.simple.JSONObject;
 import se.trixon.photokml.PhotoKml;
 
 /**
@@ -28,6 +29,12 @@ import se.trixon.photokml.PhotoKml;
  * @author Patrik Karlsson
  */
 public class Profile extends ProfileBase implements Comparable<Profile>, Cloneable {
+
+    private static final String KEY_DESCRIPTION = "description";
+    private static final String KEY_FOLDER = "folder";
+    private static final String KEY_NAME = "name";
+    private static final String KEY_PLACEMARK = "placemark";
+    private static final String KEY_SOURCE = "source";
 
     private String mAbsolutePath;
     private ProfileDescription mDescription = new ProfileDescription(this);
@@ -48,11 +55,20 @@ public class Profile extends ProfileBase implements Comparable<Profile>, Cloneab
 
     }
 
+    public Profile(JSONObject json) {
+        setName((String) json.get(KEY_NAME));
+
+        setSource(new ProfileSource(this, (JSONObject) json.get(KEY_SOURCE)));
+        setFolder(new ProfileFolder(this, (JSONObject) json.get(KEY_FOLDER)));
+        setPlacemark(new ProfilePlacemark(this, (JSONObject) json.get(KEY_PLACEMARK)));
+        setDescription(new ProfileDescription(this, (JSONObject) json.get(KEY_DESCRIPTION)));
+    }
+
     public Profile(CommandLine commandLine) {
-        mFolder = new ProfileFolder(commandLine, this);
+        mFolder = new ProfileFolder(this, commandLine);
         mFolderDesc = commandLine.getOptionValue(PhotoKml.FOLDER_DESC);
 
-        mPlacemark = new ProfilePlacemark(commandLine, this);
+        mPlacemark = new ProfilePlacemark(this, commandLine);
 
         mMaxHeightString = commandLine.getOptionValue(PhotoKml.MAX_HEIGHT);
         mMaxWidthString = commandLine.getOptionValue(PhotoKml.MAX_WIDTH);
@@ -98,6 +114,19 @@ public class Profile extends ProfileBase implements Comparable<Profile>, Cloneab
 
     public String getFolderDesc() {
         return mFolderDesc;
+    }
+
+    @Override
+    public JSONObject getJson() {
+        JSONObject json = new JSONObject();
+        json.put(KEY_NAME, getName());
+
+        json.put(KEY_SOURCE, getSource().getJson());
+        json.put(KEY_FOLDER, getFolder().getJson());
+        json.put(KEY_PLACEMARK, getPlacemark().getJson());
+        json.put(KEY_DESCRIPTION, getDescription().getJson());
+
+        return json;
     }
 
     public Integer getMaxHeight() {
@@ -160,11 +189,15 @@ public class Profile extends ProfileBase implements Comparable<Profile>, Cloneab
     }
 
     public void setDescription(ProfileDescription description) {
-        this.mDescription = description;
+        mDescription = description;
     }
 
     public void setDestFile(File dest) {
         mDestFile = dest;
+    }
+
+    public void setFolder(ProfileFolder folder) {
+        mFolder = folder;
     }
 
     public void setFolderDesc(String folderDesc) {
@@ -185,6 +218,14 @@ public class Profile extends ProfileBase implements Comparable<Profile>, Cloneab
 
     public void setName(String name) {
         mName = name;
+    }
+
+    public void setPlacemark(ProfilePlacemark placemark) {
+        mPlacemark = placemark;
+    }
+
+    public void setSource(ProfileSource source) {
+        mSource = source;
     }
 
     public void setSourceAndDest(String[] args) {

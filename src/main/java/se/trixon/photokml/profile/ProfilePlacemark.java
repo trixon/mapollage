@@ -18,6 +18,7 @@ package se.trixon.photokml.profile;
 import java.text.SimpleDateFormat;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.json.simple.JSONObject;
 import se.trixon.photokml.PhotoKml;
 
 /**
@@ -41,14 +42,23 @@ public class ProfilePlacemark extends ProfileBase {
     private boolean mIncludeNullCoordinate;
     private Double mLat = 57.6;
     private Double mLon = 11.3;
+    private int mNameBy;
     private final Profile mProfile;
-    private int nameBy;
 
     public ProfilePlacemark(final Profile profile) {
         mProfile = profile;
     }
 
-    public ProfilePlacemark(CommandLine commandLine, final Profile profile) {
+    public ProfilePlacemark(final Profile profile, JSONObject json) {
+        mProfile = profile;
+        mLat = (Double) json.get(KEY_LAT);
+        mLon = (Double) json.get(KEY_LON);
+        mNameBy = getInt(json, KEY_NAME_BY);
+        mIncludeNullCoordinate = getBoolean(json, KEY_INCLUDE_NULL_COORDINATE);
+        mDatePattern = (String) json.get(KEY_DATE_PATTERN);
+    }
+
+    public ProfilePlacemark(final Profile profile, CommandLine commandLine) {
         mProfile = profile;
         if (commandLine.hasOption(PhotoKml.PLACEMARK_NAME)) {
             mDatePattern = commandLine.getOptionValue(PhotoKml.PLACEMARK_NAME);
@@ -76,6 +86,18 @@ public class ProfilePlacemark extends ProfileBase {
         return mDesccription;
     }
 
+    @Override
+    public JSONObject getJson() {
+        JSONObject json = new JSONObject();
+        json.put(KEY_LAT, mLat);
+        json.put(KEY_LON, mLon);
+        json.put(KEY_NAME_BY, mNameBy);
+        json.put(KEY_INCLUDE_NULL_COORDINATE, mIncludeNullCoordinate);
+        json.put(KEY_DATE_PATTERN, mDatePattern);
+
+        return json;
+    }
+
     public Double getLat() {
         return mLat;
     }
@@ -85,7 +107,7 @@ public class ProfilePlacemark extends ProfileBase {
     }
 
     public int getNameBy() {
-        return nameBy;
+        return mNameBy;
     }
 
     public boolean hasCoordinate() {
@@ -183,6 +205,6 @@ public class ProfilePlacemark extends ProfileBase {
 
     @Override
     public String toString() {
-        return "ProfilePlacemark{" + "mIncludeNullCoordinate=" + mIncludeNullCoordinate + ", mByDate=" + mByDate + ", mByFilename=" + mByFilename + ", mDateFormat=" + mDateFormat + ", mDatePattern=" + mDatePattern + ", mDesccription=" + mDesccription + ", mProfile=" + mProfile + ", mLat=" + mLat + ", mLon=" + mLon + ", mCoordinate=" + mCoordinate + ", nameBy=" + nameBy + '}';
+        return "ProfilePlacemark{" + "mIncludeNullCoordinate=" + mIncludeNullCoordinate + ", mByDate=" + mByDate + ", mByFilename=" + mByFilename + ", mDateFormat=" + mDateFormat + ", mDatePattern=" + mDatePattern + ", mDesccription=" + mDesccription + ", mProfile=" + mProfile + ", mLat=" + mLat + ", mLon=" + mLon + ", mCoordinate=" + mCoordinate + ", nameBy=" + mNameBy + '}';
     }
 }
