@@ -19,7 +19,6 @@ import java.util.ResourceBundle;
 import se.trixon.almond.util.BundleHelper;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.swing.dialogs.Message;
-import se.trixon.photokml.Options;
 import se.trixon.photokml.profile.Profile;
 
 /**
@@ -28,9 +27,7 @@ import se.trixon.photokml.profile.Profile;
  */
 public abstract class ModulePanel extends javax.swing.JPanel {
 
-    protected final Options mOptions = Options.INSTANCE;
     public static final String MULTILINE_DIVIDER = "* * * * *";
-
     protected final String mHeaderPrefix = " + ";
     protected String mTitle;
     protected final ResourceBundle mBundle = BundleHelper.getBundle(ModulePanel.class, "Bundle");

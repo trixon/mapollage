@@ -19,6 +19,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import se.trixon.almond.util.Dict;
 import se.trixon.photokml.profile.Profile;
+import se.trixon.photokml.profile.ProfilePhoto;
 
 /**
  *
@@ -26,12 +27,14 @@ import se.trixon.photokml.profile.Profile;
  */
 public class ModulePhotoPanel extends ModulePanel {
 
+    private ProfilePhoto mProfilePhoto = new ProfilePhoto(mProfile);
+
     /**
      * Creates new form ModulePhotoPanel
      */
     public ModulePhotoPanel() {
         initComponents();
-        mTitle = Dict.PHOTO.getString();
+        mTitle = Dict.PHOTO.toString();
         init();
     }
 
@@ -39,10 +42,10 @@ public class ModulePhotoPanel extends ModulePanel {
     public StringBuilder getHeaderBuilder() {
         StringBuilder sb = new StringBuilder();
 
-        sb.append(Dict.PHOTO.getString().toUpperCase()).append("\n");
+        sb.append(Dict.PHOTO.toString().toUpperCase()).append("\n");
 
-        optAppend(sb, maxWidthCheckBox.isSelected(), String.format("%s = %s", maxWidthCheckBox.getText(), mOptions.getPhotoBalloonMaxWidthValue()));
-        optAppend(sb, maxHeightCheckBox.isSelected(), String.format("%s = %s", maxHeightCheckBox.getText(), mOptions.getPhotoBalloonMaxHeightValue()));
+        optAppend(sb, maxWidthCheckBox.isSelected(), String.format("%s = %s", maxWidthCheckBox.getText(), mProfilePhoto.getMaxWidthValue()));
+        optAppend(sb, maxHeightCheckBox.isSelected(), String.format("%s = %s", maxHeightCheckBox.getText(), mProfilePhoto.getMaxHeightValue()));
         optAppend(sb, lowerCaseExtCheckBox.isSelected(), lowerCaseExtCheckBox.getText());
 
         sb.append("\n");
@@ -63,53 +66,6 @@ public class ModulePhotoPanel extends ModulePanel {
     }
 
     private void init() {
-        maxHeightNumericField.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                saveOption();
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                saveOption();
-            }
-
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                saveOption();
-            }
-
-            private void saveOption() {
-                try {
-                    mOptions.setPhotoBalloonMaxHeightValue(Integer.valueOf(maxHeightNumericField.getText().replace(",", ".")));
-                } catch (NumberFormatException e) {
-                }
-            }
-        });
-
-        maxWidthNumericField.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                saveOption();
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                saveOption();
-            }
-
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                saveOption();
-            }
-
-            private void saveOption() {
-                try {
-                    mOptions.setPhotoBalloonMaxWidthValue(Integer.valueOf(maxWidthNumericField.getText().replace(",", ".")));
-                } catch (NumberFormatException e) {
-                }
-            }
-        });
 
         urlTextField.getDocument().addDocumentListener(new DocumentListener() {
             @Override
@@ -128,7 +84,7 @@ public class ModulePhotoPanel extends ModulePanel {
             }
 
             private void saveOption() {
-                mOptions.setPhotoBaseUrlValue(urlTextField.getText());
+                mProfilePhoto.setBaseUrlValue(urlTextField.getText());
             }
         });
     }
@@ -144,13 +100,13 @@ public class ModulePhotoPanel extends ModulePanel {
         java.awt.GridBagConstraints gridBagConstraints;
 
         maxWidthCheckBox = new javax.swing.JCheckBox();
-        maxWidthNumericField = new se.trixon.almond.util.swing.ANumericField();
         maxHeightCheckBox = new javax.swing.JCheckBox();
-        maxHeightNumericField = new se.trixon.almond.util.swing.ANumericField();
         urlCheckBox = new javax.swing.JCheckBox();
         urlTextField = new javax.swing.JTextField();
-        jPanel1 = new javax.swing.JPanel();
         lowerCaseExtCheckBox = new javax.swing.JCheckBox();
+        widthSpinner = new javax.swing.JSpinner();
+        heightSpinner = new javax.swing.JSpinner();
+        jPanel2 = new javax.swing.JPanel();
 
         setLayout(new java.awt.GridBagLayout());
 
@@ -168,13 +124,6 @@ public class ModulePhotoPanel extends ModulePanel {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 3, 0);
         add(maxWidthCheckBox, gridBagConstraints);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 3, 0);
-        add(maxWidthNumericField, gridBagConstraints);
 
         maxHeightCheckBox.setText(bundle.getString("ModulePhotoPanel.maxHeightCheckBox.text")); // NOI18N
         maxHeightCheckBox.setPreferredSize(new java.awt.Dimension(100, 18));
@@ -189,13 +138,6 @@ public class ModulePhotoPanel extends ModulePanel {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 4, 3, 0);
         add(maxHeightCheckBox, gridBagConstraints);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 4, 3, 0);
-        add(maxHeightNumericField, gridBagConstraints);
 
         urlCheckBox.setText(bundle.getString("ModulePhotoPanel.urlCheckBox.text")); // NOI18N
         urlCheckBox.addActionListener(new java.awt.event.ActionListener() {
@@ -213,30 +155,11 @@ public class ModulePhotoPanel extends ModulePanel {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 4;
-        gridBagConstraints.gridwidth = 4;
+        gridBagConstraints.gridwidth = 3;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 3, 0);
         add(urlTextField, gridBagConstraints);
-
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
-        );
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 3;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridheight = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        add(jPanel1, gridBagConstraints);
 
         lowerCaseExtCheckBox.setText(bundle.getString("ModulePhotoPanel.lowerCaseExtCheckBox.text")); // NOI18N
         lowerCaseExtCheckBox.setToolTipText(bundle.getString("ModulePhotoPanel.lowerCaseExtCheckBox.toolTipText")); // NOI18N
@@ -252,50 +175,102 @@ public class ModulePhotoPanel extends ModulePanel {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
         add(lowerCaseExtCheckBox, gridBagConstraints);
+
+        widthSpinner.setModel(new javax.swing.SpinnerNumberModel(400, 1, null, 1));
+        widthSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                widthSpinnerStateChanged(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        add(widthSpinner, gridBagConstraints);
+
+        heightSpinner.setModel(new javax.swing.SpinnerNumberModel(400, 1, null, 1));
+        heightSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                heightSpinnerStateChanged(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        add(heightSpinner, gridBagConstraints);
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 296, Short.MAX_VALUE)
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 114, Short.MAX_VALUE)
+        );
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 5;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        add(jPanel2, gridBagConstraints);
     }// </editor-fold>//GEN-END:initComponents
 
     private void maxWidthCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_maxWidthCheckBoxActionPerformed
-        maxWidthNumericField.setEnabled(maxWidthCheckBox.isSelected());
-        mOptions.setPhotoBalloonMaxWidth(maxWidthCheckBox.isSelected());
+        widthSpinner.setEnabled(maxWidthCheckBox.isSelected());
+        mProfilePhoto.setMaxWidth(maxWidthCheckBox.isSelected());
     }//GEN-LAST:event_maxWidthCheckBoxActionPerformed
 
     private void maxHeightCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_maxHeightCheckBoxActionPerformed
-        maxHeightNumericField.setEnabled(maxHeightCheckBox.isSelected());
-        mOptions.setPhotoBalloonMaxHeight(maxHeightCheckBox.isSelected());
+        heightSpinner.setEnabled(maxHeightCheckBox.isSelected());
+        mProfilePhoto.setMaxHeight(maxHeightCheckBox.isSelected());
     }//GEN-LAST:event_maxHeightCheckBoxActionPerformed
 
     private void urlCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_urlCheckBoxActionPerformed
         urlTextField.setEnabled(urlCheckBox.isSelected());
-        mOptions.setPhotoBaseUrl(urlCheckBox.isSelected());
+        mProfilePhoto.setBaseUrl(urlCheckBox.isSelected());
     }//GEN-LAST:event_urlCheckBoxActionPerformed
 
     private void lowerCaseExtCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_lowerCaseExtCheckBoxActionPerformed
-        mOptions.setPhotoForceLowerCaseExtension(lowerCaseExtCheckBox.isSelected());
+        mProfilePhoto.setForceLowerCaseExtension(lowerCaseExtCheckBox.isSelected());
     }//GEN-LAST:event_lowerCaseExtCheckBoxActionPerformed
 
+    private void widthSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_widthSpinnerStateChanged
+        mProfilePhoto.setMaxWidthValue((Integer) widthSpinner.getModel().getValue());
+    }//GEN-LAST:event_widthSpinnerStateChanged
+
+    private void heightSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_heightSpinnerStateChanged
+        mProfilePhoto.setMaxHeightValue((Integer) heightSpinner.getModel().getValue());
+    }//GEN-LAST:event_heightSpinnerStateChanged
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JPanel jPanel1;
+    private javax.swing.JSpinner heightSpinner;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JCheckBox lowerCaseExtCheckBox;
     private javax.swing.JCheckBox maxHeightCheckBox;
-    private se.trixon.almond.util.swing.ANumericField maxHeightNumericField;
     private javax.swing.JCheckBox maxWidthCheckBox;
-    private se.trixon.almond.util.swing.ANumericField maxWidthNumericField;
     private javax.swing.JCheckBox urlCheckBox;
     private javax.swing.JTextField urlTextField;
+    private javax.swing.JSpinner widthSpinner;
     // End of variables declaration//GEN-END:variables
 
     @Override
     public void load(Profile profile) {
-        maxHeightCheckBox.setSelected(mOptions.isPhotoBalloonMaxHeight());
-        maxHeightNumericField.setText(String.valueOf(mOptions.getPhotoBalloonMaxHeightValue()));
+        mProfilePhoto = profile.getPhoto();
+        maxHeightCheckBox.setSelected(mProfilePhoto.isMaxHeight());
+        heightSpinner.setValue(mProfilePhoto.getMaxHeightValue());
 
-        maxWidthCheckBox.setSelected(mOptions.isPhotoBalloonMaxWidth());
-        maxWidthNumericField.setText(String.valueOf(mOptions.getPhotoBalloonMaxWidthValue()));
+        maxWidthCheckBox.setSelected(mProfilePhoto.isMaxWidth());
+        widthSpinner.setValue(mProfilePhoto.getMaxWidthValue());
 
-        lowerCaseExtCheckBox.setSelected(mOptions.isPhotoForceLowerCaseExtension());
+        lowerCaseExtCheckBox.setSelected(mProfilePhoto.isForceLowerCaseExtension());
 
-        urlCheckBox.setSelected(mOptions.isPhotoBaseUrl());
-        urlTextField.setText(mOptions.getPhotoBaseUrlValue());
+        urlCheckBox.setSelected(mProfilePhoto.isBaseUrl());
+        urlTextField.setText(mProfilePhoto.getBaseUrlValue());
 
         restoreEnabledStates();
     }

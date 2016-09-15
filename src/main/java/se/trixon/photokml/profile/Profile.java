@@ -34,6 +34,7 @@ public class Profile extends ProfileBase implements Comparable<Profile>, Cloneab
     private static final String KEY_FOLDER = "folder";
     private static final String KEY_NAME = "name";
     private static final String KEY_PLACEMARK = "placemark";
+    private static final String KEY_PHOTO = "photo";
     private static final String KEY_SOURCE = "source";
 
     private String mAbsolutePath;
@@ -50,9 +51,18 @@ public class Profile extends ProfileBase implements Comparable<Profile>, Cloneab
     private ProfilePlacemark mPlacemark = new ProfilePlacemark(this);
     private ProfileSource mSource = new ProfileSource(this);
     private StringBuilder mValidationErrorBuilder;
+    private ProfilePhoto mPhoto = new ProfilePhoto(this);
 
     public Profile() {
 
+    }
+
+    public ProfilePhoto getPhoto() {
+        return mPhoto;
+    }
+
+    public void setPhoto(ProfilePhoto photo) {
+        mPhoto = photo;
     }
 
     public Profile(JSONObject json) {
@@ -62,6 +72,7 @@ public class Profile extends ProfileBase implements Comparable<Profile>, Cloneab
         setFolder(new ProfileFolder(this, (JSONObject) json.get(KEY_FOLDER)));
         setPlacemark(new ProfilePlacemark(this, (JSONObject) json.get(KEY_PLACEMARK)));
         setDescription(new ProfileDescription(this, (JSONObject) json.get(KEY_DESCRIPTION)));
+        setPhoto(new ProfilePhoto(this, (JSONObject) json.get(KEY_PHOTO)));
     }
 
     public Profile(CommandLine commandLine) {
@@ -125,6 +136,7 @@ public class Profile extends ProfileBase implements Comparable<Profile>, Cloneab
         json.put(KEY_FOLDER, getFolder().getJson());
         json.put(KEY_PLACEMARK, getPlacemark().getJson());
         json.put(KEY_DESCRIPTION, getDescription().getJson());
+        json.put(KEY_PHOTO, getPhoto().getJson());
 
         return json;
     }
@@ -255,6 +267,7 @@ public class Profile extends ProfileBase implements Comparable<Profile>, Cloneab
                 .append(mFolder.toDebugString())
                 .append(mPlacemark.toDebugString())
                 .append(mDescription.toDebugString())
+                .append(mPhoto.toDebugString())
                 .append("}");
 
         return builder.toString();
