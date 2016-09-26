@@ -293,8 +293,4 @@ public class ModuleSourcePanel extends ModulePanel implements FileChooserPanel.F
             sourceChooserPanel.getFileChooser().setSelectedFiles(files);
         }
     }
-
-    @Override
-    public void save(Profile profile) {
-    }
 }

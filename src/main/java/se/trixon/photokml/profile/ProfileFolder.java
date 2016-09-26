@@ -16,7 +16,6 @@
 package se.trixon.photokml.profile;
 
 import java.text.SimpleDateFormat;
-import org.apache.commons.cli.CommandLine;
 import org.json.simple.JSONObject;
 import se.trixon.photokml.PhotoKml;
 
@@ -26,6 +25,11 @@ import se.trixon.photokml.PhotoKml;
  */
 public class ProfileFolder extends ProfileBase {
 
+    public static final int FOLDER_BY_DATE = 2;
+    public static final int FOLDER_BY_DIR = 1;
+    public static final int FOLDER_BY_NONE = 0;
+    public static final int FOLDER_BY_REGEX = 3;
+
     public static final String KEY_CREATE_FOLDERS = "createFolders";
     public static final String KEY_DATE_PATTERN = "datePattern";
     public static final String KEY_FOLDERS_BY = "foldersBy";
@@ -34,16 +38,12 @@ public class ProfileFolder extends ProfileBase {
     public static final String KEY_ROOT_DESCRIPTION = "rootDescription";
     public static final String KEY_ROOT_NAME = "rootName";
 
-    private boolean mCreateFolders;
     private String mDatePattern = "yyyy-ww";
-    private boolean mFolderByDate;
-    private boolean mFolderByDir;
     private SimpleDateFormat mFolderDateFormat;
-    private String mFolderDatePattern;
-    private int mFoldersBy;
+    private int mFoldersBy = FOLDER_BY_DIR;
     private final Profile mProfile;
     private String mRegex = "\\d{8}";
-    private String mRegexDefault = "12345678  ";
+    private String mRegexDefault = "12345678";
     private String mRootDescription;
     private String mRootName;
 
@@ -55,34 +55,28 @@ public class ProfileFolder extends ProfileBase {
         mProfile = profile;
         mRootName = (String) json.get(KEY_ROOT_NAME);
         mRootDescription = (String) json.get(KEY_ROOT_DESCRIPTION);
-        mCreateFolders = getBoolean(json, KEY_CREATE_FOLDERS);
         mFoldersBy = getInt(json, KEY_FOLDERS_BY);
         mDatePattern = (String) json.get(KEY_DATE_PATTERN);
         mRegex = (String) json.get(KEY_REGEX);
         mRegexDefault = (String) json.get(KEY_REGEX_DEFAULT);
     }
 
-    public ProfileFolder(final Profile profile, CommandLine commandLine) {
-        mProfile = profile;
-        mRootName = commandLine.getOptionValue(PhotoKml.ROOT_NAME);
-        mRootDescription = commandLine.getOptionValue(PhotoKml.ROOT_DESC);
-        if (commandLine.hasOption(PhotoKml.FOLDER_NAME)) {
-            mFolderDatePattern = commandLine.getOptionValue(PhotoKml.FOLDER_NAME);
-            mFolderByDate = mFolderDatePattern != null;
-            mFolderByDir = !mFolderByDate;
-        }
-    }
-
+//    public ProfileFolder(final Profile profile, CommandLine commandLine) {
+//        mProfile = profile;
+//        mRootName = commandLine.getOptionValue(PhotoKml.ROOT_NAME);
+//        mRootDescription = commandLine.getOptionValue(PhotoKml.ROOT_DESC);
+//        if (commandLine.hasOption(PhotoKml.FOLDER_NAME)) {
+//            mFolderDatePattern = commandLine.getOptionValue(PhotoKml.FOLDER_NAME);
+//            mFolderByDate = mFolderDatePattern != null;
+//            mFolderByDir = !mFolderByDate;
+//        }
+//    }
     public String getDatePattern() {
         return mDatePattern;
     }
 
     public SimpleDateFormat getFolderDateFormat() {
         return mFolderDateFormat;
-    }
-
-    public String getFolderDatePattern() {
-        return mFolderDatePattern;
     }
 
     public int getFoldersBy() {
@@ -96,7 +90,6 @@ public class ProfileFolder extends ProfileBase {
         json.put(KEY_ROOT_NAME, mRootName);
         json.put(KEY_ROOT_DESCRIPTION, mRootDescription);
         json.put(KEY_FOLDERS_BY, mFoldersBy);
-        json.put(KEY_CREATE_FOLDERS, mCreateFolders);
         json.put(KEY_DATE_PATTERN, mDatePattern);
         json.put(KEY_REGEX, mRegex);
         json.put(KEY_REGEX_DEFAULT, mRegexDefault);
@@ -120,36 +113,24 @@ public class ProfileFolder extends ProfileBase {
         return mRootName;
     }
 
-    public boolean isCreateFolders() {
-        return mCreateFolders;
-    }
-
-    public boolean isFolderByDate() {
-        return mFolderByDate;
-    }
-
-    public boolean isFolderByDir() {
-        return mFolderByDir;
-    }
-
     @Override
     public boolean isValid() {
+        boolean valid = true;
         if (mRootName == null) {
             mProfile.addValidationError(String.format(mBundle.getString("invalid_value"), PhotoKml.ROOT_NAME, mRootName));
+            valid = false;
         }
 
-        if (mFolderByDate) {
+        if (mFoldersBy == FOLDER_BY_DATE) {
             try {
-                mFolderDateFormat = new SimpleDateFormat(mFolderDatePattern);
+                mFolderDateFormat = new SimpleDateFormat(mDatePattern);
             } catch (Exception e) {
-                mProfile.addValidationError(String.format(mBundle.getString("invalid_value"), PhotoKml.FOLDER_NAME, mFolderDatePattern));
+                mProfile.addValidationError(String.format(mBundle.getString("invalid_value"), PhotoKml.FOLDER_NAME, mDatePattern));
+                valid = false;
             }
         }
-        return true;
-    }
 
-    public void setCreateFolders(boolean createFolders) {
-        mCreateFolders = createFolders;
+        return valid;
     }
 
     public void setDatePattern(String datePattern) {
@@ -182,20 +163,11 @@ public class ProfileFolder extends ProfileBase {
 
     @Override
     public String toDebugString() {
-        return "\n RootName=" + mRootName
-                + "\n RootDesc=" + mRootDescription
-                + "\n FolderByDate=" + mFolderByDate
-                + "\n FolderByDir=" + mFolderByDir
-                + "\n FolderDatePattern=" + mFolderDatePattern
-                + "\n Regex=" + mRegex
-                + "\n RegexDefault=" + mRegexDefault
-                //                + "\n FolderDesc=" + mFolderDesc
-                + "\n";
+        return "ProfileFolder{" + "mDatePattern=" + mDatePattern + ", mFolderDateFormat=" + mFolderDateFormat + ", mFoldersBy=" + mFoldersBy + ", mProfile=" + mProfile + ", mRegex=" + mRegex + ", mRegexDefault=" + mRegexDefault + ", mRootDescription=" + mRootDescription + ", mRootName=" + mRootName + '}';
     }
 
     @Override
     public String toString() {
         return "Folder{" + "mRootDescription=" + mRootDescription + ", mRootName=" + mRootName + '}';
     }
-
 }

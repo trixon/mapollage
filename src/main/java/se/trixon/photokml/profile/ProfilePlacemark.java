@@ -196,11 +196,7 @@ public class ProfilePlacemark extends ProfileBase {
 
     @Override
     public String toDebugString() {
-        return "\n PlacemarkByDate=" + mByDate
-                + "\n PlacemarkByFilename=" + mByFilename
-                + "\n PlacemarkDatePattern=" + mDatePattern
-                + "\n PlacemarkDesc=" + mDesccription
-                + "\n";
+        return "ProfilePlacemark{" + "mByDate=" + mByDate + ", mByFilename=" + mByFilename + ", mCoordinate=" + mCoordinate + ", mDateFormat=" + mDateFormat + ", mDatePattern=" + mDatePattern + ", mDesccription=" + mDesccription + ", mIncludeNullCoordinate=" + mIncludeNullCoordinate + ", mLat=" + mLat + ", mLon=" + mLon + ", mNameBy=" + mNameBy + ", mProfile=" + mProfile + '}';
     }
 
     @Override

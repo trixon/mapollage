@@ -50,6 +50,7 @@ import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.GraphicsHelper;
 import se.trixon.almond.util.Scaler;
 import se.trixon.photokml.profile.Profile;
+import se.trixon.photokml.profile.ProfileFolder;
 import se.trixon.photokml.profile.ProfilePlacemark;
 
 /**
@@ -71,9 +72,9 @@ public class Operation {
     private int mNumOfInvalidFormat;
     private int mNumOfPlacemarks;
     private final Profile mProfile;
+    private final ProfilePlacemark mProfilePlacemark;
     private Folder mRootFolder;
     private long mStartTime;
-    private final ProfilePlacemark mProfilePlacemark;
 
     public Operation(OperationListener operationListener, Profile profile) {
         mListener = operationListener;
@@ -284,16 +285,24 @@ public class Operation {
 
     private Folder getFolder(File file, Date date) {
         String key;
-        Folder folder;
+        Folder folder = null;
 
-        if (mProfile.getFolder().isFolderByDir()) {
-            key = file.getParentFile().getName();
-            folder = getFolder(key);
-        } else if (mProfile.getFolder().isFolderByDate()) {
-            key = mProfile.getFolder().getFolderDateFormat().format(date);
-            folder = getFolder(key);
-        } else {
-            folder = mRootFolder;
+        switch (mProfile.getFolder().getFoldersBy()) {
+            case ProfileFolder.FOLDER_BY_DIR:
+                key = file.getParentFile().getName();
+                folder = getFolder(key);
+                break;
+            case ProfileFolder.FOLDER_BY_DATE:
+                key = mProfile.getFolder().getFolderDateFormat().format(date);
+                folder = getFolder(key);
+                break;
+
+//            case ProfileFolder.:
+//                folder = mRootFolder;
+//                break;
+            case ProfileFolder.FOLDER_BY_NONE:
+                folder = mRootFolder;
+                break;
         }
 
         return folder;

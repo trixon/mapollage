@@ -15,7 +15,6 @@
  */
 package se.trixon.photokml;
 
-import se.trixon.photokml.profile.Profile;
 import java.awt.GraphicsEnvironment;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -36,6 +35,7 @@ import se.trixon.almond.util.BundleHelper;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.Xlog;
+import se.trixon.photokml.profile.Profile;
 import se.trixon.photokml.ui.MainFrame;
 
 /**
@@ -113,7 +113,7 @@ public class PhotoKml implements OperationListener {
                             System.exit(1);
                         }
                     } else {
-                        profile = new Profile(commandLine);
+//                        profile = new Profile(commandLine);
                     }
 
                     if (profile.isValid()) {
@@ -339,25 +339,25 @@ public class PhotoKml implements OperationListener {
                 .numberOfArgs(1)
                 .desc(mBundle.getString("opt_view_profile_desc"))
                 .build();
+
         mOptions = new Options();
 
-        mOptions.addOption(rootName);
-        mOptions.addOption(rootDesc);
-
-        mOptions.addOption(folderName);
-        mOptions.addOption(folderDesc);
-
-        mOptions.addOption(placemarkName);
-        mOptions.addOption(placemarkDesc);
-        mOptions.addOption(maxHeight);
-        mOptions.addOption(maxWidth);
-        mOptions.addOption(coordinate);
-        mOptions.addOption(lowerCaseExt);
-        mOptions.addOption(absolutePath);
-
-        mOptions.addOption(links);
-        mOptions.addOption(recursive);
-
+//        mOptions.addOption(rootName);
+//        mOptions.addOption(rootDesc);
+//
+//        mOptions.addOption(folderName);
+//        mOptions.addOption(folderDesc);
+//
+//        mOptions.addOption(placemarkName);
+//        mOptions.addOption(placemarkDesc);
+//        mOptions.addOption(maxHeight);
+//        mOptions.addOption(maxWidth);
+//        mOptions.addOption(coordinate);
+//        mOptions.addOption(lowerCaseExt);
+//        mOptions.addOption(absolutePath);
+//
+//        mOptions.addOption(links);
+//        mOptions.addOption(recursive);
         mOptions.addOption(listProfiles);
         mOptions.addOption(viewProfile);
         mOptions.addOption(profile);

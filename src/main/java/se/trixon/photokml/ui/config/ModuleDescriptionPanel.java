@@ -36,8 +36,10 @@ public class ModuleDescriptionPanel extends ModulePanel {
      */
     public ModuleDescriptionPanel() {
         initComponents();
-        mTitle = Dict.DESCRIPTION.getString();
+        mTitle = Dict.DESCRIPTION.toString();
         init();
+        externalFileCheckBox.setVisible(false);
+        externalFileTextField.setVisible(false);
     }
 
     @Override
@@ -327,9 +329,5 @@ public class ModuleDescriptionPanel extends ModulePanel {
         customTextArea.setText(mDescription.getCustomValue());
 
         restoreEnabledStates();
-    }
-
-    @Override
-    public void save(Profile profile) {
     }
 }

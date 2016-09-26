@@ -33,8 +33,7 @@ import se.trixon.photokml.profile.ProfileFolder;
  */
 public class ModuleFoldersPanel extends ModulePanel {
 
-    private ProfileFolder mProfileFolder;
-
+    private ProfileFolder mFolder;
     private boolean mInvalidDateFormat;
 
     /**
@@ -67,11 +66,10 @@ public class ModuleFoldersPanel extends ModulePanel {
         } else if (folderByDateRadioButton.isSelected()) {
             folderBy = Dict.DATE_PATTERN.toString();
         } else if (folderByRegexRadioButton.isSelected()) {
-            folderBy = String.format("%s: %s", folderByRegexRadioButton.getText(), mProfileFolder.getRegex());
+            folderBy = String.format("%s: %s", folderByRegexRadioButton.getText(), mFolder.getRegex());
         }
 
-        optAppend(sb, mProfileFolder.isCreateFolders(), subFoldersCheckBox.getText() + ": " + folderBy);
-
+//        optAppend(sb, mFolder.isCreateFolders(), subFoldersCheckBox.getText() + ": " + folderBy);
         sb.append("\n");
 
         return sb;
@@ -79,15 +77,15 @@ public class ModuleFoldersPanel extends ModulePanel {
 
     @Override
     public boolean hasValidSettings() {
-        if (mInvalidDateFormat && mProfileFolder.isCreateFolders() && mProfileFolder.getFoldersBy() == 1) {
+        if (mInvalidDateFormat && mFolder.getFoldersBy() == 1) {
             invalidSettings(Dict.INVALID_DATE_PATTERN.toString());
 
             return false;
         }
 
-        if (mProfileFolder.isCreateFolders() && mProfileFolder.getFoldersBy() == 2) {
+        if (mFolder.getFoldersBy() == ProfileFolder.FOLDER_BY_REGEX) {
             try {
-                Pattern pattern = Pattern.compile(mProfileFolder.getRegex());
+                Pattern pattern = Pattern.compile(mFolder.getRegex());
             } catch (PatternSyntaxException e) {
                 String message = "PatternSyntaxException: " + e.getLocalizedMessage();
                 invalidSettings(message);
@@ -101,7 +99,7 @@ public class ModuleFoldersPanel extends ModulePanel {
 
     @Override
     public void restoreEnabledStates() {
-        subFoldersCheckBoxActionPerformed(null);
+        manageStates();
     }
 
     private void init() {
@@ -130,11 +128,11 @@ public class ModuleFoldersPanel extends ModulePanel {
                     previewDateFormat();
                 } else if (document == regexTextField.getDocument()) {
                     try {
-                        mProfileFolder.setRegex(regexTextField.getText());
+                        mFolder.setRegex(regexTextField.getText());
                     } catch (NumberFormatException e) {
                     }
                 } else if (document == defaultRegexTextField.getDocument()) {
-                    mProfileFolder.setRegexDefault(defaultRegexTextField.getText());
+                    mFolder.setRegexDefault(defaultRegexTextField.getText());
                 }
             }
 
@@ -152,7 +150,7 @@ public class ModuleFoldersPanel extends ModulePanel {
 
                 String dateLabel = String.format("%s (%s)", Dict.DATE_PATTERN.toString(), datePreview);
                 folderByDateRadioButton.setText(dateLabel);
-                mProfileFolder.setDatePattern(dateFormatTextField.getText());
+                mFolder.setDatePattern(dateFormatTextField.getText());
             }
         };
 
@@ -161,17 +159,24 @@ public class ModuleFoldersPanel extends ModulePanel {
         dateFormatTextField.getDocument().addDocumentListener(documentListener);
         regexTextField.getDocument().addDocumentListener(documentListener);
         defaultRegexTextField.getDocument().addDocumentListener(documentListener);
+
     }
 
     private void saveFolderNameBy() {
-        if (folderByDirectoryRadioButton.isSelected()) {
-            mProfile.getFolder().setFoldersBy(0);
+        if (folderByNoneRadioButton.isSelected()) {
+            mProfile.getFolder().setFoldersBy(ProfileFolder.FOLDER_BY_NONE);
+        } else if (folderByDirectoryRadioButton.isSelected()) {
+            mProfile.getFolder().setFoldersBy(ProfileFolder.FOLDER_BY_DIR);
         } else if (folderByDateRadioButton.isSelected()) {
-            mProfile.getFolder().setFoldersBy(1);
+            mProfile.getFolder().setFoldersBy(ProfileFolder.FOLDER_BY_DATE);
         } else if (folderByRegexRadioButton.isSelected()) {
-            mProfile.getFolder().setFoldersBy(2);
+            mProfile.getFolder().setFoldersBy(ProfileFolder.FOLDER_BY_REGEX);
         }
 
+        manageStates();
+    }
+
+    private void manageStates() {
         dateFormatTextField.setEnabled(folderByDateRadioButton.isSelected());
         regexTextField.setEnabled(folderByRegexRadioButton.isSelected());
         defaultRegexTextField.setEnabled(folderByRegexRadioButton.isSelected());
@@ -193,15 +198,15 @@ public class ModuleFoldersPanel extends ModulePanel {
         rootDescriptionLabel = new javax.swing.JLabel();
         rootDescriptionScrollPane = new javax.swing.JScrollPane();
         rootDescriptionTextArea = new javax.swing.JTextArea();
-        subFoldersCheckBox = new javax.swing.JCheckBox();
+        folderByLabel = new javax.swing.JLabel();
         folderByDirectoryRadioButton = new javax.swing.JRadioButton();
         folderByDateRadioButton = new javax.swing.JRadioButton();
         dateFormatTextField = new javax.swing.JTextField();
         folderByRegexRadioButton = new javax.swing.JRadioButton();
         regexTextField = new javax.swing.JTextField();
-        jPanel1 = new javax.swing.JPanel();
         defaultRegexLabel = new javax.swing.JLabel();
         defaultRegexTextField = new javax.swing.JTextField();
+        folderByNoneRadioButton = new javax.swing.JRadioButton();
 
         setLayout(new java.awt.GridBagLayout());
 
@@ -232,8 +237,9 @@ public class ModuleFoldersPanel extends ModulePanel {
         gridBagConstraints.insets = new java.awt.Insets(3, 0, 0, 0);
         add(rootDescriptionLabel, gridBagConstraints);
 
+        rootDescriptionScrollPane.setMinimumSize(new java.awt.Dimension(20, 64));
+
         rootDescriptionTextArea.setColumns(20);
-        rootDescriptionTextArea.setRows(5);
         rootDescriptionScrollPane.setViewportView(rootDescriptionTextArea);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -247,19 +253,13 @@ public class ModuleFoldersPanel extends ModulePanel {
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 3, 0);
         add(rootDescriptionScrollPane, gridBagConstraints);
 
-        subFoldersCheckBox.setText(bundle.getString("ModuleFoldersPanel.subFoldersCheckBox.text")); // NOI18N
-        subFoldersCheckBox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                subFoldersCheckBoxActionPerformed(evt);
-            }
-        });
+        folderByLabel.setText(bundle.getString("ModuleFoldersPanel.folderByLabel.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 4;
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(3, 0, 0, 0);
-        add(subFoldersCheckBox, gridBagConstraints);
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(4, 0, 0, 0);
+        add(folderByLabel, gridBagConstraints);
 
         subButtonGroup.add(folderByDirectoryRadioButton);
         folderByDirectoryRadioButton.setText(bundle.getString("ModuleFoldersPanel.folderByDirectoryRadioButton.text")); // NOI18N
@@ -310,7 +310,7 @@ public class ModuleFoldersPanel extends ModulePanel {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 8;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(3, 0, 0, 0);
         add(folderByRegexRadioButton, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -321,57 +321,35 @@ public class ModuleFoldersPanel extends ModulePanel {
         gridBagConstraints.insets = new java.awt.Insets(0, 20, 3, 0);
         add(regexTextField, gridBagConstraints);
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
-        );
-
+        defaultRegexLabel.setText(Dict.DEFAULT_VALUE.getString());
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 8;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(3, 8, 0, 0);
+        add(defaultRegexLabel, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 9;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        add(jPanel1, gridBagConstraints);
-
-        defaultRegexLabel.setText(Dict.DEFAULT_VALUE.getString());
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(3, 20, 0, 0);
-        add(defaultRegexLabel, gridBagConstraints);
+        gridBagConstraints.insets = new java.awt.Insets(0, 8, 0, 0);
+        add(defaultRegexTextField, gridBagConstraints);
 
-        defaultRegexTextField.addActionListener(new java.awt.event.ActionListener() {
+        subButtonGroup.add(folderByNoneRadioButton);
+        folderByNoneRadioButton.setText(bundle.getString("ModuleFoldersPanel.folderByNoneRadioButton.text")); // NOI18N
+        folderByNoneRadioButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                defaultRegexTextFieldActionPerformed(evt);
+                folderByNoneRadioButtonActionPerformed(evt);
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 20, 0, 0);
-        add(defaultRegexTextField, gridBagConstraints);
+        gridBagConstraints.gridy = 10;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(3, 0, 0, 0);
+        add(folderByNoneRadioButton, gridBagConstraints);
     }// </editor-fold>//GEN-END:initComponents
-
-    private void subFoldersCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_subFoldersCheckBoxActionPerformed
-        boolean state = subFoldersCheckBox.isSelected();
-        folderByDateRadioButton.setEnabled(state);
-        folderByDirectoryRadioButton.setEnabled(state);
-        folderByRegexRadioButton.setEnabled(state);
-        dateFormatTextField.setEnabled(state && folderByDateRadioButton.isSelected());
-        regexTextField.setEnabled(state && folderByRegexRadioButton.isSelected());
-        defaultRegexTextField.setEnabled(state && folderByRegexRadioButton.isSelected());
-
-        try {
-            mProfileFolder.setCreateFolders(state);
-        } catch (Exception e) {
-        }
-    }//GEN-LAST:event_subFoldersCheckBoxActionPerformed
 
     private void folderByDirectoryRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_folderByDirectoryRadioButtonActionPerformed
         saveFolderNameBy();
@@ -385,9 +363,9 @@ public class ModuleFoldersPanel extends ModulePanel {
         saveFolderNameBy();
     }//GEN-LAST:event_folderByRegexRadioButtonActionPerformed
 
-    private void defaultRegexTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_defaultRegexTextFieldActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_defaultRegexTextFieldActionPerformed
+    private void folderByNoneRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_folderByNoneRadioButtonActionPerformed
+        saveFolderNameBy();
+    }//GEN-LAST:event_folderByNoneRadioButtonActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField dateFormatTextField;
@@ -395,8 +373,9 @@ public class ModuleFoldersPanel extends ModulePanel {
     private javax.swing.JTextField defaultRegexTextField;
     private javax.swing.JRadioButton folderByDateRadioButton;
     private javax.swing.JRadioButton folderByDirectoryRadioButton;
+    private javax.swing.JLabel folderByLabel;
+    private javax.swing.JRadioButton folderByNoneRadioButton;
     private javax.swing.JRadioButton folderByRegexRadioButton;
-    private javax.swing.JPanel jPanel1;
     private javax.swing.JTextField regexTextField;
     private javax.swing.JLabel rootDescriptionLabel;
     private javax.swing.JScrollPane rootDescriptionScrollPane;
@@ -404,35 +383,42 @@ public class ModuleFoldersPanel extends ModulePanel {
     private javax.swing.JLabel rootNameLabel;
     private javax.swing.JTextField rootNameTextField;
     private javax.swing.ButtonGroup subButtonGroup;
-    private javax.swing.JCheckBox subFoldersCheckBox;
     // End of variables declaration//GEN-END:variables
 
     @Override
     public void load(Profile profile) {
         mProfile = profile;
-        mProfileFolder = profile.getFolder();
+        mFolder = profile.getFolder();
 
-        rootNameTextField.setText(mProfileFolder.getRootName());
-        rootDescriptionTextArea.setText(mProfileFolder.getRootDescription());
-        subFoldersCheckBox.setSelected(mProfileFolder.isCreateFolders());
-
-        dateFormatTextField.setText(mProfileFolder.getDatePattern());
-        regexTextField.setText(mProfileFolder.getRegex());
-        defaultRegexTextField.setText(mProfileFolder.getRegexDefault());
+        rootNameTextField.setText(mFolder.getRootName());
+        rootDescriptionTextArea.setText(mFolder.getRootDescription());
+        dateFormatTextField.setText(mFolder.getDatePattern());
+        regexTextField.setText(mFolder.getRegex());
+        defaultRegexTextField.setText(mFolder.getRegexDefault());
         subButtonGroup.setSelected(folderByDateRadioButton.getModel(), true);
 
-        if (mProfileFolder.getFoldersBy() == 0) {
-            folderByDirectoryRadioButton.setSelected(true);
-        } else if (mProfileFolder.getFoldersBy() == 1) {
-            folderByDateRadioButton.setSelected(true);
-        } else if (mProfileFolder.getFoldersBy() == 2) {
-            folderByRegexRadioButton.setSelected(true);
+        switch (mFolder.getFoldersBy()) {
+            case ProfileFolder.FOLDER_BY_NONE:
+//                folderByNoneRadioButton.setSelected(true);
+                folderByNoneRadioButton.doClick();
+                break;
+
+            case ProfileFolder.FOLDER_BY_DIR:
+//                folderByDirectoryRadioButton.setSelected(true);
+                folderByDirectoryRadioButton.doClick();
+                break;
+
+            case ProfileFolder.FOLDER_BY_DATE:
+//                folderByDateRadioButton.setSelected(true);
+                folderByDateRadioButton.doClick();
+                break;
+
+            case ProfileFolder.FOLDER_BY_REGEX:
+//                folderByRegexRadioButton.setSelected(true);
+                folderByRegexRadioButton.doClick();
+                break;
         }
 
-        restoreEnabledStates();
-    }
-
-    @Override
-    public void save(Profile profile) {
+        manageStates();
     }
 }

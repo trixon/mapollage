@@ -109,10 +109,6 @@ public class ProfileSource extends ProfileBase {
 
     @Override
     public String toDebugString() {
-        return "\n Source=" + mDir
-                + "\n FilePattern=" + mFilePattern
-                + "\n Links=" + mFollowLinks
-                + "\n Recursive=" + mRecursive
-                + "\n";
+        return "ProfileSource{" + "mDir=" + mDir + ", mFilePattern=" + mFilePattern + ", mFollowLinks=" + mFollowLinks + ", mPathMatcher=" + mPathMatcher + ", mProfile=" + mProfile + ", mRecursive=" + mRecursive + '}';
     }
 }

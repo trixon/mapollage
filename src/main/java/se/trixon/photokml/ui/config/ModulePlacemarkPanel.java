@@ -356,8 +356,4 @@ public class ModulePlacemarkPanel extends ModulePanel {
 
         restoreEnabledStates();
     }
-
-    @Override
-    public void save(Profile profile) {
-    }
 }

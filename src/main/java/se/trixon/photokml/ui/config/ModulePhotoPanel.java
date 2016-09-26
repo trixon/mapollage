@@ -112,7 +112,6 @@ public class ModulePhotoPanel extends ModulePanel {
 
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("se/trixon/photokml/ui/config/Bundle"); // NOI18N
         maxWidthCheckBox.setText(bundle.getString("ModulePhotoPanel.maxWidthCheckBox.text")); // NOI18N
-        maxWidthCheckBox.setPreferredSize(new java.awt.Dimension(100, 18));
         maxWidthCheckBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 maxWidthCheckBoxActionPerformed(evt);
@@ -121,12 +120,12 @@ public class ModulePhotoPanel extends ModulePanel {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 3, 0);
         add(maxWidthCheckBox, gridBagConstraints);
 
         maxHeightCheckBox.setText(bundle.getString("ModulePhotoPanel.maxHeightCheckBox.text")); // NOI18N
-        maxHeightCheckBox.setPreferredSize(new java.awt.Dimension(100, 18));
         maxHeightCheckBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 maxHeightCheckBoxActionPerformed(evt);
@@ -135,8 +134,9 @@ public class ModulePhotoPanel extends ModulePanel {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 4, 3, 0);
+        gridBagConstraints.insets = new java.awt.Insets(0, 8, 3, 0);
         add(maxHeightCheckBox, gridBagConstraints);
 
         urlCheckBox.setText(bundle.getString("ModulePhotoPanel.urlCheckBox.text")); // NOI18N
@@ -158,7 +158,7 @@ public class ModulePhotoPanel extends ModulePanel {
         gridBagConstraints.gridwidth = 3;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 3, 0);
+        gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
         add(urlTextField, gridBagConstraints);
 
         lowerCaseExtCheckBox.setText(bundle.getString("ModulePhotoPanel.lowerCaseExtCheckBox.text")); // NOI18N
@@ -186,6 +186,7 @@ public class ModulePhotoPanel extends ModulePanel {
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         add(widthSpinner, gridBagConstraints);
 
         heightSpinner.setModel(new javax.swing.SpinnerNumberModel(400, 1, null, 1));
@@ -198,17 +199,19 @@ public class ModulePhotoPanel extends ModulePanel {
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 8, 0, 0);
         add(heightSpinner, gridBagConstraints);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 296, Short.MAX_VALUE)
+            .addGap(0, 286, Short.MAX_VALUE)
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 114, Short.MAX_VALUE)
+            .addGap(0, 105, Short.MAX_VALUE)
         );
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -273,9 +276,5 @@ public class ModulePhotoPanel extends ModulePanel {
         urlTextField.setText(mProfilePhoto.getBaseUrlValue());
 
         restoreEnabledStates();
-    }
-
-    @Override
-    public void save(Profile profile) {
     }
 }

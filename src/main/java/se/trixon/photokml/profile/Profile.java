@@ -18,7 +18,6 @@ package se.trixon.photokml.profile;
 import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.cli.CommandLine;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.json.simple.JSONObject;
@@ -33,8 +32,8 @@ public class Profile extends ProfileBase implements Comparable<Profile>, Cloneab
     private static final String KEY_DESCRIPTION = "description";
     private static final String KEY_FOLDER = "folder";
     private static final String KEY_NAME = "name";
-    private static final String KEY_PLACEMARK = "placemark";
     private static final String KEY_PHOTO = "photo";
+    private static final String KEY_PLACEMARK = "placemark";
     private static final String KEY_SOURCE = "source";
 
     private String mAbsolutePath;
@@ -48,21 +47,13 @@ public class Profile extends ProfileBase implements Comparable<Profile>, Cloneab
     private Integer mMaxWidth;
     private String mMaxWidthString;
     private String mName;
+    private ProfilePhoto mPhoto = new ProfilePhoto(this);
     private ProfilePlacemark mPlacemark = new ProfilePlacemark(this);
     private ProfileSource mSource = new ProfileSource(this);
     private StringBuilder mValidationErrorBuilder;
-    private ProfilePhoto mPhoto = new ProfilePhoto(this);
 
     public Profile() {
 
-    }
-
-    public ProfilePhoto getPhoto() {
-        return mPhoto;
-    }
-
-    public void setPhoto(ProfilePhoto photo) {
-        mPhoto = photo;
     }
 
     public Profile(JSONObject json) {
@@ -75,23 +66,22 @@ public class Profile extends ProfileBase implements Comparable<Profile>, Cloneab
         setPhoto(new ProfilePhoto(this, (JSONObject) json.get(KEY_PHOTO)));
     }
 
-    public Profile(CommandLine commandLine) {
-        mFolder = new ProfileFolder(this, commandLine);
-        mFolderDesc = commandLine.getOptionValue(PhotoKml.FOLDER_DESC);
-
-        mPlacemark = new ProfilePlacemark(this, commandLine);
-
-        mMaxHeightString = commandLine.getOptionValue(PhotoKml.MAX_HEIGHT);
-        mMaxWidthString = commandLine.getOptionValue(PhotoKml.MAX_WIDTH);
-
-        mLowerCaseExt = commandLine.hasOption(PhotoKml.LOWER_CASE_EXT);
-        mAbsolutePath = commandLine.getOptionValue(PhotoKml.ABSOLUTE_PATH);
-
-        mSource.setFollowLinks(commandLine.hasOption(PhotoKml.LINKS));
-        mSource.setRecursive(commandLine.hasOption(PhotoKml.RECURSIVE));
-        setSourceAndDest(commandLine.getArgs());
-    }
-
+//    public Profile(CommandLine commandLine) {
+//        mFolder = new ProfileFolder(this, commandLine);
+//        mFolderDesc = commandLine.getOptionValue(PhotoKml.FOLDER_DESC);
+//
+//        mPlacemark = new ProfilePlacemark(this, commandLine);
+//
+//        mMaxHeightString = commandLine.getOptionValue(PhotoKml.MAX_HEIGHT);
+//        mMaxWidthString = commandLine.getOptionValue(PhotoKml.MAX_WIDTH);
+//
+//        mLowerCaseExt = commandLine.hasOption(PhotoKml.LOWER_CASE_EXT);
+//        mAbsolutePath = commandLine.getOptionValue(PhotoKml.ABSOLUTE_PATH);
+//
+//        mSource.setFollowLinks(commandLine.hasOption(PhotoKml.LINKS));
+//        mSource.setRecursive(commandLine.hasOption(PhotoKml.RECURSIVE));
+//        setSourceAndDest(commandLine.getArgs());
+//    }
     @Override
     public Profile clone() {
         try {
@@ -151,6 +141,10 @@ public class Profile extends ProfileBase implements Comparable<Profile>, Cloneab
 
     public String getName() {
         return mName;
+    }
+
+    public ProfilePhoto getPhoto() {
+        return mPhoto;
     }
 
     public ProfilePlacemark getPlacemark() {
@@ -232,6 +226,10 @@ public class Profile extends ProfileBase implements Comparable<Profile>, Cloneab
         mName = name;
     }
 
+    public void setPhoto(ProfilePhoto photo) {
+        mPhoto = photo;
+    }
+
     public void setPlacemark(ProfilePlacemark placemark) {
         mPlacemark = placemark;
     }
@@ -262,12 +260,12 @@ public class Profile extends ProfileBase implements Comparable<Profile>, Cloneab
 
     @Override
     public String toDebugString() {
-        StringBuilder builder = new StringBuilder("Profile summary { ").append(mName)
-                .append(mSource.toDebugString())
-                .append(mFolder.toDebugString())
-                .append(mPlacemark.toDebugString())
-                .append(mDescription.toDebugString())
-                .append(mPhoto.toDebugString())
+        StringBuilder builder = new StringBuilder("Profile summary { ").append(mName).append("\n")
+                .append(mSource.toDebugString()).append("\n")
+                .append(mFolder.toDebugString()).append("\n")
+                .append(mPlacemark.toDebugString()).append("\n")
+                .append(mDescription.toDebugString()).append("\n")
+                .append(mPhoto.toDebugString()).append("\n")
                 .append("}");
 
         return builder.toString();
