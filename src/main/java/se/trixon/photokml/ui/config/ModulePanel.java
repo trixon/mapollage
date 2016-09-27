@@ -50,8 +50,6 @@ public abstract class ModulePanel extends javax.swing.JPanel {
 
     public abstract void load(Profile profile);
 
-    public abstract void restoreEnabledStates();
-
     public void setTitle(String title) {
         mTitle = title;
     }

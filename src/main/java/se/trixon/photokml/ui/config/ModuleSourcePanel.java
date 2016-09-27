@@ -73,11 +73,6 @@ public class ModuleSourcePanel extends ModulePanel implements FileChooserPanel.F
         return true;
     }
 
-    @Override
-    public void restoreEnabledStates() {
-        followLinksCheckBox.setEnabled(!SystemUtils.IS_OS_WINDOWS);
-    }
-
     private void init() {
         sourceChooserPanel.setDropMode(FileChooserPanel.DropMode.MULTI);
         sourceChooserPanel.setMode(JFileChooser.FILES_AND_DIRECTORIES);

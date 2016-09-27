@@ -67,6 +67,9 @@
       <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout"/>
       <SubComponents>
         <Component class="javax.swing.JComboBox" name="profileComboBox">
+          <BindingProperties>
+            <BindingProperty name="enabled" source="configPanel" sourcePath="${enabled}" target="profileComboBox" targetPath="enabled" updateStrategy="0" immediately="false"/>
+          </BindingProperties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="profileComboBoxActionPerformed"/>
           </Events>
@@ -136,7 +139,7 @@
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
       <SubComponents>
-        <Component class="se.trixon.photokml.ui.config.ConfigPanel" name="configPanel1">
+        <Component class="se.trixon.photokml.ui.config.ConfigPanel" name="configPanel">
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
               <BorderConstraints direction="First"/>

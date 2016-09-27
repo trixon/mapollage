@@ -77,12 +77,6 @@ public class ModuleDescriptionPanel extends ModulePanel {
         return true;
     }
 
-    @Override
-    public void restoreEnabledStates() {
-        customTextArea.setEnabled(customCheckBox.isSelected());
-        externalFileTextField.setEnabled(externalFileCheckBox.isSelected());
-    }
-
     private void init() {
         DocumentListener documentListener = new DocumentListener() {
             @Override
@@ -122,6 +116,7 @@ public class ModuleDescriptionPanel extends ModulePanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
+        bindingGroup = new org.jdesktop.beansbinding.BindingGroup();
 
         bearingCheckBox = new javax.swing.JCheckBox();
         coordinateCheckBox = new javax.swing.JCheckBox();
@@ -228,6 +223,10 @@ public class ModuleDescriptionPanel extends ModulePanel {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
         add(externalFileCheckBox, gridBagConstraints);
+
+        org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, externalFileCheckBox, org.jdesktop.beansbinding.ELProperty.create("${selected}"), externalFileTextField, org.jdesktop.beansbinding.BeanProperty.create("enabled"));
+        bindingGroup.addBinding(binding);
+
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 4;
@@ -251,6 +250,10 @@ public class ModuleDescriptionPanel extends ModulePanel {
 
         customTextArea.setColumns(20);
         customTextArea.setRows(5);
+
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, customCheckBox, org.jdesktop.beansbinding.ELProperty.create("${selected}"), customTextArea, org.jdesktop.beansbinding.BeanProperty.create("enabled"));
+        bindingGroup.addBinding(binding);
+
         customScrollPane.setViewportView(customTextArea);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -262,6 +265,8 @@ public class ModuleDescriptionPanel extends ModulePanel {
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
         add(customScrollPane, gridBagConstraints);
+
+        bindingGroup.bind();
     }// </editor-fold>//GEN-END:initComponents
 
     private void customCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_customCheckBoxActionPerformed
@@ -310,6 +315,7 @@ public class ModuleDescriptionPanel extends ModulePanel {
     private javax.swing.JTextField externalFileTextField;
     private javax.swing.JCheckBox filenameCheckBox;
     private javax.swing.JCheckBox photoCheckBox;
+    private org.jdesktop.beansbinding.BindingGroup bindingGroup;
     // End of variables declaration//GEN-END:variables
 
     @Override
@@ -327,7 +333,5 @@ public class ModuleDescriptionPanel extends ModulePanel {
         externalFileCheckBox.setSelected(mDescription.isExternalFile());
         externalFileTextField.setText(mDescription.getExternalFileValue());
         customTextArea.setText(mDescription.getCustomValue());
-
-        restoreEnabledStates();
     }
 }

@@ -85,15 +85,6 @@ public class ConfigPanel extends javax.swing.JPanel {
     public void setEnabled(boolean enabled) {
         super.setEnabled(enabled);
         SwingHelper.enableComponents(this, enabled);
-
-        if (enabled) {
-            for (Component component : tabbedPane.getComponents()) {
-                if (component instanceof ModulePanel) {
-                    ModulePanel modulePanel = (ModulePanel) component;
-                    modulePanel.restoreEnabledStates();
-                }
-            }
-        }
     }
 
     private Component addModulePanel(ModulePanel modulePanel) {

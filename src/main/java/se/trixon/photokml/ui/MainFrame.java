@@ -166,8 +166,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
             mModel.setSelectedItem(profile);
         }
 
-        boolean hasProfiles = !mProfiles.isEmpty();
-        SwingHelper.enableComponents(mainPanel, hasProfiles);
+        SwingHelper.enableComponents(mainPanel, !mProfiles.isEmpty());
     }
 
     private void loadProfiles() {
@@ -178,6 +177,8 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
         } catch (IOException ex) {
             Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
+
+//        SwingHelper.enableComponents(mainPanel, !mProfiles.isEmpty());
     }
 
     private void profileAdd(String defaultName) {
@@ -323,6 +324,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
+        bindingGroup = new org.jdesktop.beansbinding.BindingGroup();
 
         mPopupMenu = new javax.swing.JPopupMenu();
         renameMenuItem = new javax.swing.JMenuItem();
@@ -342,7 +344,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
         removeButton = new javax.swing.JButton();
         menuButton = new javax.swing.JButton();
         mainPanel = new javax.swing.JPanel();
-        configPanel1 = new se.trixon.photokml.ui.config.ConfigPanel();
+        configPanel = new se.trixon.photokml.ui.config.ConfigPanel();
         logPanel = new se.trixon.almond.util.swing.LogPanel();
 
         mPopupMenu.add(renameMenuItem);
@@ -365,6 +367,9 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
         });
 
         topPanel.setLayout(new java.awt.GridBagLayout());
+
+        org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, configPanel, org.jdesktop.beansbinding.ELProperty.create("${enabled}"), profileComboBox, org.jdesktop.beansbinding.BeanProperty.create("enabled"));
+        bindingGroup.addBinding(binding);
 
         profileComboBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -417,10 +422,12 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
         getContentPane().add(topPanel, java.awt.BorderLayout.PAGE_START);
 
         mainPanel.setLayout(new java.awt.BorderLayout());
-        mainPanel.add(configPanel1, java.awt.BorderLayout.PAGE_START);
+        mainPanel.add(configPanel, java.awt.BorderLayout.PAGE_START);
         mainPanel.add(logPanel, java.awt.BorderLayout.CENTER);
 
         getContentPane().add(mainPanel, java.awt.BorderLayout.CENTER);
+
+        bindingGroup.bind();
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -447,7 +454,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
     private void profileComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_profileComboBoxActionPerformed
         Profile p = getSelectedProfile();
         if (p != null) {
-            configPanel1.loadProfile(p);
+            configPanel.loadProfile(p);
         }
 
     }//GEN-LAST:event_profileComboBoxActionPerformed
@@ -456,7 +463,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
     private javax.swing.JMenuItem aboutMenuItem;
     private javax.swing.JButton addButton;
     private javax.swing.JMenuItem cloneMenuItem;
-    private se.trixon.photokml.ui.config.ConfigPanel configPanel1;
+    private se.trixon.photokml.ui.config.ConfigPanel configPanel;
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JPopupMenu.Separator jSeparator2;
     private javax.swing.JPopupMenu.Separator jSeparator6;
@@ -473,6 +480,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
     private javax.swing.JButton startButton;
     private javax.swing.JToolBar toolBar;
     private javax.swing.JPanel topPanel;
+    private org.jdesktop.beansbinding.BindingGroup bindingGroup;
     // End of variables declaration//GEN-END:variables
 
     class ActionManager {
