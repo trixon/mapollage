@@ -181,7 +181,6 @@ public class ModuleSourcePanel extends ModulePanel implements FileChooserPanel.F
         });
 
         followLinksCheckBox.setText(Dict.FOLLOW_LINKS.getString());
-        followLinksCheckBox.setToolTipText(bundle.getString("ModuleSourcePanel.followLinksCheckBox.toolTipText")); // NOI18N
         followLinksCheckBox.setFocusable(false);
         followLinksCheckBox.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         followLinksCheckBox.addActionListener(new java.awt.event.ActionListener() {

@@ -149,6 +149,8 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
         loadProfiles();
         populateProfiles(null);
         initListeners();
+
+        logPanel.println(mBundleUI.getString("welcome"));
     }
 
     private void initListeners() {
