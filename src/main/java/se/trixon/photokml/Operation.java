@@ -51,7 +51,9 @@ import se.trixon.almond.util.GraphicsHelper;
 import se.trixon.almond.util.Scaler;
 import se.trixon.photokml.profile.Profile;
 import se.trixon.photokml.profile.ProfileFolder;
+import se.trixon.photokml.profile.ProfilePhoto;
 import se.trixon.photokml.profile.ProfilePlacemark;
+import se.trixon.photokml.profile.ProfileSource;
 
 /**
  *
@@ -72,14 +74,22 @@ public class Operation {
     private int mNumOfInvalidFormat;
     private int mNumOfPlacemarks;
     private final Profile mProfile;
+    private final ProfileFolder mProfileFolder;
+    private final ProfilePhoto mProfilePhoto;
     private final ProfilePlacemark mProfilePlacemark;
+    private final ProfileSource mProfileSource;
     private Folder mRootFolder;
     private long mStartTime;
 
     public Operation(OperationListener operationListener, Profile profile) {
         mListener = operationListener;
         mProfile = profile;
+        mProfileSource = mProfile.getSource();
+        mProfileFolder = mProfile.getFolder();
         mProfilePlacemark = mProfile.getPlacemark();
+        mProfilePhoto = mProfile.getPhoto();
+        mDestinationFile = mProfile.getDestinationFile();
+
         mBundle = BundleHelper.getBundle(Operation.class, "Bundle");
     }
 
@@ -87,9 +97,8 @@ public class Operation {
         mStartTime = System.currentTimeMillis();
         mListener.onOperationStarted();
         String status;
-        mDestinationFile = mProfile.getDestFile();
-        mRootFolder = mKml.createAndSetFolder().withName(mProfile.getFolder().getRootName());
-        mRootFolder.setDescription(mProfile.getFolder().getRootDescription());
+        mRootFolder = mKml.createAndSetFolder().withName(mProfileFolder.getRootName());
+        mRootFolder.setDescription(mProfileFolder.getRootDescription());
 
         mInterrupted = !generateFileList();
 
@@ -215,20 +224,20 @@ public class Operation {
 
     private boolean generateFileList() {
         mListener.onOperationLog(Dict.GENERATING_FILELIST.toString());
-        PathMatcher pathMatcher = mProfile.getSource().getPathMatcher();
+        PathMatcher pathMatcher = mProfileSource.getPathMatcher();
 
         EnumSet<FileVisitOption> fileVisitOptions = EnumSet.noneOf(FileVisitOption.class);
-        if (mProfile.getSource().isFollowLinks()) {
+        if (mProfileSource.isFollowLinks()) {
             fileVisitOptions = EnumSet.of(FileVisitOption.FOLLOW_LINKS);
         } else {
             fileVisitOptions = EnumSet.noneOf(FileVisitOption.class);
         }
 
-        File file = mProfile.getSource().getDir();
+        File file = mProfileSource.getDir();
         if (file.isDirectory()) {
             FileVisitor fileVisitor = new FileVisitor(pathMatcher, mFiles);
             try {
-                if (mProfile.getSource().isRecursive()) {
+                if (mProfileSource.isRecursive()) {
                     Files.walkFileTree(file.toPath(), fileVisitOptions, Integer.MAX_VALUE, fileVisitor);
                 } else {
                     Files.walkFileTree(file.toPath(), fileVisitOptions, 1, fileVisitor);
@@ -268,12 +277,12 @@ public class Operation {
 
         Scaler scaler = new Scaler(new Dimension(originalDimension));
 
-        if (mProfile.getMaxWidth() != null) {
-            scaler.setWidth(mProfile.getMaxWidth());
+        if (mProfilePhoto.isMaxWidth()) {
+            scaler.setWidth(mProfilePhoto.getMaxWidthValue());
         }
 
-        if (mProfile.getMaxHeight() != null) {
-            scaler.setHeight(mProfile.getMaxHeight());
+        if (mProfilePhoto.isMaxHeight()) {
+            scaler.setHeight(mProfilePhoto.getMaxHeightValue());
         }
 
         Dimension newDimension = scaler.getDimension();
@@ -287,13 +296,13 @@ public class Operation {
         String key;
         Folder folder = null;
 
-        switch (mProfile.getFolder().getFoldersBy()) {
+        switch (mProfileFolder.getFoldersBy()) {
             case ProfileFolder.FOLDER_BY_DIR:
                 key = file.getParentFile().getName();
                 folder = getFolder(key);
                 break;
             case ProfileFolder.FOLDER_BY_DATE:
-                key = mProfile.getFolder().getFolderDateFormat().format(date);
+                key = mProfileFolder.getFolderDateFormat().format(date);
                 folder = getFolder(key);
                 break;
 
@@ -342,8 +351,8 @@ public class Operation {
     private String getImagePath(File file) {
         String imageSrc;
 
-        if (mProfile.getAbsolutePath() != null) {
-            imageSrc = mProfile.getAbsolutePath() + file.getName();
+        if (mProfilePhoto.isBaseUrl()) {
+            imageSrc = mProfilePhoto.getBaseUrlValue() + file.getName();
         } else {
             Path relativePath = mDestinationFile.toPath().relativize(file.toPath());
 
@@ -359,7 +368,7 @@ public class Operation {
             }
         }
 
-        if (mProfile.isLowerCaseExt()) {
+        if (mProfilePhoto.isForceLowerCaseExtension()) {
             String ext = FilenameUtils.getExtension(imageSrc);
             if (!StringUtils.isBlank(ext) && !StringUtils.isAllLowerCase(ext)) {
                 String noExt = FilenameUtils.removeExtension(imageSrc);
@@ -382,7 +391,7 @@ public class Operation {
 
         try {
             mKml.marshal(mDestinationFile);
-            if (mProfile.getAbsolutePath() == null) {
+            if (mProfilePhoto.isBaseUrl()) {
                 mListener.onOperationLog(mBundle.getString("operationNote"));
             }
 

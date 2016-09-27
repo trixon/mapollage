@@ -18,10 +18,7 @@ package se.trixon.photokml.profile;
 import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.json.simple.JSONObject;
-import se.trixon.photokml.PhotoKml;
 
 /**
  *
@@ -36,16 +33,9 @@ public class Profile extends ProfileBase implements Comparable<Profile>, Cloneab
     private static final String KEY_PLACEMARK = "placemark";
     private static final String KEY_SOURCE = "source";
 
-    private String mAbsolutePath;
     private ProfileDescription mDescription = new ProfileDescription(this);
-    private File mDestFile;
+    private File mDestinationFile;
     private ProfileFolder mFolder = new ProfileFolder(this);
-    private String mFolderDesc;
-    private boolean mLowerCaseExt;
-    private Integer mMaxHeight;
-    private String mMaxHeightString;
-    private Integer mMaxWidth;
-    private String mMaxWidthString;
     private String mName;
     private ProfilePhoto mPhoto = new ProfilePhoto(this);
     private ProfilePlacemark mPlacemark = new ProfilePlacemark(this);
@@ -66,22 +56,6 @@ public class Profile extends ProfileBase implements Comparable<Profile>, Cloneab
         setPhoto(new ProfilePhoto(this, (JSONObject) json.get(KEY_PHOTO)));
     }
 
-//    public Profile(CommandLine commandLine) {
-//        mFolder = new ProfileFolder(this, commandLine);
-//        mFolderDesc = commandLine.getOptionValue(PhotoKml.FOLDER_DESC);
-//
-//        mPlacemark = new ProfilePlacemark(this, commandLine);
-//
-//        mMaxHeightString = commandLine.getOptionValue(PhotoKml.MAX_HEIGHT);
-//        mMaxWidthString = commandLine.getOptionValue(PhotoKml.MAX_WIDTH);
-//
-//        mLowerCaseExt = commandLine.hasOption(PhotoKml.LOWER_CASE_EXT);
-//        mAbsolutePath = commandLine.getOptionValue(PhotoKml.ABSOLUTE_PATH);
-//
-//        mSource.setFollowLinks(commandLine.hasOption(PhotoKml.LINKS));
-//        mSource.setRecursive(commandLine.hasOption(PhotoKml.RECURSIVE));
-//        setSourceAndDest(commandLine.getArgs());
-//    }
     @Override
     public Profile clone() {
         try {
@@ -97,24 +71,16 @@ public class Profile extends ProfileBase implements Comparable<Profile>, Cloneab
         return mName.compareTo(o.getName());
     }
 
-    public String getAbsolutePath() {
-        return mAbsolutePath;
-    }
-
     public ProfileDescription getDescription() {
         return mDescription;
     }
 
-    public File getDestFile() {
-        return mDestFile;
+    public File getDestinationFile() {
+        return mDestinationFile;
     }
 
     public ProfileFolder getFolder() {
         return mFolder;
-    }
-
-    public String getFolderDesc() {
-        return mFolderDesc;
     }
 
     @Override
@@ -129,14 +95,6 @@ public class Profile extends ProfileBase implements Comparable<Profile>, Cloneab
         json.put(KEY_PHOTO, getPhoto().getJson());
 
         return json;
-    }
-
-    public Integer getMaxHeight() {
-        return mMaxHeight;
-    }
-
-    public Integer getMaxWidth() {
-        return mMaxWidth;
     }
 
     public String getName() {
@@ -159,67 +117,27 @@ public class Profile extends ProfileBase implements Comparable<Profile>, Cloneab
         return mValidationErrorBuilder.toString();
     }
 
-    public boolean isLowerCaseExt() {
-        return mLowerCaseExt;
-    }
-
     @Override
     public boolean isValid() {
         mValidationErrorBuilder = new StringBuilder();
+
         mFolder.isValid();
         mPlacemark.isValid();
-
-        if (mMaxHeightString != null) {
-            try {
-                mMaxHeight = NumberUtils.createInteger(mMaxHeightString);
-            } catch (NumberFormatException e) {
-                addValidationError(String.format(mBundle.getString("invalid_value"), PhotoKml.MAX_HEIGHT, mMaxHeightString));
-            }
-        }
-
-        if (mMaxWidthString != null) {
-            try {
-                mMaxWidth = NumberUtils.createInteger(mMaxWidthString);
-            } catch (NumberFormatException e) {
-                addValidationError(String.format(mBundle.getString("invalid_value"), PhotoKml.MAX_WIDTH, mMaxWidthString));
-            }
-        }
-
         mSource.isValid();
 
         return mValidationErrorBuilder.length() == 0;
-    }
-
-    public void setAbsolutePath(String absolutePath) {
-        mAbsolutePath = absolutePath;
     }
 
     public void setDescription(ProfileDescription description) {
         mDescription = description;
     }
 
-    public void setDestFile(File dest) {
-        mDestFile = dest;
+    public void setDestinationFile(File destinationFile) {
+        mDestinationFile = destinationFile;
     }
 
     public void setFolder(ProfileFolder folder) {
         mFolder = folder;
-    }
-
-    public void setFolderDesc(String folderDesc) {
-        mFolderDesc = folderDesc;
-    }
-
-    public void setLowerCaseExt(boolean lowerCaseExt) {
-        mLowerCaseExt = lowerCaseExt;
-    }
-
-    public void setMaxHeight(Integer height) {
-        mMaxHeight = height;
-    }
-
-    public void setMaxWidth(Integer width) {
-        mMaxWidth = width;
     }
 
     public void setName(String name) {
@@ -238,26 +156,25 @@ public class Profile extends ProfileBase implements Comparable<Profile>, Cloneab
         mSource = source;
     }
 
-    public void setSourceAndDest(String[] args) {
-        if (args.length == 2) {
-            String source = args[0];
-            File sourceFile = new File(source);
-
-            if (sourceFile.isDirectory()) {
-                mSource.setDir(sourceFile);
-                mSource.setFilePattern("*");
-            } else {
-                String sourceDir = FilenameUtils.getFullPathNoEndSeparator(source);
-                mSource.setDir(new File(sourceDir));
-                mSource.setFilePattern(FilenameUtils.getName(source));
-            }
-
-            setDestFile(new File(args[1]));
-        } else {
-            addValidationError(mBundle.getString("invalid_arg_count"));
-        }
-    }
-
+//    public void setSourceAndDest(String[] args) {
+//        if (args.length == 2) {
+//            String source = args[0];
+//            File sourceFile = new File(source);
+//
+//            if (sourceFile.isDirectory()) {
+//                mSource.setDir(sourceFile);
+//                mSource.setFilePattern("*");
+//            } else {
+//                String sourceDir = FilenameUtils.getFullPathNoEndSeparator(source);
+//                mSource.setDir(new File(sourceDir));
+//                mSource.setFilePattern(FilenameUtils.getName(source));
+//            }
+//
+//            setDestFile(new File(args[1]));
+//        } else {
+//            addValidationError(mBundle.getString("invalid_arg_count"));
+//        }
+//    }
     @Override
     public String toDebugString() {
         StringBuilder builder = new StringBuilder("Profile summary { ").append(mName).append("\n")
