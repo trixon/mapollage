@@ -167,6 +167,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
         }
 
         SwingHelper.enableComponents(mainPanel, !mProfiles.isEmpty());
+        configPanel.selectTab(0);
     }
 
     private void loadProfiles() {

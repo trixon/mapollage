@@ -81,6 +81,10 @@ public class ConfigPanel extends javax.swing.JPanel {
         return validSettings;
     }
 
+    public void selectTab(int index) {
+        tabbedPane.setSelectedIndex(index);
+    }
+
     @Override
     public void setEnabled(boolean enabled) {
         super.setEnabled(enabled);
