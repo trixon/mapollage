@@ -25,6 +25,7 @@ import javax.swing.event.DocumentListener;
 import javax.swing.text.Document;
 import org.apache.commons.lang3.StringUtils;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.swing.SwingHelper;
 import se.trixon.photokml.profile.Profile;
 import se.trixon.photokml.profile.ProfileFolder;
 
@@ -50,27 +51,27 @@ public class ModuleFoldersPanel extends ModulePanel {
     public StringBuilder getHeaderBuilder() {
         StringBuilder sb = new StringBuilder();
 
-        sb.append(Dict.FOLDERS.toString().toUpperCase()).append("\n");
-
-        sb.append(mHeaderPrefix).append(rootNameLabel.getText()).append(": ").append(mProfile.getFolder().getRootName()).append("\n");
-        if (!StringUtils.isEmpty(mProfile.getFolder().getRootDescription())) {
+        sb.append(Dict.FOLDERS.toString()).append("\n");
+        append(sb, rootNameLabel.getText(), mFolder.getRootName());
+        if (!StringUtils.isEmpty(mFolder.getRootDescription())) {
             optAppend(sb, true, rootDescriptionLabel.getText());
             sb.append(MULTILINE_DIVIDER).append("\n");
-            sb.append(mProfile.getFolder().getRootDescription()).append("\n");
+            sb.append(mFolder.getRootDescription()).append("\n");
             sb.append(MULTILINE_DIVIDER).append("\n");
         }
 
-        String folderBy = "";
+        JRadioButton folderByRadioButton = (JRadioButton) SwingHelper.getSelectedButton(subButtonGroup);
+        if (folderByRadioButton != folderByNoneRadioButton) {
+            String folderBy = folderByDirectoryRadioButton.getText();
+            if (folderByRadioButton == folderByDateRadioButton) {
+                folderBy = String.format("%s: %s", Dict.DATE_PATTERN.toString(), dateFormatTextField.getText());
+            } else if (folderByRadioButton == folderByRegexRadioButton) {
+                folderBy = String.format("%s: %s", folderByRegexRadioButton.getText(), regexTextField.getText());
+            }
 
-        if (folderByDirectoryRadioButton.isSelected()) {
-            folderBy = folderByDirectoryRadioButton.getText();
-        } else if (folderByDateRadioButton.isSelected()) {
-            folderBy = Dict.DATE_PATTERN.toString();
-        } else if (folderByRegexRadioButton.isSelected()) {
-            folderBy = String.format("%s: %s", folderByRegexRadioButton.getText(), mFolder.getRegex());
+            append(sb, folderByLabel.getText(), folderBy);
         }
 
-//        optAppend(sb, mFolder.isCreateFolders(), subFoldersCheckBox.getText() + ": " + folderBy);
         sb.append("\n");
 
         return sb;
@@ -117,9 +118,9 @@ public class ModuleFoldersPanel extends ModulePanel {
 
             private void saveOption(Document document) {
                 if (document == rootNameTextField.getDocument()) {
-                    mProfile.getFolder().setRootName(rootNameTextField.getText());
+                    mFolder.setRootName(rootNameTextField.getText());
                 } else if (document == rootDescriptionTextArea.getDocument()) {
-                    mProfile.getFolder().setRootDescription(rootDescriptionTextArea.getText());
+                    mFolder.setRootDescription(rootDescriptionTextArea.getText());
                 } else if (document == dateFormatTextField.getDocument()) {
                     previewDateFormat();
                 } else if (document == regexTextField.getDocument()) {
@@ -342,19 +343,19 @@ public class ModuleFoldersPanel extends ModulePanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void folderByDirectoryRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_folderByDirectoryRadioButtonActionPerformed
-        mProfile.getFolder().setFoldersBy(ProfileFolder.FOLDER_BY_DIR);
+        mFolder.setFoldersBy(ProfileFolder.FOLDER_BY_DIR);
     }//GEN-LAST:event_folderByDirectoryRadioButtonActionPerformed
 
     private void folderByDateRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_folderByDateRadioButtonActionPerformed
-        mProfile.getFolder().setFoldersBy(ProfileFolder.FOLDER_BY_DATE);
+        mFolder.setFoldersBy(ProfileFolder.FOLDER_BY_DATE);
     }//GEN-LAST:event_folderByDateRadioButtonActionPerformed
 
     private void folderByRegexRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_folderByRegexRadioButtonActionPerformed
-        mProfile.getFolder().setFoldersBy(ProfileFolder.FOLDER_BY_REGEX);
+        mFolder.setFoldersBy(ProfileFolder.FOLDER_BY_REGEX);
     }//GEN-LAST:event_folderByRegexRadioButtonActionPerformed
 
     private void folderByNoneRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_folderByNoneRadioButtonActionPerformed
-        mProfile.getFolder().setFoldersBy(ProfileFolder.FOLDER_BY_NONE);
+        mFolder.setFoldersBy(ProfileFolder.FOLDER_BY_NONE);
     }//GEN-LAST:event_folderByNoneRadioButtonActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
