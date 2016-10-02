@@ -46,8 +46,9 @@ public class ModuleDescriptionPanel extends ModulePanel {
     public StringBuilder getHeaderBuilder() {
         StringBuilder sb = new StringBuilder();
 
-        sb.append(Dict.DESCRIPTION.toString().toUpperCase()).append("\n");
+        sb.append(Dict.DESCRIPTION.toString()).append("\n");
         optAppend(sb, mDescription.isPhoto(), Dict.PHOTO.toString());
+        optAppend(sb, mDescription.isFilename(), Dict.FILENAME.toString());
         optAppend(sb, mDescription.isDate(), Dict.DATE.toString());
         optAppend(sb, mDescription.isCoordinate(), Dict.COORDINATE.toString());
         optAppend(sb, mDescription.isAltitude(), Dict.ALTITUDE.toString());
