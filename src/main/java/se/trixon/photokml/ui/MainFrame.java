@@ -457,9 +457,10 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
     private void profileComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_profileComboBoxActionPerformed
         Profile p = getSelectedProfile();
         if (p != null) {
-            configPanel.loadProfile(p);
+            SwingUtilities.invokeLater(() -> {
+                configPanel.loadProfile(p);
+            });
         }
-
     }//GEN-LAST:event_profileComboBoxActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

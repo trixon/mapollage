@@ -19,6 +19,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+import javax.swing.JRadioButton;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.Document;
@@ -97,9 +98,6 @@ public class ModuleFoldersPanel extends ModulePanel {
         return true;
     }
 
-//    @Override
-//    public void restoreEnabledStates() {
-//    }
     private void init() {
         DocumentListener documentListener = new DocumentListener() {
             @Override
@@ -388,28 +386,26 @@ public class ModuleFoldersPanel extends ModulePanel {
         dateFormatTextField.setText(mFolder.getDatePattern());
         regexTextField.setText(mFolder.getRegex());
         defaultRegexTextField.setText(mFolder.getRegexDefault());
-        subButtonGroup.setSelected(folderByDateRadioButton.getModel(), true);
+        JRadioButton folderByRadioButton;
 
         switch (mFolder.getFoldersBy()) {
-            case ProfileFolder.FOLDER_BY_NONE:
-                folderByNoneRadioButton.setSelected(true);
-                folderByNoneRadioButton.doClick();
-                break;
-
             case ProfileFolder.FOLDER_BY_DIR:
-                folderByDirectoryRadioButton.setSelected(true);
-                folderByDirectoryRadioButton.doClick();
+                folderByRadioButton = folderByDirectoryRadioButton;
                 break;
 
             case ProfileFolder.FOLDER_BY_DATE:
-                folderByDateRadioButton.setSelected(true);
-                folderByDateRadioButton.doClick();
+                folderByRadioButton = folderByDateRadioButton;
                 break;
 
             case ProfileFolder.FOLDER_BY_REGEX:
-                folderByRegexRadioButton.setSelected(true);
-                folderByRegexRadioButton.doClick();
+                folderByRadioButton = folderByRegexRadioButton;
+                break;
+
+            default:
+                folderByRadioButton = folderByNoneRadioButton;
                 break;
         }
+
+        subButtonGroup.setSelected(folderByRadioButton.getModel(), true);
     }
 }
