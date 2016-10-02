@@ -17,6 +17,7 @@ package se.trixon.photokml.ui.config;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import se.trixon.almond.util.Dict;
@@ -45,19 +46,20 @@ public class ModulePlacemarkPanel extends ModulePanel {
     public StringBuilder getHeaderBuilder() {
         StringBuilder sb = new StringBuilder();
 
-        sb.append(Dict.PLACEMARK.toString().toUpperCase()).append("\n");
+        sb.append(Dict.PLACEMARK.toString()).append("\n");
         String nameBy = "";
         int value = mPlacemark.getNameBy();
-        if (value == 0) {
+        if (value == ProfilePlacemark.PLACEMARK_BY_FILE) {
             nameBy = nameByFileRadioButton.getText();
-        } else if (value == 1) {
-            nameBy = nameByDateRadioButton.getText();
-        } else if (value == 2) {
+        } else if (value == ProfilePlacemark.PLACEMARK_BY_DATE) {
+            nameBy = String.format("%s: %s", Dict.DATE_PATTERN.toString(), dateFormatTextField.getText());
+        } else if (value == ProfilePlacemark.PLACEMARK_BY_NONE) {
             nameBy = nameByNoRadioButton.getText();
         }
-
-        optAppend(sb, true, String.format("%s: %s", nameByLabel.getText(), nameBy));
-
+        append(sb, nameByLabel.getText(), nameBy);
+        optAppend(sb, mPlacemark.isIncludeNullCoordinate(), String.format(Locale.ENGLISH, "%s (%f, %f)",
+                includeNullCoordinateCheckBox.getText(),
+                mPlacemark.getLat(), mPlacemark.getLon()));
         sb.append("\n");
 
         return sb;
@@ -110,7 +112,7 @@ public class ModulePlacemarkPanel extends ModulePanel {
         });
     }
 
-    private void saveNameBy() {
+    private void saveNameByxx() {
         int value = 0;
         if (nameByFileRadioButton.isSelected()) {
             value = 0;
@@ -311,15 +313,15 @@ public class ModulePlacemarkPanel extends ModulePanel {
     }//GEN-LAST:event_dateFormatTextFieldFocusLost
 
     private void nameByFileRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nameByFileRadioButtonActionPerformed
-        saveNameBy();
+        mPlacemark.setNameBy(ProfilePlacemark.PLACEMARK_BY_FILE);
     }//GEN-LAST:event_nameByFileRadioButtonActionPerformed
 
     private void nameByNoRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nameByNoRadioButtonActionPerformed
-        saveNameBy();
+        mPlacemark.setNameBy(ProfilePlacemark.PLACEMARK_BY_NONE);
     }//GEN-LAST:event_nameByNoRadioButtonActionPerformed
 
     private void nameByDateRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nameByDateRadioButtonActionPerformed
-        saveNameBy();
+        mPlacemark.setNameBy(ProfilePlacemark.PLACEMARK_BY_DATE);
     }//GEN-LAST:event_nameByDateRadioButtonActionPerformed
 
     private void includeNullCoordinateCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_includeNullCoordinateCheckBoxActionPerformed

@@ -32,6 +32,9 @@ public class ProfilePlacemark extends ProfileBase {
     public static final String KEY_LAT = "lat";
     public static final String KEY_LON = "lon";
     public static final String KEY_NAME_BY = "nameBy";
+    public static final int PLACEMARK_BY_DATE = 2;
+    public static final int PLACEMARK_BY_FILE = 1;
+    public static final int PLACEMARK_BY_NONE = 0;
 
     private boolean mByDate;
     private boolean mByFilename;
@@ -191,7 +194,7 @@ public class ProfilePlacemark extends ProfileBase {
     }
 
     public void setNameBy(int nameBy) {
-        nameBy = nameBy;
+        mNameBy = nameBy;
     }
 
     @Override
