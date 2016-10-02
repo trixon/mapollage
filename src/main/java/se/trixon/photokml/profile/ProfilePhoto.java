@@ -27,19 +27,19 @@ public class ProfilePhoto extends ProfileBase {
     public static final String KEY_BASE_URL = "baseUrl";
     public static final String KEY_BASE_URL_VALUE = "baseUrlValue";
     public static final String KEY_FORCE_LOWER_CASE_EXTENSION = "forceLowerCaseExtension";
+    public static final String KEY_HEIGHT_LIMIT = "heightLimit";
+    public static final String KEY_LIMIT_HEIGHT = "limitHeight";
+    public static final String KEY_LIMIT_WIDTH = "limitWidth";
+    public static final String KEY_WIDTH_LIMIT = "widthLimit";
 
-    public static final String KEY_MAX_HEIGHT = "maxHeight";
-    public static final String KEY_MAX_HEIGHT_VALUE = "maxHeighValuet";
-    public static final String KEY_MAX_WIDTH = "maxWidth";
-    public static final String KEY_MAX_WIDTH_VALUE = "maxWidthValue";
-    private boolean mBaseUrl = true;
+    private boolean mBaseUrl = false;
     private String mBaseUrlValue = "http://www.domain.com/img/";
     private boolean mForceLowerCaseExtension = SystemUtils.IS_OS_WINDOWS;
-    private boolean mMaxHeight = true;
-    private int mMaxHeightValue = 400;
-    private boolean mMaxWidth = true;
-    private int mMaxWidthValue = 400;
+    private int mHeightLimit = 400;
+    private boolean mLimitHeight = true;
+    private boolean mLimitWidth = true;
     private final Profile mProfile;
+    private int mWidthLimit = 400;
 
     public ProfilePhoto(Profile profile) {
         mProfile = profile;
@@ -47,10 +47,10 @@ public class ProfilePhoto extends ProfileBase {
 
     public ProfilePhoto(Profile profile, JSONObject json) {
         mProfile = profile;
-        mMaxHeightValue = getInt(json, KEY_MAX_HEIGHT_VALUE);
-        mMaxWidthValue = getInt(json, KEY_MAX_WIDTH_VALUE);
-        mMaxHeight = getBoolean(json, KEY_MAX_HEIGHT);
-        mMaxWidth = getBoolean(json, KEY_MAX_WIDTH);
+        mHeightLimit = getInt(json, KEY_HEIGHT_LIMIT);
+        mWidthLimit = getInt(json, KEY_WIDTH_LIMIT);
+        mLimitHeight = getBoolean(json, KEY_LIMIT_HEIGHT);
+        mLimitWidth = getBoolean(json, KEY_LIMIT_WIDTH);
         mBaseUrl = getBoolean(json, KEY_BASE_URL);
         mBaseUrlValue = (String) json.get(KEY_BASE_URL_VALUE);
     }
@@ -59,26 +59,26 @@ public class ProfilePhoto extends ProfileBase {
         return mBaseUrlValue;
     }
 
+    public int getHeightLimit() {
+        return mHeightLimit;
+    }
+
     @Override
     public JSONObject getJson() {
         JSONObject json = new JSONObject();
         json.put(KEY_BASE_URL, mBaseUrl);
         json.put(KEY_BASE_URL_VALUE, mBaseUrlValue);
         json.put(KEY_FORCE_LOWER_CASE_EXTENSION, mForceLowerCaseExtension);
-        json.put(KEY_MAX_HEIGHT, mMaxHeight);
-        json.put(KEY_MAX_HEIGHT_VALUE, mMaxHeightValue);
-        json.put(KEY_MAX_WIDTH, mMaxWidth);
-        json.put(KEY_MAX_WIDTH_VALUE, mMaxWidthValue);
+        json.put(KEY_LIMIT_HEIGHT, mLimitHeight);
+        json.put(KEY_HEIGHT_LIMIT, mHeightLimit);
+        json.put(KEY_LIMIT_WIDTH, mLimitWidth);
+        json.put(KEY_WIDTH_LIMIT, mWidthLimit);
 
         return json;
     }
 
-    public int getMaxHeightValue() {
-        return mMaxHeightValue;
-    }
-
-    public int getMaxWidthValue() {
-        return mMaxWidthValue;
+    public int getWidthLimit() {
+        return mWidthLimit;
     }
 
     public boolean isBaseUrl() {
@@ -89,12 +89,12 @@ public class ProfilePhoto extends ProfileBase {
         return mForceLowerCaseExtension;
     }
 
-    public boolean isMaxHeight() {
-        return mMaxHeight;
+    public boolean isLimitHeight() {
+        return mLimitHeight;
     }
 
-    public boolean isMaxWidth() {
-        return mMaxWidth;
+    public boolean isLimitWidth() {
+        return mLimitWidth;
     }
 
     @Override
@@ -114,25 +114,25 @@ public class ProfilePhoto extends ProfileBase {
         mForceLowerCaseExtension = forceLowerCaseExtension;
     }
 
-    public void setMaxHeight(boolean maxHeight) {
-        mMaxHeight = maxHeight;
+    public void setHeightLimit(int maxHeightValue) {
+        mHeightLimit = maxHeightValue;
     }
 
-    public void setMaxHeightValue(int maxHeightValue) {
-        mMaxHeightValue = maxHeightValue;
+    public void setLimitHeight(boolean value) {
+        mLimitHeight = value;
     }
 
-    public void setMaxWidth(boolean maxWidth) {
-        mMaxWidth = maxWidth;
+    public void setLimitWidth(boolean value) {
+        mLimitWidth = value;
     }
 
-    public void setMaxWidthValue(int maxWidthValue) {
-        mMaxWidthValue = maxWidthValue;
+    public void setWidthLimit(int maxWidthValue) {
+        mWidthLimit = maxWidthValue;
     }
 
     @Override
     public String toDebugString() {
-        return "ProfilePhoto{" + "mProfile=" + mProfile + ", mMaxHeight=" + mMaxHeight + ", mMaxWidth=" + mMaxWidth + ", mBaseUrl=" + mBaseUrl + ", mForceLowerCaseExtension=" + mForceLowerCaseExtension + ", mBaseUrlValue=" + mBaseUrlValue + ", mMaxHeightValue=" + mMaxHeightValue + ", mMaxWidthValue=" + mMaxWidthValue + '}';
+        return "ProfilePhoto{" + "mProfile=" + mProfile + ", mLimitHeight=" + mLimitHeight + ", mLimitWidth=" + mLimitWidth + ", mBaseUrl=" + mBaseUrl + ", mForceLowerCaseExtension=" + mForceLowerCaseExtension + ", mBaseUrlValue=" + mBaseUrlValue + ", mHeightLimit=" + mHeightLimit + ", mWidthLimit=" + mWidthLimit + '}';
     }
 
     @Override

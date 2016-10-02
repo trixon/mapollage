@@ -277,12 +277,12 @@ public class Operation {
 
         Scaler scaler = new Scaler(new Dimension(originalDimension));
 
-        if (mProfilePhoto.isMaxWidth()) {
-            scaler.setWidth(mProfilePhoto.getMaxWidthValue());
+        if (mProfilePhoto.isLimitWidth()) {
+            scaler.setWidth(mProfilePhoto.getWidthLimit());
         }
 
-        if (mProfilePhoto.isMaxHeight()) {
-            scaler.setHeight(mProfilePhoto.getMaxHeightValue());
+        if (mProfilePhoto.isLimitHeight()) {
+            scaler.setHeight(mProfilePhoto.getHeightLimit());
         }
 
         Dimension newDimension = scaler.getDimension();

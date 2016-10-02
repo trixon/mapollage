@@ -42,11 +42,14 @@ public class ModulePhotoPanel extends ModulePanel {
     public StringBuilder getHeaderBuilder() {
         StringBuilder sb = new StringBuilder();
 
-        sb.append(Dict.PHOTO.toString().toUpperCase()).append("\n");
+        sb.append(mTitle).append("\n");
 
-        optAppend(sb, widthCheckBox.isSelected(), String.format("%s = %s", widthCheckBox.getText(), mProfilePhoto.getMaxWidthValue()));
-        optAppend(sb, heightCheckBox.isSelected(), String.format("%s = %s", heightCheckBox.getText(), mProfilePhoto.getMaxHeightValue()));
+        optAppend(sb, mProfilePhoto.isLimitWidth(), String.format("%s: %s", widthCheckBox.getText(), mProfilePhoto.getWidthLimit()));
+        optAppend(sb, mProfilePhoto.isLimitHeight(), String.format("%s: %s", heightCheckBox.getText(), mProfilePhoto.getHeightLimit()));
         optAppend(sb, lowerCaseExtCheckBox.isSelected(), lowerCaseExtCheckBox.getText());
+        optAppend(sb, mProfilePhoto.isBaseUrl(), String.format("%s: %s",
+                urlCheckBox.getText(),
+                urlTextField.getText()));
 
         sb.append("\n");
 
@@ -232,11 +235,11 @@ public class ModulePhotoPanel extends ModulePanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void widthCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_widthCheckBoxActionPerformed
-        mProfilePhoto.setMaxWidth(widthCheckBox.isSelected());
+        mProfilePhoto.setLimitWidth(widthCheckBox.isSelected());
     }//GEN-LAST:event_widthCheckBoxActionPerformed
 
     private void heightCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_heightCheckBoxActionPerformed
-        mProfilePhoto.setMaxHeight(heightCheckBox.isSelected());
+        mProfilePhoto.setLimitHeight(heightCheckBox.isSelected());
     }//GEN-LAST:event_heightCheckBoxActionPerformed
 
     private void urlCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_urlCheckBoxActionPerformed
@@ -248,11 +251,11 @@ public class ModulePhotoPanel extends ModulePanel {
     }//GEN-LAST:event_lowerCaseExtCheckBoxActionPerformed
 
     private void widthSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_widthSpinnerStateChanged
-        mProfilePhoto.setMaxWidthValue((Integer) widthSpinner.getModel().getValue());
+        mProfilePhoto.setWidthLimit((Integer) widthSpinner.getModel().getValue());
     }//GEN-LAST:event_widthSpinnerStateChanged
 
     private void heightSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_heightSpinnerStateChanged
-        mProfilePhoto.setMaxHeightValue((Integer) heightSpinner.getModel().getValue());
+        mProfilePhoto.setHeightLimit((Integer) heightSpinner.getModel().getValue());
     }//GEN-LAST:event_heightSpinnerStateChanged
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -270,11 +273,11 @@ public class ModulePhotoPanel extends ModulePanel {
     @Override
     public void load(Profile profile) {
         mProfilePhoto = profile.getPhoto();
-        heightCheckBox.setSelected(mProfilePhoto.isMaxHeight());
-        heightSpinner.setValue(mProfilePhoto.getMaxHeightValue());
+        heightCheckBox.setSelected(mProfilePhoto.isLimitHeight());
+        heightSpinner.setValue(mProfilePhoto.getHeightLimit());
 
-        widthCheckBox.setSelected(mProfilePhoto.isMaxWidth());
-        widthSpinner.setValue(mProfilePhoto.getMaxWidthValue());
+        widthCheckBox.setSelected(mProfilePhoto.isLimitWidth());
+        widthSpinner.setValue(mProfilePhoto.getWidthLimit());
 
         lowerCaseExtCheckBox.setSelected(mProfilePhoto.isForceLowerCaseExtension());
 
