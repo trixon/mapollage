@@ -58,6 +58,10 @@ public abstract class ModulePanel extends javax.swing.JPanel {
         Message.error(this, Dict.INVALID_SETTING.getString(), String.format("<html><h3>%s</h3>%s", mTitle, message));
     }
 
+    protected void append(StringBuilder sb, String key, String value) {
+        sb.append(mHeaderPrefix).append(String.format("%s: %s\n", key, value));
+    }
+
     protected void optAppend(StringBuilder sb, boolean state, String string) {
         if (state) {
             sb.append(mHeaderPrefix).append(string).append("\n");

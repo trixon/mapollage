@@ -25,12 +25,15 @@ import org.apache.commons.lang3.SystemUtils;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.swing.dialogs.FileChooserPanel;
 import se.trixon.photokml.profile.Profile;
+import se.trixon.photokml.profile.ProfileSource;
 
 /**
  *
  * @author Patrik Karlsson <patrik@trixon.se>
  */
 public class ModuleSourcePanel extends ModulePanel implements FileChooserPanel.FileChooserButtonListener {
+
+    private ProfileSource mSource;
 
     /**
      * Creates new form ModuleSourcePanel
@@ -45,11 +48,11 @@ public class ModuleSourcePanel extends ModulePanel implements FileChooserPanel.F
     public StringBuilder getHeaderBuilder() {
         StringBuilder sb = new StringBuilder();
 
-        sb.append(Dict.SOURCE.toString().toUpperCase()).append("\n");
-        sb.append(" ").append(mProfile.getSource().getDir()).append("\n");
-        sb.append(mHeaderPrefix).append(Dict.FILE_PATTERN.toString()).append(": ").append(mProfile.getSource().getFilePattern()).append("\n");
-        optAppend(sb, mProfile.getSource().isRecursive(), Dict.RECURSIVE.toString());
-        optAppend(sb, mProfile.getSource().isFollowLinks(), Dict.FOLLOW_LINKS.toString());
+        sb.append(Dict.SOURCE.toString()).append("\n");
+        append(sb, sourceChooserPanel.getHeader(), mSource.getDir().getAbsolutePath());
+        append(sb, patternLabel.getText(), mSource.getFilePattern());
+        optAppend(sb, mSource.isRecursive(), recursiveCheckBox.getText());
+        optAppend(sb, mSource.isFollowLinks(), followLinksCheckBox.getText());
         sb.append("\n");
 
         return sb;
@@ -119,13 +122,13 @@ public class ModuleSourcePanel extends ModulePanel implements FileChooserPanel.F
             }
 
             private void saveOption() {
-                mProfile.getSource().setFilePattern(patternTextField.getText());
+                mSource.setFilePattern(patternTextField.getText());
             }
         });
     }
 
     private void saveSourcePath() {
-        mProfile.getSource().setDir(new File(sourceChooserPanel.getPath()));
+        mSource.setDir(new File(sourceChooserPanel.getPath()));
     }
 
     /**
@@ -143,9 +146,6 @@ public class ModuleSourcePanel extends ModulePanel implements FileChooserPanel.F
         patternTextField = new javax.swing.JTextField();
         recursiveCheckBox = new javax.swing.JCheckBox();
         followLinksCheckBox = new javax.swing.JCheckBox();
-
-        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("se/trixon/photokml/ui/config/Bundle"); // NOI18N
-        sourceChooserPanel.setHeader(bundle.getString("ModuleSourcePanel.sourceChooserPanel.header")); // NOI18N
 
         patternLabel.setText(Dict.FILE_PATTERN.getString());
 
@@ -215,11 +215,11 @@ public class ModuleSourcePanel extends ModulePanel implements FileChooserPanel.F
     }// </editor-fold>//GEN-END:initComponents
 
     private void recursiveCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_recursiveCheckBoxActionPerformed
-        mProfile.getSource().setRecursive(recursiveCheckBox.isSelected());
+        mSource.setRecursive(recursiveCheckBox.isSelected());
     }//GEN-LAST:event_recursiveCheckBoxActionPerformed
 
     private void followLinksCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_followLinksCheckBoxActionPerformed
-        mProfile.getSource().setFollowLinks(followLinksCheckBox.isSelected());
+        mSource.setFollowLinks(followLinksCheckBox.isSelected());
     }//GEN-LAST:event_followLinksCheckBoxActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -234,13 +234,16 @@ public class ModuleSourcePanel extends ModulePanel implements FileChooserPanel.F
     @Override
     public void load(Profile profile) {
         mProfile = profile;
+        mSource = profile.getSource();
+
         try {
-            sourceChooserPanel.setPath(profile.getSource().getDir().getAbsolutePath());
+            sourceChooserPanel.setPath(mSource.getDir().getAbsolutePath());
         } catch (NullPointerException e) {
         }
-        patternTextField.setText(profile.getSource().getFilePattern());
-        recursiveCheckBox.setSelected(profile.getSource().isRecursive());
-        followLinksCheckBox.setSelected(profile.getSource().isFollowLinks());
+
+        patternTextField.setText(mSource.getFilePattern());
+        recursiveCheckBox.setSelected(mSource.isRecursive());
+        followLinksCheckBox.setSelected(mSource.isFollowLinks());
     }
 
     @Override

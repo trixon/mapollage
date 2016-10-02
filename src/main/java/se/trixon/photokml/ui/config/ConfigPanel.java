@@ -17,6 +17,7 @@ package se.trixon.photokml.ui.config;
 
 import java.awt.Component;
 import javax.swing.border.EmptyBorder;
+import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.swing.SwingHelper;
 import se.trixon.almond.util.swing.dialogs.FileChooserPanel;
 import se.trixon.photokml.profile.Profile;
@@ -32,6 +33,7 @@ public class ConfigPanel extends javax.swing.JPanel {
     private final ModulePlacemarkPanel mModulePlacemarksPanel = new ModulePlacemarkPanel();
     private final ModuleDescriptionPanel mModuleDescriptionPanel = new ModuleDescriptionPanel();
     private final ModulePhotoPanel mModulePhotoPanel = new ModulePhotoPanel();
+    private Profile mProfile;
 
     /**
      * Creates new form ConfigPanel
@@ -42,6 +44,7 @@ public class ConfigPanel extends javax.swing.JPanel {
     }
 
     public void loadProfile(Profile profile) {
+        mProfile = profile;
         for (Component component : tabbedPane.getComponents()) {
             if (component instanceof ModulePanel) {
                 ModulePanel modulePanel = (ModulePanel) component;
@@ -56,6 +59,7 @@ public class ConfigPanel extends javax.swing.JPanel {
 
     public StringBuilder getHeaderBuilder() {
         StringBuilder sb = new StringBuilder("\n");
+        sb.append(String.format("%s: %s\n", Dict.PROFILE.toString(), mProfile.getName()));
         sb.append(mModuleSourcePanel.getHeaderBuilder());
         sb.append(mModuleFoldersPanel.getHeaderBuilder());
         sb.append(mModulePlacemarksPanel.getHeaderBuilder());

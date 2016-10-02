@@ -275,6 +275,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
         logPanel.println(profile.getValidationError());
         logPanel.println("<-");
 
+        logPanel.println(configPanel.getHeaderBuilder().toString());
     }
 
     private String requestProfileName(String title, String value) {

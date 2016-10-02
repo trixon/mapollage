@@ -42,11 +42,6 @@
   </Layout>
   <SubComponents>
     <Component class="se.trixon.almond.util.swing.dialogs.FileChooserPanel" name="sourceChooserPanel">
-      <Properties>
-        <Property name="header" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-          <ResourceString bundle="se/trixon/photokml/ui/config/Bundle.properties" key="ModuleSourcePanel.sourceChooserPanel.header" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
-        </Property>
-      </Properties>
     </Component>
     <Container class="javax.swing.JPanel" name="patternPanel">
 
