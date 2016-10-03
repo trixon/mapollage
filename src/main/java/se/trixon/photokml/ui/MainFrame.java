@@ -616,7 +616,9 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
 
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    profileRename(getSelectedProfile().getName());
+                    if (!mProfiles.isEmpty()) {
+                        profileRename(getSelectedProfile().getName());
+                    }
                 }
             };
 
