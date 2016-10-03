@@ -40,7 +40,6 @@ public class Profile extends ProfileBase implements Comparable<Profile>, Cloneab
     private ProfilePhoto mPhoto = new ProfilePhoto(this);
     private ProfilePlacemark mPlacemark = new ProfilePlacemark(this);
     private ProfileSource mSource = new ProfileSource(this);
-    private StringBuilder mValidationErrorBuilder;
 
     public Profile() {
 
@@ -114,18 +113,19 @@ public class Profile extends ProfileBase implements Comparable<Profile>, Cloneab
     }
 
     public String getValidationError() {
-        return mValidationErrorBuilder.toString();
+        return sValidationErrorBuilder.toString();
     }
 
     @Override
     public boolean isValid() {
-        mValidationErrorBuilder = new StringBuilder();
+        sValidationErrorBuilder = new StringBuilder();
 
+        mSource.isValid();
         mFolder.isValid();
         mPlacemark.isValid();
-        mSource.isValid();
+        mPhoto.isValid();
 
-        return mValidationErrorBuilder.length() == 0;
+        return sValidationErrorBuilder.length() == 0;
     }
 
     public void setDescription(ProfileDescription description) {
@@ -186,46 +186,10 @@ public class Profile extends ProfileBase implements Comparable<Profile>, Cloneab
                 .append("}");
 
         return builder.toString();
-
-//        return "Profile summary { " + mName
-//                + "\n Source=" + mSource.getDir()
-//                + "\n FilePattern=" + mSource.getFilePattern()
-//                + "\n Links=" + mSource.isFollowLinks()
-//                + "\n Recursive=" + mSource.isRecursive()
-//                + "\n"
-//                + "\n RootName=" + mFolder.getRootName()
-//                + "\n RootDesc=" + mFolder.getRootDescription()
-//                + "\n"
-//                //                + "\n FolderByDate=" + mFolderByDate
-//                //                + "\n FolderByDir=" + mFolderByDir
-//                //                + "\n FolderDatePattern=" + mFolderDatePattern
-//                //                + "\n FolderDesc=" + mFolderDesc
-//                + "\n"
-//                + "\n PlacemarkByDate=" + mPlacemarkByDate
-//                + "\n PlacemarkByFilename=" + mPlacemarkByFilename
-//                + "\n PlacemarkDatePattern=" + mPlacemarkDatePattern
-//                + "\n PlacemarkDesc=" + mPlacemarkDesc
-//                + "\n"
-//                + "\n MaxHeight=" + mMaxHeight
-//                + "\n MaxWidth=" + mMaxWidth
-//                + "\n"
-//                + "\n Lat=" + mLat
-//                + "\n Lon=" + mLon
-//                + "\n"
-//                + "\n LowerCaseExt=" + mLowerCaseExt
-//                + "\n AbsolutePath=" + mAbsolutePath
-//                + "\n"
-//                + "\n Dest=" + mDestFile
-//                + "\n}";
     }
 
     @Override
     public String toString() {
         return mName;
     }
-
-    void addValidationError(String string) {
-        mValidationErrorBuilder.append(string).append("\n");
-    }
-
 }

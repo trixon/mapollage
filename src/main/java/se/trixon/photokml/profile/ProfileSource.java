@@ -38,11 +38,11 @@ public class ProfileSource extends ProfileBase {
     private final Profile mProfile;
     private boolean mRecursive;
 
-    public ProfileSource(final Profile profile) {
+    public ProfileSource(Profile profile) {
         mProfile = profile;
     }
 
-    public ProfileSource(final Profile profile, JSONObject json) {
+    public ProfileSource(Profile profile, JSONObject json) {
         mProfile = profile;
         mDir = getFileObject(json, KEY_PATH);
         mFilePattern = (String) json.get(KEY_PATTERN);
@@ -81,13 +81,14 @@ public class ProfileSource extends ProfileBase {
         return mRecursive;
     }
 
+    @Override
     public boolean isValid() {
-
         try {
             mPathMatcher = FileSystems.getDefault().getPathMatcher("glob:" + mFilePattern);
         } catch (Exception e) {
-            mProfile.addValidationError("invalid file pattern: " + mFilePattern);
+            addValidationError("invalid file pattern: " + mFilePattern);
         }
+
         return true;
     }
 

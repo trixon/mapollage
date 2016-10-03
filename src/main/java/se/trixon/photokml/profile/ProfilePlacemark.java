@@ -48,11 +48,11 @@ public class ProfilePlacemark extends ProfileBase {
     private int mNameBy;
     private final Profile mProfile;
 
-    public ProfilePlacemark(final Profile profile) {
+    public ProfilePlacemark(Profile profile) {
         mProfile = profile;
     }
 
-    public ProfilePlacemark(final Profile profile, JSONObject json) {
+    public ProfilePlacemark(Profile profile, JSONObject json) {
         mProfile = profile;
         mLat = (Double) json.get(KEY_LAT);
         mLon = (Double) json.get(KEY_LON);
@@ -135,7 +135,7 @@ public class ProfilePlacemark extends ProfileBase {
             try {
                 mDateFormat = new SimpleDateFormat(mDatePattern);
             } catch (Exception e) {
-                mProfile.addValidationError(String.format(mBundle.getString("invalid_value"), PhotoKml.PLACEMARK_NAME, mDatePattern));
+                addValidationError(String.format(mBundle.getString("invalid_value"), PhotoKml.PLACEMARK_NAME, mDatePattern));
 
             }
         }
@@ -144,13 +144,13 @@ public class ProfilePlacemark extends ProfileBase {
             try {
                 mLat = NumberUtils.createDouble(mCoordinate[0]);
             } catch (NumberFormatException e) {
-                mProfile.addValidationError(String.format(mBundle.getString("invalid_value"), PhotoKml.COORDINATE, mCoordinate[0]));
+                addValidationError(String.format(mBundle.getString("invalid_value"), PhotoKml.COORDINATE, mCoordinate[0]));
             }
 
             try {
                 mLon = NumberUtils.createDouble(mCoordinate[1]);
             } catch (NumberFormatException e) {
-                mProfile.addValidationError(String.format(mBundle.getString("invalid_value"), PhotoKml.COORDINATE, mCoordinate[1]));
+                addValidationError(String.format(mBundle.getString("invalid_value"), PhotoKml.COORDINATE, mCoordinate[1]));
             }
         }
 

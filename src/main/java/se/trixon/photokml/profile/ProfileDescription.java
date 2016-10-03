@@ -46,7 +46,7 @@ public class ProfileDescription extends ProfileBase {
     private boolean mPhoto = true;
     private final Profile mProfile;
 
-    public ProfileDescription(final Profile profile, JSONObject json) {
+    public ProfileDescription(Profile profile, JSONObject json) {
         mProfile = profile;
         mAltitude = getBoolean(json, KEY_ALTITUDE);
         mBearing = getBoolean(json, KEY_BEARING);

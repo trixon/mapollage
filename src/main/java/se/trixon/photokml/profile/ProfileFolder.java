@@ -47,11 +47,11 @@ public class ProfileFolder extends ProfileBase {
     private String mRootDescription;
     private String mRootName;
 
-    public ProfileFolder(final Profile profile) {
+    public ProfileFolder(Profile profile) {
         mProfile = profile;
     }
 
-    public ProfileFolder(final Profile profile, JSONObject json) {
+    public ProfileFolder(Profile profile, JSONObject json) {
         mProfile = profile;
         mRootName = (String) json.get(KEY_ROOT_NAME);
         mRootDescription = (String) json.get(KEY_ROOT_DESCRIPTION);
@@ -117,7 +117,7 @@ public class ProfileFolder extends ProfileBase {
     public boolean isValid() {
         boolean valid = true;
         if (mRootName == null) {
-            mProfile.addValidationError(String.format(mBundle.getString("invalid_value"), PhotoKml.ROOT_NAME, mRootName));
+            addValidationError(String.format(mBundle.getString("invalid_value"), PhotoKml.ROOT_NAME, mRootName));
             valid = false;
         }
 
@@ -125,7 +125,7 @@ public class ProfileFolder extends ProfileBase {
             try {
                 mFolderDateFormat = new SimpleDateFormat(mDatePattern);
             } catch (Exception e) {
-                mProfile.addValidationError(String.format(mBundle.getString("invalid_value"), PhotoKml.FOLDER_NAME, mDatePattern));
+                addValidationError(String.format(mBundle.getString("invalid_value"), PhotoKml.FOLDER_NAME, mDatePattern));
                 valid = false;
             }
         }

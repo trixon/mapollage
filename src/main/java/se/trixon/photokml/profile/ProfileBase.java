@@ -26,6 +26,7 @@ import se.trixon.almond.util.BundleHelper;
  */
 public abstract class ProfileBase {
 
+    protected static StringBuilder sValidationErrorBuilder;
     protected final ResourceBundle mBundle = BundleHelper.getBundle(Profile.class, "Bundle");
 
     public abstract JSONObject getJson();
@@ -33,6 +34,10 @@ public abstract class ProfileBase {
     public abstract boolean isValid();
 
     public abstract String toDebugString();
+
+    protected void addValidationError(String string) {
+        sValidationErrorBuilder.append(string).append("\n");
+    }
 
     protected boolean getBoolean(JSONObject object, String key) {
         return (boolean) object.get(key);
