@@ -58,7 +58,7 @@ public class ConfigPanel extends javax.swing.JPanel {
     }
 
     public StringBuilder getHeaderBuilder() {
-        StringBuilder sb = new StringBuilder("\n");
+        StringBuilder sb = new StringBuilder();
         sb.append(String.format("%s: %s\n", Dict.PROFILE.toString(), mProfile.getName()));
         sb.append(mModuleSourcePanel.getHeaderBuilder());
         sb.append(mModuleFoldersPanel.getHeaderBuilder());

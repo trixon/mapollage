@@ -21,6 +21,7 @@ import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
+import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -39,6 +40,8 @@ import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
 import se.trixon.almond.util.AlmondAction;
 import se.trixon.almond.util.AlmondOptions;
@@ -50,6 +53,7 @@ import se.trixon.almond.util.icon.Pict;
 import se.trixon.almond.util.icons.material.MaterialIcon;
 import se.trixon.almond.util.swing.SwingHelper;
 import se.trixon.almond.util.swing.dialogs.Message;
+import se.trixon.almond.util.swing.dialogs.SimpleDialog;
 import se.trixon.photokml.PhotoKml;
 import se.trixon.photokml.ProfileManager;
 import se.trixon.photokml.profile.Profile;
@@ -70,6 +74,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
     private final ProfileManager mProfileManager = ProfileManager.getInstance();
     private final LinkedList<Profile> mProfiles = mProfileManager.getProfiles();
     private DefaultComboBoxModel mModel;
+    private File mDestination;
 
     /**
      * Creates new form MainFrame
@@ -265,17 +270,35 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
     private void profileRun() {
         saveProfiles();
         Profile profile = getSelectedProfile().clone();
-        profile.isValid();
-        Object[] options = {Dict.RUN.toString(), Dict.DRY_RUN.toString(), Dict.CANCEL.toString()};
-        String message = String.format(Dict.Dialog.TITLE_PROFILE_RUN.toString(), profile.getName());
 
         logPanel.clear();
-        logPanel.println(profile.toDebugString());
-        logPanel.println("->");
-        logPanel.println(profile.getValidationError());
-        logPanel.println("<-");
+        if (profile.isValid()) {
+            logPanel.println(configPanel.getHeaderBuilder().toString());
+            requestKmlFileObject();
+        } else {
+            logPanel.println(profile.getValidationError());
+        }
 
-        logPanel.println(configPanel.getHeaderBuilder().toString());
+    }
+
+    private void requestKmlFileObject() {
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("Keyhole Markup Language (*.kml)", "kml");
+
+        SimpleDialog.clearFilters();
+        SimpleDialog.addFilter(filter);
+        SimpleDialog.setFilter(filter);
+        SimpleDialog.setParent(this);
+
+        if (mDestination == null) {
+            SimpleDialog.setPath(FileUtils.getUserDirectory());
+        } else {
+            SimpleDialog.setPath(mDestination.getParentFile());
+            SimpleDialog.setSelectedFile(new File(""));
+        }
+
+        if (SimpleDialog.saveFile(new String[]{"kml"})) {
+            //start operation
+        }
     }
 
     private String requestProfileName(String title, String value) {
