@@ -59,7 +59,7 @@ import se.trixon.photokml.profile.ProfileSource;
  *
  * @author Patrik Karlsson
  */
-public class Operation {
+public class Operation implements Runnable {
 
     private final ResourceBundle mBundle;
     private final DateFormat mDateFormatDate = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM);
@@ -93,18 +93,18 @@ public class Operation {
         mBundle = BundleHelper.getBundle(Operation.class, "Bundle");
     }
 
-    public void start() {
+    @Override
+    public void run() {
         mStartTime = System.currentTimeMillis();
         mListener.onOperationStarted();
         String status;
         mRootFolder = mKml.createAndSetFolder().withName(mProfileFolder.getRootName());
         mRootFolder.setDescription(mProfileFolder.getRootDescription());
 
+        mListener.onOperationProcessingStarted();
         mInterrupted = !generateFileList();
 
         if (!mInterrupted && !mFiles.isEmpty()) {
-            mListener.onOperationProcessingStarted();
-
             for (File file : mFiles) {
                 try {
                     addFileToKml(file);
@@ -125,6 +125,7 @@ public class Operation {
         if (mInterrupted) {
             status = Dict.TASK_ABORTED.toString();
             mListener.onOperationLog("\n" + status);
+            mListener.onOperationInterrupted();
         } else if (!mFiles.isEmpty()) {
             saveToFile();
         }
@@ -432,8 +433,7 @@ public class Operation {
             summaryBuilder.append(StringUtils.rightPad(time, rightPad)).append(":").append(StringUtils.leftPad(timeValue, leftPad)).append(" ").append(Dict.TIME_SECONDS).append("\n");
 
             mListener.onOperationLog(summaryBuilder.toString());
-
-            mListener.onOperationFinished("");
+            mListener.onOperationFinished(summaryBuilder.toString());
         } catch (FileNotFoundException ex) {
             mListener.onOperationLog(ex.getLocalizedMessage());
         }

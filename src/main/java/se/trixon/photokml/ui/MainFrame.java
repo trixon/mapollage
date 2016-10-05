@@ -54,6 +54,8 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
 import se.trixon.almond.util.swing.SwingHelper;
 import se.trixon.almond.util.swing.dialogs.Message;
 import se.trixon.almond.util.swing.dialogs.SimpleDialog;
+import se.trixon.photokml.Operation;
+import se.trixon.photokml.OperationListener;
 import se.trixon.photokml.PhotoKml;
 import se.trixon.photokml.ProfileManager;
 import se.trixon.photokml.profile.Profile;
@@ -71,10 +73,12 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
     private final LinkedList<AlmondAction> mBaseActions = new LinkedList<>();
     private final LinkedList<AlmondAction> mAllActions = new LinkedList<>();
     private final AlmondOptions mAlmondOptions = AlmondOptions.getInstance();
+    private Thread mOperationThread;
     private final ProfileManager mProfileManager = ProfileManager.getInstance();
     private final LinkedList<Profile> mProfiles = mProfileManager.getProfiles();
     private DefaultComboBoxModel mModel;
     private File mDestination;
+    private OperationListener mOperationListener;
 
     /**
      * Creates new form MainFrame
@@ -124,6 +128,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
     }
 
     private void init() {
+
         String fileName = String.format("/%s/icon-1024px.png", getClass().getPackage().getName().replace(".", "/"));
         ImageIcon imageIcon = new ImageIcon(getClass().getResource(fileName));
         setIconImage(imageIcon.getImage());
@@ -131,6 +136,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
         mModel = (DefaultComboBoxModel) profileComboBox.getModel();
         mActionManager = new ActionManager();
         mActionManager.initActions();
+        setRunningState(false);
 
         mAlmondUI.addOptionsWatcher(this);
         mAlmondUI.addWindowWatcher(this);
@@ -159,6 +165,53 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
     }
 
     private void initListeners() {
+        mOperationListener = new OperationListener() {
+            @Override
+            public void onOperationError(String message) {
+            }
+
+            @Override
+            public void onOperationFailed(String message) {
+                onOperationFinished(message);
+            }
+
+            @Override
+            public void onOperationFinished(String message) {
+                setRunningState(false);
+                Message.information(MainFrame.this, Dict.OPERATION_COMPLETED.toString(), message);
+            }
+
+            @Override
+            public void onOperationInterrupted() {
+                setRunningState(false);
+            }
+
+            @Override
+            public void onOperationLog(String message) {
+                logPanel.println(message);
+            }
+
+            @Override
+            public void onOperationProcessingStarted() {
+                logPanel.println(configPanel.getHeaderBuilder().toString());
+            }
+
+            @Override
+            public void onOperationStarted() {
+                setRunningState(true);
+            }
+        };
+    }
+
+    private void setRunningState(boolean state) {
+        mActionManager.getAction(ActionManager.START).setEnabled(!state);
+        mActionManager.getAction(ActionManager.CANCEL).setEnabled(state);
+        mActionManager.getAction(ActionManager.ADD).setEnabled(!state);
+        mActionManager.getAction(ActionManager.REMOVE).setEnabled(!state);
+
+        startButton.setVisible(!state);
+        cancelButton.setVisible(state);
+        configPanel.setEnabled(!state);
     }
 
     private void populateProfiles(Profile profile) {
@@ -273,7 +326,6 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
 
         logPanel.clear();
         if (profile.isValid()) {
-            logPanel.println(configPanel.getHeaderBuilder().toString());
             requestKmlFileObject();
         } else {
             logPanel.println(profile.getValidationError());
@@ -297,7 +349,13 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
         }
 
         if (SimpleDialog.saveFile(new String[]{"kml"})) {
-            //start operation
+            mDestination = SimpleDialog.getPath();
+            Profile profile = getSelectedProfile();
+            profile.setDestinationFile(mDestination);
+
+            Operation operation = new Operation(mOperationListener, profile);
+            mOperationThread = new Thread(operation);
+            mOperationThread.start();
         }
     }
 
@@ -367,6 +425,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
         profileComboBox = new javax.swing.JComboBox<>();
         toolBar = new javax.swing.JToolBar();
         startButton = new javax.swing.JButton();
+        cancelButton = new javax.swing.JButton();
         addButton = new javax.swing.JButton();
         removeButton = new javax.swing.JButton();
         menuButton = new javax.swing.JButton();
@@ -418,6 +477,11 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
         startButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         startButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         toolBar.add(startButton);
+
+        cancelButton.setFocusable(false);
+        cancelButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        cancelButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        toolBar.add(cancelButton);
 
         addButton.setFocusable(false);
         addButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -490,6 +554,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem;
     private javax.swing.JButton addButton;
+    private javax.swing.JButton cancelButton;
     private javax.swing.JMenuItem cloneMenuItem;
     private se.trixon.photokml.ui.config.ConfigPanel configPanel;
     private javax.swing.JPopupMenu.Separator jSeparator1;
@@ -515,10 +580,11 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
 
         static final String ABOUT = "about";
         static final String ADD = "add";
+        static final String CANCEL = "cancel";
         static final String CLONE = "clone";
         static final String MENU = "menu";
         static final String OPTIONS = "options";
-        static final String QUIT = "shutdownServerAndWindow";
+        static final String QUIT = "quit";
         static final String REMOVE = "remove";
         static final String REMOVE_ALL = "remove_all";
         static final String RENAME = "rename";
@@ -601,6 +667,19 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
 
             initAction(action, START, keyStroke, MaterialIcon.Av.PLAY_ARROW, false);
             startButton.setAction(action);
+
+            //cancel
+            keyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
+            action = new AlmondAction(Dict.CANCEL.toString()) {
+
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    mOperationThread.interrupt();
+                }
+            };
+
+            initAction(action, CANCEL, keyStroke, MaterialIcon.Content.CLEAR, false);
+            cancelButton.setAction(action);
 
             //add
             keyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, 0);

@@ -118,7 +118,7 @@ public class PhotoKml implements OperationListener {
 
                     if (profile.isValid()) {
                         Operation operation = new Operation(this, profile);
-                        operation.start();
+                        operation.run();
                     } else {
                         System.out.println(profile.getValidationError());
                         System.out.println(Dict.ABORTING.toString());
