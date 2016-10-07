@@ -154,20 +154,28 @@ public class Operation implements Runnable {
         Date exifDate = getImageDate(file, exifDirectory);
         String name;
 
-        if (mProfilePlacemark.isByFilename()) {
-            name = FilenameUtils.getBaseName(file.getAbsolutePath());
-        } else if (mProfilePlacemark.isByDate()) {
-            try {
-                name = mProfilePlacemark.getDateFormat().format(exifDate);
-            } catch (IllegalArgumentException ex) {
-                name = "invalid exif date";
-            } catch (NullPointerException ex) {
-                name = "invalid exif date";
-                mListener.onOperationError(" ! Invalid date in " + file.getAbsolutePath());
-            }
+        switch (mProfilePlacemark.getNameBy()) {
+            case ProfilePlacemark.NAME_BY_DATE:
+                try {
+                    name = mProfilePlacemark.getDateFormat().format(exifDate);
+                } catch (IllegalArgumentException ex) {
+                    name = "invalid exif date";
+                } catch (NullPointerException ex) {
+                    name = "invalid exif date";
+                    mListener.onOperationError(" ! Invalid date in " + file.getAbsolutePath());
+                }
+                break;
 
-        } else {
-            name = "";
+            case ProfilePlacemark.NAME_BY_FILE:
+                name = FilenameUtils.getBaseName(file.getAbsolutePath());
+                break;
+
+            case ProfilePlacemark.NAME_BY_NONE:
+                name = "";
+                break;
+
+            default:
+                throw new AssertionError();
         }
 
         String desc = mProfilePlacemark.getDesccription();

@@ -32,12 +32,10 @@ public class ProfilePlacemark extends ProfileBase {
     public static final String KEY_LAT = "lat";
     public static final String KEY_LON = "lon";
     public static final String KEY_NAME_BY = "nameBy";
-    public static final int PLACEMARK_BY_DATE = 2;
-    public static final int PLACEMARK_BY_FILE = 1;
-    public static final int PLACEMARK_BY_NONE = 0;
+    public static final int NAME_BY_DATE = 2;
+    public static final int NAME_BY_FILE = 1;
+    public static final int NAME_BY_NONE = 0;
 
-    private boolean mByDate;
-    private boolean mByFilename;
     private String[] mCoordinate;
     private SimpleDateFormat mDateFormat;
     private String mDatePattern = "yyyy-MM-dd HH.mm";
@@ -65,11 +63,9 @@ public class ProfilePlacemark extends ProfileBase {
         mProfile = profile;
         if (commandLine.hasOption(PhotoKml.PLACEMARK_NAME)) {
             mDatePattern = commandLine.getOptionValue(PhotoKml.PLACEMARK_NAME);
-            mByDate = mDatePattern != null;
-            mByFilename = !mByDate;
         }
-        mCoordinate = commandLine.getOptionValues(PhotoKml.COORDINATE);
 
+        mCoordinate = commandLine.getOptionValues(PhotoKml.COORDINATE);
         mDesccription = commandLine.getOptionValue(PhotoKml.PLACEMARK_DESC);
     }
 
@@ -117,26 +113,17 @@ public class ProfilePlacemark extends ProfileBase {
         return mLat != null && mLon != null;
     }
 
-    public boolean isByDate() {
-        return mByDate;
-    }
-
-    public boolean isByFilename() {
-        return mByFilename;
-    }
-
     public boolean isIncludeNullCoordinate() {
         return mIncludeNullCoordinate;
     }
 
     @Override
     public boolean isValid() {
-        if (mByDate) {
+        if (mNameBy == NAME_BY_DATE) {
             try {
                 mDateFormat = new SimpleDateFormat(mDatePattern);
             } catch (Exception e) {
                 addValidationError(String.format(mBundle.getString("invalid_value"), PhotoKml.PLACEMARK_NAME, mDatePattern));
-
             }
         }
 
@@ -155,14 +142,6 @@ public class ProfilePlacemark extends ProfileBase {
         }
 
         return true;
-    }
-
-    public void setByDate(boolean byDate) {
-        mByDate = byDate;
-    }
-
-    public void setByFilename(boolean byFilename) {
-        mByFilename = byFilename;
     }
 
     public void setCoordinate(String[] coordinate) {
@@ -199,11 +178,11 @@ public class ProfilePlacemark extends ProfileBase {
 
     @Override
     public String toDebugString() {
-        return "ProfilePlacemark{" + "mByDate=" + mByDate + ", mByFilename=" + mByFilename + ", mCoordinate=" + mCoordinate + ", mDateFormat=" + mDateFormat + ", mDatePattern=" + mDatePattern + ", mDesccription=" + mDesccription + ", mIncludeNullCoordinate=" + mIncludeNullCoordinate + ", mLat=" + mLat + ", mLon=" + mLon + ", mNameBy=" + mNameBy + ", mProfile=" + mProfile + '}';
+        return "ProfilePlacemark{" + ", mCoordinate=" + mCoordinate + ", mDateFormat=" + mDateFormat + ", mDatePattern=" + mDatePattern + ", mDesccription=" + mDesccription + ", mIncludeNullCoordinate=" + mIncludeNullCoordinate + ", mLat=" + mLat + ", mLon=" + mLon + ", mNameBy=" + mNameBy + ", mProfile=" + mProfile + '}';
     }
 
     @Override
     public String toString() {
-        return "ProfilePlacemark{" + "mIncludeNullCoordinate=" + mIncludeNullCoordinate + ", mByDate=" + mByDate + ", mByFilename=" + mByFilename + ", mDateFormat=" + mDateFormat + ", mDatePattern=" + mDatePattern + ", mDesccription=" + mDesccription + ", mProfile=" + mProfile + ", mLat=" + mLat + ", mLon=" + mLon + ", mCoordinate=" + mCoordinate + ", nameBy=" + mNameBy + '}';
+        return "ProfilePlacemark{" + "mIncludeNullCoordinate=" + mIncludeNullCoordinate + ", mDateFormat=" + mDateFormat + ", mDatePattern=" + mDatePattern + ", mDesccription=" + mDesccription + ", mProfile=" + mProfile + ", mLat=" + mLat + ", mLon=" + mLon + ", mCoordinate=" + mCoordinate + ", nameBy=" + mNameBy + '}';
     }
 }

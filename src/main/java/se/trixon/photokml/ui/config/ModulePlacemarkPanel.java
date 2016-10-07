@@ -49,11 +49,11 @@ public class ModulePlacemarkPanel extends ModulePanel {
         sb.append(Dict.PLACEMARK.toString()).append("\n");
         String nameBy = "";
         int value = mPlacemark.getNameBy();
-        if (value == ProfilePlacemark.PLACEMARK_BY_FILE) {
+        if (value == ProfilePlacemark.NAME_BY_FILE) {
             nameBy = nameByFileRadioButton.getText();
-        } else if (value == ProfilePlacemark.PLACEMARK_BY_DATE) {
+        } else if (value == ProfilePlacemark.NAME_BY_DATE) {
             nameBy = String.format("%s: %s", Dict.DATE_PATTERN.toString(), dateFormatTextField.getText());
-        } else if (value == ProfilePlacemark.PLACEMARK_BY_NONE) {
+        } else if (value == ProfilePlacemark.NAME_BY_NONE) {
             nameBy = nameByNoRadioButton.getText();
         }
         append(sb, nameByLabel.getText(), nameBy);
@@ -313,15 +313,15 @@ public class ModulePlacemarkPanel extends ModulePanel {
     }//GEN-LAST:event_dateFormatTextFieldFocusLost
 
     private void nameByFileRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nameByFileRadioButtonActionPerformed
-        mPlacemark.setNameBy(ProfilePlacemark.PLACEMARK_BY_FILE);
+        mPlacemark.setNameBy(ProfilePlacemark.NAME_BY_FILE);
     }//GEN-LAST:event_nameByFileRadioButtonActionPerformed
 
     private void nameByNoRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nameByNoRadioButtonActionPerformed
-        mPlacemark.setNameBy(ProfilePlacemark.PLACEMARK_BY_NONE);
+        mPlacemark.setNameBy(ProfilePlacemark.NAME_BY_NONE);
     }//GEN-LAST:event_nameByNoRadioButtonActionPerformed
 
     private void nameByDateRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nameByDateRadioButtonActionPerformed
-        mPlacemark.setNameBy(ProfilePlacemark.PLACEMARK_BY_DATE);
+        mPlacemark.setNameBy(ProfilePlacemark.NAME_BY_DATE);
     }//GEN-LAST:event_nameByDateRadioButtonActionPerformed
 
     private void includeNullCoordinateCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_includeNullCoordinateCheckBoxActionPerformed
