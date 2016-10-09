@@ -49,7 +49,6 @@ import se.trixon.almond.util.AlmondUI;
 import se.trixon.almond.util.BundleHelper;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
-import se.trixon.almond.util.icon.Pict;
 import se.trixon.almond.util.icons.material.MaterialIcon;
 import se.trixon.almond.util.swing.SwingHelper;
 import se.trixon.almond.util.swing.dialogs.Message;
@@ -178,7 +177,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
             @Override
             public void onOperationFinished(String message) {
                 setRunningState(false);
-                Message.information(MainFrame.this, Dict.OPERATION_COMPLETED.toString(), message);
+                //Message.information(MainFrame.this, Dict.OPERATION_COMPLETED.toString(), message);
             }
 
             @Override
@@ -636,7 +635,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
                 }
             };
 
-            initAction(action, MENU, keyStroke, MaterialIcon.Navigation.MENU, true);
+            initAction(action, MENU, keyStroke, MaterialIcon._Navigation.MENU, true);
             menuButton.setAction(action);
 
             //options
@@ -650,7 +649,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
                 }
             };
 
-            initAction(action, OPTIONS, keyStroke, MaterialIcon.Action.SETTINGS, true);
+            initAction(action, OPTIONS, keyStroke, MaterialIcon._Action.SETTINGS, true);
             optionsMenuItem.setAction(action);
 
             //start
@@ -665,7 +664,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
                 }
             };
 
-            initAction(action, START, keyStroke, MaterialIcon.Av.PLAY_ARROW, false);
+            initAction(action, START, keyStroke, MaterialIcon._Av.PLAY_ARROW, false);
             startButton.setAction(action);
 
             //cancel
@@ -678,7 +677,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
                 }
             };
 
-            initAction(action, CANCEL, keyStroke, MaterialIcon.Content.CLEAR, false);
+            initAction(action, CANCEL, keyStroke, MaterialIcon._Content.CLEAR, false);
             cancelButton.setAction(action);
 
             //add
@@ -692,7 +691,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
                 }
             };
 
-            initAction(action, ADD, keyStroke, MaterialIcon.Content.ADD, true);
+            initAction(action, ADD, keyStroke, MaterialIcon._Content.ADD, true);
             addButton.setAction(action);
 
             //clone
@@ -709,7 +708,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
                 }
             };
 
-            initAction(action, CLONE, keyStroke, MaterialIcon.Content.CONTENT_COPY, false);
+            initAction(action, CLONE, keyStroke, MaterialIcon._Content.CONTENT_COPY, false);
             cloneMenuItem.setAction(action);
 
             //rename
@@ -724,7 +723,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
                 }
             };
 
-            initAction(action, RENAME, keyStroke, MaterialIcon.Editor.MODE_EDIT, false);
+            initAction(action, RENAME, keyStroke, MaterialIcon._Editor.MODE_EDIT, false);
             renameMenuItem.setAction(action);
 
             //remove
@@ -737,7 +736,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
                 }
             };
 
-            initAction(action, REMOVE, keyStroke, MaterialIcon.Content.REMOVE, false);
+            initAction(action, REMOVE, keyStroke, MaterialIcon._Content.REMOVE, false);
             removeButton.setAction(action);
 
             //remove all
@@ -750,7 +749,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
                 }
             };
 
-            initAction(action, REMOVE_ALL, keyStroke, MaterialIcon.Content.CLEAR, false);
+            initAction(action, REMOVE_ALL, keyStroke, MaterialIcon._Content.CLEAR, false);
             removeAllProfilesMenuItem.setAction(action);
 
             //about
@@ -777,7 +776,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
                 }
             };
 
-            initAction(action, QUIT, keyStroke, Pict.Actions.APPLICATION_EXIT, true);
+            initAction(action, QUIT, keyStroke, MaterialIcon._Content.CLEAR, true);
             quitMenuItem.setAction(action);
 
             for (Component component : mPopupMenu.getComponents()) {
