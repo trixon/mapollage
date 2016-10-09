@@ -39,7 +39,6 @@ public class ProfilePlacemark extends ProfileBase {
     private String[] mCoordinate;
     private SimpleDateFormat mDateFormat;
     private String mDatePattern = "yyyy-MM-dd HH.mm";
-    private String mDesccription = "";
     private boolean mIncludeNullCoordinate;
     private Double mLat = 57.6;
     private Double mLon = 11.3;
@@ -66,7 +65,6 @@ public class ProfilePlacemark extends ProfileBase {
         }
 
         mCoordinate = commandLine.getOptionValues(PhotoKml.COORDINATE);
-        mDesccription = commandLine.getOptionValue(PhotoKml.PLACEMARK_DESC);
     }
 
     public String[] getCoordinate() {
@@ -79,10 +77,6 @@ public class ProfilePlacemark extends ProfileBase {
 
     public String getDatePattern() {
         return mDatePattern;
-    }
-
-    public String getDesccription() {
-        return mDesccription;
     }
 
     @Override
@@ -156,10 +150,6 @@ public class ProfilePlacemark extends ProfileBase {
         mDatePattern = datePattern;
     }
 
-    public void setDesccription(String desccription) {
-        mDesccription = desccription;
-    }
-
     public void setIncludeNullCoordinate(boolean includeNullCoordinate) {
         mIncludeNullCoordinate = includeNullCoordinate;
     }
@@ -178,11 +168,11 @@ public class ProfilePlacemark extends ProfileBase {
 
     @Override
     public String toDebugString() {
-        return "ProfilePlacemark{" + ", mCoordinate=" + mCoordinate + ", mDateFormat=" + mDateFormat + ", mDatePattern=" + mDatePattern + ", mDesccription=" + mDesccription + ", mIncludeNullCoordinate=" + mIncludeNullCoordinate + ", mLat=" + mLat + ", mLon=" + mLon + ", mNameBy=" + mNameBy + ", mProfile=" + mProfile + '}';
+        return "ProfilePlacemark{" + ", mCoordinate=" + mCoordinate + ", mDateFormat=" + mDateFormat + ", mDatePattern=" + mDatePattern + ", mIncludeNullCoordinate=" + mIncludeNullCoordinate + ", mLat=" + mLat + ", mLon=" + mLon + ", mNameBy=" + mNameBy + ", mProfile=" + mProfile + '}';
     }
 
     @Override
     public String toString() {
-        return "ProfilePlacemark{" + "mIncludeNullCoordinate=" + mIncludeNullCoordinate + ", mDateFormat=" + mDateFormat + ", mDatePattern=" + mDatePattern + ", mDesccription=" + mDesccription + ", mProfile=" + mProfile + ", mLat=" + mLat + ", mLon=" + mLon + ", mCoordinate=" + mCoordinate + ", nameBy=" + mNameBy + '}';
+        return "ProfilePlacemark{" + "mIncludeNullCoordinate=" + mIncludeNullCoordinate + ", mDateFormat=" + mDateFormat + ", mDatePattern=" + mDatePattern + ", mProfile=" + mProfile + ", mLat=" + mLat + ", mLon=" + mLon + ", mCoordinate=" + mCoordinate + ", nameBy=" + mNameBy + '}';
     }
 }

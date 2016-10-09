@@ -49,7 +49,9 @@ import se.trixon.almond.util.BundleHelper;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.GraphicsHelper;
 import se.trixon.almond.util.Scaler;
+import se.trixon.photokml.DescriptionManager.DescriptionSegment;
 import se.trixon.photokml.profile.Profile;
+import se.trixon.photokml.profile.ProfileDescription;
 import se.trixon.photokml.profile.ProfileFolder;
 import se.trixon.photokml.profile.ProfilePhoto;
 import se.trixon.photokml.profile.ProfilePlacemark;
@@ -74,6 +76,7 @@ public class Operation implements Runnable {
     private int mNumOfInvalidFormat;
     private int mNumOfPlacemarks;
     private final Profile mProfile;
+    private final ProfileDescription mProfileDescription;
     private final ProfileFolder mProfileFolder;
     private final ProfilePhoto mProfilePhoto;
     private final ProfilePlacemark mProfilePlacemark;
@@ -87,6 +90,7 @@ public class Operation implements Runnable {
         mProfileSource = mProfile.getSource();
         mProfileFolder = mProfile.getFolder();
         mProfilePlacemark = mProfile.getPlacemark();
+        mProfileDescription = mProfile.getDescription();
         mProfilePhoto = mProfile.getPhoto();
         mDestinationFile = mProfile.getDestinationFile();
 
@@ -178,11 +182,30 @@ public class Operation implements Runnable {
                 throw new AssertionError();
         }
 
-        String desc = mProfilePlacemark.getDesccription();
-        desc = StringUtils.replace(desc, Desc.PHOTO, getDescPhoto(file));
-        desc = StringUtils.replace(desc, Desc.FILENAME, file.getName());
-        desc = StringUtils.replace(desc, Desc.DATE, mDateFormatDate.format(exifDate));
+        String description;
+        if (mProfileDescription.isCustom()) {
+            description = mProfileDescription.getCustomValue();
 
+            description = StringUtils.replace(description, DescriptionSegment.PHOTO.toString(), getDescPhoto(file));
+            description = StringUtils.replace(description, DescriptionSegment.FILENAME.toString(), file.getName());
+            description = StringUtils.replace(description, DescriptionSegment.DATE.toString(), mDateFormatDate.format(exifDate));
+
+        } else {
+            StringBuilder descriptionBuilder = new StringBuilder();
+////            descriptionBuilder.append("<![CDATA[");
+//            if (mProfileDescription.hasPhoto()) {
+//                addPhoto(descriptionBuilder, file, exifDirectory);
+//            }
+//
+//            if (mOptions.isDescriptionFilename()) {
+//                descriptionBuilder.append(sourceFile.getName()).append("<br />");
+//            }
+//
+//            if (mOptions.isDescriptionDate()) {
+//                descriptionBuilder.append(Toolbox.getDefaultDateFormat().format(exifDate)).append("<br />");
+//            }
+        }
+        String desc = "";
         GeoLocation geoLocation = null;
         if (mProfilePlacemark.hasCoordinate()) {
             geoLocation = new GeoLocation(mProfilePlacemark.getLat(), mProfilePlacemark.getLon());
@@ -200,12 +223,12 @@ public class Operation implements Runnable {
             }
 
             if (exifDate != null) {
-                desc = StringUtils.replace(desc, Desc.ALTITUDE, gpsDescriptor.getGpsAltitudeDescription());
-                desc = StringUtils.replace(desc, Desc.COORDINATE, gpsDescriptor.getDegreesMinutesSecondsDescription());
+                desc = StringUtils.replace(desc, DescriptionSegment.ALTITUDE.toString(), gpsDescriptor.getGpsAltitudeDescription());
+                desc = StringUtils.replace(desc, DescriptionSegment.COORDINATE.toString(), gpsDescriptor.getDegreesMinutesSecondsDescription());
 
                 String bearing = gpsDescriptor.getGpsDirectionDescription(GpsDirectory.TAG_DEST_BEARING);
                 if (bearing != null) {
-                    desc = StringUtils.replace(desc, Desc.BEARING, gpsDescriptor.getGpsAltitudeDescription());
+                    desc = StringUtils.replace(desc, DescriptionSegment.BEARING.toString(), gpsDescriptor.getGpsAltitudeDescription());
                 }
             }
         }

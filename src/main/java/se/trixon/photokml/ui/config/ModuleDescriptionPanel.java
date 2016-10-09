@@ -20,6 +20,9 @@ import javax.swing.event.DocumentListener;
 import javax.swing.text.Document;
 import org.apache.commons.lang3.StringUtils;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.swing.SwingHelper;
+import se.trixon.photokml.DescriptionManager;
+import se.trixon.photokml.DescriptionManager.DescriptionSegment;
 import se.trixon.photokml.profile.Profile;
 import se.trixon.photokml.profile.ProfileDescription;
 
@@ -30,6 +33,7 @@ import se.trixon.photokml.profile.ProfileDescription;
 public class ModuleDescriptionPanel extends ModulePanel {
 
     private ProfileDescription mDescription;
+    private final DescriptionManager mDescriptionManager = DescriptionManager.getInstance();
 
     /**
      * Creates new form ModuleDescriptionPanel
@@ -44,30 +48,24 @@ public class ModuleDescriptionPanel extends ModulePanel {
 
     @Override
     public StringBuilder getHeaderBuilder() {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder(Dict.DESCRIPTION.toString()).append("\n");
 
-        sb.append(Dict.DESCRIPTION.toString()).append("\n");
-        optAppend(sb, mDescription.isPhoto(), Dict.PHOTO.toString());
-        optAppend(sb, mDescription.isFilename(), Dict.FILENAME.toString());
-        optAppend(sb, mDescription.isDate(), Dict.DATE.toString());
-        optAppend(sb, mDescription.isCoordinate(), Dict.COORDINATE.toString());
-        optAppend(sb, mDescription.isAltitude(), Dict.ALTITUDE.toString());
-        optAppend(sb, mDescription.isBearing(), Dict.BEARING.toString());
-        optAppend(sb, mDescription.isCustom(), Dict.CUSTOM_TEXT.toString());
-
-        if (mDescription.isExternalFile() && !StringUtils.isEmpty(mDescription.getExternalFileValue())) {
-            optAppend(sb, true, mBundle.getString("ModuleDescriptionPanel.externalFileCheckBox.text"));
-            sb.deleteCharAt(sb.length() - 1);
-            sb.append(": ");
-            sb.append(mDescription.getCustomValue()).append("\n"); //TODO Verify if this is ok
+        if (mDescription.isCustom()) {
+            final String customValue = mDescription.getCustomValue();
+            if (!StringUtils.isEmpty(customValue)) {
+                sb.append(MULTILINE_DIVIDER).append("\n");
+                sb.append(customValue).append("\n");
+                sb.append(MULTILINE_DIVIDER);
+            }
+        } else {
+            optAppend(sb, mDescription.hasPhoto(), Dict.PHOTO.toString());
+            optAppend(sb, mDescription.hasFilename(), Dict.FILENAME.toString());
+            optAppend(sb, mDescription.hasDate(), Dict.DATE.toString());
+            optAppend(sb, mDescription.hasCoordinate(), Dict.COORDINATE.toString());
+            optAppend(sb, mDescription.hasAltitude(), Dict.ALTITUDE.toString());
+            optAppend(sb, mDescription.hasBearing(), Dict.BEARING.toString());
+            optAppend(sb, mDescription.isCustom(), Dict.CUSTOM_TEXT.toString());
         }
-
-        if (mDescription.isCustom() && !StringUtils.isEmpty(mDescription.getCustomValue())) {
-            sb.append(MULTILINE_DIVIDER).append("\n");
-            sb.append(mDescription.getCustomValue()).append("\n");
-            sb.append(MULTILINE_DIVIDER);
-        }
-
         sb.append("\n");
 
         return sb;
@@ -119,97 +117,18 @@ public class ModuleDescriptionPanel extends ModulePanel {
         java.awt.GridBagConstraints gridBagConstraints;
         bindingGroup = new org.jdesktop.beansbinding.BindingGroup();
 
-        bearingCheckBox = new javax.swing.JCheckBox();
-        coordinateCheckBox = new javax.swing.JCheckBox();
-        dateCheckBox = new javax.swing.JCheckBox();
-        photoCheckBox = new javax.swing.JCheckBox();
-        filenameCheckBox = new javax.swing.JCheckBox();
-        altitudeCheckBox = new javax.swing.JCheckBox();
         externalFileCheckBox = new javax.swing.JCheckBox();
         externalFileTextField = new javax.swing.JTextField();
+        leftPanel = new javax.swing.JPanel();
+        photoCheckBox = new javax.swing.JCheckBox();
+        filenameCheckBox = new javax.swing.JCheckBox();
+        dateCheckBox = new javax.swing.JCheckBox();
+        coordinateCheckBox = new javax.swing.JCheckBox();
+        altitudeCheckBox = new javax.swing.JCheckBox();
+        bearingCheckBox = new javax.swing.JCheckBox();
         customCheckBox = new javax.swing.JCheckBox();
         customScrollPane = new javax.swing.JScrollPane();
         customTextArea = new javax.swing.JTextArea();
-
-        setLayout(new java.awt.GridBagLayout());
-
-        bearingCheckBox.setText(Dict.BEARING.getString());
-        bearingCheckBox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                bearingCheckBoxActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
-        add(bearingCheckBox, gridBagConstraints);
-
-        coordinateCheckBox.setText(Dict.COORDINATE.getString());
-        coordinateCheckBox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                coordinateCheckBoxActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 3, 0);
-        add(coordinateCheckBox, gridBagConstraints);
-
-        dateCheckBox.setText(Dict.DATE.getString());
-        dateCheckBox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                dateCheckBoxActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
-        add(dateCheckBox, gridBagConstraints);
-
-        photoCheckBox.setText(Dict.PHOTO.getString());
-        photoCheckBox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                photoCheckBoxActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 3, 0);
-        add(photoCheckBox, gridBagConstraints);
-
-        filenameCheckBox.setText(Dict.FILENAME.getString());
-        filenameCheckBox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                filenameCheckBoxActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
-        add(filenameCheckBox, gridBagConstraints);
-
-        altitudeCheckBox.setText(Dict.ALTITUDE.getString());
-        altitudeCheckBox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                altitudeCheckBoxActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
-        add(altitudeCheckBox, gridBagConstraints);
 
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("se/trixon/photokml/ui/config/Bundle"); // NOI18N
         externalFileCheckBox.setText(bundle.getString("ModuleDescriptionPanel.externalFileCheckBox.text")); // NOI18N
@@ -218,23 +137,74 @@ public class ModuleDescriptionPanel extends ModulePanel {
                 externalFileCheckBoxActionPerformed(evt);
             }
         });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 3;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(2, 0, 2, 0);
-        add(externalFileCheckBox, gridBagConstraints);
 
         org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, externalFileCheckBox, org.jdesktop.beansbinding.ELProperty.create("${selected}"), externalFileTextField, org.jdesktop.beansbinding.BeanProperty.create("enabled"));
         bindingGroup.addBinding(binding);
 
+        setLayout(new java.awt.GridBagLayout());
+
+        leftPanel.setLayout(new javax.swing.BoxLayout(leftPanel, javax.swing.BoxLayout.PAGE_AXIS));
+
+        photoCheckBox.setText(Dict.PHOTO.getString());
+        photoCheckBox.setToolTipText(DescriptionSegment.PHOTO.toString());
+        photoCheckBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                photoCheckBoxActionPerformed(evt);
+            }
+        });
+        leftPanel.add(photoCheckBox);
+
+        filenameCheckBox.setText(Dict.FILENAME.getString());
+        filenameCheckBox.setToolTipText(DescriptionSegment.FILENAME.toString());
+        filenameCheckBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                filenameCheckBoxActionPerformed(evt);
+            }
+        });
+        leftPanel.add(filenameCheckBox);
+
+        dateCheckBox.setText(Dict.DATE.getString());
+        dateCheckBox.setToolTipText(DescriptionSegment.DATE.toString());
+        dateCheckBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                dateCheckBoxActionPerformed(evt);
+            }
+        });
+        leftPanel.add(dateCheckBox);
+
+        coordinateCheckBox.setText(Dict.COORDINATE.getString());
+        coordinateCheckBox.setToolTipText(DescriptionSegment.COORDINATE.toString());
+        coordinateCheckBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                coordinateCheckBoxActionPerformed(evt);
+            }
+        });
+        leftPanel.add(coordinateCheckBox);
+
+        altitudeCheckBox.setText(Dict.ALTITUDE.getString());
+        altitudeCheckBox.setToolTipText(DescriptionSegment.ALTITUDE.toString());
+        altitudeCheckBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                altitudeCheckBoxActionPerformed(evt);
+            }
+        });
+        leftPanel.add(altitudeCheckBox);
+
+        bearingCheckBox.setText(Dict.BEARING.getString());
+        bearingCheckBox.setToolTipText(DescriptionSegment.BEARING.toString());
+        bearingCheckBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bearingCheckBoxActionPerformed(evt);
+            }
+        });
+        leftPanel.add(bearingCheckBox);
+
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 4;
-        gridBagConstraints.gridwidth = 3;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridheight = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        add(externalFileTextField, gridBagConstraints);
+        add(leftPanel, gridBagConstraints);
 
         customCheckBox.setText(Dict.CUSTOM_TEXT.getString());
         customCheckBox.addActionListener(new java.awt.event.ActionListener() {
@@ -243,10 +213,10 @@ public class ModuleDescriptionPanel extends ModulePanel {
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 5;
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
+        gridBagConstraints.insets = new java.awt.Insets(0, 8, 3, 0);
         add(customCheckBox, gridBagConstraints);
 
         customTextArea.setColumns(20);
@@ -258,21 +228,23 @@ public class ModuleDescriptionPanel extends ModulePanel {
         customScrollPane.setViewportView(customTextArea);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 6;
-        gridBagConstraints.gridwidth = 3;
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 8, 0, 0);
         add(customScrollPane, gridBagConstraints);
 
         bindingGroup.bind();
     }// </editor-fold>//GEN-END:initComponents
 
     private void customCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_customCheckBoxActionPerformed
-        mDescription.setCustom(customCheckBox.isSelected());
-        customTextArea.setEnabled(customCheckBox.isSelected());
+        final boolean selected = customCheckBox.isSelected();
+        mDescription.setCustom(selected);
+        customTextArea.setEnabled(selected);
+        SwingHelper.enableComponents(leftPanel, !selected);
     }//GEN-LAST:event_customCheckBoxActionPerformed
 
     private void bearingCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bearingCheckBoxActionPerformed
@@ -315,6 +287,7 @@ public class ModuleDescriptionPanel extends ModulePanel {
     private javax.swing.JCheckBox externalFileCheckBox;
     private javax.swing.JTextField externalFileTextField;
     private javax.swing.JCheckBox filenameCheckBox;
+    private javax.swing.JPanel leftPanel;
     private javax.swing.JCheckBox photoCheckBox;
     private org.jdesktop.beansbinding.BindingGroup bindingGroup;
     // End of variables declaration//GEN-END:variables
@@ -324,14 +297,14 @@ public class ModuleDescriptionPanel extends ModulePanel {
         mProfile = profile;
         mDescription = mProfile.getDescription();
 
-        altitudeCheckBox.setSelected(mDescription.isAltitude());
-        bearingCheckBox.setSelected(mDescription.isBearing());
-        coordinateCheckBox.setSelected(mDescription.isCoordinate());
+        altitudeCheckBox.setSelected(mDescription.hasAltitude());
+        bearingCheckBox.setSelected(mDescription.hasBearing());
+        coordinateCheckBox.setSelected(mDescription.hasCoordinate());
         customCheckBox.setSelected(mDescription.isCustom());
-        dateCheckBox.setSelected(mDescription.isDate());
-        photoCheckBox.setSelected(mDescription.isPhoto());
-        filenameCheckBox.setSelected(mDescription.isFilename());
-        externalFileCheckBox.setSelected(mDescription.isExternalFile());
+        dateCheckBox.setSelected(mDescription.hasDate());
+        photoCheckBox.setSelected(mDescription.hasPhoto());
+        filenameCheckBox.setSelected(mDescription.hasFilename());
+        externalFileCheckBox.setSelected(mDescription.hasExternalFile());
         externalFileTextField.setText(mDescription.getExternalFileValue());
         customTextArea.setText(mDescription.getCustomValue());
     }

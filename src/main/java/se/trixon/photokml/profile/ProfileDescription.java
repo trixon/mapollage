@@ -15,7 +15,10 @@
  */
 package se.trixon.photokml.profile;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
+import se.trixon.photokml.DescriptionManager;
+import se.trixon.photokml.DescriptionManager.DescriptionSegment;
 
 /**
  *
@@ -40,11 +43,26 @@ public class ProfileDescription extends ProfileBase {
     private boolean mCustom;
     private String mCustomValue;
     private boolean mDate = true;
+    private static String sDefaultCustomValue;
     private boolean mExternalFile;
     private String mExternalFileValue = "description.csv";
     private boolean mFilename = true;
     private boolean mPhoto = true;
     private final Profile mProfile;
+
+    static {
+        System.out.println("DO INIT ME*****************");
+        DescriptionManager descriptionManager = DescriptionManager.getInstance();
+        StringBuilder builder = new StringBuilder();
+        builder.append(descriptionManager.getSegmentString(DescriptionSegment.PHOTO));
+        builder.append(descriptionManager.getSegmentString(DescriptionSegment.DATE));
+        builder.append(descriptionManager.getSegmentString(DescriptionSegment.FILENAME));
+        builder.append(descriptionManager.getSegmentString(DescriptionSegment.COORDINATE));
+        builder.append(descriptionManager.getSegmentString(DescriptionSegment.BEARING));
+        builder.append(descriptionManager.getSegmentString(DescriptionSegment.ALTITUDE));
+
+        sDefaultCustomValue = builder.toString();
+    }
 
     public ProfileDescription(Profile profile, JSONObject json) {
         mProfile = profile;
@@ -66,13 +84,18 @@ public class ProfileDescription extends ProfileBase {
     }
 
     public String getCustomValue() {
-        return mCustomValue;
+        if (StringUtils.isBlank(mCustomValue)) {
+            return sDefaultCustomValue;
+        } else {
+            return mCustomValue;
+        }
     }
 
     public String getExternalFileValue() {
         return mExternalFileValue;
     }
 
+    @Override
     public JSONObject getJson() {
         JSONObject json = new JSONObject();
         json.put(KEY_ALTITUDE, mAltitude);
@@ -89,36 +112,36 @@ public class ProfileDescription extends ProfileBase {
         return json;
     }
 
-    public boolean isAltitude() {
+    public boolean hasAltitude() {
         return mAltitude;
     }
 
-    public boolean isBearing() {
+    public boolean hasBearing() {
         return mBearing;
     }
 
-    public boolean isCoordinate() {
+    public boolean hasCoordinate() {
         return mCoordinate;
+    }
+
+    public boolean hasDate() {
+        return mDate;
+    }
+
+    public boolean hasExternalFile() {
+        return mExternalFile;
+    }
+
+    public boolean hasFilename() {
+        return mFilename;
+    }
+
+    public boolean hasPhoto() {
+        return mPhoto;
     }
 
     public boolean isCustom() {
         return mCustom;
-    }
-
-    public boolean isDate() {
-        return mDate;
-    }
-
-    public boolean isExternalFile() {
-        return mExternalFile;
-    }
-
-    public boolean isFilename() {
-        return mFilename;
-    }
-
-    public boolean isPhoto() {
-        return mPhoto;
     }
 
     @Override
