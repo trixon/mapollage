@@ -1,5 +1,5 @@
-/*
- * Copyright 2016 Patrik Karlsson.
+/* 
+ * Copyright 2017 Patrik Karlsson.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import se.trixon.photokml.profile.ProfileDescription;
 
 /**
  *
- * @author Patrik Karlsson <patrik@trixon.se>
+ * @author Patrik Karlsson
  */
 public class ModuleDescriptionPanel extends ModulePanel {
 
