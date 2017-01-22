@@ -33,9 +33,9 @@
         </developer>
     </developers>
     <scm>
-        <url>https://github.com/trixon/java-tt_photokml</url>
-        <connection>scm:git:git://github.com/trixon/java-tt_photokml.git</connection>
-        <developerConnection>scm:git:git@github.com:trixon/java-tt_photokml.git</developerConnection>
+        <url>https://github.com/trixon/java-photokml</url>
+        <connection>scm:git:git://github.com/trixon/java-photokml.git</connection>
+        <developerConnection>scm:git:git@github.com:trixon/java-photokml.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
     <dependencies>
@@ -52,7 +52,7 @@
         <dependency>
             <groupId>se.trixon.almond</groupId>
             <artifactId>almond-util</artifactId>
-            <version>1.1.8-SNAPSHOT</version>
+            <version>1.1.10</version>
         </dependency>
         <dependency>
             <groupId>com.drewnoakes</groupId>
@@ -110,7 +110,6 @@
                                 <filter>
                                     <artifact>se.trixon.util:trixon-util</artifact>
                                     <excludes>
-                                        <exclude>se/trixon/util/icon/**</exclude>
                                         <exclude>se/trixon/util/icons/**</exclude>
                                         <exclude>se/trixon/util/swing/**</exclude>
                                     </excludes>
