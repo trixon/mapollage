@@ -1,5 +1,5 @@
-/*
- * Copyright 2016 Patrik Karlsson.
+/* 
+ * Copyright 2017 Patrik Karlsson.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,6 +48,7 @@ import se.trixon.almond.util.AlmondOptions;
 import se.trixon.almond.util.AlmondUI;
 import se.trixon.almond.util.BundleHelper;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.PomInfo;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.icons.material.MaterialIcon;
 import se.trixon.almond.util.swing.SwingHelper;
@@ -681,7 +682,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
             cancelButton.setAction(action);
 
             //add
-            keyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, 0);
+            keyStroke = null;
 
             action = new AlmondAction(Dict.ADD.toString()) {
 
@@ -727,7 +728,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
             renameMenuItem.setAction(action);
 
             //remove
-            keyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0);
+            keyStroke = null;
             action = new AlmondAction(Dict.REMOVE.toString()) {
 
                 @Override
@@ -758,7 +759,8 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
 
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    String versionInfo = String.format(mBundle.getString("version_info"), SystemHelper.getJarVersion(PhotoKml.class));
+                    PomInfo pomInfo = new PomInfo(PhotoKml.class, "se.trixon", "photokml");
+                    String versionInfo = String.format(mBundle.getString("version_info"), pomInfo.getVersion());
                     Message.information(MainFrame.this, Dict.ABOUT.toString(), versionInfo);
                 }
             };
