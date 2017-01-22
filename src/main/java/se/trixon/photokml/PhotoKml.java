@@ -1,5 +1,5 @@
-/*
- * Copyright 2016 Patrik Karlsson.
+/* 
+ * Copyright 2017 Patrik Karlsson.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ import org.apache.commons.lang3.SystemUtils;
 import se.trixon.almond.util.AlmondUI;
 import se.trixon.almond.util.BundleHelper;
 import se.trixon.almond.util.Dict;
-import se.trixon.almond.util.SystemHelper;
+import se.trixon.almond.util.PomInfo;
 import se.trixon.almond.util.Xlog;
 import se.trixon.photokml.profile.Profile;
 import se.trixon.photokml.ui.MainFrame;
@@ -216,7 +216,8 @@ public class PhotoKml implements OperationListener {
     }
 
     private void displayVersion() {
-        System.out.println(String.format(mBundle.getString("version_info"), SystemHelper.getJarVersion(PhotoKml.class)));
+        PomInfo pomInfo = new PomInfo(PhotoKml.class, "se.trixon", "photokml");
+        System.out.println(String.format(mBundle.getString("version_info"), pomInfo.getVersion()));
     }
 
     private void initOptions() {
