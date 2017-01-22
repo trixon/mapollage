@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2017 Patrik Karlsson.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,7 +18,7 @@ package se.trixon.photokml.ui.config;
 import java.awt.Component;
 import javax.swing.border.EmptyBorder;
 import se.trixon.almond.util.Dict;
-import se.trixon.almond.util.swing.SwingHelper;
+import se.trixon.almond.util.swing.LogPanel;
 import se.trixon.almond.util.swing.dialogs.FileChooserPanel;
 import se.trixon.photokml.profile.Profile;
 
@@ -51,6 +51,10 @@ public class ConfigPanel extends javax.swing.JPanel {
                 modulePanel.load(profile);
             }
         }
+    }
+
+    public LogPanel getLogPanel() {
+        return logPanel;
     }
 
     public FileChooserPanel getSourceChooserPanel() {
@@ -92,7 +96,9 @@ public class ConfigPanel extends javax.swing.JPanel {
     @Override
     public void setEnabled(boolean enabled) {
         super.setEnabled(enabled);
-        SwingHelper.enableComponents(this, enabled);
+        for (int i = 1; i < tabbedPane.getTabCount(); i++) {
+            tabbedPane.setEnabledAt(i, enabled);
+        }
     }
 
     private Component addModulePanel(ModulePanel modulePanel) {
@@ -148,6 +154,9 @@ public class ConfigPanel extends javax.swing.JPanel {
     private void initComponents() {
 
         tabbedPane = new javax.swing.JTabbedPane();
+        logPanel = new se.trixon.almond.util.swing.LogPanel();
+
+        tabbedPane.addTab(Dict.OUTPUT.toString(), logPanel);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -162,6 +171,7 @@ public class ConfigPanel extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private se.trixon.almond.util.swing.LogPanel logPanel;
     private javax.swing.JTabbedPane tabbedPane;
     // End of variables declaration//GEN-END:variables
 

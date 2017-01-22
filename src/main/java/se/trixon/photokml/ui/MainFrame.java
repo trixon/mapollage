@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2017 Patrik Karlsson.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -51,6 +51,7 @@ import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.PomInfo;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.icons.material.MaterialIcon;
+import se.trixon.almond.util.swing.LogPanel;
 import se.trixon.almond.util.swing.SwingHelper;
 import se.trixon.almond.util.swing.dialogs.Message;
 import se.trixon.almond.util.swing.dialogs.SimpleDialog;
@@ -79,6 +80,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
     private DefaultComboBoxModel mModel;
     private File mDestination;
     private OperationListener mOperationListener;
+    private LogPanel mLogPanel;
 
     /**
      * Creates new form MainFrame
@@ -161,7 +163,8 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
         populateProfiles(null);
         initListeners();
 
-        logPanel.println(mBundleUI.getString("welcome"));
+        mLogPanel = configPanel.getLogPanel();
+        mLogPanel.println(mBundleUI.getString("welcome"));
     }
 
     private void initListeners() {
@@ -188,12 +191,12 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
 
             @Override
             public void onOperationLog(String message) {
-                logPanel.println(message);
+                mLogPanel.println(message);
             }
 
             @Override
             public void onOperationProcessingStarted() {
-                logPanel.println(configPanel.getHeaderBuilder().toString());
+                mLogPanel.println(configPanel.getHeaderBuilder().toString());
             }
 
             @Override
@@ -226,20 +229,18 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
             mModel.setSelectedItem(profile);
         }
 
-        SwingHelper.enableComponents(mainPanel, !mProfiles.isEmpty());
+        configPanel.setEnabled(!mProfiles.isEmpty());
         configPanel.selectTab(0);
     }
 
     private void loadProfiles() {
-        SwingHelper.enableComponents(mainPanel, false);
+        configPanel.setEnabled(false);
 
         try {
             mProfileManager.load();
         } catch (IOException ex) {
             Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
-
-//        SwingHelper.enableComponents(mainPanel, !mProfiles.isEmpty());
     }
 
     private void profileAdd(String defaultName) {
@@ -324,11 +325,11 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
         saveProfiles();
         Profile profile = getSelectedProfile().clone();
 
-        logPanel.clear();
         if (profile.isValid()) {
             requestKmlFileObject();
         } else {
-            logPanel.println(profile.getValidationError());
+            mLogPanel.clear();
+            mLogPanel.println(profile.getValidationError());
         }
 
     }
@@ -355,6 +356,8 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
 
             Operation operation = new Operation(mOperationListener, profile);
             mOperationThread = new Thread(operation);
+            mLogPanel.clear();
+            configPanel.selectTab(0);
             mOperationThread.start();
         }
     }
@@ -429,9 +432,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
         addButton = new javax.swing.JButton();
         removeButton = new javax.swing.JButton();
         menuButton = new javax.swing.JButton();
-        mainPanel = new javax.swing.JPanel();
         configPanel = new se.trixon.photokml.ui.config.ConfigPanel();
-        logPanel = new se.trixon.almond.util.swing.LogPanel();
 
         mPopupMenu.add(renameMenuItem);
         mPopupMenu.add(cloneMenuItem);
@@ -511,12 +512,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
         topPanel.add(toolBar, gridBagConstraints);
 
         getContentPane().add(topPanel, java.awt.BorderLayout.PAGE_START);
-
-        mainPanel.setLayout(new java.awt.BorderLayout());
-        mainPanel.add(configPanel, java.awt.BorderLayout.PAGE_START);
-        mainPanel.add(logPanel, java.awt.BorderLayout.CENTER);
-
-        getContentPane().add(mainPanel, java.awt.BorderLayout.CENTER);
+        getContentPane().add(configPanel, java.awt.BorderLayout.CENTER);
 
         bindingGroup.bind();
 
@@ -560,9 +556,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JPopupMenu.Separator jSeparator2;
     private javax.swing.JPopupMenu.Separator jSeparator6;
-    private se.trixon.almond.util.swing.LogPanel logPanel;
     private javax.swing.JPopupMenu mPopupMenu;
-    private javax.swing.JPanel mainPanel;
     private javax.swing.JButton menuButton;
     private javax.swing.JMenuItem optionsMenuItem;
     private javax.swing.JComboBox<Profile> profileComboBox;
