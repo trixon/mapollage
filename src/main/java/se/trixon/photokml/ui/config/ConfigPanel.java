@@ -58,6 +58,10 @@ public class ConfigPanel extends javax.swing.JPanel {
         return logPanel;
     }
 
+    public int getSelectedIndex() {
+        return tabbedPane.getSelectedIndex();
+    }
+
     public FileChooserPanel getSourceChooserPanel() {
         return mModuleSourcePanel.getSourceChooserPanel();
     }

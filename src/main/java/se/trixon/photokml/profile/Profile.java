@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2017 Patrik Karlsson.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,15 +16,13 @@
 package se.trixon.photokml.profile;
 
 import java.io.File;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.json.simple.JSONObject;
 
 /**
  *
  * @author Patrik Karlsson
  */
-public class Profile extends ProfileBase implements Comparable<Profile>, Cloneable {
+public class Profile extends ProfileBase implements Comparable<Profile> {
 
     private static final String KEY_DESCRIPTION = "description";
     private static final String KEY_FOLDER = "folder";
@@ -53,16 +51,6 @@ public class Profile extends ProfileBase implements Comparable<Profile>, Cloneab
         setPlacemark(new ProfilePlacemark(this, (JSONObject) json.get(KEY_PLACEMARK)));
         setDescription(new ProfileDescription(this, (JSONObject) json.get(KEY_DESCRIPTION)));
         setPhoto(new ProfilePhoto(this, (JSONObject) json.get(KEY_PHOTO)));
-    }
-
-    @Override
-    public Profile clone() {
-        try {
-            return (Profile) super.clone();
-        } catch (CloneNotSupportedException ex) {
-            Logger.getLogger(Profile.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
-        }
     }
 
     @Override

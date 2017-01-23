@@ -160,7 +160,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
         inputMap.put(keyStroke, key);
 
         loadProfiles();
-        populateProfiles(null);
+        populateProfiles(null, 0);
         initListeners();
 
         mLogPanel = configPanel.getLogPanel();
@@ -217,7 +217,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
         configPanel.setEnabled(!state);
     }
 
-    private void populateProfiles(Profile profile) {
+    private void populateProfiles(Profile profile, int tab) {
         mModel.removeAllElements();
         Collections.sort(mProfiles);
 
@@ -230,7 +230,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
         }
 
         configPanel.setEnabled(!mProfiles.isEmpty());
-        configPanel.selectTab(0);
+        configPanel.selectTab(tab);
     }
 
     private void loadProfiles() {
@@ -252,7 +252,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
                 p.setName(s);
 
                 mProfiles.add(p);
-                populateProfiles(p);
+                populateProfiles(p, 0);
             } else {
                 Message.error(this, Dict.Dialog.ERROR.toString(), String.format(Dict.Dialog.ERROR_PROFILE_EXIST.toString(), s));
                 profileAdd(s);
@@ -262,16 +262,17 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
 
     private void profileClone() throws CloneNotSupportedException {
         Profile original = getSelectedProfile();
-        Profile p = original.clone();
+        Profile p = new Profile(original.getJson());
         mProfiles.add(p);
-        populateProfiles(p);
+        populateProfiles(p, configPanel.getSelectedIndex());
         String s = requestProfileName(Dict.Dialog.TITLE_PROFILE_CLONE.toString(), p.getName());
+
         if (s != null) {
             p.setName(s);
-            populateProfiles(getSelectedProfile());
+            populateProfiles(getSelectedProfile(), configPanel.getSelectedIndex());
         } else {
             mProfiles.remove(p);
-            populateProfiles(original);
+            populateProfiles(original, configPanel.getSelectedIndex());
         }
     }
 
@@ -286,7 +287,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
 
             if (retval == JOptionPane.OK_OPTION) {
                 mProfiles.remove(getSelectedProfile());
-                populateProfiles(null);
+                populateProfiles(null, 0);
             }
         }
     }
@@ -302,7 +303,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
 
             if (retval == JOptionPane.OK_OPTION) {
                 mProfiles.clear();
-                populateProfiles(null);
+                populateProfiles(null, 0);
             }
         }
     }
@@ -313,7 +314,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
             Profile existingProfile = mProfileManager.getProfile(s);
             if (existingProfile == null) {
                 getSelectedProfile().setName(s);
-                populateProfiles(getSelectedProfile());
+                populateProfiles(getSelectedProfile(), configPanel.getSelectedIndex());
             } else if (existingProfile != getSelectedProfile()) {
                 Message.error(this, Dict.Dialog.ERROR.toString(), String.format(Dict.Dialog.ERROR_PROFILE_EXIST.toString(), s));
                 profileRename(s);
@@ -323,7 +324,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
 
     private void profileRun() {
         saveProfiles();
-        Profile profile = getSelectedProfile().clone();
+        Profile profile = new Profile(getSelectedProfile().getJson());
 
         if (profile.isValid()) {
             requestKmlFileObject();

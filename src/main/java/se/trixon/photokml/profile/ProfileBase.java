@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2017 Patrik Karlsson.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -52,6 +52,11 @@ public abstract class ProfileBase {
     }
 
     protected int getInt(JSONObject object, String key) {
-        return ((Long) object.get(key)).intValue();
+        try {
+            return ((Long) object.get(key)).intValue();
+
+        } catch (ClassCastException e) {
+            return (Integer) object.get(key);
+        }
     }
 }
