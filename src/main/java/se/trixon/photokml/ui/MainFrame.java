@@ -354,6 +354,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
             mDestination = SimpleDialog.getPath();
             Profile profile = getSelectedProfile();
             profile.setDestinationFile(mDestination);
+            profile.isValid();
 
             Operation operation = new Operation(mOperationListener, profile);
             mOperationThread = new Thread(operation);
