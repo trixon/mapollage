@@ -45,6 +45,7 @@ public class ConfigPanel extends javax.swing.JPanel {
 
     public void loadProfile(Profile profile) {
         mProfile = profile;
+
         for (Component component : tabbedPane.getComponents()) {
             if (component instanceof ModulePanel) {
                 ModulePanel modulePanel = (ModulePanel) component;
@@ -129,19 +130,14 @@ public class ConfigPanel extends javax.swing.JPanel {
             }
         }
 
-        //TODO Should this be implemented.
-//        Options.getPreferences().addPreferenceChangeListener((PreferenceChangeEvent evt) -> {
-//            if (evt.getKey().equalsIgnoreCase(Options.KEY_DESCRIPTION_PHOTO)) {
-//                updatePhotoTabState();
-//            }
-//        });
-        updatePhotoTabState();
-        setEnabled(true);
-    }
+        mModuleDescriptionPanel.setPhotoDescriptionMonitor(new ModuleDescriptionPanel.PhotoDescriptionMonitor() {
+            @Override
+            public void onPhotoDescriptionChange(boolean hasPhoto) {
+                tabbedPane.setEnabledAt(tabbedPane.indexOfComponent(mModulePhotoPanel), hasPhoto);
+            }
+        });
 
-    private void updatePhotoTabState() {
-        //TODO Should this be implemented.
-//        tabbedPane.setEnabledAt(tabbedPane.indexOfComponent(mModulePhotoPanel), Options.INSTANCE.isDescriptionPhoto());
+        setEnabled(true);
     }
 
     /**

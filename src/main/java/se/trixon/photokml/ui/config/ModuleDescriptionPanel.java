@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2017 Patrik Karlsson.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -34,6 +34,7 @@ public class ModuleDescriptionPanel extends ModulePanel {
 
     private ProfileDescription mDescription;
     private final DescriptionManager mDescriptionManager = DescriptionManager.getInstance();
+    private PhotoDescriptionMonitor mPhotoDescriptionMonitor;
 
     /**
      * Creates new form ModuleDescriptionPanel
@@ -76,21 +77,28 @@ public class ModuleDescriptionPanel extends ModulePanel {
         return true;
     }
 
+    public void setPhotoDescriptionMonitor(PhotoDescriptionMonitor photoDescriptionMonitor) {
+        mPhotoDescriptionMonitor = photoDescriptionMonitor;
+    }
+
     private void init() {
         DocumentListener documentListener = new DocumentListener() {
             @Override
             public void changedUpdate(DocumentEvent e) {
                 saveOption(e.getDocument());
+                notifyPhotoDescriptionListener();
             }
 
             @Override
             public void insertUpdate(DocumentEvent e) {
                 saveOption(e.getDocument());
+                notifyPhotoDescriptionListener();
             }
 
             @Override
             public void removeUpdate(DocumentEvent e) {
                 saveOption(e.getDocument());
+                notifyPhotoDescriptionListener();
             }
 
             private void saveOption(Document document) {
@@ -104,6 +112,13 @@ public class ModuleDescriptionPanel extends ModulePanel {
 
         customTextArea.getDocument().addDocumentListener(documentListener);
         externalFileTextField.getDocument().addDocumentListener(documentListener);
+    }
+
+    private void notifyPhotoDescriptionListener() {
+        boolean hasPhoto = (photoCheckBox.isSelected() && photoCheckBox.isEnabled())
+                || (customCheckBox.isSelected() && StringUtils.containsIgnoreCase(customTextArea.getText(), "+photo"));
+
+        mPhotoDescriptionMonitor.onPhotoDescriptionChange(hasPhoto);
     }
 
     /**
@@ -245,6 +260,7 @@ public class ModuleDescriptionPanel extends ModulePanel {
         mDescription.setCustom(selected);
         customTextArea.setEnabled(selected);
         SwingHelper.enableComponents(leftPanel, !selected);
+        notifyPhotoDescriptionListener();
     }//GEN-LAST:event_customCheckBoxActionPerformed
 
     private void bearingCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bearingCheckBoxActionPerformed
@@ -261,6 +277,7 @@ public class ModuleDescriptionPanel extends ModulePanel {
 
     private void photoCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_photoCheckBoxActionPerformed
         mDescription.setPhoto(photoCheckBox.isSelected());
+        notifyPhotoDescriptionListener();
     }//GEN-LAST:event_photoCheckBoxActionPerformed
 
     private void altitudeCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_altitudeCheckBoxActionPerformed
@@ -307,5 +324,12 @@ public class ModuleDescriptionPanel extends ModulePanel {
         externalFileCheckBox.setSelected(mDescription.hasExternalFile());
         externalFileTextField.setText(mDescription.getExternalFileValue());
         customTextArea.setText(mDescription.getCustomValue());
+
+        SwingHelper.enableComponents(leftPanel, !customCheckBox.isSelected());
+    }
+
+    public interface PhotoDescriptionMonitor {
+
+        void onPhotoDescriptionChange(boolean hasPhoto);
     }
 }
