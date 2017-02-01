@@ -81,6 +81,14 @@ public class ModuleDescriptionPanel extends ModulePanel {
         mPhotoDescriptionMonitor = photoDescriptionMonitor;
     }
 
+    private void descriptionModeChanged() {
+        final boolean dynamic = dynamicRadioButton.isSelected();
+        mDescription.setCustom(dynamic);
+        customTextArea.setEnabled(dynamic);
+        SwingHelper.enableComponents(staticPanel, !dynamic);
+        notifyPhotoDescriptionListener();
+    }
+
     private void init() {
         DocumentListener documentListener = new DocumentListener() {
             @Override
@@ -116,7 +124,7 @@ public class ModuleDescriptionPanel extends ModulePanel {
 
     private void notifyPhotoDescriptionListener() {
         boolean hasPhoto = (photoCheckBox.isSelected() && photoCheckBox.isEnabled())
-                || (customCheckBox.isSelected() && StringUtils.containsIgnoreCase(customTextArea.getText(), "+photo"));
+                || (dynamicRadioButton.isSelected() && StringUtils.containsIgnoreCase(customTextArea.getText(), "+photo"));
 
         mPhotoDescriptionMonitor.onPhotoDescriptionChange(hasPhoto);
     }
@@ -134,14 +142,16 @@ public class ModuleDescriptionPanel extends ModulePanel {
 
         externalFileCheckBox = new javax.swing.JCheckBox();
         externalFileTextField = new javax.swing.JTextField();
-        leftPanel = new javax.swing.JPanel();
+        buttonGroup = new javax.swing.ButtonGroup();
+        staticRadioButton = new javax.swing.JRadioButton();
+        staticPanel = new javax.swing.JPanel();
         photoCheckBox = new javax.swing.JCheckBox();
         filenameCheckBox = new javax.swing.JCheckBox();
         dateCheckBox = new javax.swing.JCheckBox();
         coordinateCheckBox = new javax.swing.JCheckBox();
         altitudeCheckBox = new javax.swing.JCheckBox();
         bearingCheckBox = new javax.swing.JCheckBox();
-        customCheckBox = new javax.swing.JCheckBox();
+        dynamicRadioButton = new javax.swing.JRadioButton();
         customScrollPane = new javax.swing.JScrollPane();
         customTextArea = new javax.swing.JTextArea();
 
@@ -158,7 +168,18 @@ public class ModuleDescriptionPanel extends ModulePanel {
 
         setLayout(new java.awt.GridBagLayout());
 
-        leftPanel.setLayout(new javax.swing.BoxLayout(leftPanel, javax.swing.BoxLayout.PAGE_AXIS));
+        buttonGroup.add(staticRadioButton);
+        staticRadioButton.setText(Dict.STATIC.toString());
+        staticRadioButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                staticRadioButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        add(staticRadioButton, gridBagConstraints);
+
+        staticPanel.setLayout(new javax.swing.BoxLayout(staticPanel, javax.swing.BoxLayout.PAGE_AXIS));
 
         photoCheckBox.setText(Dict.PHOTO.getString());
         photoCheckBox.setToolTipText(DescriptionSegment.PHOTO.toString());
@@ -167,7 +188,7 @@ public class ModuleDescriptionPanel extends ModulePanel {
                 photoCheckBoxActionPerformed(evt);
             }
         });
-        leftPanel.add(photoCheckBox);
+        staticPanel.add(photoCheckBox);
 
         filenameCheckBox.setText(Dict.FILENAME.getString());
         filenameCheckBox.setToolTipText(DescriptionSegment.FILENAME.toString());
@@ -176,7 +197,7 @@ public class ModuleDescriptionPanel extends ModulePanel {
                 filenameCheckBoxActionPerformed(evt);
             }
         });
-        leftPanel.add(filenameCheckBox);
+        staticPanel.add(filenameCheckBox);
 
         dateCheckBox.setText(Dict.DATE.getString());
         dateCheckBox.setToolTipText(DescriptionSegment.DATE.toString());
@@ -185,7 +206,7 @@ public class ModuleDescriptionPanel extends ModulePanel {
                 dateCheckBoxActionPerformed(evt);
             }
         });
-        leftPanel.add(dateCheckBox);
+        staticPanel.add(dateCheckBox);
 
         coordinateCheckBox.setText(Dict.COORDINATE.getString());
         coordinateCheckBox.setToolTipText(DescriptionSegment.COORDINATE.toString());
@@ -194,7 +215,7 @@ public class ModuleDescriptionPanel extends ModulePanel {
                 coordinateCheckBoxActionPerformed(evt);
             }
         });
-        leftPanel.add(coordinateCheckBox);
+        staticPanel.add(coordinateCheckBox);
 
         altitudeCheckBox.setText(Dict.ALTITUDE.getString());
         altitudeCheckBox.setToolTipText(DescriptionSegment.ALTITUDE.toString());
@@ -203,7 +224,7 @@ public class ModuleDescriptionPanel extends ModulePanel {
                 altitudeCheckBoxActionPerformed(evt);
             }
         });
-        leftPanel.add(altitudeCheckBox);
+        staticPanel.add(altitudeCheckBox);
 
         bearingCheckBox.setText(Dict.BEARING.getString());
         bearingCheckBox.setToolTipText(DescriptionSegment.BEARING.toString());
@@ -212,32 +233,32 @@ public class ModuleDescriptionPanel extends ModulePanel {
                 bearingCheckBoxActionPerformed(evt);
             }
         });
-        leftPanel.add(bearingCheckBox);
+        staticPanel.add(bearingCheckBox);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridy = 1;
         gridBagConstraints.gridheight = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        add(leftPanel, gridBagConstraints);
+        add(staticPanel, gridBagConstraints);
 
-        customCheckBox.setText(Dict.CUSTOM_TEXT.getString());
-        customCheckBox.addActionListener(new java.awt.event.ActionListener() {
+        buttonGroup.add(dynamicRadioButton);
+        dynamicRadioButton.setText(Dict.DYNAMIC.toString());
+        dynamicRadioButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                customCheckBoxActionPerformed(evt);
+                dynamicRadioButtonActionPerformed(evt);
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 8, 3, 0);
-        add(customCheckBox, gridBagConstraints);
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        add(dynamicRadioButton, gridBagConstraints);
 
         customTextArea.setColumns(20);
         customTextArea.setRows(5);
 
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, customCheckBox, org.jdesktop.beansbinding.ELProperty.create("${selected}"), customTextArea, org.jdesktop.beansbinding.BeanProperty.create("enabled"));
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, new javax.swing.JCheckBox(), org.jdesktop.beansbinding.ELProperty.create("${selected}"), customTextArea, org.jdesktop.beansbinding.BeanProperty.create("enabled"));
         bindingGroup.addBinding(binding);
 
         customScrollPane.setViewportView(customTextArea);
@@ -254,14 +275,6 @@ public class ModuleDescriptionPanel extends ModulePanel {
 
         bindingGroup.bind();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void customCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_customCheckBoxActionPerformed
-        final boolean selected = customCheckBox.isSelected();
-        mDescription.setCustom(selected);
-        customTextArea.setEnabled(selected);
-        SwingHelper.enableComponents(leftPanel, !selected);
-        notifyPhotoDescriptionListener();
-    }//GEN-LAST:event_customCheckBoxActionPerformed
 
     private void bearingCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bearingCheckBoxActionPerformed
         mDescription.setBearing(bearingCheckBox.isSelected());
@@ -293,19 +306,29 @@ public class ModuleDescriptionPanel extends ModulePanel {
         externalFileTextField.setEnabled(externalFileCheckBox.isSelected());
     }//GEN-LAST:event_externalFileCheckBoxActionPerformed
 
+    private void dynamicRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dynamicRadioButtonActionPerformed
+        descriptionModeChanged();
+    }//GEN-LAST:event_dynamicRadioButtonActionPerformed
+
+    private void staticRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_staticRadioButtonActionPerformed
+        descriptionModeChanged();
+    }//GEN-LAST:event_staticRadioButtonActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBox altitudeCheckBox;
     private javax.swing.JCheckBox bearingCheckBox;
+    private javax.swing.ButtonGroup buttonGroup;
     private javax.swing.JCheckBox coordinateCheckBox;
-    private javax.swing.JCheckBox customCheckBox;
     private javax.swing.JScrollPane customScrollPane;
     private javax.swing.JTextArea customTextArea;
     private javax.swing.JCheckBox dateCheckBox;
+    private javax.swing.JRadioButton dynamicRadioButton;
     private javax.swing.JCheckBox externalFileCheckBox;
     private javax.swing.JTextField externalFileTextField;
     private javax.swing.JCheckBox filenameCheckBox;
-    private javax.swing.JPanel leftPanel;
     private javax.swing.JCheckBox photoCheckBox;
+    private javax.swing.JPanel staticPanel;
+    private javax.swing.JRadioButton staticRadioButton;
     private org.jdesktop.beansbinding.BindingGroup bindingGroup;
     // End of variables declaration//GEN-END:variables
 
@@ -313,11 +336,11 @@ public class ModuleDescriptionPanel extends ModulePanel {
     public void load(Profile profile) {
         mProfile = profile;
         mDescription = mProfile.getDescription();
-
+        staticRadioButton.setSelected(true);
         altitudeCheckBox.setSelected(mDescription.hasAltitude());
         bearingCheckBox.setSelected(mDescription.hasBearing());
         coordinateCheckBox.setSelected(mDescription.hasCoordinate());
-        customCheckBox.setSelected(mDescription.isCustom());
+        dynamicRadioButton.setSelected(mDescription.isCustom());
         dateCheckBox.setSelected(mDescription.hasDate());
         photoCheckBox.setSelected(mDescription.hasPhoto());
         filenameCheckBox.setSelected(mDescription.hasFilename());
@@ -325,7 +348,7 @@ public class ModuleDescriptionPanel extends ModulePanel {
         externalFileTextField.setText(mDescription.getExternalFileValue());
         customTextArea.setText(mDescription.getCustomValue());
 
-        SwingHelper.enableComponents(leftPanel, !customCheckBox.isSelected());
+        descriptionModeChanged();
     }
 
     public interface PhotoDescriptionMonitor {
