@@ -163,7 +163,7 @@ public class Operation implements Runnable {
 
             getFolder(file, exifDate).createAndAddPlacemark()
                     .withName(getPlacemarkName(file, exifDate))
-                    .withDescription(getPlacemarkDescription(file, gpsDirectory, geoLocation, exifDate))
+                    .withDescription(getPlacemarkDescription(file, gpsDirectory, exifDate))
                     .withOpen(Boolean.TRUE)
                     .createAndSetPoint()
                     .addToCoordinates(lonInt / format, latInt / format);
@@ -336,15 +336,19 @@ public class Operation implements Runnable {
         return imageSrc;
     }
 
-    private String getPlacemarkDescription(File file, GpsDirectory gpsDirectory, GeoLocation geoLocation, Date exifDate) throws ImageProcessingException {
-        GpsDescriptor gpsDescriptor = new GpsDescriptor(gpsDirectory);
+    private String getPlacemarkDescription(File file, GpsDirectory gpsDirectory, Date exifDate) throws ImageProcessingException {
+        GpsDescriptor gpsDescriptor = null;
+        if (gpsDirectory != null) {
+            gpsDescriptor = new GpsDescriptor(gpsDirectory);
+        }
+
         String desc = mProfileDescription.isCustom() ? mProfileDescription.getCustomValue() : getStaticDescription();
 
         desc = StringUtils.replace(desc, DescriptionSegment.PHOTO.toString(), getDescPhoto(file));
         desc = StringUtils.replace(desc, DescriptionSegment.FILENAME.toString(), file.getName());
         desc = StringUtils.replace(desc, DescriptionSegment.DATE.toString(), mDateFormatDate.format(exifDate));
 
-        if (exifDate != null) {
+        if (gpsDirectory != null && gpsDescriptor != null) {
             desc = StringUtils.replace(desc, DescriptionSegment.ALTITUDE.toString(), gpsDescriptor.getGpsAltitudeDescription());
             desc = StringUtils.replace(desc, DescriptionSegment.COORDINATE.toString(), gpsDescriptor.getDegreesMinutesSecondsDescription());
 
@@ -354,6 +358,10 @@ public class Operation implements Runnable {
             } else {
                 desc = StringUtils.replace(desc, DescriptionSegment.BEARING.toString(), "");
             }
+        } else {
+            desc = StringUtils.replace(desc, DescriptionSegment.ALTITUDE.toString(), "");
+            desc = StringUtils.replace(desc, DescriptionSegment.COORDINATE.toString(), "");
+            desc = StringUtils.replace(desc, DescriptionSegment.BEARING.toString(), "");
         }
 
         return desc;
