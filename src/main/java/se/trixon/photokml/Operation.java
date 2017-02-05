@@ -104,7 +104,14 @@ public class Operation implements Runnable {
         mListener.onOperationStarted();
         String status;
         mRootFolder = mKml.createAndSetFolder().withName(mProfileFolder.getRootName());
-        mRootFolder.setDescription(mProfileFolder.getRootDescription());
+
+        String href = "<a href=\"http://trixon.se/projects/java/photokml/\">PhotoKml</a>";
+        String description = String.format("<p>%s %s</p><p>%s</p>%s",
+                Dict.MADE_WITH.toString(),
+                href,
+                new Date().toString(),
+                mProfileFolder.getRootDescription().replaceAll("\\n", "<br />"));
+        mRootFolder.setDescription(description);
 
         mListener.onOperationProcessingStarted();
         mInterrupted = !generateFileList();
