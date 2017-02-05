@@ -21,10 +21,9 @@ import javax.swing.text.Document;
 import org.apache.commons.lang3.StringUtils;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.swing.SwingHelper;
-import se.trixon.photokml.DescriptionManager;
-import se.trixon.photokml.DescriptionManager.DescriptionSegment;
 import se.trixon.photokml.profile.Profile;
 import se.trixon.photokml.profile.ProfileDescription;
+import se.trixon.photokml.profile.ProfileDescription.DescriptionSegment;
 
 /**
  *
@@ -33,7 +32,6 @@ import se.trixon.photokml.profile.ProfileDescription;
 public class ModuleDescriptionPanel extends ModulePanel {
 
     private ProfileDescription mDescription;
-    private final DescriptionManager mDescriptionManager = DescriptionManager.getInstance();
     private PhotoDescriptionMonitor mPhotoDescriptionMonitor;
 
     /**
@@ -85,6 +83,7 @@ public class ModuleDescriptionPanel extends ModulePanel {
         final boolean dynamic = dynamicRadioButton.isSelected();
         mDescription.setCustom(dynamic);
         customTextArea.setEnabled(dynamic);
+        defaultButton.setEnabled(dynamic);
         SwingHelper.enableComponents(staticPanel, !dynamic);
         notifyPhotoDescriptionListener();
     }
@@ -152,6 +151,7 @@ public class ModuleDescriptionPanel extends ModulePanel {
         altitudeCheckBox = new javax.swing.JCheckBox();
         bearingCheckBox = new javax.swing.JCheckBox();
         dynamicRadioButton = new javax.swing.JRadioButton();
+        defaultButton = new javax.swing.JButton();
         customScrollPane = new javax.swing.JScrollPane();
         customTextArea = new javax.swing.JTextArea();
 
@@ -238,12 +238,11 @@ public class ModuleDescriptionPanel extends ModulePanel {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
-        gridBagConstraints.gridheight = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         add(staticPanel, gridBagConstraints);
 
         buttonGroup.add(dynamicRadioButton);
-        dynamicRadioButton.setText(Dict.DYNAMIC.toString());
+        dynamicRadioButton.setText(Dict.CUSTOMIZED.toString());
         dynamicRadioButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 dynamicRadioButtonActionPerformed(evt);
@@ -255,17 +254,26 @@ public class ModuleDescriptionPanel extends ModulePanel {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         add(dynamicRadioButton, gridBagConstraints);
 
+        defaultButton.setText(Dict.DEFAULT.toString());
+        defaultButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                defaultButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        add(defaultButton, gridBagConstraints);
+
         customTextArea.setColumns(20);
         customTextArea.setRows(5);
-
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, new javax.swing.JCheckBox(), org.jdesktop.beansbinding.ELProperty.create("${selected}"), customTextArea, org.jdesktop.beansbinding.BeanProperty.create("enabled"));
-        bindingGroup.addBinding(binding);
-
         customScrollPane.setViewportView(customTextArea);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.weightx = 1.0;
@@ -314,6 +322,10 @@ public class ModuleDescriptionPanel extends ModulePanel {
         descriptionModeChanged();
     }//GEN-LAST:event_staticRadioButtonActionPerformed
 
+    private void defaultButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_defaultButtonActionPerformed
+        customTextArea.setText(ProfileDescription.getDefaultCustomValue());
+    }//GEN-LAST:event_defaultButtonActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBox altitudeCheckBox;
     private javax.swing.JCheckBox bearingCheckBox;
@@ -322,6 +334,7 @@ public class ModuleDescriptionPanel extends ModulePanel {
     private javax.swing.JScrollPane customScrollPane;
     private javax.swing.JTextArea customTextArea;
     private javax.swing.JCheckBox dateCheckBox;
+    private javax.swing.JButton defaultButton;
     private javax.swing.JRadioButton dynamicRadioButton;
     private javax.swing.JCheckBox externalFileCheckBox;
     private javax.swing.JTextField externalFileTextField;

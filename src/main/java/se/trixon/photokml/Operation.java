@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2017 Patrik Karlsson.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -42,6 +42,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.TimeZone;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
@@ -49,9 +50,9 @@ import se.trixon.almond.util.BundleHelper;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.GraphicsHelper;
 import se.trixon.almond.util.Scaler;
-import se.trixon.photokml.DescriptionManager.DescriptionSegment;
 import se.trixon.photokml.profile.Profile;
 import se.trixon.photokml.profile.ProfileDescription;
+import se.trixon.photokml.profile.ProfileDescription.DescriptionSegment;
 import se.trixon.photokml.profile.ProfileFolder;
 import se.trixon.photokml.profile.ProfilePhoto;
 import se.trixon.photokml.profile.ProfilePlacemark;
@@ -65,11 +66,11 @@ public class Operation implements Runnable {
 
     private final ResourceBundle mBundle;
     private final DateFormat mDateFormatDate = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM);
-    private File mDestinationFile;
+    private final File mDestinationFile;
     private final List<File> mFiles = new ArrayList<>();
     private final Map<String, Folder> mFolders = new HashMap<>();
     private boolean mInterrupted = false;
-    private Kml mKml = new Kml();
+    private final Kml mKml = new Kml();
     private final OperationListener mListener;
     private int mNumOfExif;
     private int mNumOfGps;
@@ -133,9 +134,6 @@ public class Operation implements Runnable {
         } else if (!mFiles.isEmpty()) {
             saveToFile();
         }
-//            if (mFiles.isEmpty()) {
-//                mListener.onOperationFailed();
-//            }
     }
 
     private void addFileToKml(File file) throws ImageProcessingException, IOException {
@@ -144,7 +142,6 @@ public class Operation implements Runnable {
         Metadata metadata = ImageMetadataReader.readMetadata(file);
         ExifSubIFDDirectory exifDirectory = metadata.getFirstDirectoryOfType(ExifSubIFDDirectory.class);
         GpsDirectory gpsDirectory = metadata.getFirstDirectoryOfType(GpsDirectory.class);
-        GpsDescriptor gpsDescriptor = new GpsDescriptor(gpsDirectory);
 
         if (exifDirectory != null) {
             mNumOfExif++;
@@ -156,95 +153,18 @@ public class Operation implements Runnable {
         }
 
         Date exifDate = getImageDate(file, exifDirectory);
-        String name;
-
-        switch (mProfilePlacemark.getNameBy()) {
-            case ProfilePlacemark.NAME_BY_DATE:
-                try {
-                    name = mProfilePlacemark.getDateFormat().format(exifDate);
-                } catch (IllegalArgumentException ex) {
-                    name = "invalid exif date";
-                } catch (NullPointerException ex) {
-                    name = "invalid exif date";
-                    mListener.onOperationError(" ! Invalid date in " + file.getAbsolutePath());
-                }
-                break;
-
-            case ProfilePlacemark.NAME_BY_FILE:
-                name = FilenameUtils.getBaseName(file.getAbsolutePath());
-                break;
-
-            case ProfilePlacemark.NAME_BY_NONE:
-                name = "";
-                break;
-
-            default:
-                throw new AssertionError();
-        }
-
-        String description;
-        if (mProfileDescription.isCustom()) {
-            description = mProfileDescription.getCustomValue();
-
-            description = StringUtils.replace(description, DescriptionSegment.PHOTO.toString(), getDescPhoto(file));
-            description = StringUtils.replace(description, DescriptionSegment.FILENAME.toString(), file.getName());
-            description = StringUtils.replace(description, DescriptionSegment.DATE.toString(), mDateFormatDate.format(exifDate));
-
-        } else {
-            StringBuilder descriptionBuilder = new StringBuilder();
-////            descriptionBuilder.append("<![CDATA[");
-//            if (mProfileDescription.hasPhoto()) {
-//                addPhoto(descriptionBuilder, file, exifDirectory);
-//            }
-//
-//            if (mOptions.isDescriptionFilename()) {
-//                descriptionBuilder.append(sourceFile.getName()).append("<br />");
-//            }
-//
-//            if (mOptions.isDescriptionDate()) {
-//                descriptionBuilder.append(Toolbox.getDefaultDateFormat().format(exifDate)).append("<br />");
-//            }
-        }
-        String desc = "";
-        GeoLocation geoLocation = null;
-        if (mProfilePlacemark.hasCoordinate()) {
-            geoLocation = new GeoLocation(mProfilePlacemark.getLat(), mProfilePlacemark.getLon());
-        }
-
-        if (gpsDirectory != null) {
-            geoLocation = gpsDirectory.getGeoLocation();
-            if (geoLocation == null) {
-                throw new ImageProcessingException(file.getAbsolutePath());
-            }
-
-            if (geoLocation.isZero()) {
-                geoLocation = new GeoLocation(mProfilePlacemark.getLat(), mProfilePlacemark.getLon());
-                gpsDirectory = null;
-            }
-
-            if (exifDate != null) {
-                desc = StringUtils.replace(desc, DescriptionSegment.ALTITUDE.toString(), gpsDescriptor.getGpsAltitudeDescription());
-                desc = StringUtils.replace(desc, DescriptionSegment.COORDINATE.toString(), gpsDescriptor.getDegreesMinutesSecondsDescription());
-
-                String bearing = gpsDescriptor.getGpsDirectionDescription(GpsDirectory.TAG_DEST_BEARING);
-                if (bearing != null) {
-                    desc = StringUtils.replace(desc, DescriptionSegment.BEARING.toString(), gpsDescriptor.getGpsAltitudeDescription());
-                }
-            }
-        }
-
-//            descriptionBuilder.append("]]>");
         boolean shouldAppendToKml = gpsDirectory != null || mProfilePlacemark.hasCoordinate();
 
         if (shouldAppendToKml) {
+            GeoLocation geoLocation = getPlacemarkGeoLocation(file, gpsDirectory);
             double format = 1000000;
             int latInt = (int) (geoLocation.getLatitude() * format);
             int lonInt = (int) (geoLocation.getLongitude() * format);
 
             getFolder(file, exifDate).createAndAddPlacemark()
-                    .withName(name)
+                    .withName(getPlacemarkName(file, exifDate))
+                    .withDescription(getPlacemarkDescription(file, gpsDirectory, geoLocation, exifDate))
                     .withOpen(Boolean.TRUE)
-                    .withDescription(desc)
                     .createAndSetPoint()
                     .addToCoordinates(lonInt / format, latInt / format);
 
@@ -258,7 +178,7 @@ public class Operation implements Runnable {
         mListener.onOperationLog(Dict.GENERATING_FILELIST.toString());
         PathMatcher pathMatcher = mProfileSource.getPathMatcher();
 
-        EnumSet<FileVisitOption> fileVisitOptions = EnumSet.noneOf(FileVisitOption.class);
+        EnumSet<FileVisitOption> fileVisitOptions;
         if (mProfileSource.isFollowLinks()) {
             fileVisitOptions = EnumSet.of(FileVisitOption.FOLLOW_LINKS);
         } else {
@@ -364,7 +284,7 @@ public class Operation implements Runnable {
         Date date;
 
         if (exifDirectory.containsTag(ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL)) {
-            date = exifDirectory.getDate(ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL);
+            date = exifDirectory.getDate(ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL, TimeZone.getDefault());
         } else {
             long millis = 0;
             try {
@@ -409,6 +329,111 @@ public class Operation implements Runnable {
         }
 
         return imageSrc;
+    }
+
+    private String getPlacemarkDescription(File file, GpsDirectory gpsDirectory, GeoLocation geoLocation, Date exifDate) throws ImageProcessingException {
+        GpsDescriptor gpsDescriptor = new GpsDescriptor(gpsDirectory);
+        String desc = mProfileDescription.isCustom() ? mProfileDescription.getCustomValue() : getStaticDescription();
+
+        desc = StringUtils.replace(desc, DescriptionSegment.PHOTO.toString(), getDescPhoto(file));
+        desc = StringUtils.replace(desc, DescriptionSegment.FILENAME.toString(), file.getName());
+        desc = StringUtils.replace(desc, DescriptionSegment.DATE.toString(), mDateFormatDate.format(exifDate));
+
+        if (exifDate != null) {
+            desc = StringUtils.replace(desc, DescriptionSegment.ALTITUDE.toString(), gpsDescriptor.getGpsAltitudeDescription());
+            desc = StringUtils.replace(desc, DescriptionSegment.COORDINATE.toString(), gpsDescriptor.getDegreesMinutesSecondsDescription());
+
+            String bearing = gpsDescriptor.getGpsDirectionDescription(GpsDirectory.TAG_DEST_BEARING);
+            if (bearing != null) {
+                desc = StringUtils.replace(desc, DescriptionSegment.BEARING.toString(), gpsDescriptor.getGpsAltitudeDescription());
+            } else {
+                desc = StringUtils.replace(desc, DescriptionSegment.BEARING.toString(), "");
+            }
+        }
+
+        return desc;
+    }
+
+    private GeoLocation getPlacemarkGeoLocation(File file, GpsDirectory gpsDirectory) throws ImageProcessingException {
+        GeoLocation geoLocation = null;
+
+        if (mProfilePlacemark.hasCoordinate()) {
+            geoLocation = new GeoLocation(mProfilePlacemark.getLat(), mProfilePlacemark.getLon());
+        }
+
+        if (gpsDirectory != null) {
+            geoLocation = gpsDirectory.getGeoLocation();
+            if (geoLocation == null) {
+                throw new ImageProcessingException(file.getAbsolutePath());
+            }
+
+            if (geoLocation.isZero()) {
+                geoLocation = new GeoLocation(mProfilePlacemark.getLat(), mProfilePlacemark.getLon());
+                gpsDirectory = null;
+            }
+        }
+
+        return geoLocation;
+    }
+
+    private String getPlacemarkName(File file, Date exifDate) {
+        String name;
+
+        switch (mProfilePlacemark.getNameBy()) {
+            case ProfilePlacemark.NAME_BY_DATE:
+                try {
+                    name = mProfilePlacemark.getDateFormat().format(exifDate);
+                } catch (IllegalArgumentException ex) {
+                    name = "invalid exif date";
+                } catch (NullPointerException ex) {
+                    name = "invalid exif date";
+                    mListener.onOperationError(" ! Invalid date in " + file.getAbsolutePath());
+                }
+                break;
+
+            case ProfilePlacemark.NAME_BY_FILE:
+                name = FilenameUtils.getBaseName(file.getAbsolutePath());
+                break;
+
+            case ProfilePlacemark.NAME_BY_NONE:
+                name = "";
+                break;
+
+            default:
+                throw new AssertionError();
+        }
+
+        return name;
+    }
+
+    private String getStaticDescription() {
+        StringBuilder builder = new StringBuilder();
+
+        if (mProfileDescription.hasPhoto()) {
+            builder.append(DescriptionSegment.PHOTO.toHtml());
+        }
+
+        if (mProfileDescription.hasFilename()) {
+            builder.append(DescriptionSegment.FILENAME.toHtml());
+        }
+
+        if (mProfileDescription.hasDate()) {
+            builder.append(DescriptionSegment.DATE.toHtml());
+        }
+
+        if (mProfileDescription.hasCoordinate()) {
+            builder.append(DescriptionSegment.COORDINATE.toHtml());
+        }
+
+        if (mProfileDescription.hasAltitude()) {
+            builder.append(DescriptionSegment.ALTITUDE.toHtml());
+        }
+
+        if (mProfileDescription.hasBearing()) {
+            builder.append(DescriptionSegment.BEARING.toHtml());
+        }
+
+        return builder.toString();
     }
 
     private void saveToFile() {
@@ -469,5 +494,4 @@ public class Operation implements Runnable {
             mListener.onOperationLog(ex.getLocalizedMessage());
         }
     }
-
 }

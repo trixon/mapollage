@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2017 Patrik Karlsson.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,8 +17,6 @@ package se.trixon.photokml.profile;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
-import se.trixon.photokml.DescriptionManager;
-import se.trixon.photokml.DescriptionManager.DescriptionSegment;
 
 /**
  *
@@ -36,6 +34,7 @@ public class ProfileDescription extends ProfileBase {
     public static final String KEY_EXTERNAL_FILE_VALUE = "externalFileValue";
     public static final String KEY_FILENAME = "filename";
     public static final String KEY_PHOTO = "photo";
+    private static final String sDefaultCustomValue;
 
     private boolean mAltitude;
     private boolean mBearing;
@@ -43,7 +42,6 @@ public class ProfileDescription extends ProfileBase {
     private boolean mCustom;
     private String mCustomValue;
     private boolean mDate = true;
-    private static String sDefaultCustomValue;
     private boolean mExternalFile;
     private String mExternalFileValue = "description.csv";
     private boolean mFilename = true;
@@ -51,17 +49,25 @@ public class ProfileDescription extends ProfileBase {
     private final Profile mProfile;
 
     static {
-        System.out.println("DO INIT ME*****************");
-        DescriptionManager descriptionManager = DescriptionManager.getInstance();
         StringBuilder builder = new StringBuilder();
-        builder.append(descriptionManager.getSegmentString(DescriptionSegment.PHOTO));
-        builder.append(descriptionManager.getSegmentString(DescriptionSegment.DATE));
-        builder.append(descriptionManager.getSegmentString(DescriptionSegment.FILENAME));
-        builder.append(descriptionManager.getSegmentString(DescriptionSegment.COORDINATE));
-        builder.append(descriptionManager.getSegmentString(DescriptionSegment.BEARING));
-        builder.append(descriptionManager.getSegmentString(DescriptionSegment.ALTITUDE));
+
+//        builder.append("<p>").append(DescriptionSegment.PHOTO.toString()).append("</p>\n")
+//                .append("<h2>").append(DescriptionSegment.FILENAME.toString()).append("</h2>\n")
+//                .append("<p>").append(DescriptionSegment.DATE.toString()).append("</p>\n")
+//                .append("<p>").append(DescriptionSegment.COORDINATE.toString()).append(", ").append(DescriptionSegment.ALTITUDE.toString()).append("</p>\n")
+//                .append("<p>").append(DescriptionSegment.BEARING.toString()).append("</p>\n");
+        builder.append(DescriptionSegment.PHOTO.toHtml())
+                .append(DescriptionSegment.FILENAME.toHtml())
+                .append(DescriptionSegment.DATE.toHtml())
+                .append(DescriptionSegment.COORDINATE.toHtml())
+                .append(DescriptionSegment.ALTITUDE.toHtml())
+                .append(DescriptionSegment.BEARING.toHtml());
 
         sDefaultCustomValue = builder.toString();
+    }
+
+    public static String getDefaultCustomValue() {
+        return sDefaultCustomValue;
     }
 
     public ProfileDescription(Profile profile, JSONObject json) {
@@ -192,5 +198,25 @@ public class ProfileDescription extends ProfileBase {
     @Override
     public String toDebugString() {
         return "ProfileDescription{" + "mProfile=" + mProfile + ", mAltitude=" + mAltitude + ", mBearing=" + mBearing + ", mCoordinate=" + mCoordinate + ", mCustom=" + mCustom + ", mDate=" + mDate + ", mExternalFile=" + mExternalFile + ", mExternalFileValue=" + mExternalFileValue + ", mCustomValue=" + mCustomValue + ", mFilename=" + mFilename + ", mPhoto=" + mPhoto + '}';
+    }
+
+    public static enum DescriptionSegment {
+        ALTITUDE, BEARING, COORDINATE, DATE, FILENAME, PHOTO;
+
+        @Override
+        public String toString() {
+            return String.format("+%s", name().toLowerCase());
+        }
+
+        public String toHtml() {
+            String begTag = "<p>";
+            String endTag = "</p>";
+            if (this == FILENAME) {
+                begTag = "<h2>";
+                endTag = "</h2>";
+
+            }
+            return String.format("%s%s%s\n", begTag, toString(), endTag);
+        }
     }
 }
