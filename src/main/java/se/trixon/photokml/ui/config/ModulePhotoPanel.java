@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2017 Patrik Karlsson.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,6 +20,7 @@ import javax.swing.event.DocumentListener;
 import se.trixon.almond.util.Dict;
 import se.trixon.photokml.profile.Profile;
 import se.trixon.photokml.profile.ProfilePhoto;
+import se.trixon.photokml.profile.ProfilePhoto.Reference;
 
 /**
  *
@@ -47,9 +48,9 @@ public class ModulePhotoPanel extends ModulePanel {
         optAppend(sb, mProfilePhoto.isLimitWidth(), String.format("%s: %s", widthCheckBox.getText(), mProfilePhoto.getWidthLimit()));
         optAppend(sb, mProfilePhoto.isLimitHeight(), String.format("%s: %s", heightCheckBox.getText(), mProfilePhoto.getHeightLimit()));
         optAppend(sb, lowerCaseExtCheckBox.isSelected(), lowerCaseExtCheckBox.getText());
-        optAppend(sb, mProfilePhoto.isBaseUrl(), String.format("%s: %s",
-                urlCheckBox.getText(),
-                urlTextField.getText()));
+//        optAppend(sb, mProfilePhoto.isBaseUrl(), String.format("%s: %s",
+//                urlCheckBox.getText(),
+//                urlTextField.getText()));
 
         sb.append("\n");
 
@@ -96,14 +97,18 @@ public class ModulePhotoPanel extends ModulePanel {
         java.awt.GridBagConstraints gridBagConstraints;
         bindingGroup = new org.jdesktop.beansbinding.BindingGroup();
 
+        referenceButtonGroup = new javax.swing.ButtonGroup();
         widthCheckBox = new javax.swing.JCheckBox();
         widthSpinner = new javax.swing.JSpinner();
         heightCheckBox = new javax.swing.JCheckBox();
         heightSpinner = new javax.swing.JSpinner();
-        urlCheckBox = new javax.swing.JCheckBox();
         urlTextField = new javax.swing.JTextField();
         lowerCaseExtCheckBox = new javax.swing.JCheckBox();
         jPanel2 = new javax.swing.JPanel();
+        referenceLabel = new javax.swing.JLabel();
+        relativeRadioButton = new javax.swing.JRadioButton();
+        absoluteRadioButton = new javax.swing.JRadioButton();
+        absolutePathRadioButton = new javax.swing.JRadioButton();
 
         setLayout(new java.awt.GridBagLayout());
 
@@ -171,30 +176,16 @@ public class ModulePhotoPanel extends ModulePanel {
         gridBagConstraints.insets = new java.awt.Insets(0, 8, 0, 0);
         add(heightSpinner, gridBagConstraints);
 
-        urlCheckBox.setText(bundle.getString("ModulePhotoPanel.urlCheckBox.text")); // NOI18N
-        urlCheckBox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                urlCheckBoxActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 3;
-        gridBagConstraints.gridwidth = 3;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(3, 0, 0, 0);
-        add(urlCheckBox, gridBagConstraints);
-
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, urlCheckBox, org.jdesktop.beansbinding.ELProperty.create("${selected}"), urlTextField, org.jdesktop.beansbinding.BeanProperty.create("enabled"));
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, absolutePathRadioButton, org.jdesktop.beansbinding.ELProperty.create("${selected}"), urlTextField, org.jdesktop.beansbinding.BeanProperty.create("enabled"));
         bindingGroup.addBinding(binding);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 4;
+        gridBagConstraints.gridy = 7;
         gridBagConstraints.gridwidth = 3;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
+        gridBagConstraints.insets = new java.awt.Insets(3, 24, 3, 0);
         add(urlTextField, gridBagConstraints);
 
         lowerCaseExtCheckBox.setText(bundle.getString("ModulePhotoPanel.lowerCaseExtCheckBox.text")); // NOI18N
@@ -206,30 +197,81 @@ public class ModulePhotoPanel extends ModulePanel {
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.gridwidth = 3;
+        gridBagConstraints.gridy = 8;
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
+        gridBagConstraints.insets = new java.awt.Insets(8, 0, 3, 0);
         add(lowerCaseExtCheckBox, gridBagConstraints);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 286, Short.MAX_VALUE)
+            .addGap(0, 443, Short.MAX_VALUE)
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 105, Short.MAX_VALUE)
+            .addGap(0, 224, Short.MAX_VALUE)
         );
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 5;
+        gridBagConstraints.gridy = 9;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
         add(jPanel2, gridBagConstraints);
+
+        referenceLabel.setText(Dict.FILE_REFERENCE.toString());
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(8, 0, 0, 0);
+        add(referenceLabel, gridBagConstraints);
+
+        referenceButtonGroup.add(relativeRadioButton);
+        relativeRadioButton.setText(Dict.RELATIVE.toString());
+        relativeRadioButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                relativeRadioButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        add(relativeRadioButton, gridBagConstraints);
+
+        referenceButtonGroup.add(absoluteRadioButton);
+        absoluteRadioButton.setText(Dict.ABSOLUTE.toString());
+        absoluteRadioButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                absoluteRadioButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        add(absoluteRadioButton, gridBagConstraints);
+
+        referenceButtonGroup.add(absolutePathRadioButton);
+        absolutePathRadioButton.setText(bundle.getString("ModulePhotoPanel.absolutePathRadioButton.text")); // NOI18N
+        absolutePathRadioButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                absolutePathRadioButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 5;
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        add(absolutePathRadioButton, gridBagConstraints);
 
         bindingGroup.bind();
     }// </editor-fold>//GEN-END:initComponents
@@ -241,10 +283,6 @@ public class ModulePhotoPanel extends ModulePanel {
     private void heightCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_heightCheckBoxActionPerformed
         mProfilePhoto.setLimitHeight(heightCheckBox.isSelected());
     }//GEN-LAST:event_heightCheckBoxActionPerformed
-
-    private void urlCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_urlCheckBoxActionPerformed
-        mProfilePhoto.setBaseUrl(urlCheckBox.isSelected());
-    }//GEN-LAST:event_urlCheckBoxActionPerformed
 
     private void lowerCaseExtCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_lowerCaseExtCheckBoxActionPerformed
         mProfilePhoto.setForceLowerCaseExtension(lowerCaseExtCheckBox.isSelected());
@@ -258,12 +296,28 @@ public class ModulePhotoPanel extends ModulePanel {
         mProfilePhoto.setHeightLimit((Integer) heightSpinner.getModel().getValue());
     }//GEN-LAST:event_heightSpinnerStateChanged
 
+    private void relativeRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_relativeRadioButtonActionPerformed
+        mProfilePhoto.setReference(Reference.RELATIVE);
+    }//GEN-LAST:event_relativeRadioButtonActionPerformed
+
+    private void absoluteRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_absoluteRadioButtonActionPerformed
+        mProfilePhoto.setReference(Reference.ABSOLUTE);
+    }//GEN-LAST:event_absoluteRadioButtonActionPerformed
+
+    private void absolutePathRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_absolutePathRadioButtonActionPerformed
+        mProfilePhoto.setReference(Reference.ABSOLUTE_PATH);
+    }//GEN-LAST:event_absolutePathRadioButtonActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JRadioButton absolutePathRadioButton;
+    private javax.swing.JRadioButton absoluteRadioButton;
     private javax.swing.JCheckBox heightCheckBox;
     private javax.swing.JSpinner heightSpinner;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JCheckBox lowerCaseExtCheckBox;
-    private javax.swing.JCheckBox urlCheckBox;
+    private javax.swing.ButtonGroup referenceButtonGroup;
+    private javax.swing.JLabel referenceLabel;
+    private javax.swing.JRadioButton relativeRadioButton;
     private javax.swing.JTextField urlTextField;
     private javax.swing.JCheckBox widthCheckBox;
     private javax.swing.JSpinner widthSpinner;
@@ -281,7 +335,22 @@ public class ModulePhotoPanel extends ModulePanel {
 
         lowerCaseExtCheckBox.setSelected(mProfilePhoto.isForceLowerCaseExtension());
 
-        urlCheckBox.setSelected(mProfilePhoto.isBaseUrl());
         urlTextField.setText(mProfilePhoto.getBaseUrlValue());
+        switch (mProfilePhoto.getReference()) {
+            case ABSOLUTE:
+                absoluteRadioButton.setSelected(true);
+                absoluteRadioButtonActionPerformed(null);
+                break;
+
+            case ABSOLUTE_PATH:
+                absolutePathRadioButton.setSelected(true);
+                absolutePathRadioButtonActionPerformed(null);
+                break;
+
+            case RELATIVE:
+                relativeRadioButton.setSelected(true);
+                relativeRadioButtonActionPerformed(null);
+                break;
+        }
     }
 }

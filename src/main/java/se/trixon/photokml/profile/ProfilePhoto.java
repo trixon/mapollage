@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2017 Patrik Karlsson.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,21 +24,21 @@ import org.json.simple.JSONObject;
  */
 public class ProfilePhoto extends ProfileBase {
 
-    public static final String KEY_BASE_URL = "baseUrl";
     public static final String KEY_BASE_URL_VALUE = "baseUrlValue";
     public static final String KEY_FORCE_LOWER_CASE_EXTENSION = "forceLowerCaseExtension";
     public static final String KEY_HEIGHT_LIMIT = "heightLimit";
     public static final String KEY_LIMIT_HEIGHT = "limitHeight";
     public static final String KEY_LIMIT_WIDTH = "limitWidth";
+    public static final String KEY_REFERENCE = "reference";
     public static final String KEY_WIDTH_LIMIT = "widthLimit";
 
-    private boolean mBaseUrl = false;
     private String mBaseUrlValue = "http://www.domain.com/img/";
     private boolean mForceLowerCaseExtension = SystemUtils.IS_OS_WINDOWS;
     private int mHeightLimit = 400;
     private boolean mLimitHeight = true;
     private boolean mLimitWidth = true;
     private final Profile mProfile;
+    private Reference mReference = Reference.ABSOLUTE;
     private int mWidthLimit = 400;
 
     public ProfilePhoto(Profile profile) {
@@ -51,7 +51,7 @@ public class ProfilePhoto extends ProfileBase {
         mWidthLimit = getInt(json, KEY_WIDTH_LIMIT);
         mLimitHeight = getBoolean(json, KEY_LIMIT_HEIGHT);
         mLimitWidth = getBoolean(json, KEY_LIMIT_WIDTH);
-        mBaseUrl = getBoolean(json, KEY_BASE_URL);
+        mReference = Reference.values()[getInt(json, KEY_REFERENCE)];
         mBaseUrlValue = (String) json.get(KEY_BASE_URL_VALUE);
     }
 
@@ -66,7 +66,7 @@ public class ProfilePhoto extends ProfileBase {
     @Override
     public JSONObject getJson() {
         JSONObject json = new JSONObject();
-        json.put(KEY_BASE_URL, mBaseUrl);
+        json.put(KEY_REFERENCE, mReference.ordinal());
         json.put(KEY_BASE_URL_VALUE, mBaseUrlValue);
         json.put(KEY_FORCE_LOWER_CASE_EXTENSION, mForceLowerCaseExtension);
         json.put(KEY_LIMIT_HEIGHT, mLimitHeight);
@@ -77,12 +77,12 @@ public class ProfilePhoto extends ProfileBase {
         return json;
     }
 
-    public int getWidthLimit() {
-        return mWidthLimit;
+    public Reference getReference() {
+        return mReference;
     }
 
-    public boolean isBaseUrl() {
-        return mBaseUrl;
+    public int getWidthLimit() {
+        return mWidthLimit;
     }
 
     public boolean isForceLowerCaseExtension() {
@@ -100,10 +100,6 @@ public class ProfilePhoto extends ProfileBase {
     @Override
     public boolean isValid() {
         return true;
-    }
-
-    public void setBaseUrl(boolean baseUrl) {
-        mBaseUrl = baseUrl;
     }
 
     public void setBaseUrlValue(String baseUrlValue) {
@@ -126,17 +122,27 @@ public class ProfilePhoto extends ProfileBase {
         mLimitWidth = value;
     }
 
+    public void setReference(Reference reference) {
+        mReference = reference;
+    }
+
     public void setWidthLimit(int maxWidthValue) {
         mWidthLimit = maxWidthValue;
     }
 
     @Override
     public String toDebugString() {
-        return "ProfilePhoto{" + "mProfile=" + mProfile + ", mLimitHeight=" + mLimitHeight + ", mLimitWidth=" + mLimitWidth + ", mBaseUrl=" + mBaseUrl + ", mForceLowerCaseExtension=" + mForceLowerCaseExtension + ", mBaseUrlValue=" + mBaseUrlValue + ", mHeightLimit=" + mHeightLimit + ", mWidthLimit=" + mWidthLimit + '}';
+        return "ProfilePhoto{" + "mProfile=" + mProfile + ", mLimitHeight=" + mLimitHeight + ", mLimitWidth=" + mLimitWidth + ", mReference=" + mReference + ", mForceLowerCaseExtension=" + mForceLowerCaseExtension + ", mBaseUrlValue=" + mBaseUrlValue + ", mHeightLimit=" + mHeightLimit + ", mWidthLimit=" + mWidthLimit + '}';
     }
 
     @Override
     public String toString() {
         return super.toString();
+    }
+
+    public static enum Reference {
+        ABSOLUTE,
+        ABSOLUTE_PATH,
+        RELATIVE
     }
 }

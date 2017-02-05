@@ -303,21 +303,26 @@ public class Operation implements Runnable {
     private String getImagePath(File file) {
         String imageSrc;
 
-        if (mProfilePhoto.isBaseUrl()) {
-            imageSrc = mProfilePhoto.getBaseUrlValue() + file.getName();
-        } else {
-            Path relativePath = mDestinationFile.toPath().relativize(file.toPath());
+        switch (mProfilePhoto.getReference()) {
+            case ABSOLUTE:
+                imageSrc = String.format("file://%s", file.getAbsolutePath());
+                break;
 
-//            try {
-//                relativeSourcePath = URLEncoder.encode(relativePath.toString(), "UTF-8");
-//            } catch (UnsupportedEncodingException ex) {
-//                Exceptions.printStackTrace(ex);
-//            }
-            imageSrc = StringUtils.replace(relativePath.toString(), "..", ".", 1);
+            case ABSOLUTE_PATH:
+                imageSrc = String.format("%s%s", mProfilePhoto.getBaseUrlValue(), file.getName());
+                break;
 
-            if (SystemUtils.IS_OS_WINDOWS) {
-                imageSrc = imageSrc.replace("\\", "/");
-            }
+            case RELATIVE:
+                Path relativePath = mDestinationFile.toPath().relativize(file.toPath());
+                imageSrc = StringUtils.replace(relativePath.toString(), "..", ".", 1);
+                break;
+
+            default:
+                throw new AssertionError();
+        }
+
+        if (SystemUtils.IS_OS_WINDOWS) {
+            imageSrc = imageSrc.replace("\\", "/");
         }
 
         if (mProfilePhoto.isForceLowerCaseExtension()) {
@@ -448,9 +453,6 @@ public class Operation implements Runnable {
 
         try {
             mKml.marshal(mDestinationFile);
-            if (mProfilePhoto.isBaseUrl()) {
-                mListener.onOperationLog(mBundle.getString("operationNote"));
-            }
 
             String files = mBundle.getString("status_files");
             String exif = mBundle.getString("status_exif");

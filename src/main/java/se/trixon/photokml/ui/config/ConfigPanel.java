@@ -142,6 +142,8 @@ public class ConfigPanel extends javax.swing.JPanel {
         });
 
         setEnabled(true);
+        logPanel.getTextArea().setLineWrap(true);
+        logPanel.getTextArea().setWrapStyleWord(true);
     }
 
     /**
