@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2017 Patrik Karlsson.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -363,16 +363,21 @@ public class ModulePlacemarkPanel extends ModulePanel {
 
         dateFormatTextField.setText(mPlacemark.getDatePattern());
 
-        int value = mPlacemark.getNameBy();
-        if (value == 0) {
-            nameByFileRadioButton.setSelected(true);
-            nameByFileRadioButtonActionPerformed(null);
-        } else if (value == 1) {
-            nameByDateRadioButton.setSelected(true);
-            nameByDateRadioButtonActionPerformed(null);
-        } else if (value == 2) {
-            nameByNoRadioButton.setSelected(true);
-            nameByNoRadioButtonActionPerformed(null);
+        switch (mPlacemark.getNameBy()) {
+            case ProfilePlacemark.NAME_BY_FILE:
+                nameByFileRadioButton.setSelected(true);
+                nameByFileRadioButtonActionPerformed(null);
+                break;
+
+            case ProfilePlacemark.NAME_BY_DATE:
+                nameByDateRadioButton.setSelected(true);
+                nameByDateRadioButtonActionPerformed(null);
+                break;
+
+            case ProfilePlacemark.NAME_BY_NONE:
+                nameByNoRadioButton.setSelected(true);
+                nameByNoRadioButtonActionPerformed(null);
+                break;
         }
 
         includeNullCoordinateCheckBox.setSelected(mPlacemark.isIncludeNullCoordinate());
