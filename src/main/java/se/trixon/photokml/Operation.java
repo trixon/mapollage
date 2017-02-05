@@ -34,6 +34,7 @@ import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -101,15 +102,17 @@ public class Operation implements Runnable {
     @Override
     public void run() {
         mStartTime = System.currentTimeMillis();
+        Date date = new Date(mStartTime);
+        SimpleDateFormat dateFormat = new SimpleDateFormat();
         mListener.onOperationStarted();
         String status;
         mRootFolder = mKml.createAndSetFolder().withName(mProfileFolder.getRootName());
 
         String href = "<a href=\"http://trixon.se/projects/java/photokml/\">PhotoKml</a>";
-        String description = String.format("<p>%s %s</p><p>%s</p>%s",
+        String description = String.format("<p>%s %s, %s</p>%s",
                 Dict.MADE_WITH.toString(),
                 href,
-                new Date().toString(),
+                dateFormat.format(date),
                 mProfileFolder.getRootDescription().replaceAll("\\n", "<br />"));
         mRootFolder.setDescription(description);
 
