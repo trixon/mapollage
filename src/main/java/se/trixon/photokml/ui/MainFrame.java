@@ -16,6 +16,7 @@
 package se.trixon.photokml.ui;
 
 import java.awt.Component;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
@@ -100,7 +101,9 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
                 break;
 
             case LOOK_AND_FEEL:
-                SwingUtilities.updateComponentTreeUI(this);
+                for (Window window : Window.getWindows()) {
+                    SwingUtilities.updateComponentTreeUI(window);
+                }
                 SwingUtilities.updateComponentTreeUI(mPopupMenu);
                 break;
 
@@ -211,6 +214,10 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
         mActionManager.getAction(ActionManager.CANCEL).setEnabled(state);
         mActionManager.getAction(ActionManager.ADD).setEnabled(!state);
         mActionManager.getAction(ActionManager.REMOVE).setEnabled(!state);
+        mActionManager.getAction(ActionManager.CLONE).setEnabled(!state);
+        mActionManager.getAction(ActionManager.OPTIONS).setEnabled(!state);
+        mActionManager.getAction(ActionManager.REMOVE_ALL).setEnabled(!state);
+        mActionManager.getAction(ActionManager.RENAME).setEnabled(!state);
 
         startButton.setVisible(!state);
         cancelButton.setVisible(state);
@@ -423,6 +430,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
         jSeparator1 = new javax.swing.JPopupMenu.Separator();
         optionsMenuItem = new javax.swing.JMenuItem();
         jSeparator2 = new javax.swing.JPopupMenu.Separator();
+        aboutDateFormatMenuItem = new javax.swing.JMenuItem();
         aboutMenuItem = new javax.swing.JMenuItem();
         jSeparator6 = new javax.swing.JPopupMenu.Separator();
         quitMenuItem = new javax.swing.JMenuItem();
@@ -442,6 +450,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
         mPopupMenu.add(jSeparator1);
         mPopupMenu.add(optionsMenuItem);
         mPopupMenu.add(jSeparator2);
+        mPopupMenu.add(aboutDateFormatMenuItem);
         mPopupMenu.add(aboutMenuItem);
         mPopupMenu.add(jSeparator6);
         mPopupMenu.add(quitMenuItem);
@@ -550,6 +559,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
     }//GEN-LAST:event_profileComboBoxActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JMenuItem aboutDateFormatMenuItem;
     private javax.swing.JMenuItem aboutMenuItem;
     private javax.swing.JButton addButton;
     private javax.swing.JButton cancelButton;
@@ -575,6 +585,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
     class ActionManager {
 
         static final String ABOUT = "about";
+        static final String ABOUT_DATE_FORMAT = "about_date_format";
         static final String ADD = "add";
         static final String CANCEL = "cancel";
         static final String CLONE = "clone";
@@ -763,6 +774,20 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
 
             initAction(action, ABOUT, keyStroke, null, true);
             aboutMenuItem.setAction(action);
+
+            //about date format
+            keyStroke = null;
+            String title = String.format(Dict.ABOUT_S.toString(), Dict.DATE_PATTERN.toString().toLowerCase());
+            action = new AlmondAction(title) {
+
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    Message.dateFormatInfo(MainFrame.this, false);
+                }
+            };
+
+            initAction(action, ABOUT_DATE_FORMAT, keyStroke, null, true);
+            aboutDateFormatMenuItem.setAction(action);
 
             //quit
             keyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_Q, commandMask);
