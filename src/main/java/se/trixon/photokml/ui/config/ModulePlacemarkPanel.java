@@ -18,6 +18,7 @@ package se.trixon.photokml.ui.config;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.prefs.PreferenceChangeEvent;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import se.trixon.almond.util.Dict;
@@ -76,6 +77,11 @@ public class ModulePlacemarkPanel extends ModulePanel {
         return true;
     }
 
+    @Override
+    public void onPreferenceChange(PreferenceChangeEvent evt) {
+        previewDateFormat();
+    }
+
     private void init() {
         dateFormatTextField.getDocument().addDocumentListener(new DocumentListener() {
             @Override
@@ -92,38 +98,24 @@ public class ModulePlacemarkPanel extends ModulePanel {
             public void insertUpdate(DocumentEvent e) {
                 previewDateFormat();
             }
-
-            private void previewDateFormat() {
-                String datePreview;
-
-                try {
-                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateFormatTextField.getText());
-                    datePreview = simpleDateFormat.format(new Date(System.currentTimeMillis()));
-                    mInvalidDateFormat = false;
-                } catch (IllegalArgumentException ex) {
-                    datePreview = Dict.Dialog.ERROR.toString();
-                    mInvalidDateFormat = true;
-                }
-
-                String dateLabel = String.format("%s (%s)", Dict.DATE_PATTERN.toString(), datePreview);
-                nameByDateRadioButton.setText(dateLabel);
-                mPlacemark.setDatePattern(dateFormatTextField.getText());
-            }
         });
     }
 
-    private void saveNameByxx() {
-        int value = 0;
-        if (nameByFileRadioButton.isSelected()) {
-            value = 0;
-        } else if (nameByDateRadioButton.isSelected()) {
-            value = 1;
-        } else if (nameByNoRadioButton.isSelected()) {
-            value = 2;
+    private void previewDateFormat() {
+        String datePreview;
+
+        try {
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateFormatTextField.getText(), getDateFormatLocale());
+            datePreview = simpleDateFormat.format(new Date(System.currentTimeMillis()));
+            mInvalidDateFormat = false;
+        } catch (IllegalArgumentException ex) {
+            datePreview = Dict.Dialog.ERROR.toString();
+            mInvalidDateFormat = true;
         }
 
-        mPlacemark.setNameBy(value);
-        dateFormatTextField.setEnabled(nameByDateRadioButton.isSelected());
+        String dateLabel = String.format("%s (%s)", Dict.DATE_PATTERN.toString(), datePreview);
+        nameByDateRadioButton.setText(dateLabel);
+        mPlacemark.setDatePattern(dateFormatTextField.getText());
     }
 
     /**

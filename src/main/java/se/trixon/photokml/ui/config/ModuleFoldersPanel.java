@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2017 Patrik Karlsson.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,6 +17,7 @@ package se.trixon.photokml.ui.config;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.prefs.PreferenceChangeEvent;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import javax.swing.JRadioButton;
@@ -99,6 +100,11 @@ public class ModuleFoldersPanel extends ModulePanel {
         return true;
     }
 
+    @Override
+    public void onPreferenceChange(PreferenceChangeEvent evt) {
+        previewDateFormat();
+    }
+
     private void init() {
         DocumentListener documentListener = new DocumentListener() {
             @Override
@@ -133,22 +139,6 @@ public class ModuleFoldersPanel extends ModulePanel {
                 }
             }
 
-            private void previewDateFormat() {
-                String datePreview;
-
-                try {
-                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateFormatTextField.getText());
-                    datePreview = simpleDateFormat.format(new Date(System.currentTimeMillis()));
-                    mInvalidDateFormat = false;
-                } catch (IllegalArgumentException ex) {
-                    datePreview = Dict.Dialog.ERROR.toString();
-                    mInvalidDateFormat = true;
-                }
-
-                String dateLabel = String.format("%s (%s)", Dict.DATE_PATTERN.toString(), datePreview);
-                folderByDateRadioButton.setText(dateLabel);
-                mFolder.setDatePattern(dateFormatTextField.getText());
-            }
         };
 
         rootNameTextField.getDocument().addDocumentListener(documentListener);
@@ -156,6 +146,23 @@ public class ModuleFoldersPanel extends ModulePanel {
         dateFormatTextField.getDocument().addDocumentListener(documentListener);
         regexTextField.getDocument().addDocumentListener(documentListener);
         defaultRegexTextField.getDocument().addDocumentListener(documentListener);
+    }
+
+    private void previewDateFormat() {
+        String datePreview;
+
+        try {
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateFormatTextField.getText(), getDateFormatLocale());
+            datePreview = simpleDateFormat.format(new Date(System.currentTimeMillis()));
+            mInvalidDateFormat = false;
+        } catch (IllegalArgumentException ex) {
+            datePreview = Dict.Dialog.ERROR.toString();
+            mInvalidDateFormat = true;
+        }
+
+        String dateLabel = String.format("%s (%s)", Dict.DATE_PATTERN.toString(), datePreview);
+        folderByDateRadioButton.setText(dateLabel);
+        mFolder.setDatePattern(dateFormatTextField.getText());
     }
 
     /**

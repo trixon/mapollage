@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2017 Patrik Karlsson.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,21 +15,28 @@
  */
 package se.trixon.photokml.ui;
 
+import se.trixon.almond.util.Dict;
+import se.trixon.photokml.Options;
+
 /**
  *
  * @author Patrik Karlsson
  */
 public class OptionsPanel extends javax.swing.JPanel {
 
+    private final Options mOptions = Options.getInstance();
+
     /**
      * Creates new form OptionsPanel
      */
     public OptionsPanel() {
         initComponents();
+        localeComboBox.setSelectedItem(mOptions.getLocale());
     }
 
     void save() {
         lookAndFeelPanel.save();
+        mOptions.setLocale(localeComboBox.getSelectedItem());
     }
 
     /**
@@ -42,20 +49,36 @@ public class OptionsPanel extends javax.swing.JPanel {
     private void initComponents() {
 
         lookAndFeelPanel = new se.trixon.almond.util.swing.dialogs.LookAndFeelPanel();
+        localeLabel = new javax.swing.JLabel();
+        localeComboBox = new se.trixon.almond.util.swing.LocaleComboBox();
+
+        localeLabel.setText(Dict.CALENDAR_LANGUAGE.toString());
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(lookAndFeelPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(localeComboBox, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(localeLabel)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(lookAndFeelPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(lookAndFeelPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(localeLabel)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(localeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private se.trixon.almond.util.swing.LocaleComboBox localeComboBox;
+    private javax.swing.JLabel localeLabel;
     private se.trixon.almond.util.swing.dialogs.LookAndFeelPanel lookAndFeelPanel;
     // End of variables declaration//GEN-END:variables
 }

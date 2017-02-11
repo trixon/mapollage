@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2017 Patrik Karlsson.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -123,7 +123,7 @@ public class ProfileFolder extends ProfileBase {
 
         if (mFoldersBy == FOLDER_BY_DATE) {
             try {
-                mFolderDateFormat = new SimpleDateFormat(mDatePattern);
+                mFolderDateFormat = new SimpleDateFormat(mDatePattern, mOptions.getLocale());
             } catch (Exception e) {
                 addValidationError(String.format(mBundle.getString("invalid_value"), PhotoKml.FOLDER_NAME, mDatePattern));
                 valid = false;

@@ -19,6 +19,7 @@ import java.io.File;
 import java.util.ResourceBundle;
 import org.json.simple.JSONObject;
 import se.trixon.almond.util.BundleHelper;
+import se.trixon.photokml.Options;
 
 /**
  *
@@ -28,6 +29,7 @@ public abstract class ProfileBase {
 
     protected static StringBuilder sValidationErrorBuilder;
     protected final ResourceBundle mBundle = BundleHelper.getBundle(Profile.class, "Bundle");
+    protected final Options mOptions = Options.getInstance();
 
     public abstract JSONObject getJson();
 
