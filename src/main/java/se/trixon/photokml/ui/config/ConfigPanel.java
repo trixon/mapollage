@@ -19,7 +19,7 @@ import java.awt.Component;
 import javax.swing.border.EmptyBorder;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.swing.LogPanel;
-import se.trixon.almond.util.swing.dialogs.FileChooserPanel;
+import se.trixon.almond.util.swing.SwingHelper;
 import se.trixon.photokml.profile.Profile;
 
 /**
@@ -55,15 +55,11 @@ public class ConfigPanel extends javax.swing.JPanel {
     }
 
     public LogPanel getLogPanel() {
-        return logPanel;
+        return mModuleSourcePanel.getLogPanel();
     }
 
     public int getSelectedIndex() {
         return tabbedPane.getSelectedIndex();
-    }
-
-    public FileChooserPanel getSourceChooserPanel() {
-        return mModuleSourcePanel.getSourceChooserPanel();
     }
 
     public StringBuilder getHeaderBuilder() {
@@ -110,6 +106,11 @@ public class ConfigPanel extends javax.swing.JPanel {
     @Override
     public void setEnabled(boolean enabled) {
         super.setEnabled(enabled);
+        SwingHelper.enableComponents(mModuleSourcePanel, enabled);
+        if (!enabled) {
+            SwingHelper.enableComponents(getLogPanel(), true);
+        }
+
         for (int i = 1; i < tabbedPane.getTabCount(); i++) {
             tabbedPane.setEnabledAt(i, enabled);
         }
@@ -151,8 +152,6 @@ public class ConfigPanel extends javax.swing.JPanel {
         });
 
         setEnabled(true);
-        logPanel.getTextArea().setLineWrap(true);
-        logPanel.getTextArea().setWrapStyleWord(true);
     }
 
     /**
@@ -165,9 +164,6 @@ public class ConfigPanel extends javax.swing.JPanel {
     private void initComponents() {
 
         tabbedPane = new javax.swing.JTabbedPane();
-        logPanel = new se.trixon.almond.util.swing.LogPanel();
-
-        tabbedPane.addTab(Dict.OUTPUT.toString(), logPanel);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -182,7 +178,6 @@ public class ConfigPanel extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private se.trixon.almond.util.swing.LogPanel logPanel;
     private javax.swing.JTabbedPane tabbedPane;
     // End of variables declaration//GEN-END:variables
 

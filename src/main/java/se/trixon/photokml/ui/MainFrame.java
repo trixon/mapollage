@@ -168,6 +168,8 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
         initListeners();
 
         mLogPanel = configPanel.getLogPanel();
+        mLogPanel.getTextArea().setLineWrap(true);
+        mLogPanel.getTextArea().setWrapStyleWord(true);
         mLogPanel.println(mBundleUI.getString("welcome"));
     }
 
@@ -341,7 +343,6 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
             mLogPanel.clear();
             mLogPanel.println(profile.getValidationError());
         }
-
     }
 
     private void requestKmlFileObject() {

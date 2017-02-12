@@ -16,13 +16,16 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Component id="recursiveCheckBox" alignment="0" max="32767" attributes="0"/>
-          <Component id="followLinksCheckBox" alignment="0" max="32767" attributes="0"/>
-          <Group type="102" alignment="0" attributes="0">
-              <Component id="patternPanel" min="-2" max="-2" attributes="0"/>
-              <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
-          </Group>
           <Component id="sourceChooserPanel" alignment="0" max="32767" attributes="0"/>
+          <Group type="102" attributes="0">
+              <Component id="patternPanel" min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="recursiveCheckBox" min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="followLinksCheckBox" min="-2" max="-2" attributes="0"/>
+              <EmptySpace min="0" pref="89" max="32767" attributes="0"/>
+          </Group>
+          <Component id="logPanel" alignment="0" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
@@ -30,18 +33,24 @@
           <Group type="102" alignment="1" attributes="0">
               <Component id="sourceChooserPanel" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="patternPanel" min="-2" max="-2" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
-              <Component id="recursiveCheckBox" min="-2" max="-2" attributes="0"/>
-              <EmptySpace max="-2" attributes="0"/>
-              <Component id="followLinksCheckBox" min="-2" max="-2" attributes="0"/>
-              <EmptySpace max="32767" attributes="0"/>
+              <Group type="103" groupAlignment="1" attributes="0">
+                  <Component id="patternPanel" min="-2" max="-2" attributes="0"/>
+                  <Component id="recursiveCheckBox" min="-2" max="-2" attributes="0"/>
+                  <Component id="followLinksCheckBox" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace type="separate" max="-2" attributes="0"/>
+              <Component id="logPanel" pref="322" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
   </Layout>
   <SubComponents>
     <Component class="se.trixon.almond.util.swing.dialogs.FileChooserPanel" name="sourceChooserPanel">
+      <Properties>
+        <Property name="header" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+          <ResourceString bundle="se/trixon/photokml/ui/config/Bundle.properties" key="ModuleSourcePanel.sourceChooserPanel.header" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+        </Property>
+      </Properties>
     </Component>
     <Container class="javax.swing.JPanel" name="patternPanel">
 
@@ -116,6 +125,8 @@
       <AuxValues>
         <AuxValue name="generateMnemonicsCode" type="java.lang.Boolean" value="false"/>
       </AuxValues>
+    </Component>
+    <Component class="se.trixon.almond.util.swing.LogPanel" name="logPanel">
     </Component>
   </SubComponents>
 </Form>
