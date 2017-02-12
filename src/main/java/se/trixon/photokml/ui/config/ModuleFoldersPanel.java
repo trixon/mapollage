@@ -230,8 +230,6 @@ public class ModuleFoldersPanel extends ModulePanel {
         gridBagConstraints.insets = new java.awt.Insets(3, 0, 0, 0);
         jPanel1.add(rootDescriptionLabel, gridBagConstraints);
 
-        rootDescriptionScrollPane.setMinimumSize(new java.awt.Dimension(20, 64));
-
         rootDescriptionTextArea.setColumns(20);
         rootDescriptionScrollPane.setViewportView(rootDescriptionTextArea);
 
@@ -254,11 +252,11 @@ public class ModuleFoldersPanel extends ModulePanel {
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
-        gridBagConstraints.insets = new java.awt.Insets(4, 0, 0, 0);
         jPanel2.add(folderByLabel, gridBagConstraints);
 
         subButtonGroup.add(folderByDirectoryRadioButton);
         folderByDirectoryRadioButton.setText(bundle.getString("ModuleFoldersPanel.folderByDirectoryRadioButton.text")); // NOI18N
+        folderByDirectoryRadioButton.setAutoscrolls(true);
         folderByDirectoryRadioButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 folderByDirectoryRadioButtonActionPerformed(evt);
@@ -317,6 +315,7 @@ public class ModuleFoldersPanel extends ModulePanel {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 5;
+        gridBagConstraints.gridwidth = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 20, 3, 0);
@@ -324,21 +323,22 @@ public class ModuleFoldersPanel extends ModulePanel {
 
         defaultRegexLabel.setText(Dict.DEFAULT_VALUE.getString());
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 4;
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 6;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(3, 8, 0, 0);
+        gridBagConstraints.insets = new java.awt.Insets(3, 20, 0, 0);
         jPanel2.add(defaultRegexLabel, gridBagConstraints);
 
         binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, folderByRegexRadioButton, org.jdesktop.beansbinding.ELProperty.create("${selected}"), defaultRegexTextField, org.jdesktop.beansbinding.BeanProperty.create("enabled"));
         bindingGroup.addBinding(binding);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 5;
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 7;
+        gridBagConstraints.gridwidth = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 8, 0, 0);
+        gridBagConstraints.insets = new java.awt.Insets(0, 20, 0, 0);
         jPanel2.add(defaultRegexTextField, gridBagConstraints);
 
         subButtonGroup.add(folderByNoneRadioButton);
@@ -350,13 +350,13 @@ public class ModuleFoldersPanel extends ModulePanel {
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 6;
+        gridBagConstraints.gridy = 8;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.insets = new java.awt.Insets(3, 0, 0, 0);
         jPanel2.add(folderByNoneRadioButton, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 7;
+        gridBagConstraints.gridy = 9;
         gridBagConstraints.fill = java.awt.GridBagConstraints.VERTICAL;
         gridBagConstraints.weighty = 1.0;
         jPanel2.add(jPanel3, gridBagConstraints);
