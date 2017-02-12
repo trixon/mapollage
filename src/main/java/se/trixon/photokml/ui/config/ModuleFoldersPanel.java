@@ -20,12 +20,14 @@ import java.util.Date;
 import java.util.prefs.PreferenceChangeEvent;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+import javax.swing.ImageIcon;
 import javax.swing.JRadioButton;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.Document;
 import org.apache.commons.lang3.StringUtils;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.icons.material.MaterialIcon;
 import se.trixon.almond.util.swing.SwingHelper;
 import se.trixon.photokml.profile.Profile;
 import se.trixon.photokml.profile.ProfileFolder;
@@ -76,6 +78,11 @@ public class ModuleFoldersPanel extends ModulePanel {
         sb.append("\n");
 
         return sb;
+    }
+
+    @Override
+    public ImageIcon getIcon() {
+        return MaterialIcon._File.FOLDER_OPEN.get(ICON_SIZE, getIconColor());
     }
 
     @Override

@@ -94,6 +94,15 @@ public class ConfigPanel extends javax.swing.JPanel {
         return validSettings;
     }
 
+    public void refreshIcons() {
+        for (Component component : tabbedPane.getComponents()) {
+            if (component instanceof ModulePanel) {
+                ModulePanel modulePanel = (ModulePanel) component;
+                tabbedPane.setIconAt(tabbedPane.indexOfComponent(modulePanel), modulePanel.getIcon());
+            }
+        }
+    }
+
     public void selectTab(int index) {
         tabbedPane.setSelectedIndex(index);
     }
@@ -106,8 +115,8 @@ public class ConfigPanel extends javax.swing.JPanel {
         }
     }
 
-    private Component addModulePanel(ModulePanel modulePanel) {
-        return tabbedPane.add(modulePanel.getTitle(), modulePanel);
+    private void addModulePanel(ModulePanel modulePanel) {
+        tabbedPane.addTab(null, modulePanel.getIcon(), modulePanel, modulePanel.getTitle());
     }
 
     private boolean disableTab(Component tab) {

@@ -97,6 +97,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
             case ICON_THEME:
                 mAllActions.stream().forEach((almondAction) -> {
                     almondAction.updateIcon();
+                    configPanel.refreshIcons();
                 });
                 break;
 

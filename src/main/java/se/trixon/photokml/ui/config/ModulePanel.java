@@ -19,8 +19,11 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.PreferenceChangeListener;
+import javax.swing.ImageIcon;
+import se.trixon.almond.util.AlmondOptions;
 import se.trixon.almond.util.BundleHelper;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.icons.IconColor;
 import se.trixon.almond.util.swing.dialogs.Message;
 import se.trixon.photokml.Options;
 import se.trixon.photokml.profile.Profile;
@@ -31,6 +34,7 @@ import se.trixon.photokml.profile.Profile;
  */
 public abstract class ModulePanel extends javax.swing.JPanel {
 
+    public static final int ICON_SIZE = 48;
     public static final String MULTILINE_DIVIDER = "* * * * *";
     protected final ResourceBundle mBundle = BundleHelper.getBundle(ModulePanel.class, "Bundle");
     protected final String mHeaderPrefix = " + ";
@@ -47,14 +51,17 @@ public abstract class ModulePanel extends javax.swing.JPanel {
         });
     }
 
-    public void onPreferenceChange(PreferenceChangeEvent evt) {
-    }
-
     public Locale getDateFormatLocale() {
         return mOptions.getLocale();
     }
 
     public abstract StringBuilder getHeaderBuilder();
+
+    public abstract ImageIcon getIcon();
+
+    public IconColor getIconColor() {
+        return AlmondOptions.getInstance().getIconColor();
+    }
 
     public String getTitle() {
         return mTitle;
@@ -63,6 +70,9 @@ public abstract class ModulePanel extends javax.swing.JPanel {
     public abstract boolean hasValidSettings();
 
     public abstract void load(Profile profile);
+
+    public void onPreferenceChange(PreferenceChangeEvent evt) {
+    }
 
     public void setTitle(String title) {
         mTitle = title;

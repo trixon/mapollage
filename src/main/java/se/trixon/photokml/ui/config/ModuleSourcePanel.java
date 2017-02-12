@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2017 Patrik Karlsson.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,12 +17,14 @@ package se.trixon.photokml.ui.config;
 
 import java.awt.event.FocusAdapter;
 import java.io.File;
+import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.icons.material.MaterialIcon;
 import se.trixon.almond.util.swing.dialogs.FileChooserPanel;
 import se.trixon.photokml.profile.Profile;
 import se.trixon.photokml.profile.ProfileSource;
@@ -60,6 +62,11 @@ public class ModuleSourcePanel extends ModulePanel implements FileChooserPanel.F
 
     public FileChooserPanel getSourceChooserPanel() {
         return sourceChooserPanel;
+    }
+
+    @Override
+    public ImageIcon getIcon() {
+        return MaterialIcon._Image.PHOTO_LIBRARY.get(ICON_SIZE, getIconColor());
     }
 
     @Override

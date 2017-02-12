@@ -19,9 +19,11 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.prefs.PreferenceChangeEvent;
+import javax.swing.ImageIcon;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.icons.material.MaterialIcon;
 import se.trixon.photokml.profile.Profile;
 import se.trixon.photokml.profile.ProfilePlacemark;
 
@@ -64,6 +66,11 @@ public class ModulePlacemarkPanel extends ModulePanel {
         sb.append("\n");
 
         return sb;
+    }
+
+    @Override
+    public ImageIcon getIcon() {
+        return MaterialIcon._Maps.PLACE.get(ICON_SIZE, getIconColor());
     }
 
     @Override

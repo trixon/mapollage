@@ -15,9 +15,11 @@
  */
 package se.trixon.photokml.ui.config;
 
+import javax.swing.ImageIcon;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.icons.material.MaterialIcon;
 import se.trixon.photokml.profile.Profile;
 import se.trixon.photokml.profile.ProfilePhoto;
 import se.trixon.photokml.profile.ProfilePhoto.Reference;
@@ -55,6 +57,11 @@ public class ModulePhotoPanel extends ModulePanel {
         sb.append("\n");
 
         return sb;
+    }
+
+    @Override
+    public ImageIcon getIcon() {
+        return MaterialIcon._Image.PHOTO.get(ICON_SIZE, getIconColor());
     }
 
     @Override
