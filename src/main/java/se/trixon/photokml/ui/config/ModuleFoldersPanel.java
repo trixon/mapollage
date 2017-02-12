@@ -184,11 +184,13 @@ public class ModuleFoldersPanel extends ModulePanel {
         bindingGroup = new org.jdesktop.beansbinding.BindingGroup();
 
         subButtonGroup = new javax.swing.ButtonGroup();
+        jPanel1 = new javax.swing.JPanel();
         rootNameLabel = new javax.swing.JLabel();
         rootNameTextField = new javax.swing.JTextField();
         rootDescriptionLabel = new javax.swing.JLabel();
         rootDescriptionScrollPane = new javax.swing.JScrollPane();
         rootDescriptionTextArea = new javax.swing.JTextArea();
+        jPanel2 = new javax.swing.JPanel();
         folderByLabel = new javax.swing.JLabel();
         folderByDirectoryRadioButton = new javax.swing.JRadioButton();
         folderByDateRadioButton = new javax.swing.JRadioButton();
@@ -198,35 +200,35 @@ public class ModuleFoldersPanel extends ModulePanel {
         defaultRegexLabel = new javax.swing.JLabel();
         defaultRegexTextField = new javax.swing.JTextField();
         folderByNoneRadioButton = new javax.swing.JRadioButton();
+        jPanel3 = new javax.swing.JPanel();
 
-        setLayout(new java.awt.GridBagLayout());
+        setLayout(new java.awt.GridLayout(1, 0, 8, 0));
+
+        jPanel1.setLayout(new java.awt.GridBagLayout());
 
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("se/trixon/photokml/ui/config/Bundle"); // NOI18N
         rootNameLabel.setText(bundle.getString("ModuleFoldersPanel.rootNameLabel.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 3, 0);
-        add(rootNameLabel, gridBagConstraints);
+        jPanel1.add(rootNameLabel, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 3, 0);
-        add(rootNameTextField, gridBagConstraints);
+        jPanel1.add(rootNameTextField, gridBagConstraints);
 
         rootDescriptionLabel.setText(bundle.getString("ModuleFoldersPanel.rootDescriptionLabel.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(3, 0, 0, 0);
-        add(rootDescriptionLabel, gridBagConstraints);
+        jPanel1.add(rootDescriptionLabel, gridBagConstraints);
 
         rootDescriptionScrollPane.setMinimumSize(new java.awt.Dimension(20, 64));
 
@@ -236,21 +238,24 @@ public class ModuleFoldersPanel extends ModulePanel {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 3;
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 3, 0);
-        add(rootDescriptionScrollPane, gridBagConstraints);
+        jPanel1.add(rootDescriptionScrollPane, gridBagConstraints);
+
+        add(jPanel1);
+
+        jPanel2.setLayout(new java.awt.GridBagLayout());
 
         folderByLabel.setText(bundle.getString("ModuleFoldersPanel.folderByLabel.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 4;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
         gridBagConstraints.insets = new java.awt.Insets(4, 0, 0, 0);
-        add(folderByLabel, gridBagConstraints);
+        jPanel2.add(folderByLabel, gridBagConstraints);
 
         subButtonGroup.add(folderByDirectoryRadioButton);
         folderByDirectoryRadioButton.setText(bundle.getString("ModuleFoldersPanel.folderByDirectoryRadioButton.text")); // NOI18N
@@ -261,11 +266,10 @@ public class ModuleFoldersPanel extends ModulePanel {
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 5;
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.gridy = 1;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(3, 0, 3, 0);
-        add(folderByDirectoryRadioButton, gridBagConstraints);
+        jPanel2.add(folderByDirectoryRadioButton, gridBagConstraints);
 
         subButtonGroup.add(folderByDateRadioButton);
         folderByDateRadioButton.setText(Dict.DATE_PATTERN.getString());
@@ -276,22 +280,22 @@ public class ModuleFoldersPanel extends ModulePanel {
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 6;
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.gridy = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        add(folderByDateRadioButton, gridBagConstraints);
+        jPanel2.add(folderByDateRadioButton, gridBagConstraints);
 
         org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, folderByDateRadioButton, org.jdesktop.beansbinding.ELProperty.create("${selected}"), dateFormatTextField, org.jdesktop.beansbinding.BeanProperty.create("enabled"));
         bindingGroup.addBinding(binding);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 7;
+        gridBagConstraints.gridy = 3;
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 20, 3, 0);
-        add(dateFormatTextField, gridBagConstraints);
+        jPanel2.add(dateFormatTextField, gridBagConstraints);
 
         subButtonGroup.add(folderByRegexRadioButton);
         folderByRegexRadioButton.setText(bundle.getString("ModuleFoldersPanel.folderByRegexRadioButton.text")); // NOI18N
@@ -302,40 +306,40 @@ public class ModuleFoldersPanel extends ModulePanel {
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 8;
+        gridBagConstraints.gridy = 4;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(3, 0, 0, 0);
-        add(folderByRegexRadioButton, gridBagConstraints);
+        jPanel2.add(folderByRegexRadioButton, gridBagConstraints);
 
         binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, folderByRegexRadioButton, org.jdesktop.beansbinding.ELProperty.create("${selected}"), regexTextField, org.jdesktop.beansbinding.BeanProperty.create("enabled"));
         bindingGroup.addBinding(binding);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 9;
+        gridBagConstraints.gridy = 5;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 20, 3, 0);
-        add(regexTextField, gridBagConstraints);
+        jPanel2.add(regexTextField, gridBagConstraints);
 
         defaultRegexLabel.setText(Dict.DEFAULT_VALUE.getString());
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 8;
+        gridBagConstraints.gridy = 4;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(3, 8, 0, 0);
-        add(defaultRegexLabel, gridBagConstraints);
+        jPanel2.add(defaultRegexLabel, gridBagConstraints);
 
         binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, folderByRegexRadioButton, org.jdesktop.beansbinding.ELProperty.create("${selected}"), defaultRegexTextField, org.jdesktop.beansbinding.BeanProperty.create("enabled"));
         bindingGroup.addBinding(binding);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 9;
+        gridBagConstraints.gridy = 5;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 8, 0, 0);
-        add(defaultRegexTextField, gridBagConstraints);
+        jPanel2.add(defaultRegexTextField, gridBagConstraints);
 
         subButtonGroup.add(folderByNoneRadioButton);
         folderByNoneRadioButton.setText(bundle.getString("ModuleFoldersPanel.folderByNoneRadioButton.text")); // NOI18N
@@ -346,10 +350,18 @@ public class ModuleFoldersPanel extends ModulePanel {
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 10;
+        gridBagConstraints.gridy = 6;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.insets = new java.awt.Insets(3, 0, 0, 0);
-        add(folderByNoneRadioButton, gridBagConstraints);
+        jPanel2.add(folderByNoneRadioButton, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 7;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.VERTICAL;
+        gridBagConstraints.weighty = 1.0;
+        jPanel2.add(jPanel3, gridBagConstraints);
+
+        add(jPanel2);
 
         bindingGroup.bind();
     }// </editor-fold>//GEN-END:initComponents
@@ -379,6 +391,9 @@ public class ModuleFoldersPanel extends ModulePanel {
     private javax.swing.JLabel folderByLabel;
     private javax.swing.JRadioButton folderByNoneRadioButton;
     private javax.swing.JRadioButton folderByRegexRadioButton;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
     private javax.swing.JTextField regexTextField;
     private javax.swing.JLabel rootDescriptionLabel;
     private javax.swing.JScrollPane rootDescriptionScrollPane;
