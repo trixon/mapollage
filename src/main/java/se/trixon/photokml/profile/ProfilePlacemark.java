@@ -32,9 +32,14 @@ public class ProfilePlacemark extends ProfileBase {
     public static final String KEY_LAT = "lat";
     public static final String KEY_LON = "lon";
     public static final String KEY_NAME_BY = "nameBy";
+    public static final String KEY_SCALE = "scale";
+    public static final String KEY_SYMBOL_AS = "symbolAs";
+    public static final String KEY_ZOOM = "zoom";
     public static final int NAME_BY_DATE = 2;
     public static final int NAME_BY_FILE = 1;
     public static final int NAME_BY_NONE = 0;
+    public static final int SYMBOL_AS_PHOTO = 0;
+    public static final int SYMBOL_AS_PIN = 1;
 
     private String[] mCoordinate;
     private SimpleDateFormat mDateFormat;
@@ -44,6 +49,9 @@ public class ProfilePlacemark extends ProfileBase {
     private Double mLon = 11.3;
     private int mNameBy;
     private final Profile mProfile;
+    private Double mScale = 3.0;
+    private int mSymbolAs = 0;
+    private Double mZoom = 2.0;
 
     public ProfilePlacemark(Profile profile) {
         mProfile = profile;
@@ -53,7 +61,10 @@ public class ProfilePlacemark extends ProfileBase {
         mProfile = profile;
         mLat = (Double) json.get(KEY_LAT);
         mLon = (Double) json.get(KEY_LON);
+        mScale = (Double) json.get(KEY_SCALE);
+        mZoom = (Double) json.get(KEY_ZOOM);
         mNameBy = getInt(json, KEY_NAME_BY);
+        mSymbolAs = getInt(json, KEY_SYMBOL_AS);
         mIncludeNullCoordinate = getBoolean(json, KEY_INCLUDE_NULL_COORDINATE);
         mDatePattern = (String) json.get(KEY_DATE_PATTERN);
     }
@@ -84,6 +95,9 @@ public class ProfilePlacemark extends ProfileBase {
         JSONObject json = new JSONObject();
         json.put(KEY_LAT, mLat);
         json.put(KEY_LON, mLon);
+        json.put(KEY_SCALE, mScale);
+        json.put(KEY_ZOOM, mZoom);
+        json.put(KEY_SYMBOL_AS, mSymbolAs);
         json.put(KEY_NAME_BY, mNameBy);
         json.put(KEY_INCLUDE_NULL_COORDINATE, mIncludeNullCoordinate);
         json.put(KEY_DATE_PATTERN, mDatePattern);
@@ -103,12 +117,28 @@ public class ProfilePlacemark extends ProfileBase {
         return mNameBy;
     }
 
+    public Double getScale() {
+        return mScale;
+    }
+
+    public int getSymbolAs() {
+        return mSymbolAs;
+    }
+
+    public Double getZoom() {
+        return mZoom;
+    }
+
     public boolean hasCoordinate() {
         return mLat != null && mLon != null;
     }
 
     public boolean isIncludeNullCoordinate() {
         return mIncludeNullCoordinate;
+    }
+
+    public boolean isSymbolAsPhoto() {
+        return mSymbolAs == SYMBOL_AS_PHOTO;
     }
 
     @Override
@@ -164,6 +194,18 @@ public class ProfilePlacemark extends ProfileBase {
 
     public void setNameBy(int nameBy) {
         mNameBy = nameBy;
+    }
+
+    public void setScale(Double scale) {
+        mScale = scale;
+    }
+
+    public void setSymbolAs(int symbolAs) {
+        mSymbolAs = symbolAs;
+    }
+
+    public void setZoom(Double zoom) {
+        mZoom = zoom;
     }
 
     @Override

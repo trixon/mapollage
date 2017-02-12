@@ -174,6 +174,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
         mOperationListener = new OperationListener() {
             @Override
             public void onOperationError(String message) {
+                mLogPanel.println(message);
             }
 
             @Override

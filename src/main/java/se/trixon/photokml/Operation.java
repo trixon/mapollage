@@ -22,9 +22,20 @@ import com.drew.metadata.Metadata;
 import com.drew.metadata.exif.ExifSubIFDDirectory;
 import com.drew.metadata.exif.GpsDescriptor;
 import com.drew.metadata.exif.GpsDirectory;
+import de.micromata.opengis.kml.v_2_2_0.AltitudeMode;
 import de.micromata.opengis.kml.v_2_2_0.Folder;
+import de.micromata.opengis.kml.v_2_2_0.Icon;
+import de.micromata.opengis.kml.v_2_2_0.IconStyle;
 import de.micromata.opengis.kml.v_2_2_0.Kml;
+import de.micromata.opengis.kml.v_2_2_0.KmlFactory;
+import de.micromata.opengis.kml.v_2_2_0.Placemark;
+import de.micromata.opengis.kml.v_2_2_0.StyleState;
+import de.micromata.opengis.kml.v_2_2_0.Units;
+import de.micromata.opengis.kml.v_2_2_0.Vec2;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -44,12 +55,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.TimeZone;
+import javax.imageio.ImageIO;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import se.trixon.almond.util.BundleHelper;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.GraphicsHelper;
+import se.trixon.almond.util.ImageScaler;
 import se.trixon.almond.util.Scaler;
 import se.trixon.photokml.profile.Profile;
 import se.trixon.photokml.profile.ProfileDescription;
@@ -70,6 +84,7 @@ public class Operation implements Runnable {
     private final File mDestinationFile;
     private final List<File> mFiles = new ArrayList<>();
     private final Map<String, Folder> mFolders = new HashMap<>();
+    private final ImageScaler mImageScaler = ImageScaler.getInstance();
     private boolean mInterrupted = false;
     private final Kml mKml = new Kml();
     private final OperationListener mListener;
@@ -85,6 +100,7 @@ public class Operation implements Runnable {
     private final ProfileSource mProfileSource;
     private Folder mRootFolder;
     private long mStartTime;
+    private File mThumbsDir;
 
     public Operation(OperationListener operationListener, Profile profile) {
         mListener = operationListener;
@@ -105,6 +121,16 @@ public class Operation implements Runnable {
         Date date = new Date(mStartTime);
         SimpleDateFormat dateFormat = new SimpleDateFormat();
         mListener.onOperationStarted();
+
+        if (mProfilePlacemark.isSymbolAsPhoto()) {
+            mThumbsDir = new File(mDestinationFile.getParent() + String.format("/%s-thumbnails", FilenameUtils.getBaseName(mDestinationFile.getAbsolutePath())));
+            try {
+                FileUtils.forceMkdir(mThumbsDir);
+            } catch (IOException ex) {
+                mListener.onOperationError(ex.getMessage());
+            }
+        }
+
         String status;
         mRootFolder = mKml.createAndSetFolder().withName(mProfileFolder.getRootName());
 
@@ -171,17 +197,72 @@ public class Operation implements Runnable {
             int latInt = (int) (geoLocation.getLatitude() * format);
             int lonInt = (int) (geoLocation.getLongitude() * format);
 
-            getFolder(file, exifDate).createAndAddPlacemark()
+            Vec2 iconHotSpot = new Vec2();
+            iconHotSpot.setX(0.5);
+            iconHotSpot.setY(0.5);
+            iconHotSpot.setXunits(Units.FRACTION);
+            iconHotSpot.setYunits(Units.FRACTION);
+
+            Folder folder = getFolder(file, exifDate);
+
+            String imageId = String.format("%08x", FileUtils.checksumCRC32(file));
+            String styleNormalId = String.format("s_%s-pushpin", imageId);
+            String styleHighlightId = String.format("s_%s-pushpin_hl", imageId);
+            String styleMapId = String.format("m_%s-pushpin", imageId);
+            double highlightZoom = mProfilePlacemark.getZoom() * mProfilePlacemark.getScale();
+
+            IconStyle normalIconStyle = folder.createAndAddStyle().withId(styleNormalId).createAndSetIconStyle().withScale(mProfilePlacemark.getScale());
+            IconStyle highlightIconStyle = folder.createAndAddStyle().withId(styleHighlightId).createAndSetIconStyle().withScale(highlightZoom);
+
+            if (mProfilePlacemark.isSymbolAsPhoto()) {
+                Icon icon = KmlFactory.createIcon().withHref(String.format("%s/%s", mThumbsDir.getName(), imageId));
+                normalIconStyle.setIcon(icon);
+                highlightIconStyle.setIcon(icon);
+
+                File thumbnail = new File(mThumbsDir, imageId);
+                if (!thumbnail.exists()) {
+                    createThumbnail(file, thumbnail);
+                }
+            }
+
+            folder.createAndAddStyleMap().withId(styleMapId)
+                    .addToPair(KmlFactory.createPair().withKey(StyleState.NORMAL).withStyleUrl(styleNormalId))
+                    .addToPair(KmlFactory.createPair().withKey(StyleState.HIGHLIGHT).withStyleUrl(styleHighlightId));
+
+            Placemark placemark = KmlFactory.createPlacemark()
                     .withName(getPlacemarkName(file, exifDate))
                     .withDescription(getPlacemarkDescription(file, gpsDirectory, exifDate))
                     .withOpen(Boolean.TRUE)
-                    .createAndSetPoint()
-                    .addToCoordinates(lonInt / format, latInt / format);
+                    .withStyleUrl(styleMapId);
 
+            placemark.createAndSetPoint()
+                    .addToCoordinates(lonInt / format, latInt / format)
+                    .setAltitudeMode(AltitudeMode.CLAMP_TO_GROUND);
+
+            folder.addToFeature(placemark);
             mNumOfPlacemarks++;
         } else {
             mListener.onOperationError(Dict.FAILED.toString());
         }
+    }
+
+    private void createThumbnail(File source, File dest) throws IOException {
+        int borderSize = 2;
+        BufferedImage scaledImage = mImageScaler.getScaledImage(source, new Dimension(512 - borderSize * 2, 512 - borderSize * 2));
+
+        int width = scaledImage.getWidth();
+        int height = scaledImage.getHeight();
+        int borderedImageWidth = width + borderSize * 2;
+        int borderedImageHeight = height + borderSize * 2;
+
+        BufferedImage borderedImage = new BufferedImage(borderedImageWidth, borderedImageHeight, BufferedImage.TYPE_3BYTE_BGR);
+
+        Graphics2D g2d = borderedImage.createGraphics();
+        g2d.setColor(Color.YELLOW);
+        g2d.fillRect(0, 0, borderedImageWidth, borderedImageHeight);
+        g2d.drawImage(scaledImage, borderSize, borderSize, width + borderSize, height + borderSize, 0, 0, width, height, Color.YELLOW, null);
+
+        ImageIO.write(borderedImage, "jpg", dest);
     }
 
     private boolean generateFileList() {

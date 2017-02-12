@@ -59,6 +59,8 @@ public abstract class ProfileBase {
 
         } catch (ClassCastException e) {
             return (Integer) object.get(key);
+        } catch (NullPointerException e) {
+            return 0;
         }
     }
 }

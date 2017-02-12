@@ -130,6 +130,7 @@ public class ModulePlacemarkPanel extends ModulePanel {
         bindingGroup = new org.jdesktop.beansbinding.BindingGroup();
 
         nameButtonGroup = new javax.swing.ButtonGroup();
+        symbolButtonGroup = new javax.swing.ButtonGroup();
         nameByLabel = new javax.swing.JLabel();
         nameByFileRadioButton = new javax.swing.JRadioButton();
         nameByDateRadioButton = new javax.swing.JRadioButton();
@@ -142,6 +143,13 @@ public class ModulePlacemarkPanel extends ModulePanel {
         lonLabel = new javax.swing.JLabel();
         lonSpinner = new javax.swing.JSpinner();
         filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
+        scaleLabel = new javax.swing.JLabel();
+        scaleSpinner = new javax.swing.JSpinner();
+        zoomSpinner = new javax.swing.JSpinner();
+        zoomLabel = new javax.swing.JLabel();
+        symbolLabel = new javax.swing.JLabel();
+        symbolPhotoRadioButton = new javax.swing.JRadioButton();
+        symbolPinRadioButton = new javax.swing.JRadioButton();
 
         setLayout(new java.awt.GridBagLayout());
 
@@ -149,8 +157,9 @@ public class ModulePlacemarkPanel extends ModulePanel {
         nameByLabel.setText(bundle.getString("ModulePlacemarkPanel.nameByLabel.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridy = 7;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(8, 0, 0, 0);
         add(nameByLabel, gridBagConstraints);
 
         nameButtonGroup.add(nameByFileRadioButton);
@@ -162,7 +171,7 @@ public class ModulePlacemarkPanel extends ModulePanel {
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridy = 8;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(6, 8, 0, 0);
         add(nameByFileRadioButton, gridBagConstraints);
@@ -176,7 +185,7 @@ public class ModulePlacemarkPanel extends ModulePanel {
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridy = 9;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(6, 8, 0, 0);
         add(nameByDateRadioButton, gridBagConstraints);
@@ -191,7 +200,7 @@ public class ModulePlacemarkPanel extends ModulePanel {
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 3;
+        gridBagConstraints.gridy = 10;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 28, 0, 0);
@@ -206,7 +215,7 @@ public class ModulePlacemarkPanel extends ModulePanel {
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 4;
+        gridBagConstraints.gridy = 11;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(6, 8, 0, 0);
         add(nameByNoRadioButton, gridBagConstraints);
@@ -287,13 +296,89 @@ public class ModulePlacemarkPanel extends ModulePanel {
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 5;
+        gridBagConstraints.gridy = 12;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(6, 0, 0, 0);
         add(nullCoordinatePanel, gridBagConstraints);
+
+        scaleLabel.setText(Dict.SCALE.toString());
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(8, 0, 0, 0);
+        add(scaleLabel, gridBagConstraints);
+
+        scaleSpinner.setModel(new javax.swing.SpinnerNumberModel(0.5d, 0.5d, 10.0d, 0.1d));
+        scaleSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                scaleSpinnerStateChanged(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        add(scaleSpinner, gridBagConstraints);
+
+        zoomSpinner.setModel(new javax.swing.SpinnerNumberModel(2.0d, 1.5d, 10.0d, 0.1d));
+        zoomSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                zoomSpinnerStateChanged(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 6;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        add(zoomSpinner, gridBagConstraints);
+
+        zoomLabel.setText(Dict.ZOOM.toString());
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 5;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(8, 0, 0, 0);
+        add(zoomLabel, gridBagConstraints);
+
+        symbolLabel.setText(Dict.SYMBOL.toString());
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        add(symbolLabel, gridBagConstraints);
+
+        symbolButtonGroup.add(symbolPhotoRadioButton);
+        symbolPhotoRadioButton.setText(Dict.PHOTO.toString());
+        symbolPhotoRadioButton.setToolTipText(bundle.getString("ModulePlacemarkPanel.symbolPhotoRadioButton.toolTipText")); // NOI18N
+        symbolPhotoRadioButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                symbolPhotoRadioButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(6, 8, 0, 0);
+        add(symbolPhotoRadioButton, gridBagConstraints);
+
+        symbolButtonGroup.add(symbolPinRadioButton);
+        symbolPinRadioButton.setText(Dict.PIN.toString());
+        symbolPinRadioButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                symbolPinRadioButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(6, 8, 0, 0);
+        add(symbolPinRadioButton, gridBagConstraints);
 
         bindingGroup.bind();
     }// </editor-fold>//GEN-END:initComponents
@@ -329,6 +414,22 @@ public class ModulePlacemarkPanel extends ModulePanel {
         mPlacemark.setLon((Double) lonSpinner.getModel().getValue());
     }//GEN-LAST:event_lonSpinnerStateChanged
 
+    private void scaleSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_scaleSpinnerStateChanged
+        mPlacemark.setScale((Double) scaleSpinner.getModel().getValue());
+    }//GEN-LAST:event_scaleSpinnerStateChanged
+
+    private void zoomSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_zoomSpinnerStateChanged
+        mPlacemark.setZoom((Double) zoomSpinner.getModel().getValue());
+    }//GEN-LAST:event_zoomSpinnerStateChanged
+
+    private void symbolPhotoRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_symbolPhotoRadioButtonActionPerformed
+        mPlacemark.setSymbolAs(ProfilePlacemark.SYMBOL_AS_PHOTO);
+    }//GEN-LAST:event_symbolPhotoRadioButtonActionPerformed
+
+    private void symbolPinRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_symbolPinRadioButtonActionPerformed
+        mPlacemark.setSymbolAs(ProfilePlacemark.SYMBOL_AS_PIN);
+    }//GEN-LAST:event_symbolPinRadioButtonActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField dateFormatTextField;
     private javax.swing.Box.Filler filler1;
@@ -343,6 +444,14 @@ public class ModulePlacemarkPanel extends ModulePanel {
     private javax.swing.JLabel nameByLabel;
     private javax.swing.JRadioButton nameByNoRadioButton;
     private javax.swing.JPanel nullCoordinatePanel;
+    private javax.swing.JLabel scaleLabel;
+    private javax.swing.JSpinner scaleSpinner;
+    private javax.swing.ButtonGroup symbolButtonGroup;
+    private javax.swing.JLabel symbolLabel;
+    private javax.swing.JRadioButton symbolPhotoRadioButton;
+    private javax.swing.JRadioButton symbolPinRadioButton;
+    private javax.swing.JLabel zoomLabel;
+    private javax.swing.JSpinner zoomSpinner;
     private org.jdesktop.beansbinding.BindingGroup bindingGroup;
     // End of variables declaration//GEN-END:variables
 
@@ -370,8 +479,22 @@ public class ModulePlacemarkPanel extends ModulePanel {
                 break;
         }
 
+        switch (mPlacemark.getSymbolAs()) {
+            case ProfilePlacemark.SYMBOL_AS_PHOTO:
+                symbolPhotoRadioButton.setSelected(true);
+                symbolPhotoRadioButtonActionPerformed(null);
+                break;
+
+            case ProfilePlacemark.SYMBOL_AS_PIN:
+                symbolPinRadioButton.setSelected(true);
+                symbolPinRadioButtonActionPerformed(null);
+                break;
+        }
+
         includeNullCoordinateCheckBox.setSelected(mPlacemark.isIncludeNullCoordinate());
         latSpinner.setValue(mPlacemark.getLat());
         lonSpinner.setValue(mPlacemark.getLon());
+        scaleSpinner.setValue(mPlacemark.getScale());
+        zoomSpinner.setValue(mPlacemark.getZoom());
     }
 }
