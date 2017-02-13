@@ -17,7 +17,6 @@ package se.trixon.photokml.ui.config;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 import java.util.prefs.PreferenceChangeEvent;
 import javax.swing.ImageIcon;
 import javax.swing.event.DocumentEvent;
@@ -60,9 +59,9 @@ public class ModulePlacemarkPanel extends ModulePanel {
             nameBy = nameByNoRadioButton.getText();
         }
         append(sb, nameByLabel.getText(), nameBy);
-        optAppend(sb, mPlacemark.isIncludeNullCoordinate(), String.format(Locale.ENGLISH, "%s (%f, %f)",
-                includeNullCoordinateCheckBox.getText(),
-                mPlacemark.getLat(), mPlacemark.getLon()));
+//        optAppend(sb, mPlacemark.isIncludeNullCoordinate(), String.format(Locale.ENGLISH, "%s (%f, %f)",
+//                includeNullCoordinateCheckBox.getText(),
+//                mPlacemark.getLat(), mPlacemark.getLon()));
         sb.append("\n");
 
         return sb;
@@ -138,6 +137,13 @@ public class ModulePlacemarkPanel extends ModulePanel {
 
         nameButtonGroup = new javax.swing.ButtonGroup();
         symbolButtonGroup = new javax.swing.ButtonGroup();
+        jPanel2 = new javax.swing.JPanel();
+        nameByLabel = new javax.swing.JLabel();
+        nameByFileRadioButton = new javax.swing.JRadioButton();
+        nameByDateRadioButton = new javax.swing.JRadioButton();
+        dateFormatTextField = new javax.swing.JTextField();
+        nameByNoRadioButton = new javax.swing.JRadioButton();
+        jPanel3 = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
         symbolLabel = new javax.swing.JLabel();
         symbolPhotoRadioButton = new javax.swing.JRadioButton();
@@ -146,22 +152,88 @@ public class ModulePlacemarkPanel extends ModulePanel {
         scaleSpinner = new javax.swing.JSpinner();
         zoomLabel = new javax.swing.JLabel();
         zoomSpinner = new javax.swing.JSpinner();
-        nullCoordinatePanel = new javax.swing.JPanel();
-        includeNullCoordinateCheckBox = new javax.swing.JCheckBox();
-        latLabel = new javax.swing.JLabel();
-        latSpinner = new javax.swing.JSpinner();
-        lonLabel = new javax.swing.JLabel();
-        lonSpinner = new javax.swing.JSpinner();
-        filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
-        jPanel2 = new javax.swing.JPanel();
-        nameByLabel = new javax.swing.JLabel();
-        nameByFileRadioButton = new javax.swing.JRadioButton();
-        nameByDateRadioButton = new javax.swing.JRadioButton();
-        dateFormatTextField = new javax.swing.JTextField();
-        nameByNoRadioButton = new javax.swing.JRadioButton();
-        jPanel3 = new javax.swing.JPanel();
+        jPanel4 = new javax.swing.JPanel();
 
         setLayout(new java.awt.GridLayout(1, 0, 8, 0));
+
+        jPanel2.setLayout(new java.awt.GridBagLayout());
+
+        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("se/trixon/photokml/ui/config/Bundle"); // NOI18N
+        nameByLabel.setText(bundle.getString("ModulePlacemarkPanel.nameByLabel.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        jPanel2.add(nameByLabel, gridBagConstraints);
+
+        nameButtonGroup.add(nameByFileRadioButton);
+        nameByFileRadioButton.setText(Dict.FILENAME.getString());
+        nameByFileRadioButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                nameByFileRadioButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(6, 0, 0, 0);
+        jPanel2.add(nameByFileRadioButton, gridBagConstraints);
+
+        nameButtonGroup.add(nameByDateRadioButton);
+        nameByDateRadioButton.setText(Dict.DATE_PATTERN.getString());
+        nameByDateRadioButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                nameByDateRadioButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(6, 0, 0, 0);
+        jPanel2.add(nameByDateRadioButton, gridBagConstraints);
+
+        org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, nameByDateRadioButton, org.jdesktop.beansbinding.ELProperty.create("${selected}"), dateFormatTextField, org.jdesktop.beansbinding.BeanProperty.create("enabled"));
+        bindingGroup.addBinding(binding);
+
+        dateFormatTextField.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                dateFormatTextFieldFocusLost(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 20, 0, 0);
+        jPanel2.add(dateFormatTextField, gridBagConstraints);
+
+        nameButtonGroup.add(nameByNoRadioButton);
+        nameByNoRadioButton.setText(bundle.getString("ModulePlacemarkPanel.nameByNoRadioButton.text")); // NOI18N
+        nameByNoRadioButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                nameByNoRadioButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(6, 0, 0, 0);
+        jPanel2.add(nameByNoRadioButton, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 5;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        jPanel2.add(jPanel3, gridBagConstraints);
+
+        add(jPanel2);
 
         jPanel1.setLayout(new java.awt.GridBagLayout());
 
@@ -174,7 +246,6 @@ public class ModulePlacemarkPanel extends ModulePanel {
 
         symbolButtonGroup.add(symbolPhotoRadioButton);
         symbolPhotoRadioButton.setText(Dict.PHOTO.toString());
-        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("se/trixon/photokml/ui/config/Bundle"); // NOI18N
         symbolPhotoRadioButton.setToolTipText(bundle.getString("ModulePlacemarkPanel.symbolPhotoRadioButton.toolTipText")); // NOI18N
         symbolPhotoRadioButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -241,170 +312,15 @@ public class ModulePlacemarkPanel extends ModulePanel {
         gridBagConstraints.gridy = 6;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         jPanel1.add(zoomSpinner, gridBagConstraints);
-
-        nullCoordinatePanel.setLayout(new java.awt.GridBagLayout());
-
-        includeNullCoordinateCheckBox.setText(bundle.getString("ModulePlacemarkPanel.includeNullCoordinateCheckBox.text")); // NOI18N
-        includeNullCoordinateCheckBox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                includeNullCoordinateCheckBoxActionPerformed(evt);
-            }
-        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridwidth = 3;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 4, 0);
-        nullCoordinatePanel.add(includeNullCoordinateCheckBox, gridBagConstraints);
-
-        latLabel.setText(Dict.LATITUDE.getString());
-        latLabel.setPreferredSize(new java.awt.Dimension(100, 15));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        nullCoordinatePanel.add(latLabel, gridBagConstraints);
-
-        latSpinner.setModel(new javax.swing.SpinnerNumberModel(0.0d, -90.0d, 90.0d, 0.01d));
-
-        org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, includeNullCoordinateCheckBox, org.jdesktop.beansbinding.ELProperty.create("${selected}"), latSpinner, org.jdesktop.beansbinding.BeanProperty.create("enabled"));
-        bindingGroup.addBinding(binding);
-
-        latSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
-            public void stateChanged(javax.swing.event.ChangeEvent evt) {
-                latSpinnerStateChanged(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        nullCoordinatePanel.add(latSpinner, gridBagConstraints);
-
-        lonLabel.setText(Dict.LONGITUDE.getString());
-        lonLabel.setPreferredSize(new java.awt.Dimension(100, 15));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 8, 0, 0);
-        nullCoordinatePanel.add(lonLabel, gridBagConstraints);
-
-        lonSpinner.setModel(new javax.swing.SpinnerNumberModel(0.0d, -180.0d, 180.0d, 0.01d));
-
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, includeNullCoordinateCheckBox, org.jdesktop.beansbinding.ELProperty.create("${selected}"), lonSpinner, org.jdesktop.beansbinding.BeanProperty.create("enabled"));
-        bindingGroup.addBinding(binding);
-
-        lonSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
-            public void stateChanged(javax.swing.event.ChangeEvent evt) {
-                lonSpinnerStateChanged(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(0, 8, 0, 0);
-        nullCoordinatePanel.add(lonSpinner, gridBagConstraints);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 3;
-        gridBagConstraints.gridwidth = 3;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.gridy = 7;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.VERTICAL;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
-        nullCoordinatePanel.add(filler1, gridBagConstraints);
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 12;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(6, 0, 0, 0);
-        jPanel1.add(nullCoordinatePanel, gridBagConstraints);
+        jPanel1.add(jPanel4, gridBagConstraints);
 
         add(jPanel1);
-
-        jPanel2.setLayout(new java.awt.GridBagLayout());
-
-        nameByLabel.setText(bundle.getString("ModulePlacemarkPanel.nameByLabel.text")); // NOI18N
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        jPanel2.add(nameByLabel, gridBagConstraints);
-
-        nameButtonGroup.add(nameByFileRadioButton);
-        nameByFileRadioButton.setText(Dict.FILENAME.getString());
-        nameByFileRadioButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                nameByFileRadioButtonActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(6, 0, 0, 0);
-        jPanel2.add(nameByFileRadioButton, gridBagConstraints);
-
-        nameButtonGroup.add(nameByDateRadioButton);
-        nameByDateRadioButton.setText(Dict.DATE_PATTERN.getString());
-        nameByDateRadioButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                nameByDateRadioButtonActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(6, 0, 0, 0);
-        jPanel2.add(nameByDateRadioButton, gridBagConstraints);
-
-        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, nameByDateRadioButton, org.jdesktop.beansbinding.ELProperty.create("${selected}"), dateFormatTextField, org.jdesktop.beansbinding.BeanProperty.create("enabled"));
-        bindingGroup.addBinding(binding);
-
-        dateFormatTextField.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                dateFormatTextFieldFocusLost(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 3;
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 20, 0, 0);
-        jPanel2.add(dateFormatTextField, gridBagConstraints);
-
-        nameButtonGroup.add(nameByNoRadioButton);
-        nameByNoRadioButton.setText(bundle.getString("ModulePlacemarkPanel.nameByNoRadioButton.text")); // NOI18N
-        nameByNoRadioButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                nameByNoRadioButtonActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 4;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(6, 0, 0, 0);
-        jPanel2.add(nameByNoRadioButton, gridBagConstraints);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 5;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        jPanel2.add(jPanel3, gridBagConstraints);
-
-        add(jPanel2);
 
         bindingGroup.bind();
     }// </editor-fold>//GEN-END:initComponents
@@ -425,21 +341,6 @@ public class ModulePlacemarkPanel extends ModulePanel {
         mPlacemark.setNameBy(ProfilePlacemark.NAME_BY_DATE);
     }//GEN-LAST:event_nameByDateRadioButtonActionPerformed
 
-    private void includeNullCoordinateCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_includeNullCoordinateCheckBoxActionPerformed
-        boolean state = includeNullCoordinateCheckBox.isSelected();
-        latSpinner.setEnabled(state);
-        lonSpinner.setEnabled(state);
-        mPlacemark.setIncludeNullCoordinate(includeNullCoordinateCheckBox.isSelected());
-    }//GEN-LAST:event_includeNullCoordinateCheckBoxActionPerformed
-
-    private void latSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_latSpinnerStateChanged
-        mPlacemark.setLat((Double) latSpinner.getModel().getValue());
-    }//GEN-LAST:event_latSpinnerStateChanged
-
-    private void lonSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_lonSpinnerStateChanged
-        mPlacemark.setLon((Double) lonSpinner.getModel().getValue());
-    }//GEN-LAST:event_lonSpinnerStateChanged
-
     private void scaleSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_scaleSpinnerStateChanged
         mPlacemark.setScale((Double) scaleSpinner.getModel().getValue());
     }//GEN-LAST:event_scaleSpinnerStateChanged
@@ -458,21 +359,15 @@ public class ModulePlacemarkPanel extends ModulePanel {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField dateFormatTextField;
-    private javax.swing.Box.Filler filler1;
-    private javax.swing.JCheckBox includeNullCoordinateCheckBox;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JLabel latLabel;
-    private javax.swing.JSpinner latSpinner;
-    private javax.swing.JLabel lonLabel;
-    private javax.swing.JSpinner lonSpinner;
+    private javax.swing.JPanel jPanel4;
     private javax.swing.ButtonGroup nameButtonGroup;
     private javax.swing.JRadioButton nameByDateRadioButton;
     private javax.swing.JRadioButton nameByFileRadioButton;
     private javax.swing.JLabel nameByLabel;
     private javax.swing.JRadioButton nameByNoRadioButton;
-    private javax.swing.JPanel nullCoordinatePanel;
     private javax.swing.JLabel scaleLabel;
     private javax.swing.JSpinner scaleSpinner;
     private javax.swing.ButtonGroup symbolButtonGroup;
@@ -520,9 +415,6 @@ public class ModulePlacemarkPanel extends ModulePanel {
                 break;
         }
 
-        includeNullCoordinateCheckBox.setSelected(mPlacemark.isIncludeNullCoordinate());
-        latSpinner.setValue(mPlacemark.getLat());
-        lonSpinner.setValue(mPlacemark.getLon());
         scaleSpinner.setValue(mPlacemark.getScale());
         zoomSpinner.setValue(mPlacemark.getZoom());
     }

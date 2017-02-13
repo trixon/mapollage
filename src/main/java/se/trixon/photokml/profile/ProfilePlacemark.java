@@ -17,7 +17,6 @@ package se.trixon.photokml.profile;
 
 import java.text.SimpleDateFormat;
 import org.apache.commons.cli.CommandLine;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.json.simple.JSONObject;
 import se.trixon.photokml.PhotoKml;
 
@@ -28,9 +27,6 @@ import se.trixon.photokml.PhotoKml;
 public class ProfilePlacemark extends ProfileBase {
 
     public static final String KEY_DATE_PATTERN = "datePattern";
-    public static final String KEY_INCLUDE_NULL_COORDINATE = "includeNullCoordinate";
-    public static final String KEY_LAT = "lat";
-    public static final String KEY_LON = "lon";
     public static final String KEY_NAME_BY = "nameBy";
     public static final String KEY_SCALE = "scale";
     public static final String KEY_SYMBOL_AS = "symbolAs";
@@ -44,14 +40,11 @@ public class ProfilePlacemark extends ProfileBase {
     private String[] mCoordinate;
     private SimpleDateFormat mDateFormat;
     private String mDatePattern = "yyyy-MM-dd HH.mm";
-    private boolean mIncludeNullCoordinate;
-    private Double mLat = 57.6;
-    private Double mLon = 11.3;
     private int mNameBy;
     private final Profile mProfile;
     private Double mScale = 3.0;
     private int mSymbolAs = 0;
-    private Double mZoom = 2.0;
+    private Double mZoom = 3.0;
 
     public ProfilePlacemark(Profile profile) {
         mProfile = profile;
@@ -59,13 +52,10 @@ public class ProfilePlacemark extends ProfileBase {
 
     public ProfilePlacemark(Profile profile, JSONObject json) {
         mProfile = profile;
-        mLat = (Double) json.get(KEY_LAT);
-        mLon = (Double) json.get(KEY_LON);
         mScale = (Double) json.get(KEY_SCALE);
         mZoom = (Double) json.get(KEY_ZOOM);
         mNameBy = getInt(json, KEY_NAME_BY);
         mSymbolAs = getInt(json, KEY_SYMBOL_AS);
-        mIncludeNullCoordinate = getBoolean(json, KEY_INCLUDE_NULL_COORDINATE);
         mDatePattern = (String) json.get(KEY_DATE_PATTERN);
     }
 
@@ -93,24 +83,13 @@ public class ProfilePlacemark extends ProfileBase {
     @Override
     public JSONObject getJson() {
         JSONObject json = new JSONObject();
-        json.put(KEY_LAT, mLat);
-        json.put(KEY_LON, mLon);
         json.put(KEY_SCALE, mScale);
         json.put(KEY_ZOOM, mZoom);
         json.put(KEY_SYMBOL_AS, mSymbolAs);
         json.put(KEY_NAME_BY, mNameBy);
-        json.put(KEY_INCLUDE_NULL_COORDINATE, mIncludeNullCoordinate);
         json.put(KEY_DATE_PATTERN, mDatePattern);
 
         return json;
-    }
-
-    public Double getLat() {
-        return mLat;
-    }
-
-    public Double getLon() {
-        return mLon;
     }
 
     public int getNameBy() {
@@ -129,14 +108,6 @@ public class ProfilePlacemark extends ProfileBase {
         return mZoom;
     }
 
-    public boolean hasCoordinate() {
-        return mLat != null && mLon != null;
-    }
-
-    public boolean isIncludeNullCoordinate() {
-        return mIncludeNullCoordinate;
-    }
-
     public boolean isSymbolAsPhoto() {
         return mSymbolAs == SYMBOL_AS_PHOTO;
     }
@@ -148,20 +119,6 @@ public class ProfilePlacemark extends ProfileBase {
                 mDateFormat = new SimpleDateFormat(mDatePattern, mOptions.getLocale());
             } catch (Exception e) {
                 addValidationError(String.format(mBundle.getString("invalid_value"), PhotoKml.PLACEMARK_NAME, mDatePattern));
-            }
-        }
-
-        if (mCoordinate != null) {
-            try {
-                mLat = NumberUtils.createDouble(mCoordinate[0]);
-            } catch (NumberFormatException e) {
-                addValidationError(String.format(mBundle.getString("invalid_value"), PhotoKml.COORDINATE, mCoordinate[0]));
-            }
-
-            try {
-                mLon = NumberUtils.createDouble(mCoordinate[1]);
-            } catch (NumberFormatException e) {
-                addValidationError(String.format(mBundle.getString("invalid_value"), PhotoKml.COORDINATE, mCoordinate[1]));
             }
         }
 
@@ -178,18 +135,6 @@ public class ProfilePlacemark extends ProfileBase {
 
     public void setDatePattern(String datePattern) {
         mDatePattern = datePattern;
-    }
-
-    public void setIncludeNullCoordinate(boolean includeNullCoordinate) {
-        mIncludeNullCoordinate = includeNullCoordinate;
-    }
-
-    public void setLat(Double lat) {
-        mLat = lat;
-    }
-
-    public void setLon(Double lon) {
-        mLon = lon;
     }
 
     public void setNameBy(int nameBy) {
@@ -210,11 +155,11 @@ public class ProfilePlacemark extends ProfileBase {
 
     @Override
     public String toDebugString() {
-        return "ProfilePlacemark{" + ", mCoordinate=" + mCoordinate + ", mDateFormat=" + mDateFormat + ", mDatePattern=" + mDatePattern + ", mIncludeNullCoordinate=" + mIncludeNullCoordinate + ", mLat=" + mLat + ", mLon=" + mLon + ", mNameBy=" + mNameBy + ", mProfile=" + mProfile + '}';
+        return "ProfilePlacemark{" + ", mCoordinate=" + mCoordinate + ", mDateFormat=" + mDateFormat + ", mDatePattern=" + mDatePattern + ", mNameBy=" + mNameBy + ", mProfile=" + mProfile + '}';
     }
 
     @Override
     public String toString() {
-        return "ProfilePlacemark{" + "mIncludeNullCoordinate=" + mIncludeNullCoordinate + ", mDateFormat=" + mDateFormat + ", mDatePattern=" + mDatePattern + ", mProfile=" + mProfile + ", mLat=" + mLat + ", mLon=" + mLon + ", mCoordinate=" + mCoordinate + ", nameBy=" + mNameBy + '}';
+        return "ProfilePlacemark{" + ", mDateFormat=" + mDateFormat + ", mDatePattern=" + mDatePattern + ", mProfile=" + mProfile + ", mCoordinate=" + mCoordinate + ", nameBy=" + mNameBy + '}';
     }
 }

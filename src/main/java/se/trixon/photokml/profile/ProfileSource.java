@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2017 Patrik Karlsson.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,15 +28,17 @@ import org.json.simple.JSONObject;
 public class ProfileSource extends ProfileBase {
 
     public static final String KEY_FOLLOW_LINKS = "followLinks";
+    public static final String KEY_INCLUDE_NULL_COORDINATE = "includeNullCoordinate";
     public static final String KEY_PATH = "path";
     public static final String KEY_PATTERN = "pattern";
     public static final String KEY_RECURSIVE = "recursive";
     private File mDir = SystemUtils.getUserHome();
     private String mFilePattern = "{*.jpg,*.JPG}";
-    private boolean mFollowLinks;
+    private boolean mFollowLinks = true;
+    private boolean mIncludeNullCoordinate = false;
     private PathMatcher mPathMatcher;
     private final Profile mProfile;
-    private boolean mRecursive;
+    private boolean mRecursive = true;
 
     public ProfileSource(Profile profile) {
         mProfile = profile;
@@ -48,6 +50,7 @@ public class ProfileSource extends ProfileBase {
         mFilePattern = (String) json.get(KEY_PATTERN);
         mRecursive = getBoolean(json, KEY_RECURSIVE);
         mFollowLinks = getBoolean(json, KEY_FOLLOW_LINKS);
+        mIncludeNullCoordinate = getBoolean(json, KEY_INCLUDE_NULL_COORDINATE);
     }
 
     public File getDir() {
@@ -65,6 +68,7 @@ public class ProfileSource extends ProfileBase {
         json.put(KEY_PATTERN, mFilePattern);
         json.put(KEY_FOLLOW_LINKS, mFollowLinks);
         json.put(KEY_RECURSIVE, mRecursive);
+        json.put(KEY_INCLUDE_NULL_COORDINATE, mIncludeNullCoordinate);
 
         return json;
     }
@@ -75,6 +79,10 @@ public class ProfileSource extends ProfileBase {
 
     public boolean isFollowLinks() {
         return mFollowLinks;
+    }
+
+    public boolean isIncludeNullCoordinate() {
+        return mIncludeNullCoordinate;
     }
 
     public boolean isRecursive() {
@@ -102,6 +110,10 @@ public class ProfileSource extends ProfileBase {
 
     public void setFollowLinks(boolean followLinks) {
         mFollowLinks = followLinks;
+    }
+
+    public void setIncludeNullCoordinate(boolean includeNullCoordinate) {
+        mIncludeNullCoordinate = includeNullCoordinate;
     }
 
     public void setRecursive(boolean recursive) {

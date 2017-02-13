@@ -44,8 +44,8 @@ public class ProfileFolder extends ProfileBase {
     private final Profile mProfile;
     private String mRegex = "\\d{8}";
     private String mRegexDefault = "12345678";
-    private String mRootDescription;
-    private String mRootName;
+    private String mRootDescription = "";
+    private String mRootName = "";
 
     public ProfileFolder(Profile profile) {
         mProfile = profile;
@@ -61,16 +61,6 @@ public class ProfileFolder extends ProfileBase {
         mRegexDefault = (String) json.get(KEY_REGEX_DEFAULT);
     }
 
-//    public ProfileFolder(final Profile profile, CommandLine commandLine) {
-//        mProfile = profile;
-//        mRootName = commandLine.getOptionValue(PhotoKml.ROOT_NAME);
-//        mRootDescription = commandLine.getOptionValue(PhotoKml.ROOT_DESC);
-//        if (commandLine.hasOption(PhotoKml.FOLDER_NAME)) {
-//            mFolderDatePattern = commandLine.getOptionValue(PhotoKml.FOLDER_NAME);
-//            mFolderByDate = mFolderDatePattern != null;
-//            mFolderByDir = !mFolderByDate;
-//        }
-//    }
     public String getDatePattern() {
         return mDatePattern;
     }

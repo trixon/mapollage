@@ -92,6 +92,7 @@ public class Operation implements Runnable {
     private int mNumOfGps;
     private int mNumOfInvalidFormat;
     private int mNumOfPlacemarks;
+    private final Options mOptions = Options.getInstance();
     private final Profile mProfile;
     private final ProfileDescription mProfileDescription;
     private final ProfileFolder mProfileFolder;
@@ -189,7 +190,7 @@ public class Operation implements Runnable {
         }
 
         Date exifDate = getImageDate(file, exifDirectory);
-        boolean shouldAppendToKml = gpsDirectory != null || mProfilePlacemark.hasCoordinate();
+        boolean shouldAppendToKml = gpsDirectory != null || mProfileSource.isIncludeNullCoordinate();
 
         if (shouldAppendToKml) {
             GeoLocation geoLocation = getPlacemarkGeoLocation(file, gpsDirectory);
@@ -461,9 +462,7 @@ public class Operation implements Runnable {
     private GeoLocation getPlacemarkGeoLocation(File file, GpsDirectory gpsDirectory) throws ImageProcessingException {
         GeoLocation geoLocation = null;
 
-        if (mProfilePlacemark.hasCoordinate()) {
-            geoLocation = new GeoLocation(mProfilePlacemark.getLat(), mProfilePlacemark.getLon());
-        }
+        geoLocation = new GeoLocation(mOptions.getDefaultLat(), mOptions.getDefaultLon());
 
         if (gpsDirectory != null) {
             geoLocation = gpsDirectory.getGeoLocation();
@@ -472,7 +471,7 @@ public class Operation implements Runnable {
             }
 
             if (geoLocation.isZero()) {
-                geoLocation = new GeoLocation(mProfilePlacemark.getLat(), mProfilePlacemark.getLon());
+                geoLocation = new GeoLocation(mOptions.getDefaultLat(), mOptions.getDefaultLon());
                 gpsDirectory = null;
             }
         }

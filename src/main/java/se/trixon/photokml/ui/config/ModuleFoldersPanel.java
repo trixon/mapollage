@@ -227,7 +227,7 @@ public class ModuleFoldersPanel extends ModulePanel {
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(3, 0, 0, 0);
+        gridBagConstraints.insets = new java.awt.Insets(8, 0, 0, 0);
         jPanel1.add(rootDescriptionLabel, gridBagConstraints);
 
         rootDescriptionTextArea.setColumns(20);

@@ -24,8 +24,12 @@ import java.util.prefs.Preferences;
  */
 public class Options {
 
+    public static final String KEY_DEFAULT_LAT = "deflat";
+    public static final String KEY_DEFAULT_LON = "deflon";
     public static final String KEY_LOCALE = "locale";
     private static final Locale DEFAULT_LOCALE = Locale.getDefault();
+    private final Double DEFAULT_LAT = 57.6;
+    private final Double DEFAULT_LON = 11.3;
     private final Preferences mPreferences = Preferences.userNodeForPackage(Options.class);
 
     public static Options getInstance() {
@@ -35,12 +39,28 @@ public class Options {
     private Options() {
     }
 
+    public Double getDefaultLat() {
+        return mPreferences.getDouble(KEY_DEFAULT_LAT, DEFAULT_LAT);
+    }
+
+    public Double getDefaultLon() {
+        return mPreferences.getDouble(KEY_DEFAULT_LON, DEFAULT_LON);
+    }
+
     public Locale getLocale() {
         return Locale.forLanguageTag(mPreferences.get(KEY_LOCALE, DEFAULT_LOCALE.toLanguageTag()));
     }
 
     public Preferences getPreferences() {
         return mPreferences;
+    }
+
+    public void setDefaultLat(Double value) {
+        mPreferences.putDouble(KEY_DEFAULT_LAT, value);
+    }
+
+    public void setDefaultLon(Double value) {
+        mPreferences.putDouble(KEY_DEFAULT_LON, value);
     }
 
     public void setLocale(Locale locale) {

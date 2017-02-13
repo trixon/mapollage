@@ -23,7 +23,9 @@
               <Component id="recursiveCheckBox" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="followLinksCheckBox" min="-2" max="-2" attributes="0"/>
-              <EmptySpace min="0" pref="89" max="32767" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="includeNullCoordinateCheckBox" min="-2" pref="229" max="-2" attributes="0"/>
+              <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
           </Group>
           <Component id="logPanel" alignment="0" max="32767" attributes="0"/>
       </Group>
@@ -37,6 +39,7 @@
                   <Component id="patternPanel" min="-2" max="-2" attributes="0"/>
                   <Component id="recursiveCheckBox" min="-2" max="-2" attributes="0"/>
                   <Component id="followLinksCheckBox" min="-2" max="-2" attributes="0"/>
+                  <Component id="includeNullCoordinateCheckBox" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace type="separate" max="-2" attributes="0"/>
               <Component id="logPanel" pref="322" max="32767" attributes="0"/>
@@ -127,6 +130,19 @@
       </AuxValues>
     </Component>
     <Component class="se.trixon.almond.util.swing.LogPanel" name="logPanel">
+    </Component>
+    <Component class="javax.swing.JCheckBox" name="includeNullCoordinateCheckBox">
+      <Properties>
+        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+          <ResourceString bundle="se/trixon/photokml/ui/config/Bundle.properties" key="ModuleSourcePanel.includeNullCoordinateCheckBox.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+        </Property>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="includeNullCoordinateCheckBoxActionPerformed"/>
+      </Events>
+      <AuxValues>
+        <AuxValue name="generateMnemonicsCode" type="java.lang.Boolean" value="false"/>
+      </AuxValues>
     </Component>
   </SubComponents>
 </Form>

@@ -159,6 +159,7 @@ public class ModuleSourcePanel extends ModulePanel implements FileChooserPanel.F
         recursiveCheckBox = new javax.swing.JCheckBox();
         followLinksCheckBox = new javax.swing.JCheckBox();
         logPanel = new se.trixon.almond.util.swing.LogPanel();
+        includeNullCoordinateCheckBox = new javax.swing.JCheckBox();
 
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("se/trixon/photokml/ui/config/Bundle"); // NOI18N
         sourceChooserPanel.setHeader(bundle.getString("ModuleSourcePanel.sourceChooserPanel.header")); // NOI18N
@@ -205,6 +206,13 @@ public class ModuleSourcePanel extends ModulePanel implements FileChooserPanel.F
             }
         });
 
+        includeNullCoordinateCheckBox.setText(bundle.getString("ModuleSourcePanel.includeNullCoordinateCheckBox.text")); // NOI18N
+        includeNullCoordinateCheckBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                includeNullCoordinateCheckBoxActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -216,7 +224,9 @@ public class ModuleSourcePanel extends ModulePanel implements FileChooserPanel.F
                 .addComponent(recursiveCheckBox)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(followLinksCheckBox)
-                .addGap(0, 89, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(includeNullCoordinateCheckBox, javax.swing.GroupLayout.PREFERRED_SIZE, 229, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
             .addComponent(logPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
@@ -227,7 +237,8 @@ public class ModuleSourcePanel extends ModulePanel implements FileChooserPanel.F
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(patternPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(recursiveCheckBox)
-                    .addComponent(followLinksCheckBox))
+                    .addComponent(followLinksCheckBox)
+                    .addComponent(includeNullCoordinateCheckBox))
                 .addGap(18, 18, 18)
                 .addComponent(logPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 322, Short.MAX_VALUE))
         );
@@ -241,8 +252,13 @@ public class ModuleSourcePanel extends ModulePanel implements FileChooserPanel.F
         mSource.setFollowLinks(followLinksCheckBox.isSelected());
     }//GEN-LAST:event_followLinksCheckBoxActionPerformed
 
+    private void includeNullCoordinateCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_includeNullCoordinateCheckBoxActionPerformed
+        mSource.setIncludeNullCoordinate(includeNullCoordinateCheckBox.isSelected());
+    }//GEN-LAST:event_includeNullCoordinateCheckBoxActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBox followLinksCheckBox;
+    private javax.swing.JCheckBox includeNullCoordinateCheckBox;
     private se.trixon.almond.util.swing.LogPanel logPanel;
     private javax.swing.JLabel patternLabel;
     private javax.swing.JPanel patternPanel;
@@ -264,6 +280,8 @@ public class ModuleSourcePanel extends ModulePanel implements FileChooserPanel.F
         patternTextField.setText(mSource.getFilePattern());
         recursiveCheckBox.setSelected(mSource.isRecursive());
         followLinksCheckBox.setSelected(mSource.isFollowLinks());
+
+        includeNullCoordinateCheckBox.setSelected(mSource.isIncludeNullCoordinate());
     }
 
     @Override
