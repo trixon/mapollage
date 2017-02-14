@@ -34,6 +34,8 @@ public class OptionsPanel extends javax.swing.JPanel {
         localeComboBox.setSelectedItem(mOptions.getLocale());
         latSpinner.setValue(mOptions.getDefaultLat());
         lonSpinner.setValue(mOptions.getDefaultLon());
+        thumbnailSizeSpinner.setValue(mOptions.getThumbnailSize());
+        borderSizeSpinner.setValue(mOptions.getThumbnailBorderSize());
     }
 
     void save() {
@@ -41,6 +43,8 @@ public class OptionsPanel extends javax.swing.JPanel {
         mOptions.setLocale(localeComboBox.getSelectedItem());
         mOptions.setDefaultLat((Double) latSpinner.getModel().getValue());
         mOptions.setDefaultLon((Double) lonSpinner.getModel().getValue());
+        mOptions.setThumbnailSize((int) thumbnailSizeSpinner.getModel().getValue());
+        mOptions.setThumbnailBorderSize((int) borderSizeSpinner.getModel().getValue());
     }
 
     /**
@@ -62,6 +66,10 @@ public class OptionsPanel extends javax.swing.JPanel {
         latSpinner = new javax.swing.JSpinner();
         lonLabel = new javax.swing.JLabel();
         lonSpinner = new javax.swing.JSpinner();
+        thumbnailSizeLabel = new javax.swing.JLabel();
+        thumbnailSizeSpinner = new javax.swing.JSpinner();
+        borderSizeLabel = new javax.swing.JLabel();
+        borderSizeSpinner = new javax.swing.JSpinner();
 
         localeLabel.setText(Dict.CALENDAR_LANGUAGE.toString());
 
@@ -108,6 +116,14 @@ public class OptionsPanel extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(0, 8, 0, 0);
         nullCoordinatePanel.add(lonSpinner, gridBagConstraints);
 
+        thumbnailSizeLabel.setText(bundle.getString("OptionsPanel.thumbnailSizeLabel.text")); // NOI18N
+
+        thumbnailSizeSpinner.setModel(new javax.swing.SpinnerNumberModel(250, 100, 1200, 10));
+
+        borderSizeLabel.setText(bundle.getString("OptionsPanel.borderSizeLabel.text")); // NOI18N
+
+        borderSizeSpinner.setModel(new javax.swing.SpinnerNumberModel(2, 0, 20, 1));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -117,7 +133,11 @@ public class OptionsPanel extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(localeLabel)
-                    .addComponent(nullCoordinatePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(nullCoordinatePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(thumbnailSizeLabel)
+                    .addComponent(thumbnailSizeSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(borderSizeLabel)
+                    .addComponent(borderSizeSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -130,11 +150,21 @@ public class OptionsPanel extends javax.swing.JPanel {
                 .addComponent(localeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(nullCoordinatePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(thumbnailSizeLabel)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(thumbnailSizeSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(borderSizeLabel)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(borderSizeSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(7, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel borderSizeLabel;
+    private javax.swing.JSpinner borderSizeSpinner;
     private javax.swing.JLabel coordinateLabel;
     private javax.swing.JLabel latLabel;
     private javax.swing.JSpinner latSpinner;
@@ -144,5 +174,7 @@ public class OptionsPanel extends javax.swing.JPanel {
     private javax.swing.JSpinner lonSpinner;
     private se.trixon.almond.util.swing.dialogs.LookAndFeelPanel lookAndFeelPanel;
     private javax.swing.JPanel nullCoordinatePanel;
+    private javax.swing.JLabel thumbnailSizeLabel;
+    private javax.swing.JSpinner thumbnailSizeSpinner;
     // End of variables declaration//GEN-END:variables
 }

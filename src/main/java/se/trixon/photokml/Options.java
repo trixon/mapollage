@@ -27,9 +27,13 @@ public class Options {
     public static final String KEY_DEFAULT_LAT = "deflat";
     public static final String KEY_DEFAULT_LON = "deflon";
     public static final String KEY_LOCALE = "locale";
+    public static final String KEY_THUMBNAIL_BORDER_SIZE = "thumbnail_border_size";
+    public static final String KEY_THUMBNAIL_SIZE = "thumbnail_size";
     private static final Locale DEFAULT_LOCALE = Locale.getDefault();
     private final Double DEFAULT_LAT = 57.6;
     private final Double DEFAULT_LON = 11.3;
+    private final int DEFAULT_THUMBNAIL_BORDER_SIZE = 2;
+    private final int DEFAULT_THUMBNAIL_SIZE = 512;
     private final Preferences mPreferences = Preferences.userNodeForPackage(Options.class);
 
     public static Options getInstance() {
@@ -55,6 +59,14 @@ public class Options {
         return mPreferences;
     }
 
+    public int getThumbnailBorderSize() {
+        return mPreferences.getInt(KEY_THUMBNAIL_BORDER_SIZE, DEFAULT_THUMBNAIL_BORDER_SIZE);
+    }
+
+    public int getThumbnailSize() {
+        return mPreferences.getInt(KEY_THUMBNAIL_SIZE, DEFAULT_THUMBNAIL_SIZE);
+    }
+
     public void setDefaultLat(Double value) {
         mPreferences.putDouble(KEY_DEFAULT_LAT, value);
     }
@@ -65,6 +77,14 @@ public class Options {
 
     public void setLocale(Locale locale) {
         mPreferences.put(KEY_LOCALE, locale.toLanguageTag());
+    }
+
+    public void setThumbnailBorderSize(int size) {
+        mPreferences.putInt(KEY_THUMBNAIL_BORDER_SIZE, size);
+    }
+
+    public void setThumbnailSize(int size) {
+        mPreferences.putInt(KEY_THUMBNAIL_SIZE, size);
     }
 
     private static class Holder {

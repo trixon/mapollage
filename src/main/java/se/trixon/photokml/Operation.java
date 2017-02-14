@@ -248,8 +248,9 @@ public class Operation implements Runnable {
     }
 
     private void createThumbnail(File source, File dest) throws IOException {
-        int borderSize = 2;
-        BufferedImage scaledImage = mImageScaler.getScaledImage(source, new Dimension(512 - borderSize * 2, 512 - borderSize * 2));
+        int borderSize = mOptions.getThumbnailBorderSize();
+        int thumbnailSize = mOptions.getThumbnailSize();
+        BufferedImage scaledImage = mImageScaler.getScaledImage(source, new Dimension(thumbnailSize - borderSize * 2, thumbnailSize - borderSize * 2));
 
         int width = scaledImage.getWidth();
         int height = scaledImage.getHeight();
