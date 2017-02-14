@@ -108,11 +108,22 @@
                             <minimizeJar>true</minimizeJar>
                             <filters>
                                 <filter>
-                                    <artifact>se.trixon.util:trixon-util</artifact>
-                                    <excludes>
-                                        <exclude>se/trixon/util/icons/**</exclude>
-                                        <exclude>se/trixon/util/swing/**</exclude>
-                                    </excludes>
+                                    <artifact>se.trixon.almond:almond-util</artifact>
+                                    <includes>
+                                        <include>se/trixon/almond/util/*</include>
+                                        <include>se/trixon/almond/util/swing/**</include>
+                                        <include>se/trixon/almond/util/icons/*</include>
+                                        <include>se/trixon/almond/util/icons/material/*</include>
+                                        <include>se/trixon/almond/util/icons/material/_action/*</include>
+                                        <include>se/trixon/almond/util/icons/material/_alert/*</include>
+                                        <include>se/trixon/almond/util/icons/material/_av/*play*</include>
+                                        <include>se/trixon/almond/util/icons/material/_content/*</include>
+                                        <include>se/trixon/almond/util/icons/material/_editor/mode_edit*</include>
+                                        <include>se/trixon/almond/util/icons/material/_file/folder_open*</include>
+                                        <include>se/trixon/almond/util/icons/material/_image/*photo*</include>
+                                        <include>se/trixon/almond/util/icons/material/_maps/*place*</include>
+                                        <include>se/trixon/almond/util/icons/material/_navigation/menu*</include>
+                                    </includes>
                                 </filter>
                                 <filter>
                                     <artifact>com.bulenkov:darcula</artifact>
