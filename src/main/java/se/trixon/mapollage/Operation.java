@@ -15,11 +15,7 @@
  */
 package se.trixon.mapollage;
 
-import com.drew.imaging.ImageMetadataReader;
 import com.drew.imaging.ImageProcessingException;
-import com.drew.lang.GeoLocation;
-import com.drew.metadata.Metadata;
-import com.drew.metadata.exif.ExifSubIFDDirectory;
 import com.drew.metadata.exif.GpsDescriptor;
 import com.drew.metadata.exif.GpsDirectory;
 import de.micromata.opengis.kml.v_2_2_0.AltitudeMode;
@@ -33,12 +29,7 @@ import de.micromata.opengis.kml.v_2_2_0.Kml;
 import de.micromata.opengis.kml.v_2_2_0.KmlFactory;
 import de.micromata.opengis.kml.v_2_2_0.Placemark;
 import de.micromata.opengis.kml.v_2_2_0.StyleState;
-import de.micromata.opengis.kml.v_2_2_0.Units;
-import de.micromata.opengis.kml.v_2_2_0.Vec2;
-import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -46,7 +37,6 @@ import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -57,16 +47,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.TimeZone;
-import javax.imageio.ImageIO;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import se.trixon.almond.util.BundleHelper;
 import se.trixon.almond.util.Dict;
-import se.trixon.almond.util.GraphicsHelper;
-import se.trixon.almond.util.ImageScaler;
 import se.trixon.almond.util.Scaler;
 import se.trixon.mapollage.profile.Profile;
 import se.trixon.mapollage.profile.ProfileDescription;
@@ -89,7 +75,6 @@ public class Operation implements Runnable {
     private final Document mDocument;
     private final List<File> mFiles = new ArrayList<>();
     private final Map<String, Folder> mFolders = new HashMap<>();
-    private final ImageScaler mImageScaler = ImageScaler.getInstance();
     private boolean mInterrupted = false;
     private final Kml mKml = new Kml();
     private final OperationListener mListener;
@@ -97,7 +82,7 @@ public class Operation implements Runnable {
     private int mNumOfGps;
     private int mNumOfInvalidFormat;
     private int mNumOfPlacemarks;
-    private final Options mOptions = Options.getInstance();
+    private PhotoInfo mPhotoInfo;
     private final Profile mProfile;
     private final ProfileDescription mProfileDescription;
     private final ProfileFolder mProfileFolder;
@@ -125,7 +110,7 @@ public class Operation implements Runnable {
                 //aabbggrr
                 .withBgColor("FF272420")
                 .withTextColor("FFEEEEEE")
-                .withText("<p style=\"font-size:160%;\">This is a paragraph.</p>$[description]")
+                .withText("$[description]")
                 .withDisplayMode(DisplayMode.DEFAULT);
     }
 
@@ -188,35 +173,20 @@ public class Operation implements Runnable {
 
     private void addFileToKml(File file) throws ImageProcessingException, IOException {
         mListener.onOperationLog(file.getAbsolutePath());
+        mPhotoInfo = new PhotoInfo(file);
 
-        Metadata metadata = ImageMetadataReader.readMetadata(file);
-        ExifSubIFDDirectory exifDirectory = metadata.getFirstDirectoryOfType(ExifSubIFDDirectory.class);
-        GpsDirectory gpsDirectory = metadata.getFirstDirectoryOfType(GpsDirectory.class);
-
-        if (exifDirectory != null) {
+        if (mPhotoInfo.hasExif()) {
             mNumOfExif++;
-            if (gpsDirectory != null) {
+            if (mPhotoInfo.hasGps()) {
                 mNumOfGps++;
             }
         } else {
             throw new ImageProcessingException(String.format(mBundle.getString("exifError"), file.getAbsolutePath()));
         }
 
-        Date exifDate = getImageDate(file, exifDirectory);
-        boolean shouldAppendToKml = gpsDirectory != null || mProfileSource.isIncludeNullCoordinate();
+        Date exifDate = mPhotoInfo.getDate();
 
-        if (shouldAppendToKml) {
-            GeoLocation geoLocation = getPlacemarkGeoLocation(file, gpsDirectory);
-            double format = 1000000;
-            int latInt = (int) (geoLocation.getLatitude() * format);
-            int lonInt = (int) (geoLocation.getLongitude() * format);
-
-            Vec2 iconHotSpot = new Vec2();
-            iconHotSpot.setX(0.5);
-            iconHotSpot.setY(0.5);
-            iconHotSpot.setXunits(Units.FRACTION);
-            iconHotSpot.setYunits(Units.FRACTION);
-
+        if (mPhotoInfo.hasGps() || mProfileSource.isIncludeNullCoordinate()) {
             Folder folder = getFolder(file, exifDate);
 
             String imageId = String.format("%08x", FileUtils.checksumCRC32(file));
@@ -243,10 +213,7 @@ public class Operation implements Runnable {
                 normalIconStyle.setIcon(icon);
                 highlightIconStyle.setIcon(icon);
 
-                File thumbnail = new File(mThumbsDir, imageId);
-                if (!thumbnail.exists()) {
-                    createThumbnail(file, thumbnail);
-                }
+                mPhotoInfo.createThumbnail(new File(mThumbsDir, imageId));
             }
 
             folder.createAndAddStyleMap().withId(styleMapId)
@@ -255,39 +222,19 @@ public class Operation implements Runnable {
 
             Placemark placemark = KmlFactory.createPlacemark()
                     .withName(getPlacemarkName(file, exifDate))
-                    .withDescription(getPlacemarkDescription(file, gpsDirectory, exifDate))
+                    .withDescription(getPlacemarkDescription(file, mPhotoInfo.getGpsDirectory(), exifDate))
                     .withOpen(Boolean.TRUE)
                     .withStyleUrl(styleMapId);
 
             placemark.createAndSetPoint()
-                    .addToCoordinates(lonInt / format, latInt / format)
+                    .addToCoordinates(mPhotoInfo.getLon(), mPhotoInfo.getLat())
                     .setAltitudeMode(AltitudeMode.CLAMP_TO_GROUND);
 
             folder.addToFeature(placemark);
             mNumOfPlacemarks++;
         } else {
-            mListener.onOperationError(Dict.FAILED.toString());
+            //mListener.onOperationError(Dict.FAILED.toString());
         }
-    }
-
-    private void createThumbnail(File source, File dest) throws IOException {
-        int borderSize = mOptions.getThumbnailBorderSize();
-        int thumbnailSize = mOptions.getThumbnailSize();
-        BufferedImage scaledImage = mImageScaler.getScaledImage(source, new Dimension(thumbnailSize - borderSize * 2, thumbnailSize - borderSize * 2));
-
-        int width = scaledImage.getWidth();
-        int height = scaledImage.getHeight();
-        int borderedImageWidth = width + borderSize * 2;
-        int borderedImageHeight = height + borderSize * 2;
-
-        BufferedImage borderedImage = new BufferedImage(borderedImageWidth, borderedImageHeight, BufferedImage.TYPE_3BYTE_BGR);
-
-        Graphics2D g2d = borderedImage.createGraphics();
-        g2d.setColor(Color.YELLOW);
-        g2d.fillRect(0, 0, borderedImageWidth, borderedImageHeight);
-        g2d.drawImage(scaledImage, borderSize, borderSize, width + borderSize, height + borderSize, 0, 0, width, height, Color.YELLOW, null);
-
-        ImageIO.write(borderedImage, "jpg", dest);
     }
 
     private boolean generateFileList() {
@@ -331,19 +278,7 @@ public class Operation implements Runnable {
     }
 
     private String getDescPhoto(File sourceFile) {
-        Dimension originalDimension = null;
-
-        try {
-            originalDimension = GraphicsHelper.getImgageDimension(sourceFile);
-        } catch (IOException ex) {
-            System.err.println(ex.getLocalizedMessage());
-        }
-
-        if (originalDimension == null) {
-            originalDimension = new Dimension(200, 200);
-        }
-
-        Scaler scaler = new Scaler(new Dimension(originalDimension));
+        Scaler scaler = new Scaler(new Dimension(mPhotoInfo.getOriginalDimension()));
 
         if (mProfilePhoto.isLimitWidth()) {
             scaler.setWidth(mProfilePhoto.getWidthLimit());
@@ -375,9 +310,6 @@ public class Operation implements Runnable {
                 folder = getFolder(key);
                 break;
 
-//            case ProfileFolder.:
-//                folder = mRootFolder;
-//                break;
             case ProfileFolder.FOLDER_BY_NONE:
                 folder = mRootFolder;
                 break;
@@ -395,26 +327,6 @@ public class Operation implements Runnable {
         }
 
         return folder;
-    }
-
-    private Date getImageDate(File file, ExifSubIFDDirectory exifDirectory) {
-        Date date;
-
-        if (exifDirectory.containsTag(ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL)) {
-            date = exifDirectory.getDate(ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL, TimeZone.getDefault());
-        } else {
-            long millis = 0;
-            try {
-                BasicFileAttributes attr = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
-                millis = attr.creationTime().toMillis();
-            } catch (IOException ex) {
-                millis = file.lastModified();
-            } finally {
-                date = new Date(millis);
-            }
-        }
-
-        return date;
     }
 
     private String getImagePath(File file) {
@@ -461,7 +373,9 @@ public class Operation implements Runnable {
 
         String desc = mProfileDescription.isCustom() ? mProfileDescription.getCustomValue() : getStaticDescription();
 
-        desc = StringUtils.replace(desc, DescriptionSegment.PHOTO.toString(), getDescPhoto(file));
+        if (StringUtils.containsIgnoreCase(desc, DescriptionSegment.PHOTO.toString())) {
+            desc = StringUtils.replace(desc, DescriptionSegment.PHOTO.toString(), getDescPhoto(file));
+        }
         desc = StringUtils.replace(desc, DescriptionSegment.FILENAME.toString(), file.getName());
         desc = StringUtils.replace(desc, DescriptionSegment.DATE.toString(), mDateFormatDate.format(exifDate));
 
@@ -482,26 +396,6 @@ public class Operation implements Runnable {
         }
 
         return desc;
-    }
-
-    private GeoLocation getPlacemarkGeoLocation(File file, GpsDirectory gpsDirectory) throws ImageProcessingException {
-        GeoLocation geoLocation = null;
-
-        geoLocation = new GeoLocation(mOptions.getDefaultLat(), mOptions.getDefaultLon());
-
-        if (gpsDirectory != null) {
-            geoLocation = gpsDirectory.getGeoLocation();
-            if (geoLocation == null) {
-                throw new ImageProcessingException(file.getAbsolutePath());
-            }
-
-            if (geoLocation.isZero()) {
-                geoLocation = new GeoLocation(mOptions.getDefaultLat(), mOptions.getDefaultLon());
-                gpsDirectory = null;
-            }
-        }
-
-        return geoLocation;
     }
 
     private String getPlacemarkName(File file, Date exifDate) {

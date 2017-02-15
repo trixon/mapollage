@@ -104,7 +104,7 @@ public class ConfigPanel extends javax.swing.JPanel {
     }
 
     @Override
-    public void setEnabled(boolean enabled) {
+    public void setEnabled(final boolean enabled) {
         super.setEnabled(enabled);
         SwingHelper.enableComponents(mModuleSourcePanel, enabled);
         if (!enabled) {
@@ -113,6 +113,11 @@ public class ConfigPanel extends javax.swing.JPanel {
 
         for (int i = 1; i < tabbedPane.getTabCount(); i++) {
             tabbedPane.setEnabledAt(i, enabled);
+        }
+
+        int photoIndex = tabbedPane.indexOfComponent(mModulePhotoPanel);
+        if (mProfile != null) {
+            tabbedPane.setEnabledAt(photoIndex, enabled && mProfile.getDescription().hasPhoto());
         }
     }
 
