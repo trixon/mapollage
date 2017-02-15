@@ -23,6 +23,9 @@ import com.drew.metadata.exif.ExifSubIFDDirectory;
 import com.drew.metadata.exif.GpsDescriptor;
 import com.drew.metadata.exif.GpsDirectory;
 import de.micromata.opengis.kml.v_2_2_0.AltitudeMode;
+import de.micromata.opengis.kml.v_2_2_0.BalloonStyle;
+import de.micromata.opengis.kml.v_2_2_0.DisplayMode;
+import de.micromata.opengis.kml.v_2_2_0.Document;
 import de.micromata.opengis.kml.v_2_2_0.Folder;
 import de.micromata.opengis.kml.v_2_2_0.Icon;
 import de.micromata.opengis.kml.v_2_2_0.IconStyle;
@@ -79,9 +82,11 @@ import se.trixon.photokml.profile.ProfileSource;
  */
 public class Operation implements Runnable {
 
+    private final BalloonStyle mBalloonStyle;
     private final ResourceBundle mBundle;
     private final DateFormat mDateFormatDate = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM);
     private final File mDestinationFile;
+    private final Document mDocument;
     private final List<File> mFiles = new ArrayList<>();
     private final Map<String, Folder> mFolders = new HashMap<>();
     private final ImageScaler mImageScaler = ImageScaler.getInstance();
@@ -114,6 +119,14 @@ public class Operation implements Runnable {
         mDestinationFile = mProfile.getDestinationFile();
 
         mBundle = BundleHelper.getBundle(Operation.class, "Bundle");
+        mDocument = mKml.createAndSetDocument();
+        mBalloonStyle = KmlFactory.createBalloonStyle()
+                .withId("BalloonStyleId")
+                //aabbggrr
+                .withBgColor("FF272420")
+                .withTextColor("FFEEEEEE")
+                .withText("<p style=\"font-size:160%;\">This is a paragraph.</p>$[description]")
+                .withDisplayMode(DisplayMode.DEFAULT);
     }
 
     @Override
@@ -133,7 +146,7 @@ public class Operation implements Runnable {
         }
 
         String status;
-        mRootFolder = mKml.createAndSetFolder().withName(mProfileFolder.getRootName());
+        mRootFolder = mDocument.createAndAddFolder().withName(mProfileFolder.getRootName());
 
         String href = "<a href=\"http://trixon.se/projects/java/photokml/\">PhotoKml</a>";
         String description = String.format("<p>%s %s, %s</p>%s",
@@ -214,6 +227,16 @@ public class Operation implements Runnable {
 
             IconStyle normalIconStyle = folder.createAndAddStyle().withId(styleNormalId).createAndSetIconStyle().withScale(mProfilePlacemark.getScale());
             IconStyle highlightIconStyle = folder.createAndAddStyle().withId(styleHighlightId).createAndSetIconStyle().withScale(highlightZoom);
+
+            folder.createAndAddStyle()
+                    .withBalloonStyle(mBalloonStyle)
+                    .withIconStyle(normalIconStyle)
+                    .withId(styleNormalId);
+
+            folder.createAndAddStyle()
+                    .withBalloonStyle(mBalloonStyle)
+                    .withIconStyle(highlightIconStyle)
+                    .withId(styleHighlightId);
 
             if (mProfilePlacemark.isSymbolAsPhoto()) {
                 Icon icon = KmlFactory.createIcon().withHref(String.format("%s/%s", mThumbsDir.getName(), imageId));
@@ -346,6 +369,7 @@ public class Operation implements Runnable {
                 key = file.getParentFile().getName();
                 folder = getFolder(key);
                 break;
+
             case ProfileFolder.FOLDER_BY_DATE:
                 key = mProfileFolder.getFolderDateFormat().format(date);
                 folder = getFolder(key);
