@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>se.trixon</groupId>
-    <artifactId>photokml</artifactId>
+    <artifactId>mapollage</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
     <properties>
@@ -33,9 +33,9 @@
         </developer>
     </developers>
     <scm>
-        <url>https://github.com/trixon/java-photokml</url>
-        <connection>scm:git:git://github.com/trixon/java-photokml.git</connection>
-        <developerConnection>scm:git:git@github.com:trixon/java-photokml.git</developerConnection>
+        <url>https://github.com/trixon/java-mapollage</url>
+        <connection>scm:git:git://github.com/trixon/java-mapollage.git</connection>
+        <developerConnection>scm:git:git@github.com:trixon/java-mapollage.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
     <dependencies>
@@ -89,7 +89,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>se.trixon.photokml.PhotoKml</mainClass>
+                            <mainClass>se.trixon.mapollage.Mapollage</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -185,5 +185,5 @@
             </plugin>
         </plugins>
     </build>
-    <name>photokml</name>
+    <name>mapollage</name>
 </project>
