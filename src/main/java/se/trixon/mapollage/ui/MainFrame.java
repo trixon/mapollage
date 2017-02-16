@@ -188,7 +188,6 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
             @Override
             public void onOperationFinished(String message) {
                 setRunningState(false);
-                //Message.information(MainFrame.this, Dict.OPERATION_COMPLETED.toString(), message);
             }
 
             @Override
@@ -203,7 +202,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
 
             @Override
             public void onOperationProcessingStarted() {
-                mLogPanel.println(configPanel.getHeaderBuilder().toString());
+                //mLogPanel.println(configPanel.getHeaderBuilder().toString());
             }
 
             @Override

@@ -24,8 +24,7 @@
               <EmptySpace max="-2" attributes="0"/>
               <Component id="followLinksCheckBox" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="includeNullCoordinateCheckBox" min="-2" pref="229" max="-2" attributes="0"/>
-              <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+              <Component id="includeNullCoordinateCheckBox" min="-2" max="-2" attributes="0"/>
           </Group>
           <Component id="logPanel" alignment="0" max="32767" attributes="0"/>
       </Group>

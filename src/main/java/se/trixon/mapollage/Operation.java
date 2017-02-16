@@ -133,7 +133,7 @@ public class Operation implements Runnable {
         String status;
         mRootFolder = mDocument.createAndAddFolder().withName(mProfileFolder.getRootName());
 
-        String href = "<a href=\"http://trixon.se/projects/java/mapollage/\">Mapollage</a>";
+        String href = "<a href=\"http://trixon.se/mapollage/\">Mapollage</a>";
         String description = String.format("<p>%s %s, %s</p>%s",
                 Dict.MADE_WITH.toString(),
                 href,

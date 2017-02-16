@@ -16,6 +16,8 @@
 package se.trixon.mapollage.ui.config;
 
 import java.awt.Component;
+import javax.swing.BorderFactory;
+import javax.swing.JLabel;
 import javax.swing.border.EmptyBorder;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.swing.LogPanel;
@@ -122,7 +124,11 @@ public class ConfigPanel extends javax.swing.JPanel {
     }
 
     private void addModulePanel(ModulePanel modulePanel) {
-        tabbedPane.addTab(null, modulePanel.getIcon(), modulePanel, modulePanel.getTitle());
+        tabbedPane.add(modulePanel);
+        JLabel label = new JLabel(modulePanel.getTitle(), modulePanel.getIcon(), JLabel.CENTER);
+        label.setIconTextGap(4);
+        label.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+        tabbedPane.setTabComponentAt(tabbedPane.getTabCount() - 1, label);
     }
 
     private boolean disableTab(Component tab) {

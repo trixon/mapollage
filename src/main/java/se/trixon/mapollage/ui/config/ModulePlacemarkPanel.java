@@ -256,7 +256,7 @@ public class ModulePlacemarkPanel extends ModulePanel {
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.insets = new java.awt.Insets(6, 8, 0, 0);
+        gridBagConstraints.insets = new java.awt.Insets(6, 0, 0, 0);
         jPanel1.add(symbolPhotoRadioButton, gridBagConstraints);
 
         symbolButtonGroup.add(symbolPinRadioButton);
@@ -270,7 +270,7 @@ public class ModulePlacemarkPanel extends ModulePanel {
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.insets = new java.awt.Insets(6, 8, 0, 0);
+        gridBagConstraints.insets = new java.awt.Insets(6, 0, 0, 0);
         jPanel1.add(symbolPinRadioButton, gridBagConstraints);
 
         scaleLabel.setText(Dict.SCALE.toString());
