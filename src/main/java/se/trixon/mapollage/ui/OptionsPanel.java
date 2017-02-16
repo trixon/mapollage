@@ -84,7 +84,7 @@ public class OptionsPanel extends javax.swing.JPanel {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         nullCoordinatePanel.add(coordinateLabel, gridBagConstraints);
 
-        latLabel.setText(Dict.LATITUDE.getString());
+        latLabel.setText(Dict.LATITUDE.toString());
         latLabel.setPreferredSize(new java.awt.Dimension(100, 15));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -99,7 +99,7 @@ public class OptionsPanel extends javax.swing.JPanel {
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         nullCoordinatePanel.add(latSpinner, gridBagConstraints);
 
-        lonLabel.setText(Dict.LONGITUDE.getString());
+        lonLabel.setText(Dict.LONGITUDE.toString());
         lonLabel.setPreferredSize(new java.awt.Dimension(100, 15));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;

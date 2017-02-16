@@ -83,7 +83,7 @@ public abstract class ModulePanel extends javax.swing.JPanel {
     }
 
     protected void invalidSettings(String message) {
-        Message.error(this, Dict.INVALID_SETTING.getString(), String.format("<html><h3>%s</h3>%s", mTitle, message));
+        Message.error(this, Dict.INVALID_SETTING.toString(), String.format("<html><h3>%s</h3>%s", mTitle, message));
     }
 
     protected void optAppend(StringBuilder sb, boolean state, String string) {

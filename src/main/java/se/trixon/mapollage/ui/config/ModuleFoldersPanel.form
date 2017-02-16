@@ -133,7 +133,7 @@
               <ComponentRef name="subButtonGroup"/>
             </Property>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-              <Connection code="Dict.DATE_PATTERN.getString()" type="code"/>
+              <Connection code="Dict.DATE_PATTERN.toString()" type="code"/>
             </Property>
           </Properties>
           <Events>
@@ -192,7 +192,7 @@
         <Component class="javax.swing.JLabel" name="defaultRegexLabel">
           <Properties>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-              <Connection code="Dict.DEFAULT_VALUE.getString()" type="code"/>
+              <Connection code="Dict.DEFAULT_VALUE.toString()" type="code"/>
             </Property>
           </Properties>
           <AuxValues>

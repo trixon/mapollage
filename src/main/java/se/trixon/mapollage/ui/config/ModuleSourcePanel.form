@@ -88,7 +88,7 @@
         <Component class="javax.swing.JLabel" name="patternLabel">
           <Properties>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-              <Connection code="Dict.FILE_PATTERN.getString()" type="code"/>
+              <Connection code="Dict.FILE_PATTERN.toString()" type="code"/>
             </Property>
           </Properties>
           <AuxValues>
@@ -102,7 +102,7 @@
     <Component class="javax.swing.JCheckBox" name="recursiveCheckBox">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-          <Connection code="Dict.SUBDIRECTORIES.getString()" type="code"/>
+          <Connection code="Dict.SUBDIRECTORIES.toString()" type="code"/>
         </Property>
         <Property name="focusable" type="boolean" value="false"/>
         <Property name="verticalTextPosition" type="int" value="3"/>
@@ -117,7 +117,7 @@
     <Component class="javax.swing.JCheckBox" name="followLinksCheckBox">
       <Properties>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-          <Connection code="Dict.FOLLOW_LINKS.getString()" type="code"/>
+          <Connection code="Dict.FOLLOW_LINKS.toString()" type="code"/>
         </Property>
         <Property name="focusable" type="boolean" value="false"/>
         <Property name="verticalTextPosition" type="int" value="3"/>

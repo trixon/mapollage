@@ -236,7 +236,7 @@ public class ModuleDescriptionPanel extends ModulePanel {
 
         staticPanel.setLayout(new javax.swing.BoxLayout(staticPanel, javax.swing.BoxLayout.PAGE_AXIS));
 
-        photoCheckBox.setText(Dict.PHOTO.getString());
+        photoCheckBox.setText(Dict.PHOTO.toString());
         photoCheckBox.setToolTipText(DescriptionSegment.PHOTO.toString());
         photoCheckBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -245,7 +245,7 @@ public class ModuleDescriptionPanel extends ModulePanel {
         });
         staticPanel.add(photoCheckBox);
 
-        filenameCheckBox.setText(Dict.FILENAME.getString());
+        filenameCheckBox.setText(Dict.FILENAME.toString());
         filenameCheckBox.setToolTipText(DescriptionSegment.FILENAME.toString());
         filenameCheckBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -254,7 +254,7 @@ public class ModuleDescriptionPanel extends ModulePanel {
         });
         staticPanel.add(filenameCheckBox);
 
-        dateCheckBox.setText(Dict.DATE.getString());
+        dateCheckBox.setText(Dict.DATE.toString());
         dateCheckBox.setToolTipText(DescriptionSegment.DATE.toString());
         dateCheckBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -263,7 +263,7 @@ public class ModuleDescriptionPanel extends ModulePanel {
         });
         staticPanel.add(dateCheckBox);
 
-        coordinateCheckBox.setText(Dict.COORDINATE.getString());
+        coordinateCheckBox.setText(Dict.COORDINATE.toString());
         coordinateCheckBox.setToolTipText(DescriptionSegment.COORDINATE.toString());
         coordinateCheckBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -272,7 +272,7 @@ public class ModuleDescriptionPanel extends ModulePanel {
         });
         staticPanel.add(coordinateCheckBox);
 
-        altitudeCheckBox.setText(Dict.ALTITUDE.getString());
+        altitudeCheckBox.setText(Dict.ALTITUDE.toString());
         altitudeCheckBox.setToolTipText(DescriptionSegment.ALTITUDE.toString());
         altitudeCheckBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -281,7 +281,7 @@ public class ModuleDescriptionPanel extends ModulePanel {
         });
         staticPanel.add(altitudeCheckBox);
 
-        bearingCheckBox.setText(Dict.BEARING.getString());
+        bearingCheckBox.setText(Dict.BEARING.toString());
         bearingCheckBox.setToolTipText(DescriptionSegment.BEARING.toString());
         bearingCheckBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

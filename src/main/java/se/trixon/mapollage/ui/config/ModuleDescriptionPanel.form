@@ -137,7 +137,7 @@
             <Component class="javax.swing.JCheckBox" name="photoCheckBox">
               <Properties>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                  <Connection code="Dict.PHOTO.getString()" type="code"/>
+                  <Connection code="Dict.PHOTO.toString()" type="code"/>
                 </Property>
                 <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
                   <Connection code="DescriptionSegment.PHOTO.toString()" type="code"/>
@@ -153,7 +153,7 @@
             <Component class="javax.swing.JCheckBox" name="filenameCheckBox">
               <Properties>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                  <Connection code="Dict.FILENAME.getString()" type="code"/>
+                  <Connection code="Dict.FILENAME.toString()" type="code"/>
                 </Property>
                 <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
                   <Connection code="DescriptionSegment.FILENAME.toString()" type="code"/>
@@ -169,7 +169,7 @@
             <Component class="javax.swing.JCheckBox" name="dateCheckBox">
               <Properties>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                  <Connection code="Dict.DATE.getString()" type="code"/>
+                  <Connection code="Dict.DATE.toString()" type="code"/>
                 </Property>
                 <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
                   <Connection code="DescriptionSegment.DATE.toString()" type="code"/>
@@ -185,7 +185,7 @@
             <Component class="javax.swing.JCheckBox" name="coordinateCheckBox">
               <Properties>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                  <Connection code="Dict.COORDINATE.getString()" type="code"/>
+                  <Connection code="Dict.COORDINATE.toString()" type="code"/>
                 </Property>
                 <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
                   <Connection code="DescriptionSegment.COORDINATE.toString()" type="code"/>
@@ -201,7 +201,7 @@
             <Component class="javax.swing.JCheckBox" name="altitudeCheckBox">
               <Properties>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                  <Connection code="Dict.ALTITUDE.getString()" type="code"/>
+                  <Connection code="Dict.ALTITUDE.toString()" type="code"/>
                 </Property>
                 <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
                   <Connection code="DescriptionSegment.ALTITUDE.toString()" type="code"/>
@@ -217,7 +217,7 @@
             <Component class="javax.swing.JCheckBox" name="bearingCheckBox">
               <Properties>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                  <Connection code="Dict.BEARING.getString()" type="code"/>
+                  <Connection code="Dict.BEARING.toString()" type="code"/>
                 </Property>
                 <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
                   <Connection code="DescriptionSegment.BEARING.toString()" type="code"/>

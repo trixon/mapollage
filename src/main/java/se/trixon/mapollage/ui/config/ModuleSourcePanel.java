@@ -22,7 +22,6 @@ import javax.swing.JFileChooser;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.SystemUtils;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.icons.material.MaterialIcon;
 import se.trixon.almond.util.swing.LogPanel;
@@ -164,7 +163,7 @@ public class ModuleSourcePanel extends ModulePanel implements FileChooserPanel.F
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("se/trixon/mapollage/ui/config/Bundle"); // NOI18N
         sourceChooserPanel.setHeader(bundle.getString("ModuleSourcePanel.sourceChooserPanel.header")); // NOI18N
 
-        patternLabel.setText(Dict.FILE_PATTERN.getString());
+        patternLabel.setText(Dict.FILE_PATTERN.toString());
 
         javax.swing.GroupLayout patternPanelLayout = new javax.swing.GroupLayout(patternPanel);
         patternPanel.setLayout(patternPanelLayout);
@@ -188,7 +187,7 @@ public class ModuleSourcePanel extends ModulePanel implements FileChooserPanel.F
                 .addGap(0, 0, Short.MAX_VALUE))
         );
 
-        recursiveCheckBox.setText(Dict.SUBDIRECTORIES.getString());
+        recursiveCheckBox.setText(Dict.SUBDIRECTORIES.toString());
         recursiveCheckBox.setFocusable(false);
         recursiveCheckBox.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         recursiveCheckBox.addActionListener(new java.awt.event.ActionListener() {
@@ -197,7 +196,7 @@ public class ModuleSourcePanel extends ModulePanel implements FileChooserPanel.F
             }
         });
 
-        followLinksCheckBox.setText(Dict.FOLLOW_LINKS.getString());
+        followLinksCheckBox.setText(Dict.FOLLOW_LINKS.toString());
         followLinksCheckBox.setFocusable(false);
         followLinksCheckBox.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         followLinksCheckBox.addActionListener(new java.awt.event.ActionListener() {
@@ -307,7 +306,7 @@ public class ModuleSourcePanel extends ModulePanel implements FileChooserPanel.F
 
         if (fileChooserPanel == sourceChooserPanel) {
             if (fileChooser.isMultiSelectionEnabled()) {
-                String paths = StringUtils.join(fileChooser.getSelectedFiles(), SystemUtils.PATH_SEPARATOR);
+                String paths = StringUtils.join(fileChooser.getSelectedFiles(), File.pathSeparator);
                 fileChooserPanel.setPath(paths);
             }
 
@@ -318,7 +317,7 @@ public class ModuleSourcePanel extends ModulePanel implements FileChooserPanel.F
     @Override
     public void onFileChooserPreSelect(FileChooserPanel fileChooserPanel) {
         if (fileChooserPanel == sourceChooserPanel) {
-            final String[] paths = sourceChooserPanel.getPath().split(SystemUtils.PATH_SEPARATOR);
+            final String[] paths = sourceChooserPanel.getPath().split(File.pathSeparator);
             File[] files = new File[paths.length];
 
             for (int i = 0; i < files.length; i++) {

@@ -167,7 +167,7 @@ public class ModulePlacemarkPanel extends ModulePanel {
         jPanel2.add(nameByLabel, gridBagConstraints);
 
         nameButtonGroup.add(nameByFileRadioButton);
-        nameByFileRadioButton.setText(Dict.FILENAME.getString());
+        nameByFileRadioButton.setText(Dict.FILENAME.toString());
         nameByFileRadioButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 nameByFileRadioButtonActionPerformed(evt);
@@ -181,7 +181,7 @@ public class ModulePlacemarkPanel extends ModulePanel {
         jPanel2.add(nameByFileRadioButton, gridBagConstraints);
 
         nameButtonGroup.add(nameByDateRadioButton);
-        nameByDateRadioButton.setText(Dict.DATE_PATTERN.getString());
+        nameByDateRadioButton.setText(Dict.DATE_PATTERN.toString());
         nameByDateRadioButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 nameByDateRadioButtonActionPerformed(evt);

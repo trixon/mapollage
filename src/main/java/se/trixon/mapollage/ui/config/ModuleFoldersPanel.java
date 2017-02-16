@@ -270,7 +270,7 @@ public class ModuleFoldersPanel extends ModulePanel {
         jPanel2.add(folderByDirectoryRadioButton, gridBagConstraints);
 
         subButtonGroup.add(folderByDateRadioButton);
-        folderByDateRadioButton.setText(Dict.DATE_PATTERN.getString());
+        folderByDateRadioButton.setText(Dict.DATE_PATTERN.toString());
         folderByDateRadioButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 folderByDateRadioButtonActionPerformed(evt);
@@ -321,7 +321,7 @@ public class ModuleFoldersPanel extends ModulePanel {
         gridBagConstraints.insets = new java.awt.Insets(0, 20, 3, 0);
         jPanel2.add(regexTextField, gridBagConstraints);
 
-        defaultRegexLabel.setText(Dict.DEFAULT_VALUE.getString());
+        defaultRegexLabel.setText(Dict.DEFAULT_VALUE.toString());
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 6;
