@@ -44,20 +44,7 @@ import se.trixon.mapollage.ui.MainFrame;
  */
 public class Mapollage implements OperationListener {
 
-    public static final String ABSOLUTE_PATH = "absolute-path";
-    public static final String COORDINATE = "coordinate";
-    public static final String FOLDER_DESC = "folder-desc";
-    public static final String FOLDER_NAME = "folder-name";
     public static final String HELP = "help";
-    public static final String LINKS = "links";
-    public static final String LOWER_CASE_EXT = "lower-case-ext";
-    public static final String MAX_HEIGHT = "max-height";
-    public static final String MAX_WIDTH = "max-width";
-    public static final String PLACEMARK_DESC = "placemark-desc";
-    public static final String PLACEMARK_NAME = "placemark-name";
-    public static final String RECURSIVE = "recursive";
-    public static final String ROOT_DESC = "root-desc";
-    public static final String ROOT_NAME = "root-name";
     public static final String VERSION = "version";
     private final AlmondUI mAlmondUI = AlmondUI.getInstance();
     private final ResourceBundle mBundle = BundleHelper.getBundle(Mapollage.class, "Bundle");
@@ -158,7 +145,7 @@ public class Mapollage implements OperationListener {
 
     @Override
     public void onOperationProcessingStarted() {
-        System.out.println("Adding photos");
+        //System.out.println("Adding photos");
     }
 
     @Override
@@ -231,99 +218,13 @@ public class Mapollage implements OperationListener {
                 .desc(mBundle.getString("opt_version_desc"))
                 .build();
 
-        Option recursive = Option.builder("r")
-                .longOpt(RECURSIVE)
-                .desc(mBundle.getString("opt_recursive_desc"))
-                .build();
-
-        Option links = Option.builder("l")
-                .longOpt(LINKS)
-                .desc(mBundle.getString("opt_links_desc"))
-                .build();
-
-        Option rootName = Option.builder("rn")
-                .longOpt(ROOT_NAME)
-                .desc(mBundle.getString("opt_root_name_desc"))
-                .hasArg()
-                .build();
-
-        Option rootDesc = Option.builder("rd")
-                .longOpt(ROOT_DESC)
-                .desc(mBundle.getString("opt_root_desc_desc"))
-                .hasArg()
-                .build();
-
-        Option folderName = Option.builder("fn")
-                .longOpt(FOLDER_NAME)
-                .desc(mBundle.getString("opt_folder_name_desc"))
-                .hasArg()
-                .optionalArg(true)
-                .build();
-
-        Option folderDesc = Option.builder("fd")
-                .longOpt(FOLDER_DESC)
-                .desc(mBundle.getString("opt_folder_desc_desc"))
-                .hasArg()
-                .build();
-
-        Option placemarkName = Option.builder("pn")
-                .longOpt(PLACEMARK_NAME)
-                .desc(mBundle.getString("opt_placemark_name_desc"))
-                .hasArg()
-                .optionalArg(true)
-                .build();
-
-        Option placemarkDesc = Option.builder("pd")
-                .longOpt(PLACEMARK_DESC)
-                .desc(mBundle.getString("opt_placemark_desc_desc"))
-                .hasArg()
-                .argName("html")
-                .build();
-
-        Option coordinate = Option.builder("c")
-                .longOpt(COORDINATE)
-                .desc(mBundle.getString("opt_coordinate_desc"))
-                .hasArgs()
-                .numberOfArgs(2)
-                .argName("LAT LON")
-                .build();
-
-        Option maxHeight = Option.builder("h")
-                .longOpt(MAX_HEIGHT)
-                .desc(mBundle.getString("opt_max_height_desc"))
-                .hasArg()
-                .optionalArg(false)
-                .argName("NUM")
-                .build();
-
-        Option maxWidth = Option.builder("w")
-                .longOpt(MAX_WIDTH)
-                .desc(mBundle.getString("opt_max_width_desc"))
-                .hasArg()
-                .optionalArg(false)
-                .argName("NUM")
-                .build();
-
-        Option lowerCaseExt = Option.builder("e")
-                .longOpt(LOWER_CASE_EXT)
-                .desc(mBundle.getString("opt_lower_case_ext_desc"))
-                .build();
-
-        Option absolutePath = Option.builder("a")
-                .longOpt(ABSOLUTE_PATH)
-                .desc(mBundle.getString("opt_absolute_path_desc"))
-                .hasArg()
-                .optionalArg(false)
-                .argName("PATH")
-                .build();
-
         Option gui = Option.builder("g")
                 .longOpt("gui")
                 .desc(mBundle.getString("opt_gui_desc"))
                 .build();
 
-        Option profile = Option.builder("p")
-                .longOpt("profile")
+        Option profile = Option.builder("rp")
+                .longOpt("run-profile")
                 .hasArg()
                 .numberOfArgs(1)
                 .desc(mBundle.getString("opt_profile_desc"))
@@ -343,22 +244,6 @@ public class Mapollage implements OperationListener {
 
         mOptions = new Options();
 
-//        mOptions.addOption(rootName);
-//        mOptions.addOption(rootDesc);
-//
-//        mOptions.addOption(folderName);
-//        mOptions.addOption(folderDesc);
-//
-//        mOptions.addOption(placemarkName);
-//        mOptions.addOption(placemarkDesc);
-//        mOptions.addOption(maxHeight);
-//        mOptions.addOption(maxWidth);
-//        mOptions.addOption(coordinate);
-//        mOptions.addOption(lowerCaseExt);
-//        mOptions.addOption(absolutePath);
-//
-//        mOptions.addOption(links);
-//        mOptions.addOption(recursive);
         mOptions.addOption(listProfiles);
         mOptions.addOption(viewProfile);
         mOptions.addOption(profile);

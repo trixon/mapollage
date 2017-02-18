@@ -18,7 +18,6 @@ package se.trixon.mapollage.profile;
 import java.text.SimpleDateFormat;
 import org.apache.commons.cli.CommandLine;
 import org.json.simple.JSONObject;
-import se.trixon.mapollage.Mapollage;
 
 /**
  *
@@ -36,6 +35,9 @@ public class ProfilePlacemark extends ProfileBase {
     public static final int NAME_BY_NONE = 0;
     public static final int SYMBOL_AS_PHOTO = 0;
     public static final int SYMBOL_AS_PIN = 1;
+
+    private static final String COORDINATE = "coordinate";
+    private static final String PLACEMARK_NAME = "placemark-name";
 
     private String[] mCoordinate;
     private SimpleDateFormat mDateFormat;
@@ -61,11 +63,11 @@ public class ProfilePlacemark extends ProfileBase {
 
     public ProfilePlacemark(final Profile profile, CommandLine commandLine) {
         mProfile = profile;
-        if (commandLine.hasOption(Mapollage.PLACEMARK_NAME)) {
-            mDatePattern = commandLine.getOptionValue(Mapollage.PLACEMARK_NAME);
+        if (commandLine.hasOption(PLACEMARK_NAME)) {
+            mDatePattern = commandLine.getOptionValue(PLACEMARK_NAME);
         }
 
-        mCoordinate = commandLine.getOptionValues(Mapollage.COORDINATE);
+        mCoordinate = commandLine.getOptionValues(COORDINATE);
     }
 
     public String[] getCoordinate() {
@@ -118,7 +120,7 @@ public class ProfilePlacemark extends ProfileBase {
             try {
                 mDateFormat = new SimpleDateFormat(mDatePattern, mOptions.getLocale());
             } catch (Exception e) {
-                addValidationError(String.format(mBundle.getString("invalid_value"), Mapollage.PLACEMARK_NAME, mDatePattern));
+                addValidationError(String.format(mBundle.getString("invalid_value"), PLACEMARK_NAME, mDatePattern));
             }
         }
 

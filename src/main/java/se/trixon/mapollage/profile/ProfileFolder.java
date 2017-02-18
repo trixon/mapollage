@@ -17,7 +17,6 @@ package se.trixon.mapollage.profile;
 
 import java.text.SimpleDateFormat;
 import org.json.simple.JSONObject;
-import se.trixon.mapollage.Mapollage;
 
 /**
  *
@@ -37,6 +36,9 @@ public class ProfileFolder extends ProfileBase {
     public static final String KEY_REGEX_DEFAULT = "regexDefault";
     public static final String KEY_ROOT_DESCRIPTION = "rootDescription";
     public static final String KEY_ROOT_NAME = "rootName";
+
+    private static final String FOLDER_NAME = "folder-name";
+    private static final String ROOT_NAME = "root-name";
 
     private String mDatePattern = "yyyy-ww";
     private SimpleDateFormat mFolderDateFormat;
@@ -107,7 +109,7 @@ public class ProfileFolder extends ProfileBase {
     public boolean isValid() {
         boolean valid = true;
         if (mRootName == null) {
-            addValidationError(String.format(mBundle.getString("invalid_value"), Mapollage.ROOT_NAME, mRootName));
+            addValidationError(String.format(mBundle.getString("invalid_value"), ROOT_NAME, mRootName));
             valid = false;
         }
 
@@ -115,7 +117,7 @@ public class ProfileFolder extends ProfileBase {
             try {
                 mFolderDateFormat = new SimpleDateFormat(mDatePattern, mOptions.getLocale());
             } catch (Exception e) {
-                addValidationError(String.format(mBundle.getString("invalid_value"), Mapollage.FOLDER_NAME, mDatePattern));
+                addValidationError(String.format(mBundle.getString("invalid_value"), FOLDER_NAME, mDatePattern));
                 valid = false;
             }
         }
