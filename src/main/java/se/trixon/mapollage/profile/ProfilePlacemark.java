@@ -16,8 +16,10 @@
 package se.trixon.mapollage.profile;
 
 import java.text.SimpleDateFormat;
+import java.util.LinkedHashMap;
 import org.apache.commons.cli.CommandLine;
 import org.json.simple.JSONObject;
+import se.trixon.almond.util.Dict;
 
 /**
  *
@@ -106,6 +108,11 @@ public class ProfilePlacemark extends ProfileBase {
         return mSymbolAs;
     }
 
+    @Override
+    public String getTitle() {
+        return Dict.PLACEMARK.toString();
+    }
+
     public Double getZoom() {
         return mZoom;
     }
@@ -156,12 +163,31 @@ public class ProfilePlacemark extends ProfileBase {
     }
 
     @Override
-    public String toDebugString() {
-        return "ProfilePlacemark{" + ", mCoordinate=" + mCoordinate + ", mDateFormat=" + mDateFormat + ", mDatePattern=" + mDatePattern + ", mNameBy=" + mNameBy + ", mProfile=" + mProfile + '}';
-    }
+    protected ProfileInfo getProfileInfo() {
+        ProfileInfo profileInfo = new ProfileInfo();
+        LinkedHashMap<String, String> values = new LinkedHashMap<>();
 
-    @Override
-    public String toString() {
-        return "ProfilePlacemark{" + ", mDateFormat=" + mDateFormat + ", mDatePattern=" + mDatePattern + ", mProfile=" + mProfile + ", mCoordinate=" + mCoordinate + ", nameBy=" + mNameBy + '}';
+        String nameBy = mBundleUI.getString("ModulePlacemarkPanel.nameByNoRadioButton.text");
+
+        switch (mNameBy) {
+            case NAME_BY_DATE:
+                nameBy = String.format("%s: %s", Dict.DATE_PATTERN.toString(), mDatePattern);
+                break;
+
+            case NAME_BY_FILE:
+                nameBy = Dict.FILENAME.toString();
+                break;
+
+        }
+
+        values.put(mBundleUI.getString("ModulePlacemarkPanel.nameByLabel.text"), nameBy);
+        values.put(Dict.SYMBOL.toString(), mSymbolAs == SYMBOL_AS_PHOTO ? Dict.PHOTO.toString() : Dict.PIN.toString());
+        values.put(Dict.SCALE.toString(), String.valueOf(mScale));
+        values.put(Dict.ZOOM.toString(), String.valueOf(mZoom));
+
+        profileInfo.setTitle(getTitle());
+        profileInfo.setValues(values);
+
+        return profileInfo;
     }
 }

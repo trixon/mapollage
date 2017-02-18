@@ -18,8 +18,10 @@ package se.trixon.mapollage.profile;
 import java.io.File;
 import java.nio.file.FileSystems;
 import java.nio.file.PathMatcher;
+import java.util.LinkedHashMap;
 import org.apache.commons.lang3.SystemUtils;
 import org.json.simple.JSONObject;
+import se.trixon.almond.util.Dict;
 
 /**
  *
@@ -77,6 +79,11 @@ public class ProfileSource extends ProfileBase {
         return mPathMatcher;
     }
 
+    @Override
+    public String getTitle() {
+        return Dict.SOURCE.toString();
+    }
+
     public boolean isFollowLinks() {
         return mFollowLinks;
     }
@@ -104,6 +111,22 @@ public class ProfileSource extends ProfileBase {
         mDir = dir;
     }
 
+    @Override
+    protected ProfileInfo getProfileInfo() {
+        ProfileInfo profileInfo = new ProfileInfo();
+        LinkedHashMap<String, String> values = new LinkedHashMap<>();
+        values.put(mBundleUI.getString("ModuleSourcePanel.sourceChooserPanel.header"), mDir.getAbsolutePath());
+        values.put(Dict.FILE_PATTERN.toString(), mFilePattern);
+        values.put(Dict.SUBDIRECTORIES.toString(), String.valueOf(mRecursive));
+        values.put(Dict.FOLLOW_LINKS.toString(), String.valueOf(mFollowLinks));
+        values.put(mBundleUI.getString("ModuleSourcePanel.includeNullCoordinateCheckBox.text"), String.valueOf(mIncludeNullCoordinate));
+
+        profileInfo.setTitle(getTitle());
+        profileInfo.setValues(values);
+
+        return profileInfo;
+    }
+
     public void setFilePattern(String filePattern) {
         mFilePattern = filePattern;
     }
@@ -118,10 +141,5 @@ public class ProfileSource extends ProfileBase {
 
     public void setRecursive(boolean recursive) {
         mRecursive = recursive;
-    }
-
-    @Override
-    public String toDebugString() {
-        return "ProfileSource{" + "mDir=" + mDir + ", mFilePattern=" + mFilePattern + ", mFollowLinks=" + mFollowLinks + ", mPathMatcher=" + mPathMatcher + ", mProfile=" + mProfile + ", mRecursive=" + mRecursive + '}';
     }
 }

@@ -16,7 +16,12 @@
 package se.trixon.mapollage.profile;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
+import se.trixon.almond.util.Dict;
 
 /**
  *
@@ -40,7 +45,6 @@ public class Profile extends ProfileBase implements Comparable<Profile> {
     private ProfileSource mSource = new ProfileSource(this);
 
     public Profile() {
-
     }
 
     public Profile(JSONObject json) {
@@ -100,6 +104,11 @@ public class Profile extends ProfileBase implements Comparable<Profile> {
         return mSource;
     }
 
+    @Override
+    public String getTitle() {
+        return Dict.PROFILE.toString();
+    }
+
     public String getValidationError() {
         return sValidationErrorBuilder.toString();
     }
@@ -144,34 +153,37 @@ public class Profile extends ProfileBase implements Comparable<Profile> {
         mSource = source;
     }
 
-//    public void setSourceAndDest(String[] args) {
-//        if (args.length == 2) {
-//            String source = args[0];
-//            File sourceFile = new File(source);
-//
-//            if (sourceFile.isDirectory()) {
-//                mSource.setDir(sourceFile);
-//                mSource.setFilePattern("*");
-//            } else {
-//                String sourceDir = FilenameUtils.getFullPathNoEndSeparator(source);
-//                mSource.setDir(new File(sourceDir));
-//                mSource.setFilePattern(FilenameUtils.getName(source));
-//            }
-//
-//            setDestFile(new File(args[1]));
-//        } else {
-//            addValidationError(mBundle.getString("invalid_arg_count"));
-//        }
-//    }
     @Override
     public String toDebugString() {
-        StringBuilder builder = new StringBuilder("Profile summary { ").append(mName).append("\n")
-                .append(mSource.toDebugString()).append("\n")
-                .append(mFolder.toDebugString()).append("\n")
-                .append(mPlacemark.toDebugString()).append("\n")
-                .append(mDescription.toDebugString()).append("\n")
-                .append(mPhoto.toDebugString()).append("\n")
-                .append("}");
+        ArrayList<ProfileInfo> profileInfos = new ArrayList<>();
+        profileInfos.add(mSource.getProfileInfo());
+        profileInfos.add(mFolder.getProfileInfo());
+        profileInfos.add(mPlacemark.getProfileInfo());
+        profileInfos.add(mDescription.getProfileInfo());
+        profileInfos.add(mPhoto.getProfileInfo());
+        profileInfos.add(getProfileInfo());
+
+        int maxLength = Integer.MIN_VALUE;
+        for (ProfileInfo profileInfo : profileInfos) {
+            maxLength = Math.max(maxLength, profileInfo.getMaxLength());
+        }
+        maxLength = maxLength + 3;
+
+        String separator = " : ";
+        StringBuilder builder = new StringBuilder("\n");
+        builder.append(StringUtils.leftPad(Dict.PROFILE.toString(), maxLength)).append(separator).append(mName).append("\n");
+
+        for (ProfileInfo profileInfo : profileInfos) {
+            builder.append(profileInfo.getTitle()).append("\n");
+
+            for (Map.Entry<String, String> entry : profileInfo.getValues().entrySet()) {
+                String key = entry.getKey();
+                String value = entry.getValue();
+                builder.append(StringUtils.leftPad(key, maxLength)).append(separator).append(value).append("\n");
+            }
+
+            builder.append("\n");
+        }
 
         return builder.toString();
     }
@@ -179,5 +191,22 @@ public class Profile extends ProfileBase implements Comparable<Profile> {
     @Override
     public String toString() {
         return mName;
+    }
+
+    @Override
+    protected ProfileInfo getProfileInfo() {
+        ProfileInfo profileInfo = new ProfileInfo();
+        LinkedHashMap<String, String> values = new LinkedHashMap<>();
+
+        values.put(Dict.CALENDAR_LANGUAGE.toString(), mOptions.getLocale().getDisplayName());
+        values.put(Dict.IMAGE_SIZE.toString(), String.valueOf(mOptions.getThumbnailSize()));
+        values.put(Dict.BORDER_SIZE.toString(), String.valueOf(mOptions.getThumbnailBorderSize()));
+        values.put(String.format("%s %s", Dict.DEFAULT.toString(), Dict.LATITUDE.toString()), String.valueOf(mOptions.getDefaultLat()));
+        values.put(String.format("%s %s", Dict.DEFAULT.toString(), Dict.LONGITUDE.toString()), String.valueOf(mOptions.getDefaultLon()));
+
+        profileInfo.setTitle(Dict.GLOBAL_OPTIONS.toString());
+        profileInfo.setValues(values);
+
+        return profileInfo;
     }
 }

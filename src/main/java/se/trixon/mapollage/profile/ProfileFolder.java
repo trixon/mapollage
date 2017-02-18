@@ -16,7 +16,9 @@
 package se.trixon.mapollage.profile;
 
 import java.text.SimpleDateFormat;
+import java.util.LinkedHashMap;
 import org.json.simple.JSONObject;
+import se.trixon.almond.util.Dict;
 
 /**
  *
@@ -106,6 +108,11 @@ public class ProfileFolder extends ProfileBase {
     }
 
     @Override
+    public String getTitle() {
+        return Dict.FOLDERS.toString();
+    }
+
+    @Override
     public boolean isValid() {
         boolean valid = true;
         if (mRootName == null) {
@@ -154,12 +161,31 @@ public class ProfileFolder extends ProfileBase {
     }
 
     @Override
-    public String toDebugString() {
-        return "ProfileFolder{" + "mDatePattern=" + mDatePattern + ", mFolderDateFormat=" + mFolderDateFormat + ", mFoldersBy=" + mFoldersBy + ", mProfile=" + mProfile + ", mRegex=" + mRegex + ", mRegexDefault=" + mRegexDefault + ", mRootDescription=" + mRootDescription + ", mRootName=" + mRootName + '}';
-    }
+    protected ProfileInfo getProfileInfo() {
+        ProfileInfo profileInfo = new ProfileInfo();
+        LinkedHashMap<String, String> values = new LinkedHashMap<>();
+        values.put(mBundleUI.getString("ModuleFoldersPanel.rootNameLabel.text"), mRootName);
+        values.put(mBundleUI.getString("ModuleFoldersPanel.rootDescriptionLabel.text"), mRootDescription.replaceAll("\\n", "\\\\n"));
+        String foldersBy = mBundleUI.getString("ModuleFoldersPanel.folderByNoneRadioButton.text");
 
-    @Override
-    public String toString() {
-        return "Folder{" + "mRootDescription=" + mRootDescription + ", mRootName=" + mRootName + '}';
+        switch (mFoldersBy) {
+            case FOLDER_BY_DATE:
+                foldersBy = String.format("%s: %s", Dict.DATE_PATTERN.toString(), mDatePattern);
+                break;
+
+            case FOLDER_BY_DIR:
+                foldersBy = mBundleUI.getString("ModuleFoldersPanel.folderByDirectoryRadioButton.text");
+                break;
+
+            case FOLDER_BY_REGEX:
+                foldersBy = String.format("%s: %s", mBundleUI.getString("ModuleFoldersPanel.folderByRegexRadioButton.text"), mRegex);
+                break;
+        }
+        values.put(mBundleUI.getString("ModuleFoldersPanel.folderByLabel.text"), foldersBy);
+
+        profileInfo.setTitle(getTitle());
+        profileInfo.setValues(values);
+
+        return profileInfo;
     }
 }

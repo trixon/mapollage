@@ -16,10 +16,13 @@
 package se.trixon.mapollage.profile;
 
 import java.io.File;
+import java.util.Map;
 import java.util.ResourceBundle;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 import se.trixon.almond.util.BundleHelper;
 import se.trixon.mapollage.Options;
+import se.trixon.mapollage.ui.config.ConfigPanel;
 
 /**
  *
@@ -29,13 +32,32 @@ public abstract class ProfileBase {
 
     protected static StringBuilder sValidationErrorBuilder;
     protected final ResourceBundle mBundle = BundleHelper.getBundle(Profile.class, "Bundle");
+    protected final ResourceBundle mBundleUI = BundleHelper.getBundle(ConfigPanel.class, "Bundle");
     protected final Options mOptions = Options.getInstance();
 
     public abstract JSONObject getJson();
 
     public abstract boolean isValid();
 
-    public abstract String toDebugString();
+    public String toDebugString() {
+        ProfileInfo profileInfo = getProfileInfo();
+        int maxLength = profileInfo.getMaxLength() + 3;
+
+        String separator = " : ";
+        StringBuilder builder = new StringBuilder("\n");
+
+        builder.append(profileInfo.getTitle()).append("\n");
+
+        for (Map.Entry<String, String> entry : profileInfo.getValues().entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
+            builder.append(StringUtils.leftPad(key, maxLength)).append(separator).append(value).append("\n");
+        }
+
+        return builder.toString();
+    }
+
+    public abstract String getTitle();
 
     protected void addValidationError(String string) {
         sValidationErrorBuilder.append(string).append("\n");
@@ -52,6 +74,8 @@ public abstract class ProfileBase {
             return null;
         }
     }
+
+    protected abstract ProfileInfo getProfileInfo();
 
     protected int getInt(JSONObject object, String key) {
         try {

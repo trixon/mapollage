@@ -15,8 +15,10 @@
  */
 package se.trixon.mapollage.profile;
 
+import java.util.LinkedHashMap;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
+import se.trixon.almond.util.Dict;
 
 /**
  *
@@ -50,12 +52,6 @@ public class ProfileDescription extends ProfileBase {
 
     static {
         StringBuilder builder = new StringBuilder();
-
-//        builder.append("<p>").append(DescriptionSegment.PHOTO.toString()).append("</p>\n")
-//                .append("<h2>").append(DescriptionSegment.FILENAME.toString()).append("</h2>\n")
-//                .append("<p>").append(DescriptionSegment.DATE.toString()).append("</p>\n")
-//                .append("<p>").append(DescriptionSegment.COORDINATE.toString()).append(", ").append(DescriptionSegment.ALTITUDE.toString()).append("</p>\n")
-//                .append("<p>").append(DescriptionSegment.BEARING.toString()).append("</p>\n");
         builder.append(DescriptionSegment.PHOTO.toHtml())
                 .append(DescriptionSegment.FILENAME.toHtml())
                 .append(DescriptionSegment.DATE.toHtml())
@@ -116,6 +112,11 @@ public class ProfileDescription extends ProfileBase {
         json.put(KEY_PHOTO, mPhoto);
 
         return json;
+    }
+
+    @Override
+    public String getTitle() {
+        return Dict.DESCRIPTION.toString();
     }
 
     public boolean hasAltitude() {
@@ -196,8 +197,27 @@ public class ProfileDescription extends ProfileBase {
     }
 
     @Override
-    public String toDebugString() {
-        return "ProfileDescription{" + "mProfile=" + mProfile + ", mAltitude=" + mAltitude + ", mBearing=" + mBearing + ", mCoordinate=" + mCoordinate + ", mCustom=" + mCustom + ", mDate=" + mDate + ", mExternalFile=" + mExternalFile + ", mExternalFileValue=" + mExternalFileValue + ", mCustomValue=" + mCustomValue + ", mFilename=" + mFilename + ", mPhoto=" + mPhoto + '}';
+    protected ProfileInfo getProfileInfo() {
+        ProfileInfo profileInfo = new ProfileInfo();
+        LinkedHashMap<String, String> values = new LinkedHashMap<>();
+
+        values.put(Dict.TYPE.toString(), mCustom ? Dict.CUSTOMIZED.toString() : Dict.STATIC.toString());
+
+        if (mCustom) {
+            values.put(Dict.VALUE.toString(), mCustomValue.replaceAll("\\n", "\\\\n"));
+        } else {
+            values.put(Dict.PHOTO.toString(), String.valueOf(mPhoto));
+            values.put(Dict.FILENAME.toString(), String.valueOf(mFilename));
+            values.put(Dict.DATE.toString(), String.valueOf(mDate));
+            values.put(Dict.COORDINATE.toString(), String.valueOf(mCoordinate));
+            values.put(Dict.ALTITUDE.toString(), String.valueOf(mAltitude));
+            values.put(Dict.BEARING.toString(), String.valueOf(mBearing));
+        }
+
+        profileInfo.setTitle(getTitle());
+        profileInfo.setValues(values);
+
+        return profileInfo;
     }
 
     public static enum DescriptionSegment {

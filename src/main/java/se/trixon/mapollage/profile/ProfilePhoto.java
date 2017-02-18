@@ -15,8 +15,10 @@
  */
 package se.trixon.mapollage.profile;
 
+import java.util.LinkedHashMap;
 import org.apache.commons.lang3.SystemUtils;
 import org.json.simple.JSONObject;
+import se.trixon.almond.util.Dict;
 
 /**
  *
@@ -51,6 +53,7 @@ public class ProfilePhoto extends ProfileBase {
         mWidthLimit = getInt(json, KEY_WIDTH_LIMIT);
         mLimitHeight = getBoolean(json, KEY_LIMIT_HEIGHT);
         mLimitWidth = getBoolean(json, KEY_LIMIT_WIDTH);
+        mForceLowerCaseExtension = getBoolean(json, KEY_FORCE_LOWER_CASE_EXTENSION);
         mReference = Reference.values()[getInt(json, KEY_REFERENCE)];
         mBaseUrlValue = (String) json.get(KEY_BASE_URL_VALUE);
     }
@@ -79,6 +82,11 @@ public class ProfilePhoto extends ProfileBase {
 
     public Reference getReference() {
         return mReference;
+    }
+
+    @Override
+    public String getTitle() {
+        return Dict.PHOTO.toString();
     }
 
     public int getWidthLimit() {
@@ -131,13 +139,38 @@ public class ProfilePhoto extends ProfileBase {
     }
 
     @Override
-    public String toDebugString() {
-        return "ProfilePhoto{" + "mProfile=" + mProfile + ", mLimitHeight=" + mLimitHeight + ", mLimitWidth=" + mLimitWidth + ", mReference=" + mReference + ", mForceLowerCaseExtension=" + mForceLowerCaseExtension + ", mBaseUrlValue=" + mBaseUrlValue + ", mHeightLimit=" + mHeightLimit + ", mWidthLimit=" + mWidthLimit + '}';
-    }
+    protected ProfileInfo getProfileInfo() {
+        ProfileInfo profileInfo = new ProfileInfo();
+        LinkedHashMap<String, String> values = new LinkedHashMap<>();
 
-    @Override
-    public String toString() {
-        return super.toString();
+        values.put(mBundleUI.getString("ModulePhotoPanel.widthCheckBox.text"), mLimitWidth ? String.valueOf(mWidthLimit) : "-");
+        values.put(mBundleUI.getString("ModulePhotoPanel.heightCheckBox.text"), mLimitHeight ? String.valueOf(mHeightLimit) : "-");
+
+        String fileReference = null;
+
+        switch (mReference) {
+            case ABSOLUTE:
+                fileReference = Dict.ABSOLUTE.toString();
+                break;
+
+            case ABSOLUTE_PATH:
+                fileReference = Dict.FILENAME.toString();
+                fileReference = String.format("%s: %s", mBundleUI.getString("ModulePhotoPanel.absolutePathRadioButton.text"), mBaseUrlValue);
+                break;
+
+            case RELATIVE:
+                fileReference = Dict.RELATIVE.toString();
+                break;
+
+        }
+
+        values.put(Dict.FILE_REFERENCE.toString(), fileReference);
+        values.put(mBundleUI.getString("ModulePhotoPanel.lowerCaseExtCheckBox.text"), String.valueOf(mForceLowerCaseExtension));
+
+        profileInfo.setTitle(getTitle());
+        profileInfo.setValues(values);
+
+        return profileInfo;
     }
 
     public static enum Reference {
