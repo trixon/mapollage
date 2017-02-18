@@ -46,11 +46,32 @@ public class Mapollage implements OperationListener {
 
     public static final String HELP = "help";
     public static final String VERSION = "version";
+    private static final ResourceBundle sBundle = BundleHelper.getBundle(Mapollage.class, "Bundle");
+    private static Options sOptions;
     private final AlmondUI mAlmondUI = AlmondUI.getInstance();
-    private final ResourceBundle mBundle = BundleHelper.getBundle(Mapollage.class, "Bundle");
     private MainFrame mMainFrame = null;
-    private Options mOptions;
     private final ProfileManager mProfileManager = ProfileManager.getInstance();
+
+    public static String getHelp() {
+        PrintStream defaultStdOut = System.out;
+        StringBuilder sb = new StringBuilder()
+                .append(sBundle.getString("usage")).append("\n\n");
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PrintStream ps = new PrintStream(baos);
+        System.setOut(ps);
+
+        HelpFormatter formatter = new HelpFormatter();
+        formatter.setWidth(79);
+        formatter.setOptionComparator(null);
+        formatter.printHelp("xxx", sOptions, false);
+        System.out.flush();
+        System.setOut(defaultStdOut);
+        sb.append(baos.toString().replace("usage: xxx" + SystemUtils.LINE_SEPARATOR, "")).append("\n")
+                .append(sBundle.getString("help_footer"));
+
+        return sb.toString();
+    }
 
     /**
      * @param args the command line arguments
@@ -62,12 +83,12 @@ public class Mapollage implements OperationListener {
     public Mapollage(String[] args) {
         initOptions();
         if (args.length == 0) {
-            System.out.println(mBundle.getString("hint_tui"));
+            System.out.println(sBundle.getString("hint_tui"));
             displayGui();
         } else {
             try {
                 CommandLineParser commandLineParser = new DefaultParser();
-                CommandLine commandLine = commandLineParser.parse(mOptions, args);
+                CommandLine commandLine = commandLineParser.parse(sOptions, args);
 
                 if (commandLine.hasOption(HELP)) {
                     displayHelp();
@@ -113,7 +134,7 @@ public class Mapollage implements OperationListener {
                 }
             } catch (ParseException ex) {
                 System.out.println(ex.getMessage());
-                System.out.println(mBundle.getString("parse_help"));
+                System.out.println(sBundle.getString("parse_help"));
             }
         }
     }
@@ -171,24 +192,7 @@ public class Mapollage implements OperationListener {
     }
 
     private void displayHelp() {
-        PrintStream defaultStdOut = System.out;
-        StringBuilder sb = new StringBuilder()
-                .append(mBundle.getString("usage")).append("\n\n");
-
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        PrintStream ps = new PrintStream(baos);
-        System.setOut(ps);
-
-        HelpFormatter formatter = new HelpFormatter();
-        formatter.setWidth(79);
-        formatter.setOptionComparator(null);
-        formatter.printHelp("xxx", mOptions, false);
-        System.out.flush();
-        System.setOut(defaultStdOut);
-        sb.append(baos.toString().replace("usage: xxx" + SystemUtils.LINE_SEPARATOR, "")).append("\n")
-                .append(mBundle.getString("help_footer"));
-
-        System.out.println(sb.toString());
+        System.out.println(getHelp());
     }
 
     private void displayProfiles() {
@@ -204,54 +208,54 @@ public class Mapollage implements OperationListener {
 
     private void displayVersion() {
         PomInfo pomInfo = new PomInfo(Mapollage.class, "se.trixon", "mapollage");
-        System.out.println(String.format(mBundle.getString("version_info"), pomInfo.getVersion()));
+        System.out.println(String.format(sBundle.getString("version_info"), pomInfo.getVersion()));
     }
 
     private void initOptions() {
         Option help = Option.builder("?")
                 .longOpt(HELP)
-                .desc(mBundle.getString("opt_help_desc"))
+                .desc(sBundle.getString("opt_help_desc"))
                 .build();
 
         Option version = Option.builder("v")
                 .longOpt(VERSION)
-                .desc(mBundle.getString("opt_version_desc"))
+                .desc(sBundle.getString("opt_version_desc"))
                 .build();
 
         Option gui = Option.builder("g")
                 .longOpt("gui")
-                .desc(mBundle.getString("opt_gui_desc"))
+                .desc(sBundle.getString("opt_gui_desc"))
                 .build();
 
         Option profile = Option.builder("rp")
                 .longOpt("run-profile")
                 .hasArg()
                 .numberOfArgs(1)
-                .desc(mBundle.getString("opt_profile_desc"))
+                .desc(sBundle.getString("opt_profile_desc"))
                 .build();
 
         Option listProfiles = Option.builder("lp")
                 .longOpt("list-profiles")
-                .desc(mBundle.getString("opt_list_profiles_desc"))
+                .desc(sBundle.getString("opt_list_profiles_desc"))
                 .build();
 
         Option viewProfile = Option.builder("vp")
                 .longOpt("view-profile")
                 .hasArg()
                 .numberOfArgs(1)
-                .desc(mBundle.getString("opt_view_profile_desc"))
+                .desc(sBundle.getString("opt_view_profile_desc"))
                 .build();
 
-        mOptions = new Options();
+        sOptions = new Options();
 
-        mOptions.addOption(listProfiles);
-        mOptions.addOption(viewProfile);
-        mOptions.addOption(profile);
+        sOptions.addOption(listProfiles);
+        sOptions.addOption(viewProfile);
+        sOptions.addOption(profile);
 
-        mOptions.addOption(gui);
+        sOptions.addOption(gui);
 
-        mOptions.addOption(help);
-        mOptions.addOption(version);
+        sOptions.addOption(help);
+        sOptions.addOption(version);
     }
 
     private void loadProfiles() {

@@ -172,7 +172,9 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
         mLogPanel = configPanel.getLogPanel();
         mLogPanel.getTextArea().setLineWrap(true);
         mLogPanel.getTextArea().setWrapStyleWord(true);
-        mLogPanel.println(mBundleUI.getString("welcome"));
+        mLogPanel.println(mBundleUI.getString("welcome_1"));
+        mLogPanel.println(Mapollage.getHelp());
+        mLogPanel.println(mBundleUI.getString("welcome_3"));
     }
 
     private void initListeners() {
