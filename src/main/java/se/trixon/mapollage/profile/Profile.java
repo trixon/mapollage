@@ -204,7 +204,7 @@ public class Profile extends ProfileBase implements Comparable<Profile> {
         values.put(String.format("%s %s", Dict.DEFAULT.toString(), Dict.LATITUDE.toString()), String.valueOf(mOptions.getDefaultLat()));
         values.put(String.format("%s %s", Dict.DEFAULT.toString(), Dict.LONGITUDE.toString()), String.valueOf(mOptions.getDefaultLon()));
 
-        profileInfo.setTitle(Dict.GLOBAL_OPTIONS.toString());
+        profileInfo.setTitle(Dict.OPTIONS.toString());
         profileInfo.setValues(values);
 
         return profileInfo;

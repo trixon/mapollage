@@ -171,7 +171,7 @@ public class ProfilePlacemark extends ProfileBase {
 
         switch (mNameBy) {
             case NAME_BY_DATE:
-                nameBy = String.format("%s: %s", Dict.DATE_PATTERN.toString(), mDatePattern);
+                nameBy = mDatePattern;
                 break;
 
             case NAME_BY_FILE:

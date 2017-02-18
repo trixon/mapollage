@@ -170,7 +170,7 @@ public class ProfileFolder extends ProfileBase {
 
         switch (mFoldersBy) {
             case FOLDER_BY_DATE:
-                foldersBy = String.format("%s: %s", Dict.DATE_PATTERN.toString(), mDatePattern);
+                foldersBy = mDatePattern;
                 break;
 
             case FOLDER_BY_DIR:
@@ -178,9 +178,10 @@ public class ProfileFolder extends ProfileBase {
                 break;
 
             case FOLDER_BY_REGEX:
-                foldersBy = String.format("%s: %s", mBundleUI.getString("ModuleFoldersPanel.folderByRegexRadioButton.text"), mRegex);
+                foldersBy = mRegex;
                 break;
         }
+
         values.put(mBundleUI.getString("ModuleFoldersPanel.folderByLabel.text"), foldersBy);
 
         profileInfo.setTitle(getTitle());
