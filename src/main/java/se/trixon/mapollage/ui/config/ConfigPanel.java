@@ -96,7 +96,8 @@ public class ConfigPanel extends javax.swing.JPanel {
         for (Component component : tabbedPane.getComponents()) {
             if (component instanceof ModulePanel) {
                 ModulePanel modulePanel = (ModulePanel) component;
-                tabbedPane.setIconAt(tabbedPane.indexOfComponent(modulePanel), modulePanel.getIcon());
+                JLabel label = (JLabel) tabbedPane.getTabComponentAt(tabbedPane.indexOfComponent(modulePanel));
+                label.setIcon(modulePanel.getIcon());
             }
         }
     }
