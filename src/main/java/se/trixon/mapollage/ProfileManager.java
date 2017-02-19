@@ -36,7 +36,7 @@ public class ProfileManager {
     private static final String KEY_PROFILES = "profiles";
     private static final String KEY_VERSION = "version";
 
-    private static final int sVersion = 1;
+    private static final int VERSION = 1;
     private final File mDirectory;
     private final File mProfileFile;
     private final LinkedList<Profile> mProfiles = new LinkedList<>();
@@ -47,7 +47,7 @@ public class ProfileManager {
     }
 
     private ProfileManager() {
-        mDirectory = new File(System.getProperty("user.home"), ".config/trixon");
+        mDirectory = new File(System.getProperty("user.home"), ".config/mapollage");
         mProfileFile = new File(mDirectory, "mapollage.profiles");
 
         try {
@@ -105,7 +105,7 @@ public class ProfileManager {
 
         JSONObject jsonObject = new JSONObject();
         jsonObject.put(KEY_PROFILES, array);
-        jsonObject.put(KEY_VERSION, sVersion);
+        jsonObject.put(KEY_VERSION, VERSION);
 
         String jsonString = jsonObject.toJSONString();
         FileUtils.writeStringToFile(mProfileFile, jsonString, Charset.defaultCharset());
