@@ -372,11 +372,16 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
             profile.setDestinationFile(mDestination);
             profile.isValid();
 
-            Operation operation = new Operation(mOperationListener, profile);
-            mOperationThread = new Thread(operation);
             mLogPanel.clear();
             configPanel.selectTab(0);
-            mOperationThread.start();
+            if (profile.hasValidRelativeSourceDest()) {
+                Operation operation = new Operation(mOperationListener, profile);
+                mOperationThread = new Thread(operation);
+                mOperationThread.start();
+            } else {
+                mLogPanel.println(mBundle.getString("invalid_relative_source_dest"));
+                mLogPanel.println(Dict.ABORTING.toString());
+            }
         }
     }
 
