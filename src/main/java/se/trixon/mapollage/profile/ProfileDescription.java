@@ -147,6 +147,13 @@ public class ProfileDescription extends ProfileBase {
         return mPhoto;
     }
 
+    public boolean hasPhotoStaticOrDynamic() {
+        boolean hasPhoto = (isCustom() && StringUtils.containsIgnoreCase(mCustomValue, "+photo"))
+                || (!isCustom() && hasPhoto());
+
+        return hasPhoto;
+    }
+
     public boolean isCustom() {
         return mCustom;
     }

@@ -17,6 +17,7 @@ package se.trixon.mapollage;
 
 import java.awt.GraphicsEnvironment;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ResourceBundle;
@@ -113,23 +114,41 @@ public class Mapollage implements OperationListener {
                 } else {
                     Profile profile = null;
 
-                    if (commandLine.hasOption("profile")) {
+                    if (commandLine.hasOption("run-profile")) {
+                        String[] rpArgs = commandLine.getOptionValues("run-profile");
+                        File destFile = new File(rpArgs[1]);
+                        if (destFile.isAbsolute()) {
+                            if (!destFile.getParentFile().isDirectory()) {
+                                System.err.println(Dict.INVALID_DESTINATION.toString());
+                                System.exit(1);
+                            }
+                        } else {
+                            destFile = new File(SystemUtils.USER_DIR + File.separator + rpArgs[1]);
+                        }
+
                         loadProfiles();
-                        profile = mProfileManager.getProfile(commandLine.getOptionValue("profile"));
+                        profile = mProfileManager.getProfile(commandLine.getOptionValue("run-profile"));
                         if (profile == null) {
                             System.err.println(Dict.Dialog.ERROR_PROFILE_NOT_FOUND.toString());
                             System.exit(1);
+                        } else if (destFile.isDirectory()) {
+                            System.err.println(Dict.INVALID_DESTINATION.toString());
+                            System.exit(1);
                         }
-                    } else {
-//                        profile = new Profile(commandLine);
-                    }
 
-                    if (profile.isValid()) {
-                        Operation operation = new Operation(this, profile);
-                        operation.run();
-                    } else {
-                        System.out.println(profile.getValidationError());
-                        System.out.println(Dict.ABORTING.toString());
+                        profile.setDestinationFile(destFile);
+                        if (profile.isValid()) {
+                            if (profile.hasValidRelativeSourceDest()) {
+                                Operation operation = new Operation(this, profile);
+                                operation.run();
+                            } else {
+                                System.err.println(sBundle.getString("invalid_relative_source_dest"));
+                                System.err.println(Dict.ABORTING.toString());
+                            }
+                        } else {
+                            System.out.println(profile.getValidationError());
+                            System.err.println(Dict.ABORTING.toString());
+                        }
                     }
                 }
             } catch (ParseException ex) {
@@ -230,7 +249,7 @@ public class Mapollage implements OperationListener {
         Option profile = Option.builder("rp")
                 .longOpt("run-profile")
                 .hasArg()
-                .numberOfArgs(1)
+                .numberOfArgs(2)
                 .desc(sBundle.getString("opt_profile_desc"))
                 .build();
 

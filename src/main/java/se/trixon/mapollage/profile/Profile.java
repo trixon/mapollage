@@ -16,6 +16,7 @@
 package se.trixon.mapollage.profile;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -111,6 +112,20 @@ public class Profile extends ProfileBase implements Comparable<Profile> {
 
     public String getValidationError() {
         return sValidationErrorBuilder.toString();
+    }
+
+    public boolean hasValidRelativeSourceDest() {
+        boolean valid = true;
+
+        if (mDescription.hasPhotoStaticOrDynamic() && mPhoto.getReference() == ProfilePhoto.Reference.RELATIVE) {
+            try {
+                Path path = mDestinationFile.toPath().relativize(mSource.getDir().toPath());
+            } catch (IllegalArgumentException e) {
+                valid = false;
+            }
+        }
+
+        return valid;
     }
 
     @Override
