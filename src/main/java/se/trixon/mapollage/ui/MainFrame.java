@@ -16,6 +16,7 @@
 package se.trixon.mapollage.ui;
 
 import java.awt.Component;
+import java.awt.Desktop;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
@@ -24,6 +25,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.ResourceBundle;
@@ -788,7 +791,11 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
 
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    Message.dateFormatInfo(MainFrame.this, false);
+                    try {
+                        Desktop.getDesktop().browse(new URI("https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html"));
+                    } catch (URISyntaxException | IOException ex) {
+                        Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
             };
 
