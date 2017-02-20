@@ -48,31 +48,6 @@ public class ModuleDescriptionPanel extends ModulePanel {
     }
 
     @Override
-    public StringBuilder getHeaderBuilder() {
-        StringBuilder sb = new StringBuilder(Dict.DESCRIPTION.toString()).append("\n");
-
-        if (mDescription.isCustom()) {
-            final String customValue = mDescription.getCustomValue();
-            if (!StringUtils.isEmpty(customValue)) {
-                sb.append(MULTILINE_DIVIDER).append("\n");
-                sb.append(customValue).append("\n");
-                sb.append(MULTILINE_DIVIDER);
-            }
-        } else {
-            optAppend(sb, mDescription.hasPhoto(), Dict.PHOTO.toString());
-            optAppend(sb, mDescription.hasFilename(), Dict.FILENAME.toString());
-            optAppend(sb, mDescription.hasDate(), Dict.DATE.toString());
-            optAppend(sb, mDescription.hasCoordinate(), Dict.COORDINATE.toString());
-            optAppend(sb, mDescription.hasAltitude(), Dict.ALTITUDE.toString());
-            optAppend(sb, mDescription.hasBearing(), Dict.BEARING.toString());
-            optAppend(sb, mDescription.isCustom(), Dict.CUSTOM_TEXT.toString());
-        }
-        sb.append("\n");
-
-        return sb;
-    }
-
-    @Override
     public ImageIcon getIcon() {
         return MaterialIcon._Action.DESCRIPTION.get(ICON_SIZE, getIconColor());
     }

@@ -19,7 +19,6 @@ import java.awt.Component;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.border.EmptyBorder;
-import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.swing.LogPanel;
 import se.trixon.almond.util.swing.SwingHelper;
 import se.trixon.mapollage.profile.Profile;
@@ -62,18 +61,6 @@ public class ConfigPanel extends javax.swing.JPanel {
 
     public int getSelectedIndex() {
         return tabbedPane.getSelectedIndex();
-    }
-
-    public StringBuilder getHeaderBuilder() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(String.format("%s: %s\n", Dict.PROFILE.toString(), mProfile.getName()));
-        sb.append(mModuleSourcePanel.getHeaderBuilder());
-        sb.append(mModuleFoldersPanel.getHeaderBuilder());
-        sb.append(mModulePlacemarksPanel.getHeaderBuilder());
-        sb.append(mModuleDescriptionPanel.getHeaderBuilder());
-        sb.append(mModulePhotoPanel.getHeaderBuilder());
-
-        return sb;
     }
 
     public boolean hasValidSettings() {

@@ -20,6 +20,8 @@ import java.util.ResourceBundle;
 import java.util.prefs.PreferenceChangeEvent;
 import java.util.prefs.PreferenceChangeListener;
 import javax.swing.ImageIcon;
+import javax.swing.JComboBox;
+import javax.swing.text.JTextComponent;
 import se.trixon.almond.util.AlmondOptions;
 import se.trixon.almond.util.BundleHelper;
 import se.trixon.almond.util.Dict;
@@ -51,16 +53,22 @@ public abstract class ModulePanel extends javax.swing.JPanel {
         });
     }
 
+    public String getComboInEditValue(JComboBox comboBox) {
+        return getTextComponent(comboBox).getText();
+    }
+
     public Locale getDateFormatLocale() {
         return mOptions.getLocale();
     }
-
-    public abstract StringBuilder getHeaderBuilder();
 
     public abstract ImageIcon getIcon();
 
     public IconColor getIconColor() {
         return AlmondOptions.getInstance().getIconColor();
+    }
+
+    public JTextComponent getTextComponent(JComboBox comboBox) {
+        return (JTextComponent) comboBox.getEditor().getEditorComponent();
     }
 
     public String getTitle() {

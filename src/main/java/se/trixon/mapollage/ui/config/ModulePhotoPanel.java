@@ -42,24 +42,6 @@ public class ModulePhotoPanel extends ModulePanel {
     }
 
     @Override
-    public StringBuilder getHeaderBuilder() {
-        StringBuilder sb = new StringBuilder();
-
-        sb.append(mTitle).append("\n");
-
-        optAppend(sb, mProfilePhoto.isLimitWidth(), String.format("%s: %s", widthCheckBox.getText(), mProfilePhoto.getWidthLimit()));
-        optAppend(sb, mProfilePhoto.isLimitHeight(), String.format("%s: %s", heightCheckBox.getText(), mProfilePhoto.getHeightLimit()));
-        optAppend(sb, lowerCaseExtCheckBox.isSelected(), lowerCaseExtCheckBox.getText());
-//        optAppend(sb, mProfilePhoto.isBaseUrl(), String.format("%s: %s",
-//                urlCheckBox.getText(),
-//                urlTextField.getText()));
-
-        sb.append("\n");
-
-        return sb;
-    }
-
-    @Override
     public ImageIcon getIcon() {
         return MaterialIcon._Image.PHOTO.get(ICON_SIZE, getIconColor());
     }

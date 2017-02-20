@@ -46,20 +46,6 @@ public class ModuleSourcePanel extends ModulePanel implements FileChooserPanel.F
         mTitle = Dict.SOURCE.toString();
     }
 
-    @Override
-    public StringBuilder getHeaderBuilder() {
-        StringBuilder sb = new StringBuilder();
-
-        sb.append(Dict.SOURCE.toString()).append("\n");
-        append(sb, sourceChooserPanel.getHeader(), mSource.getDir().getAbsolutePath());
-        append(sb, patternLabel.getText(), mSource.getFilePattern());
-        optAppend(sb, mSource.isRecursive(), recursiveCheckBox.getText());
-        optAppend(sb, mSource.isFollowLinks(), followLinksCheckBox.getText());
-        sb.append("\n");
-
-        return sb;
-    }
-
     public FileChooserPanel getSourceChooserPanel() {
         return sourceChooserPanel;
     }

@@ -15,9 +15,11 @@
  */
 package se.trixon.mapollage.ui.config;
 
+import java.beans.PropertyChangeEvent;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.prefs.PreferenceChangeEvent;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -45,29 +47,6 @@ public class ModulePlacemarkPanel extends ModulePanel {
     }
 
     @Override
-    public StringBuilder getHeaderBuilder() {
-        StringBuilder sb = new StringBuilder();
-
-        sb.append(Dict.PLACEMARK.toString()).append("\n");
-        String nameBy = "";
-        int value = mPlacemark.getNameBy();
-        if (value == ProfilePlacemark.NAME_BY_FILE) {
-            nameBy = nameByFileRadioButton.getText();
-        } else if (value == ProfilePlacemark.NAME_BY_DATE) {
-            nameBy = String.format("%s: %s", Dict.DATE_PATTERN.toString(), dateFormatTextField.getText());
-        } else if (value == ProfilePlacemark.NAME_BY_NONE) {
-            nameBy = nameByNoRadioButton.getText();
-        }
-        append(sb, nameByLabel.getText(), nameBy);
-//        optAppend(sb, mPlacemark.isIncludeNullCoordinate(), String.format(Locale.ENGLISH, "%s (%f, %f)",
-//                includeNullCoordinateCheckBox.getText(),
-//                mPlacemark.getLat(), mPlacemark.getLon()));
-        sb.append("\n");
-
-        return sb;
-    }
-
-    @Override
     public ImageIcon getIcon() {
         return MaterialIcon._Maps.PLACE.get(ICON_SIZE, getIconColor());
     }
@@ -89,14 +68,9 @@ public class ModulePlacemarkPanel extends ModulePanel {
     }
 
     private void init() {
-        dateFormatTextField.getDocument().addDocumentListener(new DocumentListener() {
+        DocumentListener documentListener = new DocumentListener() {
             @Override
             public void changedUpdate(DocumentEvent e) {
-                previewDateFormat();
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
                 previewDateFormat();
             }
 
@@ -104,14 +78,28 @@ public class ModulePlacemarkPanel extends ModulePanel {
             public void insertUpdate(DocumentEvent e) {
                 previewDateFormat();
             }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                previewDateFormat();
+            }
+        };
+
+        dateFormatComboBox.setModel(new DefaultComboBoxModel<>(mBundle.getString("dateFormats").split(";")));
+        dateFormatComboBox.addPropertyChangeListener("UI", (PropertyChangeEvent evt) -> {
+            getTextComponent(dateFormatComboBox).getDocument().addDocumentListener(documentListener);
         });
+
+        getTextComponent(dateFormatComboBox).getDocument().addDocumentListener(documentListener);
     }
 
     private void previewDateFormat() {
         String datePreview;
+        String datePattern = getComboInEditValue(dateFormatComboBox);
+        dateFormatComboBox.setSelectedItem(datePattern);
 
         try {
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateFormatTextField.getText(), getDateFormatLocale());
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat((String) dateFormatComboBox.getSelectedItem(), mOptions.getLocale());
             datePreview = simpleDateFormat.format(new Date(System.currentTimeMillis()));
             mInvalidDateFormat = false;
         } catch (IllegalArgumentException ex) {
@@ -121,7 +109,7 @@ public class ModulePlacemarkPanel extends ModulePanel {
 
         String dateLabel = String.format("%s (%s)", Dict.DATE_PATTERN.toString(), datePreview);
         nameByDateRadioButton.setText(dateLabel);
-        mPlacemark.setDatePattern(dateFormatTextField.getText());
+        mPlacemark.setDatePattern(datePattern);
     }
 
     /**
@@ -141,7 +129,7 @@ public class ModulePlacemarkPanel extends ModulePanel {
         nameByLabel = new javax.swing.JLabel();
         nameByFileRadioButton = new javax.swing.JRadioButton();
         nameByDateRadioButton = new javax.swing.JRadioButton();
-        dateFormatTextField = new javax.swing.JTextField();
+        dateFormatComboBox = new javax.swing.JComboBox<>();
         nameByNoRadioButton = new javax.swing.JRadioButton();
         jPanel3 = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
@@ -194,23 +182,19 @@ public class ModulePlacemarkPanel extends ModulePanel {
         gridBagConstraints.insets = new java.awt.Insets(6, 0, 0, 0);
         jPanel2.add(nameByDateRadioButton, gridBagConstraints);
 
-        org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, nameByDateRadioButton, org.jdesktop.beansbinding.ELProperty.create("${selected}"), dateFormatTextField, org.jdesktop.beansbinding.BeanProperty.create("enabled"));
+        dateFormatComboBox.setEditable(true);
+
+        org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, nameByDateRadioButton, org.jdesktop.beansbinding.ELProperty.create("${selected}"), dateFormatComboBox, org.jdesktop.beansbinding.BeanProperty.create("enabled"));
         bindingGroup.addBinding(binding);
 
-        dateFormatTextField.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                dateFormatTextFieldFocusLost(evt);
-            }
-        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 3;
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 20, 0, 0);
-        jPanel2.add(dateFormatTextField, gridBagConstraints);
+        jPanel2.add(dateFormatComboBox, gridBagConstraints);
 
         nameButtonGroup.add(nameByNoRadioButton);
         nameByNoRadioButton.setText(bundle.getString("ModulePlacemarkPanel.nameByNoRadioButton.text")); // NOI18N
@@ -325,10 +309,6 @@ public class ModulePlacemarkPanel extends ModulePanel {
         bindingGroup.bind();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void dateFormatTextFieldFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_dateFormatTextFieldFocusLost
-        mPlacemark.setDatePattern(dateFormatTextField.getText());
-    }//GEN-LAST:event_dateFormatTextFieldFocusLost
-
     private void nameByFileRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nameByFileRadioButtonActionPerformed
         mPlacemark.setNameBy(ProfilePlacemark.NAME_BY_FILE);
     }//GEN-LAST:event_nameByFileRadioButtonActionPerformed
@@ -358,7 +338,7 @@ public class ModulePlacemarkPanel extends ModulePanel {
     }//GEN-LAST:event_symbolPinRadioButtonActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTextField dateFormatTextField;
+    private javax.swing.JComboBox<String> dateFormatComboBox;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -384,7 +364,7 @@ public class ModulePlacemarkPanel extends ModulePanel {
         mProfile = profile;
         mPlacemark = mProfile.getPlacemark();
 
-        dateFormatTextField.setText(mPlacemark.getDatePattern());
+        dateFormatComboBox.setSelectedItem(mPlacemark.getDatePattern());
 
         switch (mPlacemark.getNameBy()) {
             case ProfilePlacemark.NAME_BY_FILE:
