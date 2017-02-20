@@ -80,6 +80,13 @@
             <version>1.2.1</version>
         </dependency>
     </dependencies>
+    <repositories>
+        <repository>
+            <id>unknown-jars-temp-repo</id>
+            <name>A temporary repository.</name>
+            <url>file:${project.basedir}/lib</url>
+        </repository>
+    </repositories>
     <build>
         <plugins>
             <plugin>
