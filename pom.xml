@@ -143,6 +143,12 @@
                                         <include>*/**</include>
                                     </includes>
                                 </filter>
+                                <filter>
+                                    <artifact>org.jdesktop:beansbinding</artifact>
+                                    <includes>
+                                        <include>*/**</include>
+                                    </includes>
+                                </filter>
                             </filters>
                         </configuration>
                     </execution>
