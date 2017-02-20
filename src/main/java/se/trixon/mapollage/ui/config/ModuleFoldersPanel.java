@@ -15,20 +15,20 @@
  */
 package se.trixon.mapollage.ui.config;
 
+import java.beans.PropertyChangeEvent;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.prefs.PreferenceChangeEvent;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JRadioButton;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.Document;
-import org.apache.commons.lang3.StringUtils;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.icons.material.MaterialIcon;
-import se.trixon.almond.util.swing.SwingHelper;
 import se.trixon.mapollage.profile.Profile;
 import se.trixon.mapollage.profile.ProfileFolder;
 
@@ -48,36 +48,6 @@ public class ModuleFoldersPanel extends ModulePanel {
         initComponents();
         mTitle = Dict.FOLDERS.toString();
         init();
-    }
-
-    @Override
-    public StringBuilder getHeaderBuilder() {
-        StringBuilder sb = new StringBuilder();
-
-        sb.append(Dict.FOLDERS.toString()).append("\n");
-        append(sb, rootNameLabel.getText(), mFolder.getRootName());
-        if (!StringUtils.isEmpty(mFolder.getRootDescription())) {
-            optAppend(sb, true, rootDescriptionLabel.getText());
-            sb.append(MULTILINE_DIVIDER).append("\n");
-            sb.append(mFolder.getRootDescription()).append("\n");
-            sb.append(MULTILINE_DIVIDER).append("\n");
-        }
-
-        JRadioButton folderByRadioButton = (JRadioButton) SwingHelper.getSelectedButton(subButtonGroup);
-        if (folderByRadioButton != folderByNoneRadioButton) {
-            String folderBy = folderByDirectoryRadioButton.getText();
-            if (folderByRadioButton == folderByDateRadioButton) {
-                folderBy = String.format("%s: %s", Dict.DATE_PATTERN.toString(), dateFormatTextField.getText());
-            } else if (folderByRadioButton == folderByRegexRadioButton) {
-                folderBy = String.format("%s: %s", folderByRegexRadioButton.getText(), regexTextField.getText());
-            }
-
-            append(sb, folderByLabel.getText(), folderBy);
-        }
-
-        sb.append("\n");
-
-        return sb;
     }
 
     @Override
@@ -134,7 +104,7 @@ public class ModuleFoldersPanel extends ModulePanel {
                     mFolder.setRootName(rootNameTextField.getText());
                 } else if (document == rootDescriptionTextArea.getDocument()) {
                     mFolder.setRootDescription(rootDescriptionTextArea.getText());
-                } else if (document == dateFormatTextField.getDocument()) {
+                } else if (document == getTextComponent(dateFormatComboBox).getDocument()) {
                     previewDateFormat();
                 } else if (document == regexTextField.getDocument()) {
                     try {
@@ -145,21 +115,27 @@ public class ModuleFoldersPanel extends ModulePanel {
                     mFolder.setRegexDefault(defaultRegexTextField.getText());
                 }
             }
-
         };
 
+        dateFormatComboBox.setModel(new DefaultComboBoxModel<>(mBundle.getString("dateFormats").split(";")));
+        dateFormatComboBox.addPropertyChangeListener("UI", (PropertyChangeEvent evt) -> {
+            getTextComponent(dateFormatComboBox).getDocument().addDocumentListener(documentListener);
+        });
+
+        getTextComponent(dateFormatComboBox).getDocument().addDocumentListener(documentListener);
         rootNameTextField.getDocument().addDocumentListener(documentListener);
         rootDescriptionTextArea.getDocument().addDocumentListener(documentListener);
-        dateFormatTextField.getDocument().addDocumentListener(documentListener);
         regexTextField.getDocument().addDocumentListener(documentListener);
         defaultRegexTextField.getDocument().addDocumentListener(documentListener);
     }
 
     private void previewDateFormat() {
         String datePreview;
+        String datePattern = getComboInEditValue(dateFormatComboBox);
+        dateFormatComboBox.setSelectedItem(datePattern);
 
         try {
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateFormatTextField.getText(), getDateFormatLocale());
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat((String) dateFormatComboBox.getSelectedItem(), mOptions.getLocale());
             datePreview = simpleDateFormat.format(new Date(System.currentTimeMillis()));
             mInvalidDateFormat = false;
         } catch (IllegalArgumentException ex) {
@@ -169,7 +145,7 @@ public class ModuleFoldersPanel extends ModulePanel {
 
         String dateLabel = String.format("%s (%s)", Dict.DATE_PATTERN.toString(), datePreview);
         folderByDateRadioButton.setText(dateLabel);
-        mFolder.setDatePattern(dateFormatTextField.getText());
+        mFolder.setDatePattern(datePattern);
     }
 
     /**
@@ -194,7 +170,7 @@ public class ModuleFoldersPanel extends ModulePanel {
         folderByLabel = new javax.swing.JLabel();
         folderByDirectoryRadioButton = new javax.swing.JRadioButton();
         folderByDateRadioButton = new javax.swing.JRadioButton();
-        dateFormatTextField = new javax.swing.JTextField();
+        dateFormatComboBox = new javax.swing.JComboBox<>();
         folderByRegexRadioButton = new javax.swing.JRadioButton();
         regexTextField = new javax.swing.JTextField();
         defaultRegexLabel = new javax.swing.JLabel();
@@ -282,7 +258,9 @@ public class ModuleFoldersPanel extends ModulePanel {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         jPanel2.add(folderByDateRadioButton, gridBagConstraints);
 
-        org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, folderByDateRadioButton, org.jdesktop.beansbinding.ELProperty.create("${selected}"), dateFormatTextField, org.jdesktop.beansbinding.BeanProperty.create("enabled"));
+        dateFormatComboBox.setEditable(true);
+
+        org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, folderByDateRadioButton, org.jdesktop.beansbinding.ELProperty.create("${selected}"), dateFormatComboBox, org.jdesktop.beansbinding.BeanProperty.create("enabled"));
         bindingGroup.addBinding(binding);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -290,10 +268,9 @@ public class ModuleFoldersPanel extends ModulePanel {
         gridBagConstraints.gridy = 3;
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 20, 3, 0);
-        jPanel2.add(dateFormatTextField, gridBagConstraints);
+        jPanel2.add(dateFormatComboBox, gridBagConstraints);
 
         subButtonGroup.add(folderByRegexRadioButton);
         folderByRegexRadioButton.setText(bundle.getString("ModuleFoldersPanel.folderByRegexRadioButton.text")); // NOI18N
@@ -383,7 +360,7 @@ public class ModuleFoldersPanel extends ModulePanel {
     }//GEN-LAST:event_folderByNoneRadioButtonActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTextField dateFormatTextField;
+    private javax.swing.JComboBox<String> dateFormatComboBox;
     private javax.swing.JLabel defaultRegexLabel;
     private javax.swing.JTextField defaultRegexTextField;
     private javax.swing.JRadioButton folderByDateRadioButton;
@@ -411,7 +388,7 @@ public class ModuleFoldersPanel extends ModulePanel {
 
         rootNameTextField.setText(mFolder.getRootName());
         rootDescriptionTextArea.setText(mFolder.getRootDescription());
-        dateFormatTextField.setText(mFolder.getDatePattern());
+        dateFormatComboBox.setSelectedItem(mFolder.getDatePattern());
         regexTextField.setText(mFolder.getRegex());
         defaultRegexTextField.setText(mFolder.getRegexDefault());
         JRadioButton folderByRadioButton;
