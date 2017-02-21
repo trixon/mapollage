@@ -466,7 +466,11 @@ public class Operation implements Runnable {
             mRootFolder.getFeature().add(mFolders.get((String) key));
         });
 
-        mListener.onOperationLog("\n" + String.format(Dict.SAVING.toString(), mDestinationFile.getAbsolutePath()));
+        if (mProfilePlacemark.isSymbolAsPhoto()) {
+            mListener.onOperationLog("\n" + String.format(mBundle.getString("stored_thumbnails"), mThumbsDir.getAbsolutePath()));
+        }
+
+        mListener.onOperationLog(String.format(Dict.SAVING.toString(), mDestinationFile.getAbsolutePath()));
 
         try {
             mKml.marshal(mDestinationFile);

@@ -162,7 +162,7 @@ public class OptionsPanel extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(8, 0, 0, 0);
         add(placemarkLabel, gridBagConstraints);
 
-        thumbnailSizeLabel.setText(bundle.getString("OptionsPanel.thumbnailSizeLabel.text")); // NOI18N
+        thumbnailSizeLabel.setText(Dict.THUMBNAIL.toString());
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 5;
