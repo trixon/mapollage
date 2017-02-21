@@ -16,6 +16,7 @@
 package se.trixon.mapollage.ui.config;
 
 import javax.swing.ImageIcon;
+import javax.swing.JSpinner;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import se.trixon.almond.util.Dict;
@@ -52,6 +53,8 @@ public class ModulePhotoPanel extends ModulePanel {
     }
 
     private void init() {
+        widthSpinner.setEditor(new JSpinner.NumberEditor(widthSpinner, "#"));
+        heightSpinner.setEditor(new JSpinner.NumberEditor(heightSpinner, "#"));
 
         urlTextField.getDocument().addDocumentListener(new DocumentListener() {
             @Override
@@ -116,7 +119,7 @@ public class ModulePhotoPanel extends ModulePanel {
         gridBagConstraints.insets = new java.awt.Insets(0, 0, 3, 0);
         add(widthCheckBox, gridBagConstraints);
 
-        widthSpinner.setModel(new javax.swing.SpinnerNumberModel(400, 1, null, 1));
+        widthSpinner.setModel(new javax.swing.SpinnerNumberModel(400, 1, null, 10));
 
         org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, widthCheckBox, org.jdesktop.beansbinding.ELProperty.create("${selected}"), widthSpinner, org.jdesktop.beansbinding.BeanProperty.create("enabled"));
         bindingGroup.addBinding(binding);
@@ -147,7 +150,7 @@ public class ModulePhotoPanel extends ModulePanel {
         gridBagConstraints.insets = new java.awt.Insets(0, 8, 3, 0);
         add(heightCheckBox, gridBagConstraints);
 
-        heightSpinner.setModel(new javax.swing.SpinnerNumberModel(400, 1, null, 1));
+        heightSpinner.setModel(new javax.swing.SpinnerNumberModel(400, 1, null, 10));
 
         binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, heightCheckBox, org.jdesktop.beansbinding.ELProperty.create("${selected}"), heightSpinner, org.jdesktop.beansbinding.BeanProperty.create("enabled"));
         bindingGroup.addBinding(binding);

@@ -15,6 +15,7 @@
  */
 package se.trixon.mapollage.ui;
 
+import javax.swing.JSpinner;
 import se.trixon.almond.util.Dict;
 import se.trixon.mapollage.Options;
 
@@ -31,6 +32,7 @@ public class OptionsPanel extends javax.swing.JPanel {
      */
     public OptionsPanel() {
         initComponents();
+        thumbnailSizeSpinner.setEditor(new JSpinner.NumberEditor(thumbnailSizeSpinner, "#"));
         localeComboBox.setSelectedItem(mOptions.getLocale());
         latSpinner.setValue(mOptions.getDefaultLat());
         lonSpinner.setValue(mOptions.getDefaultLon());

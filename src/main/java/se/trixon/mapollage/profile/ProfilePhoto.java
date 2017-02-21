@@ -36,12 +36,12 @@ public class ProfilePhoto extends ProfileBase {
 
     private String mBaseUrlValue = "http://www.domain.com/img/";
     private boolean mForceLowerCaseExtension = SystemUtils.IS_OS_WINDOWS;
-    private int mHeightLimit = 400;
+    private int mHeightLimit = 1000;
     private boolean mLimitHeight = true;
     private boolean mLimitWidth = true;
     private final Profile mProfile;
     private Reference mReference = Reference.ABSOLUTE;
-    private int mWidthLimit = 400;
+    private int mWidthLimit = 1000;
 
     public ProfilePhoto(Profile profile) {
         mProfile = profile;
@@ -154,8 +154,7 @@ public class ProfilePhoto extends ProfileBase {
                 break;
 
             case ABSOLUTE_PATH:
-                fileReference = Dict.FILENAME.toString();
-                fileReference = String.format("%s: %s", mBundleUI.getString("ModulePhotoPanel.absolutePathRadioButton.text"), mBaseUrlValue);
+                fileReference = mBaseUrlValue;
                 break;
 
             case RELATIVE:
