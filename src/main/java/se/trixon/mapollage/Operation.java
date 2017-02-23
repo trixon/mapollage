@@ -177,9 +177,11 @@ public class Operation implements Runnable {
         mListener.onOperationLog(file.getAbsolutePath());
         mPhotoInfo = new PhotoInfo(file);
 
+        boolean hasLocation = false;
         if (mPhotoInfo.hasExif()) {
             mNumOfExif++;
-            if (mPhotoInfo.hasGps()) {
+            hasLocation = mPhotoInfo.hasGps() && !mPhotoInfo.isZeroCoordinate();
+            if (hasLocation) {
                 mNumOfGps++;
             }
         } else {
@@ -188,7 +190,7 @@ public class Operation implements Runnable {
 
         Date exifDate = mPhotoInfo.getDate();
 
-        if (mPhotoInfo.hasGps() || mProfileSource.isIncludeNullCoordinate()) {
+        if (hasLocation || mProfileSource.isIncludeNullCoordinate()) {
             Folder folder = getFolder(file, exifDate);
 
             String imageId = String.format("%08x", FileUtils.checksumCRC32(file));

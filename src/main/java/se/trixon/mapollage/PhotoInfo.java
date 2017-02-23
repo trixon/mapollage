@@ -59,22 +59,6 @@ public class PhotoInfo {
         mGeoLocation = getGeoLocation();
     }
 
-    public Dimension getOriginalDimension() {
-        if (mOriginalDimension == null) {
-            try {
-                mOriginalDimension = GraphicsHelper.getImgageDimension(mFile);
-            } catch (IOException ex) {
-                System.err.println(ex.getLocalizedMessage());
-            }
-
-            if (mOriginalDimension == null) {
-                mOriginalDimension = new Dimension(200, 200);
-            }
-        }
-
-        return mOriginalDimension;
-    }
-
     public void createThumbnail(File dest) throws IOException {
         if (!dest.exists()) {
             int borderSize = mOptions.getThumbnailBorderSize();
@@ -141,12 +125,32 @@ public class PhotoInfo {
         return mMetadata;
     }
 
+    public Dimension getOriginalDimension() {
+        if (mOriginalDimension == null) {
+            try {
+                mOriginalDimension = GraphicsHelper.getImgageDimension(mFile);
+            } catch (IOException ex) {
+                System.err.println(ex.getLocalizedMessage());
+            }
+
+            if (mOriginalDimension == null) {
+                mOriginalDimension = new Dimension(200, 200);
+            }
+        }
+
+        return mOriginalDimension;
+    }
+
     public boolean hasExif() {
         return mExifDirectory != null;
     }
 
     public boolean hasGps() {
         return hasExif() && mGpsDirectory != null;
+    }
+
+    public boolean isZeroCoordinate() {
+        return mGpsDirectory.getGeoLocation().isZero();
     }
 
     private GeoLocation getGeoLocation() throws ImageProcessingException {
