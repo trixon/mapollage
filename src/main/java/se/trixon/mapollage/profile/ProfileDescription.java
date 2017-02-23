@@ -68,14 +68,14 @@ public class ProfileDescription extends ProfileBase {
 
     public ProfileDescription(Profile profile, JSONObject json) {
         mProfile = profile;
-        mAltitude = getBoolean(json, KEY_ALTITUDE);
-        mBearing = getBoolean(json, KEY_BEARING);
-        mCoordinate = getBoolean(json, KEY_COORDINATE);
-        mCustom = getBoolean(json, KEY_CUSTOM);
-        mDate = getBoolean(json, KEY_DATE);
-        mExternalFile = getBoolean(json, KEY_EXTERNAL_FILE);
-        mFilename = getBoolean(json, KEY_FILENAME);
-        mPhoto = getBoolean(json, KEY_PHOTO);
+        mAltitude = getBoolean(json, KEY_ALTITUDE, mAltitude);
+        mBearing = getBoolean(json, KEY_BEARING, mBearing);
+        mCoordinate = getBoolean(json, KEY_COORDINATE, mCoordinate);
+        mCustom = getBoolean(json, KEY_CUSTOM, mCustom);
+        mDate = getBoolean(json, KEY_DATE, mDate);
+        mExternalFile = getBoolean(json, KEY_EXTERNAL_FILE, mExternalFile);
+        mFilename = getBoolean(json, KEY_FILENAME, mFilename);
+        mPhoto = getBoolean(json, KEY_PHOTO, mPhoto);
 
         mCustomValue = (String) json.get(KEY_CUSTOM_VALUE);
         mExternalFileValue = (String) json.get(KEY_EXTERNAL_FILE_VALUE);

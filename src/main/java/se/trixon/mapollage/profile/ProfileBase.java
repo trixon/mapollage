@@ -63,11 +63,6 @@ public abstract class ProfileBase {
         sValidationErrorBuilder.append(string).append("\n");
     }
 
-    @Deprecated
-    protected boolean getBoolean(JSONObject object, String key) {
-        return (boolean) object.get(key);
-    }
-
     protected boolean getBoolean(JSONObject object, String key, boolean defaultValue) {
         try {
             return (boolean) object.get(key);

@@ -51,9 +51,9 @@ public class ProfilePhoto extends ProfileBase {
         mProfile = profile;
         mHeightLimit = getInt(json, KEY_HEIGHT_LIMIT);
         mWidthLimit = getInt(json, KEY_WIDTH_LIMIT);
-        mLimitHeight = getBoolean(json, KEY_LIMIT_HEIGHT);
-        mLimitWidth = getBoolean(json, KEY_LIMIT_WIDTH);
-        mForceLowerCaseExtension = getBoolean(json, KEY_FORCE_LOWER_CASE_EXTENSION);
+        mLimitHeight = getBoolean(json, KEY_LIMIT_HEIGHT, mLimitHeight);
+        mLimitWidth = getBoolean(json, KEY_LIMIT_WIDTH, mLimitWidth);
+        mForceLowerCaseExtension = getBoolean(json, KEY_FORCE_LOWER_CASE_EXTENSION, mForceLowerCaseExtension);
         mReference = Reference.values()[getInt(json, KEY_REFERENCE)];
         mBaseUrlValue = (String) json.get(KEY_BASE_URL_VALUE);
     }

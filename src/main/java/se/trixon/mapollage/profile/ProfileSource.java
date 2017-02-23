@@ -50,9 +50,9 @@ public class ProfileSource extends ProfileBase {
         mProfile = profile;
         mDir = getFileObject(json, KEY_PATH);
         mFilePattern = (String) json.get(KEY_PATTERN);
-        mRecursive = getBoolean(json, KEY_RECURSIVE);
-        mFollowLinks = getBoolean(json, KEY_FOLLOW_LINKS);
-        mIncludeNullCoordinate = getBoolean(json, KEY_INCLUDE_NULL_COORDINATE);
+        mRecursive = getBoolean(json, KEY_RECURSIVE, mRecursive);
+        mFollowLinks = getBoolean(json, KEY_FOLLOW_LINKS, mFollowLinks);
+        mIncludeNullCoordinate = getBoolean(json, KEY_INCLUDE_NULL_COORDINATE, mIncludeNullCoordinate);
     }
 
     public File getDir() {
