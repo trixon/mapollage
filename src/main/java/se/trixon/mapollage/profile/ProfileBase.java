@@ -37,6 +37,8 @@ public abstract class ProfileBase {
 
     public abstract JSONObject getJson();
 
+    public abstract String getTitle();
+
     public abstract boolean isValid();
 
     public String toDebugString() {
@@ -57,14 +59,21 @@ public abstract class ProfileBase {
         return builder.toString();
     }
 
-    public abstract String getTitle();
-
     protected void addValidationError(String string) {
         sValidationErrorBuilder.append(string).append("\n");
     }
 
+    @Deprecated
     protected boolean getBoolean(JSONObject object, String key) {
         return (boolean) object.get(key);
+    }
+
+    protected boolean getBoolean(JSONObject object, String key, boolean defaultValue) {
+        try {
+            return (boolean) object.get(key);
+        } catch (NullPointerException e) {
+            return defaultValue;
+        }
     }
 
     protected File getFileObject(JSONObject object, String key) {
@@ -74,8 +83,6 @@ public abstract class ProfileBase {
             return null;
         }
     }
-
-    protected abstract ProfileInfo getProfileInfo();
 
     protected int getInt(JSONObject object, String key) {
         try {
@@ -87,4 +94,6 @@ public abstract class ProfileBase {
             return 0;
         }
     }
+
+    protected abstract ProfileInfo getProfileInfo();
 }

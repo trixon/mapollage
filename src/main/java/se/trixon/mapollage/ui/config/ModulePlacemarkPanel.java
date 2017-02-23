@@ -140,6 +140,7 @@ public class ModulePlacemarkPanel extends ModulePanel {
         scaleSpinner = new javax.swing.JSpinner();
         zoomLabel = new javax.swing.JLabel();
         zoomSpinner = new javax.swing.JSpinner();
+        timestampCheckBox = new javax.swing.JCheckBox();
         jPanel4 = new javax.swing.JPanel();
 
         setLayout(new java.awt.GridLayout(1, 0, 8, 0));
@@ -296,9 +297,22 @@ public class ModulePlacemarkPanel extends ModulePanel {
         gridBagConstraints.gridy = 6;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         jPanel1.add(zoomSpinner, gridBagConstraints);
+
+        timestampCheckBox.setText(bundle.getString("ModulePlacemarkPanel.timestampCheckBox.text")); // NOI18N
+        timestampCheckBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                timestampCheckBoxActionPerformed(evt);
+            }
+        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 7;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(8, 0, 0, 0);
+        jPanel1.add(timestampCheckBox, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 8;
         gridBagConstraints.fill = java.awt.GridBagConstraints.VERTICAL;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
@@ -337,6 +351,10 @@ public class ModulePlacemarkPanel extends ModulePanel {
         mPlacemark.setSymbolAs(ProfilePlacemark.SYMBOL_AS_PIN);
     }//GEN-LAST:event_symbolPinRadioButtonActionPerformed
 
+    private void timestampCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_timestampCheckBoxActionPerformed
+        mPlacemark.setTimestamp(timestampCheckBox.isSelected());
+    }//GEN-LAST:event_timestampCheckBoxActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox<String> dateFormatComboBox;
     private javax.swing.JPanel jPanel1;
@@ -354,6 +372,7 @@ public class ModulePlacemarkPanel extends ModulePanel {
     private javax.swing.JLabel symbolLabel;
     private javax.swing.JRadioButton symbolPhotoRadioButton;
     private javax.swing.JRadioButton symbolPinRadioButton;
+    private javax.swing.JCheckBox timestampCheckBox;
     private javax.swing.JLabel zoomLabel;
     private javax.swing.JSpinner zoomSpinner;
     private org.jdesktop.beansbinding.BindingGroup bindingGroup;
@@ -397,5 +416,6 @@ public class ModulePlacemarkPanel extends ModulePanel {
 
         scaleSpinner.setValue(mPlacemark.getScale());
         zoomSpinner.setValue(mPlacemark.getZoom());
+        timestampCheckBox.setSelected(mPlacemark.isTimestamp());
     }
 }

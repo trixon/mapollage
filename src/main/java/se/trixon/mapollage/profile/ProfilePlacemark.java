@@ -31,6 +31,7 @@ public class ProfilePlacemark extends ProfileBase {
     public static final String KEY_NAME_BY = "nameBy";
     public static final String KEY_SCALE = "scale";
     public static final String KEY_SYMBOL_AS = "symbolAs";
+    public static final String KEY_TIMESTAMP = "timestamp";
     public static final String KEY_ZOOM = "zoom";
     public static final int NAME_BY_DATE = 2;
     public static final int NAME_BY_FILE = 1;
@@ -48,6 +49,7 @@ public class ProfilePlacemark extends ProfileBase {
     private final Profile mProfile;
     private Double mScale = 3.0;
     private int mSymbolAs = 0;
+    private boolean mTimestamp = true;
     private Double mZoom = 3.0;
 
     public ProfilePlacemark(Profile profile) {
@@ -61,6 +63,7 @@ public class ProfilePlacemark extends ProfileBase {
         mNameBy = getInt(json, KEY_NAME_BY);
         mSymbolAs = getInt(json, KEY_SYMBOL_AS);
         mDatePattern = (String) json.get(KEY_DATE_PATTERN);
+        mTimestamp = getBoolean(json, KEY_TIMESTAMP, mTimestamp);
     }
 
     public ProfilePlacemark(final Profile profile, CommandLine commandLine) {
@@ -92,6 +95,7 @@ public class ProfilePlacemark extends ProfileBase {
         json.put(KEY_SYMBOL_AS, mSymbolAs);
         json.put(KEY_NAME_BY, mNameBy);
         json.put(KEY_DATE_PATTERN, mDatePattern);
+        json.put(KEY_TIMESTAMP, mTimestamp);
 
         return json;
     }
@@ -119,6 +123,10 @@ public class ProfilePlacemark extends ProfileBase {
 
     public boolean isSymbolAsPhoto() {
         return mSymbolAs == SYMBOL_AS_PHOTO;
+    }
+
+    public boolean isTimestamp() {
+        return mTimestamp;
     }
 
     @Override
@@ -156,6 +164,10 @@ public class ProfilePlacemark extends ProfileBase {
 
     public void setSymbolAs(int symbolAs) {
         mSymbolAs = symbolAs;
+    }
+
+    public void setTimestamp(boolean timestamp) {
+        mTimestamp = timestamp;
     }
 
     public void setZoom(Double zoom) {

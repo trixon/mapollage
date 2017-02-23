@@ -29,6 +29,7 @@ import de.micromata.opengis.kml.v_2_2_0.Kml;
 import de.micromata.opengis.kml.v_2_2_0.KmlFactory;
 import de.micromata.opengis.kml.v_2_2_0.Placemark;
 import de.micromata.opengis.kml.v_2_2_0.StyleState;
+import de.micromata.opengis.kml.v_2_2_0.TimeStamp;
 import java.awt.Dimension;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -92,6 +93,7 @@ public class Operation implements Runnable {
     private Folder mRootFolder;
     private long mStartTime;
     private File mThumbsDir;
+    private final SimpleDateFormat mTimeStampDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
 
     public Operation(OperationListener operationListener, Profile profile) {
         mListener = operationListener;
@@ -229,6 +231,12 @@ public class Operation implements Runnable {
             placemark.createAndSetPoint()
                     .addToCoordinates(mPhotoInfo.getLon(), mPhotoInfo.getLat())
                     .setAltitudeMode(AltitudeMode.CLAMP_TO_GROUND);
+
+            if (mProfilePlacemark.isTimestamp()) {
+                TimeStamp timeStamp = KmlFactory.createTimeStamp();
+                timeStamp.setWhen(mTimeStampDateFormat.format(exifDate));
+                placemark.setTimePrimitive(timeStamp);
+            }
 
             folder.addToFeature(placemark);
             mNumOfPlacemarks++;
