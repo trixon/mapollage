@@ -60,8 +60,8 @@ public class ProfilePlacemark extends ProfileBase {
         mProfile = profile;
         mScale = (Double) json.get(KEY_SCALE);
         mZoom = (Double) json.get(KEY_ZOOM);
-        mNameBy = getInt(json, KEY_NAME_BY);
-        mSymbolAs = getInt(json, KEY_SYMBOL_AS);
+        mNameBy = getInt(json, KEY_NAME_BY, mNameBy);
+        mSymbolAs = getInt(json, KEY_SYMBOL_AS, mSymbolAs);
         mDatePattern = (String) json.get(KEY_DATE_PATTERN);
         mTimestamp = getBoolean(json, KEY_TIMESTAMP, mTimestamp);
     }

@@ -59,7 +59,7 @@ public class ProfileFolder extends ProfileBase {
         mProfile = profile;
         mRootName = (String) json.get(KEY_ROOT_NAME);
         mRootDescription = (String) json.get(KEY_ROOT_DESCRIPTION);
-        mFoldersBy = getInt(json, KEY_FOLDERS_BY);
+        mFoldersBy = getInt(json, KEY_FOLDERS_BY, mFoldersBy);
         mDatePattern = (String) json.get(KEY_DATE_PATTERN);
         mRegex = (String) json.get(KEY_REGEX);
         mRegexDefault = (String) json.get(KEY_REGEX_DEFAULT);
