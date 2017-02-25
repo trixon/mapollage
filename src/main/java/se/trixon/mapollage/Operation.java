@@ -27,7 +27,10 @@ import de.micromata.opengis.kml.v_2_2_0.Icon;
 import de.micromata.opengis.kml.v_2_2_0.IconStyle;
 import de.micromata.opengis.kml.v_2_2_0.Kml;
 import de.micromata.opengis.kml.v_2_2_0.KmlFactory;
+import de.micromata.opengis.kml.v_2_2_0.LineString;
+import de.micromata.opengis.kml.v_2_2_0.LineStyle;
 import de.micromata.opengis.kml.v_2_2_0.Placemark;
+import de.micromata.opengis.kml.v_2_2_0.Style;
 import de.micromata.opengis.kml.v_2_2_0.StyleState;
 import de.micromata.opengis.kml.v_2_2_0.TimeStamp;
 import java.awt.Dimension;
@@ -59,6 +62,7 @@ import se.trixon.mapollage.profile.Profile;
 import se.trixon.mapollage.profile.ProfileDescription;
 import se.trixon.mapollage.profile.ProfileDescription.DescriptionSegment;
 import se.trixon.mapollage.profile.ProfileFolder;
+import se.trixon.mapollage.profile.ProfilePath;
 import se.trixon.mapollage.profile.ProfilePhoto;
 import se.trixon.mapollage.profile.ProfilePlacemark;
 import se.trixon.mapollage.profile.ProfileSource;
@@ -78,6 +82,7 @@ public class Operation implements Runnable {
     private final Map<String, Folder> mFolders = new HashMap<>();
     private boolean mInterrupted = false;
     private final Kml mKml = new Kml();
+    private final ArrayList<LineNode> mLineNodes = new ArrayList<>();
     private final OperationListener mListener;
     private int mNumOfExif;
     private int mNumOfGps;
@@ -87,6 +92,7 @@ public class Operation implements Runnable {
     private final Profile mProfile;
     private final ProfileDescription mProfileDescription;
     private final ProfileFolder mProfileFolder;
+    private final ProfilePath mProfilePath;
     private final ProfilePhoto mProfilePhoto;
     private final ProfilePlacemark mProfilePlacemark;
     private final ProfileSource mProfileSource;
@@ -100,6 +106,7 @@ public class Operation implements Runnable {
         mProfile = profile;
         mProfileSource = mProfile.getSource();
         mProfileFolder = mProfile.getFolder();
+        mProfilePath = mProfile.getPath();
         mProfilePlacemark = mProfile.getPlacemark();
         mProfileDescription = mProfile.getDescription();
         mProfilePhoto = mProfile.getPhoto();
@@ -162,6 +169,10 @@ public class Operation implements Runnable {
                     break;
                 }
             }
+
+            if (mProfilePath.isDrawPath() && mLineNodes.size() > 1) {
+                addPath();
+            }
         }
 
         if (mInterrupted) {
@@ -189,6 +200,9 @@ public class Operation implements Runnable {
         }
 
         Date exifDate = mPhotoInfo.getDate();
+        if (hasLocation && mProfilePath.isDrawPath()) {
+            mLineNodes.add(new LineNode(exifDate.getTime(), mPhotoInfo.getLat(), mPhotoInfo.getLon()));
+        }
 
         if (hasLocation || mProfileSource.isIncludeNullCoordinate()) {
             Folder folder = getFolder(file, exifDate);
@@ -244,6 +258,26 @@ public class Operation implements Runnable {
             mNumOfPlacemarks++;
         } else {
             //mListener.onOperationError(Dict.FAILED.toString());
+        }
+    }
+
+    private void addPath() {
+        Collections.sort(mLineNodes, (LineNode o1, LineNode o2) -> Long.compare(o1.getTime(), o2.getTime()));
+
+        Placemark path = mDocument.createAndAddPlacemark()
+                .withName("NONAME");
+
+        Style pathStyle = path.createAndAddStyle();
+        LineStyle lineStyle = pathStyle.createAndSetLineStyle();
+        lineStyle.withColor("ff0000ff").withWidth(mProfilePath.getWidth());
+
+        LineString line = path
+                .createAndSetLineString()
+                .withExtrude(false)
+                .withTessellate(true);
+
+        for (LineNode node : mLineNodes) {
+            line.addToCoordinates(node.getLon(), node.getLat());
         }
     }
 

@@ -34,6 +34,7 @@ public class ConfigPanel extends javax.swing.JPanel {
     private final ModulePlacemarkPanel mModulePlacemarksPanel = new ModulePlacemarkPanel();
     private final ModuleDescriptionPanel mModuleDescriptionPanel = new ModuleDescriptionPanel();
     private final ModulePhotoPanel mModulePhotoPanel = new ModulePhotoPanel();
+    private final ModulePathPanel mModuleLinePanel = new ModulePathPanel();
     private Profile mProfile;
 
     /**
@@ -132,6 +133,7 @@ public class ConfigPanel extends javax.swing.JPanel {
     private void init() {
         addModulePanel(mModuleSourcePanel);
         addModulePanel(mModuleFoldersPanel);
+        addModulePanel(mModuleLinePanel);
         addModulePanel(mModulePlacemarksPanel);
         addModulePanel(mModuleDescriptionPanel);
         addModulePanel(mModulePhotoPanel);

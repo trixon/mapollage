@@ -33,6 +33,7 @@ public class Profile extends ProfileBase implements Comparable<Profile> {
     private static final String KEY_DESCRIPTION = "description";
     private static final String KEY_FOLDER = "folder";
     private static final String KEY_NAME = "name";
+    private static final String KEY_PATH = "path";
     private static final String KEY_PHOTO = "photo";
     private static final String KEY_PLACEMARK = "placemark";
     private static final String KEY_SOURCE = "source";
@@ -41,6 +42,7 @@ public class Profile extends ProfileBase implements Comparable<Profile> {
     private File mDestinationFile;
     private ProfileFolder mFolder = new ProfileFolder(this);
     private String mName;
+    private ProfilePath mPath = new ProfilePath(this);
     private ProfilePhoto mPhoto = new ProfilePhoto(this);
     private ProfilePlacemark mPlacemark = new ProfilePlacemark(this);
     private ProfileSource mSource = new ProfileSource(this);
@@ -56,6 +58,7 @@ public class Profile extends ProfileBase implements Comparable<Profile> {
         setPlacemark(new ProfilePlacemark(this, (JSONObject) json.get(KEY_PLACEMARK)));
         setDescription(new ProfileDescription(this, (JSONObject) json.get(KEY_DESCRIPTION)));
         setPhoto(new ProfilePhoto(this, (JSONObject) json.get(KEY_PHOTO)));
+        setPath(new ProfilePath(this, (JSONObject) json.get(KEY_PATH)));
     }
 
     @Override
@@ -85,12 +88,17 @@ public class Profile extends ProfileBase implements Comparable<Profile> {
         json.put(KEY_PLACEMARK, getPlacemark().getJson());
         json.put(KEY_DESCRIPTION, getDescription().getJson());
         json.put(KEY_PHOTO, getPhoto().getJson());
+        json.put(KEY_PATH, getPath().getJson());
 
         return json;
     }
 
     public String getName() {
         return mName;
+    }
+
+    public ProfilePath getPath() {
+        return mPath;
     }
 
     public ProfilePhoto getPhoto() {
@@ -136,6 +144,7 @@ public class Profile extends ProfileBase implements Comparable<Profile> {
         mFolder.isValid();
         mPlacemark.isValid();
         mPhoto.isValid();
+        mPath.isValid();
 
         return sValidationErrorBuilder.length() == 0;
     }
@@ -156,6 +165,10 @@ public class Profile extends ProfileBase implements Comparable<Profile> {
         mName = name;
     }
 
+    public void setPath(ProfilePath path) {
+        mPath = path;
+    }
+
     public void setPhoto(ProfilePhoto photo) {
         mPhoto = photo;
     }
@@ -173,6 +186,7 @@ public class Profile extends ProfileBase implements Comparable<Profile> {
         ArrayList<ProfileInfo> profileInfos = new ArrayList<>();
         profileInfos.add(mSource.getProfileInfo());
         profileInfos.add(mFolder.getProfileInfo());
+        profileInfos.add(mPath.getProfileInfo());
         profileInfos.add(mPlacemark.getProfileInfo());
         profileInfos.add(mDescription.getProfileInfo());
         profileInfos.add(mPhoto.getProfileInfo());

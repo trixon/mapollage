@@ -71,6 +71,19 @@ public abstract class ProfileBase {
         }
     }
 
+    protected Double getDouble(JSONObject object, String key, Double defaultValue) {
+        if (object.containsKey(key)) {
+            try {
+                Double d = ((Double) object.get(key));
+                return d;
+            } catch (Exception e) {
+            }
+
+        }
+
+        return defaultValue;
+    }
+
     protected File getFileObject(JSONObject object, String key) {
         try {
             return new File((String) object.get(key));
