@@ -102,6 +102,15 @@ public class ProfilePath extends ProfileBase {
         LinkedHashMap<String, String> values = new LinkedHashMap<>();
         values.put(mBundleUI.getString("ModulePathPanel.drawPathCheckBox.text"), String.valueOf(mDrawPath));
         values.put(Dict.WIDTH.toString(), String.valueOf(mWidth));
+        String[] units = new String[]{
+            Dict.DO_NOT_SPLIT.toString(),
+            Dict.Time.HOUR.toString(),
+            Dict.Time.DAY.toString(),
+            Dict.Time.WEEK.toString(),
+            Dict.Time.MONTH.toString(),
+            Dict.Time.YEAR.toString()
+        };
+        values.put(Dict.SPLIT_BY.toString(), units[mSplitBy]);
 
         profileInfo.setTitle(getTitle());
         profileInfo.setValues(values);
