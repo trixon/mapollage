@@ -15,20 +15,27 @@
  */
 package se.trixon.mapollage;
 
+import java.util.Date;
+
 /**
  *
  * @author Patrik Karlsson
  */
 public class LineNode {
 
+    private Date mDate;
+
     private double mLat;
     private double mLon;
-    private Long mTime;
 
-    public LineNode(long time, double lat, double lon) {
+    public LineNode(Date date, double lat, double lon) {
+        mDate = date;
         mLat = lat;
         mLon = lon;
-        mTime = time;
+    }
+
+    public Date getDate() {
+        return mDate;
     }
 
     public double getLat() {
@@ -39,8 +46,8 @@ public class LineNode {
         return mLon;
     }
 
-    public long getTime() {
-        return mTime;
+    public void setDate(Date date) {
+        mDate = date;
     }
 
     public void setLat(double lat) {
@@ -49,9 +56,5 @@ public class LineNode {
 
     public void setLon(double lon) {
         mLon = lon;
-    }
-
-    public void setTime(long time) {
-        mTime = time;
     }
 }

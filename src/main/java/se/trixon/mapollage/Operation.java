@@ -28,7 +28,6 @@ import de.micromata.opengis.kml.v_2_2_0.IconStyle;
 import de.micromata.opengis.kml.v_2_2_0.Kml;
 import de.micromata.opengis.kml.v_2_2_0.KmlFactory;
 import de.micromata.opengis.kml.v_2_2_0.LineString;
-import de.micromata.opengis.kml.v_2_2_0.LineStyle;
 import de.micromata.opengis.kml.v_2_2_0.Placemark;
 import de.micromata.opengis.kml.v_2_2_0.Style;
 import de.micromata.opengis.kml.v_2_2_0.StyleState;
@@ -51,6 +50,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.TreeMap;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -88,6 +88,7 @@ public class Operation implements Runnable {
     private int mNumOfGps;
     private int mNumOfInvalidFormat;
     private int mNumOfPlacemarks;
+    private Folder mPathFolder;
     private PhotoInfo mPhotoInfo;
     private final Profile mProfile;
     private final ProfileDescription mProfileDescription;
@@ -113,7 +114,7 @@ public class Operation implements Runnable {
         mDestinationFile = mProfile.getDestinationFile();
 
         mBundle = BundleHelper.getBundle(Operation.class, "Bundle");
-        mDocument = mKml.createAndSetDocument();
+        mDocument = mKml.createAndSetDocument().withOpen(true);
         mBalloonStyle = KmlFactory.createBalloonStyle()
                 .withId("BalloonStyleId")
                 //aabbggrr
@@ -140,7 +141,7 @@ public class Operation implements Runnable {
         }
 
         String status;
-        mRootFolder = mDocument.createAndAddFolder().withName(mProfileFolder.getRootName());
+        mRootFolder = mDocument.createAndAddFolder().withName(mProfileFolder.getRootName()).withOpen(true);
 
         String href = "<a href=\"https://trixon.se/mapollage/\">Mapollage</a>";
         String description = String.format("<p>%s %s, %s</p>%s",
@@ -201,7 +202,7 @@ public class Operation implements Runnable {
 
         Date exifDate = mPhotoInfo.getDate();
         if (hasLocation && mProfilePath.isDrawPath()) {
-            mLineNodes.add(new LineNode(exifDate.getTime(), mPhotoInfo.getLat(), mPhotoInfo.getLon()));
+            mLineNodes.add(new LineNode(exifDate, mPhotoInfo.getLat(), mPhotoInfo.getLon()));
         }
 
         if (hasLocation || mProfileSource.isIncludeNullCoordinate()) {
@@ -262,22 +263,54 @@ public class Operation implements Runnable {
     }
 
     private void addPath() {
-        Collections.sort(mLineNodes, (LineNode o1, LineNode o2) -> Long.compare(o1.getTime(), o2.getTime()));
+        Collections.sort(mLineNodes, (LineNode o1, LineNode o2) -> o1.getDate().compareTo(o2.getDate()));
+        SimpleDateFormat nameDateFormat = new SimpleDateFormat("yyyyMMdd HHmmss");
 
-        Placemark path = mDocument.createAndAddPlacemark()
-                .withName("NONAME");
+        mPathFolder = KmlFactory.createFolder()
+                .withName(Dict.PATH_GFX.toString())
+                .withOpen(true);
 
-        Style pathStyle = path.createAndAddStyle();
-        LineStyle lineStyle = pathStyle.createAndSetLineStyle();
-        lineStyle.withColor("ff0000ff").withWidth(mProfilePath.getWidth());
+        String[] patterns = new String[]{"'NO_SPLIT'", "yyyyMMddHH", "yyyyMMdd", "yyyyww", "yyyyMM", "yyyy"};
+        String pattern = patterns[mProfilePath.getSplitBy()];
+        SimpleDateFormat dateFormat = new SimpleDateFormat(pattern);
 
-        LineString line = path
-                .createAndSetLineString()
-                .withExtrude(false)
-                .withTessellate(true);
+        TreeMap<String, ArrayList<LineNode>> map = new TreeMap<>();
 
-        for (LineNode node : mLineNodes) {
-            line.addToCoordinates(node.getLon(), node.getLat());
+        mLineNodes.forEach((node) -> {
+            String key = dateFormat.format(node.getDate());
+            if (!map.containsKey(key)) {
+                map.put(key, new ArrayList<>());
+            }
+            map.get(key).add(node);
+        });
+
+        boolean colorState = true;
+
+        for (ArrayList<LineNode> nodes : map.values()) {
+            if (nodes.size() > 1) {
+                String name = String.format("%s_%s",
+                        nameDateFormat.format(nodes.get(0).getDate()),
+                        nameDateFormat.format(nodes.get(nodes.size() - 1).getDate()));
+
+                Placemark path = mPathFolder.createAndAddPlacemark()
+                        .withName(name);
+
+                Style pathStyle = path.createAndAddStyle();
+                pathStyle.createAndSetLineStyle()
+                        .withColor(colorState ? "ff0000ff" : "ff00ffff")
+                        .withWidth(mProfilePath.getWidth());
+
+                LineString line = path
+                        .createAndSetLineString()
+                        .withExtrude(false)
+                        .withTessellate(true);
+
+                nodes.forEach((node) -> {
+                    line.addToCoordinates(node.getLon(), node.getLat());
+                });
+
+                colorState = !colorState;
+            }
         }
     }
 
@@ -509,6 +542,10 @@ public class Operation implements Runnable {
         keys.stream().forEach((key) -> {
             mRootFolder.getFeature().add(mFolders.get((String) key));
         });
+
+        if (mPathFolder != null) {
+            mRootFolder.getFeature().add(mPathFolder);
+        }
 
         if (mProfilePlacemark.isSymbolAsPhoto()) {
             mListener.onOperationLog("\n" + String.format(mBundle.getString("stored_thumbnails"), mThumbsDir.getAbsolutePath()));

@@ -92,6 +92,7 @@ public abstract class ProfileBase {
         }
     }
 
+    @Deprecated
     protected int getInt(JSONObject object, String key) {
         try {
             return ((Long) object.get(key)).intValue();
@@ -100,6 +101,17 @@ public abstract class ProfileBase {
             return (Integer) object.get(key);
         } catch (NullPointerException e) {
             return 0;
+        }
+    }
+
+    protected int getInt(JSONObject object, String key, int defaultValue) {
+        try {
+            return ((Long) object.get(key)).intValue();
+
+        } catch (ClassCastException e) {
+            return (Integer) object.get(key);
+        } catch (NullPointerException e) {
+            return defaultValue;
         }
     }
 

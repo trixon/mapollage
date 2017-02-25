@@ -26,9 +26,18 @@ import se.trixon.almond.util.Dict;
 public class ProfilePath extends ProfileBase {
 
     public static final String KEY_DRAW_PATH = "drawPath";
+    public static final String KEY_SPLIT_BY = "splitBy";
     public static final String KEY_WIDTH = "width";
+    public static final int SPLIT_BY_DAY = 2;
+    public static final int SPLIT_BY_HOUR = 1;
+    public static final int SPLIT_BY_MONTH = 4;
+    public static final int SPLIT_BY_NONE = 0;
+    public static final int SPLIT_BY_WEEK = 3;
+    public static final int SPLIT_BY_YEAR = 5;
+
     private boolean mDrawPath = true;
     private final Profile mProfile;
+    private int mSplitBy = SPLIT_BY_MONTH;
     private Double mWidth = 2.0;
 
     public ProfilePath(Profile profile) {
@@ -39,6 +48,8 @@ public class ProfilePath extends ProfileBase {
         mProfile = profile;
         mDrawPath = getBoolean(json, KEY_DRAW_PATH, mDrawPath);
         mWidth = getDouble(json, KEY_WIDTH, mWidth);
+        mSplitBy = getInt(json, KEY_SPLIT_BY, mSplitBy);
+
     }
 
     @Override
@@ -46,8 +57,13 @@ public class ProfilePath extends ProfileBase {
         JSONObject json = new JSONObject();
         json.put(KEY_DRAW_PATH, mDrawPath);
         json.put(KEY_WIDTH, mWidth);
+        json.put(KEY_SPLIT_BY, mSplitBy);
 
         return json;
+    }
+
+    public int getSplitBy() {
+        return mSplitBy;
     }
 
     @Override
@@ -70,6 +86,10 @@ public class ProfilePath extends ProfileBase {
 
     public void setDrawPath(boolean drawPath) {
         mDrawPath = drawPath;
+    }
+
+    public void setSplitBy(int splitBy) {
+        mSplitBy = splitBy;
     }
 
     public void setWidth(Double width) {
