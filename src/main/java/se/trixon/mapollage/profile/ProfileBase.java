@@ -72,7 +72,7 @@ public abstract class ProfileBase {
     }
 
     protected Double getDouble(JSONObject object, String key, Double defaultValue) {
-        if (object.containsKey(key)) {
+        if (object != null && object.containsKey(key)) {
             try {
                 Double d = ((Double) object.get(key));
                 return d;
