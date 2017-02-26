@@ -98,6 +98,7 @@ public class Operation implements Runnable {
     private final ProfilePlacemark mProfilePlacemark;
     private final ProfileSource mProfileSource;
     private Folder mRootFolder;
+    private final Map<String, Folder> mRootFolders = new HashMap<>();
     private long mStartTime;
     private File mThumbsDir;
     private final SimpleDateFormat mTimeStampDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
@@ -378,7 +379,8 @@ public class Operation implements Runnable {
 
         switch (mProfileFolder.getFoldersBy()) {
             case ProfileFolder.FOLDER_BY_DIR:
-                key = file.getParentFile().getName();
+                Path relativePath = mProfileSource.getDir().toPath().relativize(file.getParentFile().toPath());
+                key = relativePath.toString();
                 folder = getFolder(key);
                 break;
 
@@ -396,14 +398,31 @@ public class Operation implements Runnable {
     }
 
     private Folder getFolder(String key) {
-        Folder folder = mFolders.get(key);
+        key = StringUtils.replace(key, "\\", "/");
+        String[] levels = StringUtils.split(key, "/");
 
-        if (folder == null) {
-            folder = new Folder().withName(key);
+        Folder parent = mRootFolder;
+        String path = "";
+
+        for (int i = 0; i < levels.length; i++) {
+            String level = levels[i];
+            path = String.format("%s/%s", path, level);
+            parent = getFolder(path, parent, level);
+            if (i == 0) {
+                mFolders.put(path, parent);
+            }
+        }
+
+        return parent;
+    }
+
+    private Folder getFolder(String key, Folder parent, String name) {
+        if (!mFolders.containsKey(key)) {
+            Folder folder = parent.createAndAddFolder().withName(name);
             mFolders.put(key, folder);
         }
 
-        return folder;
+        return mFolders.get(key);
     }
 
     private String getImagePath(File file) {
@@ -536,11 +555,11 @@ public class Operation implements Runnable {
     }
 
     private void saveToFile() {
-        List keys = new ArrayList(mFolders.keySet());
+        List keys = new ArrayList(mRootFolders.keySet());
         Collections.sort(keys);
 
         keys.stream().forEach((key) -> {
-            mRootFolder.getFeature().add(mFolders.get((String) key));
+            mRootFolder.getFeature().add(mRootFolders.get((String) key));
         });
 
         if (mPathFolder != null) {
