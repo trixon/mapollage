@@ -472,6 +472,7 @@ public class Operation implements Runnable {
         if (StringUtils.containsIgnoreCase(desc, DescriptionSegment.PHOTO.toString())) {
             desc = StringUtils.replace(desc, DescriptionSegment.PHOTO.toString(), getDescPhoto(file));
         }
+
         desc = StringUtils.replace(desc, DescriptionSegment.FILENAME.toString(), file.getName());
         desc = StringUtils.replace(desc, DescriptionSegment.DATE.toString(), mDateFormatDate.format(exifDate));
 
@@ -480,11 +481,7 @@ public class Operation implements Runnable {
             desc = StringUtils.replace(desc, DescriptionSegment.COORDINATE.toString(), gpsDescriptor.getDegreesMinutesSecondsDescription());
 
             String bearing = gpsDescriptor.getGpsDirectionDescription(GpsDirectory.TAG_DEST_BEARING);
-            if (bearing != null) {
-                desc = StringUtils.replace(desc, DescriptionSegment.BEARING.toString(), gpsDescriptor.getGpsAltitudeDescription());
-            } else {
-                desc = StringUtils.replace(desc, DescriptionSegment.BEARING.toString(), "");
-            }
+            desc = StringUtils.replace(desc, DescriptionSegment.BEARING.toString(), bearing == null ? "" : bearing);
         } else {
             desc = StringUtils.replace(desc, DescriptionSegment.ALTITUDE.toString(), "");
             desc = StringUtils.replace(desc, DescriptionSegment.COORDINATE.toString(), "");
