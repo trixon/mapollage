@@ -228,7 +228,7 @@ public class Profile extends ProfileBase implements Comparable<Profile> {
         LinkedHashMap<String, String> values = new LinkedHashMap<>();
 
         values.put(Dict.CALENDAR_LANGUAGE.toString(), mOptions.getLocale().getDisplayName());
-        values.put(Dict.IMAGE_SIZE.toString(), String.valueOf(mOptions.getThumbnailSize()));
+        values.put(Dict.THUMBNAIL.toString(), String.valueOf(mOptions.getThumbnailSize()));
         values.put(Dict.BORDER_SIZE.toString(), String.valueOf(mOptions.getThumbnailBorderSize()));
         values.put(String.format("%s %s", Dict.DEFAULT.toString(), Dict.LATITUDE.toString()), String.valueOf(mOptions.getDefaultLat()));
         values.put(String.format("%s %s", Dict.DEFAULT.toString(), Dict.LONGITUDE.toString()), String.valueOf(mOptions.getDefaultLon()));

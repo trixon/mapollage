@@ -178,6 +178,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
         mLogPanel.println(mBundleUI.getString("welcome_1"));
         mLogPanel.println(Mapollage.getHelp());
         mLogPanel.println(mBundleUI.getString("welcome_3"));
+        mLogPanel.scrollToTop();
     }
 
     private void initListeners() {

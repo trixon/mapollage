@@ -35,6 +35,7 @@ public class ConfigPanel extends javax.swing.JPanel {
     private final ModuleDescriptionPanel mModuleDescriptionPanel = new ModuleDescriptionPanel();
     private final ModulePhotoPanel mModulePhotoPanel = new ModulePhotoPanel();
     private final ModulePathPanel mModuleLinePanel = new ModulePathPanel();
+    private final ModuleInfoPanel mModuleInfoPanel = new ModuleInfoPanel();
     private Profile mProfile;
 
     /**
@@ -137,6 +138,7 @@ public class ConfigPanel extends javax.swing.JPanel {
         addModulePanel(mModulePlacemarksPanel);
         addModulePanel(mModuleDescriptionPanel);
         addModulePanel(mModulePhotoPanel);
+        addModulePanel(mModuleInfoPanel);
 
         for (Component component : tabbedPane.getComponents()) {
             if (component instanceof ModulePanel) {
@@ -165,6 +167,8 @@ public class ConfigPanel extends javax.swing.JPanel {
     private void initComponents() {
 
         tabbedPane = new javax.swing.JTabbedPane();
+
+        tabbedPane.setTabLayoutPolicy(javax.swing.JTabbedPane.SCROLL_TAB_LAYOUT);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
