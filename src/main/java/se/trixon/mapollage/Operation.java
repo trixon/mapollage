@@ -51,6 +51,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.TreeMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -102,6 +104,7 @@ public class Operation implements Runnable {
     private long mStartTime;
     private File mThumbsDir;
     private final SimpleDateFormat mTimeStampDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
+    private final Pattern mFolderByRegexPattern;
 
     public Operation(OperationListener operationListener, Profile profile) {
         mListener = operationListener;
@@ -113,6 +116,8 @@ public class Operation implements Runnable {
         mProfileDescription = mProfile.getDescription();
         mProfilePhoto = mProfile.getPhoto();
         mDestinationFile = mProfile.getDestinationFile();
+
+        mFolderByRegexPattern = Pattern.compile(mProfileFolder.getRegex());
 
         mBundle = BundleHelper.getBundle(Operation.class, "Bundle");
         mDocument = mKml.createAndSetDocument().withOpen(true);
@@ -386,6 +391,15 @@ public class Operation implements Runnable {
 
             case ProfileFolder.FOLDER_BY_DATE:
                 key = mProfileFolder.getFolderDateFormat().format(date);
+                folder = getFolder(key);
+                break;
+
+            case ProfileFolder.FOLDER_BY_REGEX:
+                key = mProfileFolder.getRegexDefault();
+                Matcher matcher = mFolderByRegexPattern.matcher(file.getParent());
+                if (matcher.find()) {
+                    key = matcher.group();
+                }
                 folder = getFolder(key);
                 break;
 
