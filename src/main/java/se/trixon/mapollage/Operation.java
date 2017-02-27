@@ -136,6 +136,7 @@ public class Operation implements Runnable {
         Date date = new Date(mStartTime);
         SimpleDateFormat dateFormat = new SimpleDateFormat();
         mListener.onOperationStarted();
+        mListener.onOperationLog(new SimpleDateFormat().format(new Date()));
 
         if (mProfilePlacemark.isSymbolAsPhoto()) {
             mThumbsDir = new File(mDestinationFile.getParent() + String.format("/%s-thumbnails", FilenameUtils.getBaseName(mDestinationFile.getAbsolutePath())));
@@ -161,6 +162,7 @@ public class Operation implements Runnable {
         mInterrupted = !generateFileList();
 
         if (!mInterrupted && !mFiles.isEmpty()) {
+            mListener.onOperationLog(String.format(mBundle.getString("found_count"), mFiles.size()));
             for (File file : mFiles) {
                 try {
                     addFileToKml(file);
@@ -352,7 +354,7 @@ public class Operation implements Runnable {
         }
 
         if (mFiles.isEmpty()) {
-            mListener.onOperationLog(Dict.FILELIST_EMPTY.toString());
+            mListener.onOperationFinished(Dict.FILELIST_EMPTY.toString());
         } else {
             Collections.sort(mFiles);
         }
@@ -622,7 +624,6 @@ public class Operation implements Runnable {
             String timeValue = String.format("%.3f", (System.currentTimeMillis() - mStartTime) / 1000.0).trim();
             summaryBuilder.append(StringUtils.rightPad(time, rightPad)).append(":").append(StringUtils.leftPad(timeValue, leftPad)).append(" ").append(Dict.TIME_SECONDS).append("\n");
 
-            mListener.onOperationLog(summaryBuilder.toString());
             mListener.onOperationFinished(summaryBuilder.toString());
         } catch (FileNotFoundException ex) {
             mListener.onOperationLog(ex.getLocalizedMessage());

@@ -196,6 +196,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
             @Override
             public void onOperationFinished(String message) {
                 setRunningState(false);
+                mLogPanel.println(message);
             }
 
             @Override
