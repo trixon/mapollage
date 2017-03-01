@@ -19,6 +19,7 @@ import java.awt.event.FocusAdapter;
 import java.io.File;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
+import javax.swing.JTabbedPane;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import org.apache.commons.lang3.StringUtils;
@@ -50,8 +51,22 @@ public class ModuleSourcePanel extends ModulePanel implements FileChooserPanel.F
         return sourceChooserPanel;
     }
 
-    public LogPanel getLogPanel() {
-        return logPanel;
+    public void reset() {
+        logErrPanel.clear();
+        logOutPanel.clear();
+        tabbedPane.setSelectedIndex(0);
+    }
+
+    public JTabbedPane getTabbedPane() {
+        return tabbedPane;
+    }
+
+    public LogPanel getLogErrPanel() {
+        return logErrPanel;
+    }
+
+    public LogPanel getLogOutPanel() {
+        return logOutPanel;
     }
 
     @Override
@@ -143,8 +158,10 @@ public class ModuleSourcePanel extends ModulePanel implements FileChooserPanel.F
         patternTextField = new javax.swing.JTextField();
         recursiveCheckBox = new javax.swing.JCheckBox();
         followLinksCheckBox = new javax.swing.JCheckBox();
-        logPanel = new se.trixon.almond.util.swing.LogPanel();
         includeNullCoordinateCheckBox = new javax.swing.JCheckBox();
+        tabbedPane = new javax.swing.JTabbedPane();
+        logOutPanel = new se.trixon.almond.util.swing.LogPanel();
+        logErrPanel = new se.trixon.almond.util.swing.LogPanel();
 
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("se/trixon/mapollage/ui/config/Bundle"); // NOI18N
         sourceChooserPanel.setHeader(bundle.getString("ModuleSourcePanel.sourceChooserPanel.header")); // NOI18N
@@ -198,6 +215,10 @@ public class ModuleSourcePanel extends ModulePanel implements FileChooserPanel.F
             }
         });
 
+        tabbedPane.setTabPlacement(javax.swing.JTabbedPane.BOTTOM);
+        tabbedPane.addTab(Dict.OUTPUT.toString().toLowerCase(), logOutPanel);
+        tabbedPane.addTab(Dict.Dialog.ERROR.toString().toLowerCase(), logErrPanel);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -210,8 +231,9 @@ public class ModuleSourcePanel extends ModulePanel implements FileChooserPanel.F
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(followLinksCheckBox)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(includeNullCoordinateCheckBox))
-            .addComponent(logPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(includeNullCoordinateCheckBox)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addComponent(tabbedPane, javax.swing.GroupLayout.Alignment.TRAILING)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -224,7 +246,7 @@ public class ModuleSourcePanel extends ModulePanel implements FileChooserPanel.F
                     .addComponent(followLinksCheckBox)
                     .addComponent(includeNullCoordinateCheckBox))
                 .addGap(18, 18, 18)
-                .addComponent(logPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 322, Short.MAX_VALUE))
+                .addComponent(tabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 322, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -243,12 +265,14 @@ public class ModuleSourcePanel extends ModulePanel implements FileChooserPanel.F
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBox followLinksCheckBox;
     private javax.swing.JCheckBox includeNullCoordinateCheckBox;
-    private se.trixon.almond.util.swing.LogPanel logPanel;
+    private se.trixon.almond.util.swing.LogPanel logErrPanel;
+    private se.trixon.almond.util.swing.LogPanel logOutPanel;
     private javax.swing.JLabel patternLabel;
     private javax.swing.JPanel patternPanel;
     private javax.swing.JTextField patternTextField;
     private javax.swing.JCheckBox recursiveCheckBox;
     private se.trixon.almond.util.swing.dialogs.FileChooserPanel sourceChooserPanel;
+    private javax.swing.JTabbedPane tabbedPane;
     // End of variables declaration//GEN-END:variables
 
     @Override

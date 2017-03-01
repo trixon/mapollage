@@ -41,22 +41,20 @@ import se.trixon.almond.util.ImageScaler;
  */
 public class PhotoInfo {
 
-    private final ExifSubIFDDirectory mExifDirectory;
+    private ExifSubIFDDirectory mExifDirectory;
     private final File mFile;
     private final double mFormat = 1000000;
-    private final GeoLocation mGeoLocation;
-    private final GpsDirectory mGpsDirectory;
+    private GeoLocation mGeoLocation;
+    private GpsDirectory mGpsDirectory;
     private final ImageScaler mImageScaler = ImageScaler.getInstance();
-    private final Metadata mMetadata;
+    private final boolean mIncludeNullCoordinate;
+    private Metadata mMetadata;
     private final Options mOptions = Options.getInstance();
     private Dimension mOriginalDimension = null;
 
-    public PhotoInfo(File file) throws ImageProcessingException, IOException {
+    public PhotoInfo(File file, boolean includeNullCoordinate) {
         mFile = file;
-        mMetadata = ImageMetadataReader.readMetadata(file);
-        mExifDirectory = mMetadata.getFirstDirectoryOfType(ExifSubIFDDirectory.class);
-        mGpsDirectory = mMetadata.getFirstDirectoryOfType(GpsDirectory.class);
-        mGeoLocation = getGeoLocation();
+        mIncludeNullCoordinate = includeNullCoordinate;
     }
 
     public void createThumbnail(File dest) throws IOException {
@@ -77,7 +75,11 @@ public class PhotoInfo {
             g2d.fillRect(0, 0, borderedImageWidth, borderedImageHeight);
             g2d.drawImage(scaledImage, borderSize, borderSize, width + borderSize, height + borderSize, 0, 0, width, height, Color.YELLOW, null);
 
-            ImageIO.write(borderedImage, "jpg", dest);
+            try {
+                ImageIO.write(borderedImage, "jpg", dest);
+            } catch (IOException ex) {
+                throw new IOException(String.format("E000 %s", dest.getAbsolutePath()));
+            }
         }
     }
 
@@ -125,12 +127,12 @@ public class PhotoInfo {
         return mMetadata;
     }
 
-    public Dimension getOriginalDimension() {
+    public Dimension getOriginalDimension() throws IOException {
         if (mOriginalDimension == null) {
             try {
                 mOriginalDimension = GraphicsHelper.getImgageDimension(mFile);
             } catch (IOException ex) {
-                System.err.println(ex.getLocalizedMessage());
+                throw new IOException(String.format("E000 %s", mFile.getAbsolutePath()));
             }
 
             if (mOriginalDimension == null) {
@@ -149,27 +151,46 @@ public class PhotoInfo {
         return hasExif() && mGpsDirectory != null;
     }
 
+    public void init() throws ImageProcessingException, IOException {
+        try {
+            mMetadata = ImageMetadataReader.readMetadata(mFile);
+            mExifDirectory = mMetadata.getFirstDirectoryOfType(ExifSubIFDDirectory.class);
+            mGpsDirectory = mMetadata.getFirstDirectoryOfType(GpsDirectory.class);
+            mGeoLocation = getGeoLocation();
+        } catch (IOException ex) {
+            throw new IOException(String.format("E000 %s", mFile.getAbsolutePath()));
+        }
+    }
+
     public boolean isZeroCoordinate() {
-        return mGpsDirectory.getGeoLocation().isZero();
+        return mGpsDirectory == null || mGpsDirectory.getGeoLocation() == null || mGpsDirectory.getGeoLocation().isZero();
     }
 
     private GeoLocation getGeoLocation() throws ImageProcessingException {
         GeoLocation geoLocation = null;
 
-        geoLocation = new GeoLocation(mOptions.getDefaultLat(), mOptions.getDefaultLon());
-
-        if (mGpsDirectory != null) {
-            geoLocation = mGpsDirectory.getGeoLocation();
-            if (geoLocation == null) {
-                throw new ImageProcessingException(mFile.getAbsolutePath());
+        if (mIncludeNullCoordinate) {
+            try {
+                geoLocation = mGpsDirectory.getGeoLocation();
+                if (geoLocation.isZero()) {
+                    geoLocation = new GeoLocation(mOptions.getDefaultLat(), mOptions.getDefaultLon());
+                }
+            } catch (Exception e) {
+                //never error
             }
-
-            if (geoLocation.isZero()) {
-                geoLocation = new GeoLocation(mOptions.getDefaultLat(), mOptions.getDefaultLon());
-//                gpsDirectory = null;
+        } else {
+            try {
+                geoLocation = mGpsDirectory.getGeoLocation();
+                geoLocation.isZero(); //Just force a reference
+            } catch (NullPointerException e) {
+                throw new ImageProcessingException(String.format("E012 %s", mFile.getAbsolutePath()));
             }
         }
 
+        if (geoLocation == null) {
+            geoLocation = new GeoLocation(mOptions.getDefaultLat(), mOptions.getDefaultLon());
+
+        }
         return geoLocation;
     }
 }

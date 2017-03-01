@@ -81,14 +81,15 @@ public class Operation implements Runnable {
     private final File mDestinationFile;
     private final Document mDocument;
     private final List<File> mFiles = new ArrayList<>();
+    private final Pattern mFolderByRegexPattern;
     private final Map<String, Folder> mFolders = new HashMap<>();
     private boolean mInterrupted = false;
     private final Kml mKml = new Kml();
     private final ArrayList<LineNode> mLineNodes = new ArrayList<>();
     private final OperationListener mListener;
+    private int mNumOfErrors = 0;
     private int mNumOfExif;
     private int mNumOfGps;
-    private int mNumOfInvalidFormat;
     private int mNumOfPlacemarks;
     private Folder mPathFolder;
     private PhotoInfo mPhotoInfo;
@@ -104,7 +105,6 @@ public class Operation implements Runnable {
     private long mStartTime;
     private File mThumbsDir;
     private final SimpleDateFormat mTimeStampDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
-    private final Pattern mFolderByRegexPattern;
 
     public Operation(OperationListener operationListener, Profile profile) {
         mListener = operationListener;
@@ -143,7 +143,7 @@ public class Operation implements Runnable {
             try {
                 FileUtils.forceMkdir(mThumbsDir);
             } catch (IOException ex) {
-                mListener.onOperationError(ex.getMessage());
+                logError(String.format("E000 %s", ex.getMessage()));
             }
         }
 
@@ -159,18 +159,21 @@ public class Operation implements Runnable {
         mRootFolder.setDescription(description);
 
         mListener.onOperationProcessingStarted();
-        mInterrupted = !generateFileList();
+        try {
+            mInterrupted = !generateFileList();
+        } catch (IOException ex) {
+            logError(ex.getMessage());
+        }
 
         if (!mInterrupted && !mFiles.isEmpty()) {
             mListener.onOperationLog(String.format(mBundle.getString("found_count"), mFiles.size()));
             for (File file : mFiles) {
                 try {
-                    addFileToKml(file);
-                } catch (ImageProcessingException | IOException ex) {
-                    if (ex.getMessage().equalsIgnoreCase("File format is not supported")) {
-                        mNumOfInvalidFormat++;
-                    }
-                    mListener.onOperationError(ex.getMessage() + "<<<");
+                    addPhoto(file);
+                } catch (ImageProcessingException ex) {
+                    logError(String.format(ex.getMessage()));
+                } catch (IOException ex) {
+                    logError(String.format("E000 %s", file.getAbsolutePath()));
                 }
 
                 if (Thread.interrupted()) {
@@ -191,11 +194,75 @@ public class Operation implements Runnable {
         } else if (!mFiles.isEmpty()) {
             saveToFile();
         }
+
+        if (mNumOfErrors > 0) {
+            logError(mBundle.getString("error_description"));
+        }
     }
 
-    private void addFileToKml(File file) throws ImageProcessingException, IOException {
-        mListener.onOperationLog(file.getAbsolutePath());
-        mPhotoInfo = new PhotoInfo(file);
+    private void addPath() {
+        Collections.sort(mLineNodes, (LineNode o1, LineNode o2) -> o1.getDate().compareTo(o2.getDate()));
+        SimpleDateFormat nameDateFormat = new SimpleDateFormat("yyyyMMdd HHmmss");
+
+        mPathFolder = KmlFactory.createFolder()
+                .withName(Dict.PATH_GFX.toString())
+                .withOpen(true);
+
+        String[] patterns = new String[]{"'NO_SPLIT'", "yyyyMMddHH", "yyyyMMdd", "yyyyww", "yyyyMM", "yyyy"};
+        String pattern = patterns[mProfilePath.getSplitBy()];
+        SimpleDateFormat dateFormat = new SimpleDateFormat(pattern);
+
+        TreeMap<String, ArrayList<LineNode>> map = new TreeMap<>();
+
+        mLineNodes.forEach((node) -> {
+            String key = dateFormat.format(node.getDate());
+            if (!map.containsKey(key)) {
+                map.put(key, new ArrayList<>());
+            }
+            map.get(key).add(node);
+        });
+
+        boolean colorState = true;
+
+        for (ArrayList<LineNode> nodes : map.values()) {
+            if (nodes.size() > 1) {
+                String name = String.format("%s_%s",
+                        nameDateFormat.format(nodes.get(0).getDate()),
+                        nameDateFormat.format(nodes.get(nodes.size() - 1).getDate()));
+
+                Placemark path = mPathFolder.createAndAddPlacemark()
+                        .withName(name);
+
+                Style pathStyle = path.createAndAddStyle();
+                pathStyle.createAndSetLineStyle()
+                        .withColor(colorState ? "ff0000ff" : "ff00ffff")
+                        .withWidth(mProfilePath.getWidth());
+
+                LineString line = path
+                        .createAndSetLineString()
+                        .withExtrude(false)
+                        .withTessellate(true);
+
+                nodes.forEach((node) -> {
+                    line.addToCoordinates(node.getLon(), node.getLat());
+                });
+
+                colorState = !colorState;
+            }
+        }
+    }
+
+    private void addPhoto(File file) throws ImageProcessingException, IOException {
+        mPhotoInfo = new PhotoInfo(file, mProfileSource.isIncludeNullCoordinate());
+        try {
+            mPhotoInfo.init();
+        } catch (ImageProcessingException | IOException e) {
+            if (mPhotoInfo.hasExif()) {
+                mNumOfExif++;
+            }
+
+            throw e;
+        }
 
         boolean hasLocation = false;
         if (mPhotoInfo.hasExif()) {
@@ -205,7 +272,7 @@ public class Operation implements Runnable {
                 mNumOfGps++;
             }
         } else {
-            throw new ImageProcessingException(String.format(mBundle.getString("exifError"), file.getAbsolutePath()));
+            throw new ImageProcessingException(String.format("E010 %s", file.getAbsolutePath()));
         }
 
         Date exifDate = mPhotoInfo.getDate();
@@ -265,64 +332,12 @@ public class Operation implements Runnable {
 
             folder.addToFeature(placemark);
             mNumOfPlacemarks++;
-        } else {
-            //mListener.onOperationError(Dict.FAILED.toString());
         }
+
+        mListener.onOperationLog(file.getAbsolutePath());
     }
 
-    private void addPath() {
-        Collections.sort(mLineNodes, (LineNode o1, LineNode o2) -> o1.getDate().compareTo(o2.getDate()));
-        SimpleDateFormat nameDateFormat = new SimpleDateFormat("yyyyMMdd HHmmss");
-
-        mPathFolder = KmlFactory.createFolder()
-                .withName(Dict.PATH_GFX.toString())
-                .withOpen(true);
-
-        String[] patterns = new String[]{"'NO_SPLIT'", "yyyyMMddHH", "yyyyMMdd", "yyyyww", "yyyyMM", "yyyy"};
-        String pattern = patterns[mProfilePath.getSplitBy()];
-        SimpleDateFormat dateFormat = new SimpleDateFormat(pattern);
-
-        TreeMap<String, ArrayList<LineNode>> map = new TreeMap<>();
-
-        mLineNodes.forEach((node) -> {
-            String key = dateFormat.format(node.getDate());
-            if (!map.containsKey(key)) {
-                map.put(key, new ArrayList<>());
-            }
-            map.get(key).add(node);
-        });
-
-        boolean colorState = true;
-
-        for (ArrayList<LineNode> nodes : map.values()) {
-            if (nodes.size() > 1) {
-                String name = String.format("%s_%s",
-                        nameDateFormat.format(nodes.get(0).getDate()),
-                        nameDateFormat.format(nodes.get(nodes.size() - 1).getDate()));
-
-                Placemark path = mPathFolder.createAndAddPlacemark()
-                        .withName(name);
-
-                Style pathStyle = path.createAndAddStyle();
-                pathStyle.createAndSetLineStyle()
-                        .withColor(colorState ? "ff0000ff" : "ff00ffff")
-                        .withWidth(mProfilePath.getWidth());
-
-                LineString line = path
-                        .createAndSetLineString()
-                        .withExtrude(false)
-                        .withTessellate(true);
-
-                nodes.forEach((node) -> {
-                    line.addToCoordinates(node.getLon(), node.getLat());
-                });
-
-                colorState = !colorState;
-            }
-        }
-    }
-
-    private boolean generateFileList() {
+    private boolean generateFileList() throws IOException {
         mListener.onOperationLog(Dict.GENERATING_FILELIST.toString());
         PathMatcher pathMatcher = mProfileSource.getPathMatcher();
 
@@ -347,7 +362,7 @@ public class Operation implements Runnable {
                     return false;
                 }
             } catch (IOException ex) {
-                System.err.println(ex.getMessage());
+                throw new IOException(String.format("E000 %s", file.getAbsolutePath()));
             }
         } else if (file.isFile() && pathMatcher.matches(file.toPath().getFileName())) {
             mFiles.add(file);
@@ -362,7 +377,7 @@ public class Operation implements Runnable {
         return true;
     }
 
-    private String getDescPhoto(File sourceFile) {
+    private String getDescPhoto(File sourceFile) throws IOException {
         Scaler scaler = new Scaler(new Dimension(mPhotoInfo.getOriginalDimension()));
 
         if (mProfilePhoto.isLimitWidth()) {
@@ -477,7 +492,7 @@ public class Operation implements Runnable {
         return imageSrc;
     }
 
-    private String getPlacemarkDescription(File file, GpsDirectory gpsDirectory, Date exifDate) throws ImageProcessingException {
+    private String getPlacemarkDescription(File file, GpsDirectory gpsDirectory, Date exifDate) throws IOException {
         GpsDescriptor gpsDescriptor = null;
         if (gpsDirectory != null) {
             gpsDescriptor = new GpsDescriptor(gpsDirectory);
@@ -518,7 +533,7 @@ public class Operation implements Runnable {
                     name = "invalid exif date";
                 } catch (NullPointerException ex) {
                     name = "invalid exif date";
-                    mListener.onOperationError(" ! Invalid date in " + file.getAbsolutePath());
+                    logError(String.format("E011 %s", file.getAbsolutePath()));
                 }
                 break;
 
@@ -567,6 +582,11 @@ public class Operation implements Runnable {
         return builder.toString();
     }
 
+    private void logError(String message) {
+        mNumOfErrors++;
+        mListener.onOperationError(message);
+    }
+
     private void saveToFile() {
         List keys = new ArrayList(mRootFolders.keySet());
         Collections.sort(keys);
@@ -592,14 +612,14 @@ public class Operation implements Runnable {
             String exif = mBundle.getString("status_exif");
             String coordinate = mBundle.getString("status_coordinate");
             String time = mBundle.getString("status_time");
-            String invalidFormat = mBundle.getString("status_invalid_format");
+            String error = " " + Dict.Dialog.ERRORS.toString().toLowerCase();
             String placemarks = mBundle.getString("status_placemarks");
 
             int rightPad = files.length();
             rightPad = Math.max(rightPad, exif.length());
             rightPad = Math.max(rightPad, coordinate.length());
             rightPad = Math.max(rightPad, time.length());
-            rightPad = Math.max(rightPad, invalidFormat.length());
+            rightPad = Math.max(rightPad, error.length());
             rightPad = Math.max(rightPad, placemarks.length());
             rightPad++;
 
@@ -615,11 +635,11 @@ public class Operation implements Runnable {
             String coordinateValue = String.valueOf(mNumOfGps);
             summaryBuilder.append(StringUtils.rightPad(coordinate, rightPad)).append(":").append(StringUtils.leftPad(coordinateValue, leftPad)).append("\n");
 
-            String invalidFormatValue = String.valueOf(mNumOfInvalidFormat);
-            summaryBuilder.append(StringUtils.rightPad(invalidFormat, rightPad)).append(":").append(StringUtils.leftPad(invalidFormatValue, leftPad)).append("\n");
-
             String placemarksValue = String.valueOf(mNumOfPlacemarks);
             summaryBuilder.append(StringUtils.rightPad(placemarks, rightPad)).append(":").append(StringUtils.leftPad(placemarksValue, leftPad)).append("\n");
+
+            String errorValue = String.valueOf(mNumOfErrors);
+            summaryBuilder.append(StringUtils.rightPad(error, rightPad)).append(":").append(StringUtils.leftPad(errorValue, leftPad)).append("\n");
 
             String timeValue = String.format("%.3f", (System.currentTimeMillis() - mStartTime) / 1000.0).trim();
             summaryBuilder.append(StringUtils.rightPad(time, rightPad)).append(":").append(StringUtils.leftPad(timeValue, leftPad)).append(" ").append(Dict.TIME_SECONDS).append("\n");

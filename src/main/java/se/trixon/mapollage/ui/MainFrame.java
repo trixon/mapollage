@@ -84,7 +84,8 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
     private DefaultComboBoxModel mModel;
     private File mDestination;
     private OperationListener mOperationListener;
-    private LogPanel mLogPanel;
+    private LogPanel mLogErrPanel;
+    private LogPanel mLogOutPanel;
 
     /**
      * Creates new form MainFrame
@@ -172,20 +173,24 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
         populateProfiles(null, 0);
         initListeners();
 
-        mLogPanel = configPanel.getLogPanel();
-        mLogPanel.getTextArea().setLineWrap(true);
-        mLogPanel.getTextArea().setWrapStyleWord(true);
-        mLogPanel.println(mBundleUI.getString("welcome_1"));
-        mLogPanel.println(Mapollage.getHelp());
-        mLogPanel.println(mBundleUI.getString("welcome_3"));
-        mLogPanel.scrollToTop();
+        mLogErrPanel = configPanel.getLogErrPanel();
+        mLogErrPanel.getTextArea().setLineWrap(true);
+        mLogErrPanel.getTextArea().setWrapStyleWord(true);
+
+        mLogOutPanel = configPanel.getLogOutPanel();
+        mLogOutPanel.getTextArea().setLineWrap(true);
+        mLogOutPanel.getTextArea().setWrapStyleWord(true);
+        mLogOutPanel.println(mBundleUI.getString("welcome_1"));
+        mLogOutPanel.println(Mapollage.getHelp());
+        mLogOutPanel.println(mBundleUI.getString("welcome_3"));
+        mLogOutPanel.scrollToTop();
     }
 
     private void initListeners() {
         mOperationListener = new OperationListener() {
             @Override
             public void onOperationError(String message) {
-                mLogPanel.println(message);
+                mLogErrPanel.println(message);
             }
 
             @Override
@@ -196,7 +201,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
             @Override
             public void onOperationFinished(String message) {
                 setRunningState(false);
-                mLogPanel.println(message);
+                mLogOutPanel.println(message);
             }
 
             @Override
@@ -206,7 +211,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
 
             @Override
             public void onOperationLog(String message) {
-                mLogPanel.println(message);
+                mLogOutPanel.println(message);
             }
 
             @Override
@@ -233,6 +238,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
 
         startButton.setVisible(!state);
         cancelButton.setVisible(state);
+
         configPanel.setEnabled(!state);
     }
 
@@ -348,8 +354,8 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
         if (profile.isValid()) {
             requestKmlFileObject();
         } else {
-            mLogPanel.clear();
-            mLogPanel.println(profile.getValidationError());
+            mLogErrPanel.clear();
+            mLogOutPanel.println(profile.getValidationError());
         }
     }
 
@@ -374,15 +380,14 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
             profile.setDestinationFile(mDestination);
             profile.isValid();
 
-            mLogPanel.clear();
-            configPanel.selectTab(0);
+            configPanel.reset();
             if (profile.hasValidRelativeSourceDest()) {
                 Operation operation = new Operation(mOperationListener, profile);
                 mOperationThread = new Thread(operation);
                 mOperationThread.start();
             } else {
-                mLogPanel.println(mBundle.getString("invalid_relative_source_dest"));
-                mLogPanel.println(Dict.ABORTING.toString());
+                mLogOutPanel.println(mBundle.getString("invalid_relative_source_dest"));
+                mLogOutPanel.println(Dict.ABORTING.toString());
             }
         }
     }

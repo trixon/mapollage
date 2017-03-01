@@ -20,7 +20,6 @@ import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.border.EmptyBorder;
 import se.trixon.almond.util.swing.LogPanel;
-import se.trixon.almond.util.swing.SwingHelper;
 import se.trixon.mapollage.profile.Profile;
 
 /**
@@ -57,8 +56,12 @@ public class ConfigPanel extends javax.swing.JPanel {
         }
     }
 
-    public LogPanel getLogPanel() {
-        return mModuleSourcePanel.getLogPanel();
+    public LogPanel getLogErrPanel() {
+        return mModuleSourcePanel.getLogErrPanel();
+    }
+
+    public LogPanel getLogOutPanel() {
+        return mModuleSourcePanel.getLogOutPanel();
     }
 
     public int getSelectedIndex() {
@@ -91,6 +94,11 @@ public class ConfigPanel extends javax.swing.JPanel {
         }
     }
 
+    public void reset() {
+        mModuleSourcePanel.reset();
+        selectTab(0);
+    }
+
     public void selectTab(int index) {
         tabbedPane.setSelectedIndex(index);
     }
@@ -98,9 +106,11 @@ public class ConfigPanel extends javax.swing.JPanel {
     @Override
     public void setEnabled(final boolean enabled) {
         super.setEnabled(enabled);
-        SwingHelper.enableComponents(mModuleSourcePanel, enabled);
-        if (!enabled) {
-            SwingHelper.enableComponents(getLogPanel(), true);
+
+        for (Component component : mModuleSourcePanel.getComponents()) {
+            if (component != mModuleSourcePanel.getTabbedPane()) {
+                component.setEnabled(enabled);
+            }
         }
 
         for (int i = 1; i < tabbedPane.getTabCount(); i++) {
