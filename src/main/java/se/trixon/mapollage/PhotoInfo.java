@@ -19,6 +19,8 @@ import com.drew.imaging.ImageMetadataReader;
 import com.drew.imaging.ImageProcessingException;
 import com.drew.lang.GeoLocation;
 import com.drew.metadata.Metadata;
+import com.drew.metadata.MetadataException;
+import com.drew.metadata.exif.ExifIFD0Directory;
 import com.drew.metadata.exif.ExifSubIFDDirectory;
 import com.drew.metadata.exif.GpsDirectory;
 import java.awt.Color;
@@ -50,6 +52,7 @@ public class PhotoInfo {
     private final boolean mIncludeNullCoordinate;
     private Metadata mMetadata;
     private final Options mOptions = Options.getInstance();
+    private int mOrientation;
     private Dimension mOriginalDimension = null;
 
     public PhotoInfo(File file, boolean includeNullCoordinate) {
@@ -61,7 +64,9 @@ public class PhotoInfo {
         if (!dest.exists()) {
             int borderSize = mOptions.getThumbnailBorderSize();
             int thumbnailSize = mOptions.getThumbnailSize();
+
             BufferedImage scaledImage = mImageScaler.getScaledImage(mFile, new Dimension(thumbnailSize - borderSize * 2, thumbnailSize - borderSize * 2));
+            scaledImage = GraphicsHelper.rotate(scaledImage, mOrientation);
 
             int width = scaledImage.getWidth();
             int height = scaledImage.getHeight();
@@ -70,10 +75,10 @@ public class PhotoInfo {
 
             BufferedImage borderedImage = new BufferedImage(borderedImageWidth, borderedImageHeight, BufferedImage.TYPE_3BYTE_BGR);
 
-            Graphics2D g2d = borderedImage.createGraphics();
-            g2d.setColor(Color.YELLOW);
-            g2d.fillRect(0, 0, borderedImageWidth, borderedImageHeight);
-            g2d.drawImage(scaledImage, borderSize, borderSize, width + borderSize, height + borderSize, 0, 0, width, height, Color.YELLOW, null);
+            Graphics2D g2 = borderedImage.createGraphics();
+            g2.setColor(Color.YELLOW);
+            g2.fillRect(0, 0, borderedImageWidth, borderedImageHeight);
+            g2.drawImage(scaledImage, borderSize, borderSize, width + borderSize, height + borderSize, 0, 0, width, height, Color.YELLOW, null);
 
             try {
                 ImageIO.write(borderedImage, "jpg", dest);
@@ -157,6 +162,13 @@ public class PhotoInfo {
             mExifDirectory = mMetadata.getFirstDirectoryOfType(ExifSubIFDDirectory.class);
             mGpsDirectory = mMetadata.getFirstDirectoryOfType(GpsDirectory.class);
             mGeoLocation = getGeoLocation();
+
+            try {
+                ExifIFD0Directory rotationDirectory = mMetadata.getFirstDirectoryOfType(ExifIFD0Directory.class);
+                mOrientation = rotationDirectory.getInt(ExifSubIFDDirectory.TAG_ORIENTATION);
+            } catch (MetadataException ex) {
+                mOrientation = 1;
+            }
         } catch (IOException ex) {
             throw new IOException(String.format("E000 %s", mFile.getAbsolutePath()));
         }
