@@ -18,7 +18,6 @@ package se.trixon.mapollage.ui.config;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.prefs.PreferenceChangeEvent;
-import java.util.prefs.PreferenceChangeListener;
 import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 import javax.swing.text.JTextComponent;
@@ -36,7 +35,7 @@ import se.trixon.mapollage.profile.Profile;
  */
 public abstract class ModulePanel extends javax.swing.JPanel {
 
-    public static final int ICON_SIZE = 48;
+    public static final int ICON_SIZE = 36;
     public static final String MULTILINE_DIVIDER = "* * * * *";
     protected final ResourceBundle mBundle = BundleHelper.getBundle(ModulePanel.class, "Bundle");
     protected final String mHeaderPrefix = " + ";
@@ -45,11 +44,8 @@ public abstract class ModulePanel extends javax.swing.JPanel {
     protected String mTitle;
 
     public ModulePanel() {
-        mOptions.getPreferences().addPreferenceChangeListener(new PreferenceChangeListener() {
-            @Override
-            public void preferenceChange(PreferenceChangeEvent evt) {
-                onPreferenceChange(evt);
-            }
+        mOptions.getPreferences().addPreferenceChangeListener((PreferenceChangeEvent evt) -> {
+            onPreferenceChange(evt);
         });
     }
 
