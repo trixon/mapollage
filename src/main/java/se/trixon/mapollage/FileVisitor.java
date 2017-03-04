@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2017 Patrik Karlsson.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -33,9 +33,15 @@ public class FileVisitor extends SimpleFileVisitor<Path> {
 
     private List<File> mFiles = new ArrayList<>();
     private boolean mInterrupted;
+    private final Operation mOperation;
+    private final OperationListener mOperationListener;
     private final PathMatcher mPathMatcher;
+    private final File mStartDir;
 
-    public FileVisitor(PathMatcher pathMatcher, List<File> paths) {
+    public FileVisitor(PathMatcher pathMatcher, List<File> paths, File startDir, Operation operation) {
+        mStartDir = startDir;
+        mOperation = operation;
+        mOperationListener = operation.getListener();
         mFiles = paths;
         mPathMatcher = pathMatcher;
     }
@@ -45,13 +51,15 @@ public class FileVisitor extends SimpleFileVisitor<Path> {
     }
 
     @Override
-    public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+    public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
         if (Thread.interrupted()) {
             mInterrupted = true;
             return FileVisitResult.TERMINATE;
         }
 
         String[] filePaths = dir.toFile().list();
+
+        mOperationListener.onOperationLog(dir.toString());
 
         if (filePaths != null && filePaths.length > 0) {
             for (String fileName : filePaths) {
@@ -66,7 +74,9 @@ public class FileVisitor extends SimpleFileVisitor<Path> {
     }
 
     @Override
-    public FileVisitResult visitFileFailed(Path file, IOException exc) {
+    public FileVisitResult visitFileFailed(Path file, IOException exception) {
+        mOperation.logError(String.format("E000 %s", file.toString()));
+
         return FileVisitResult.CONTINUE;
     }
 }

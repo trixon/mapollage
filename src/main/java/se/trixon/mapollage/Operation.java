@@ -167,6 +167,7 @@ public class Operation implements Runnable {
 
         if (!mInterrupted && !mFiles.isEmpty()) {
             mListener.onOperationLog(String.format(mBundle.getString("found_count"), mFiles.size()));
+            mListener.onOperationLog("");
             for (File file : mFiles) {
                 try {
                     addPhoto(file);
@@ -350,7 +351,7 @@ public class Operation implements Runnable {
 
         File file = mProfileSource.getDir();
         if (file.isDirectory()) {
-            FileVisitor fileVisitor = new FileVisitor(pathMatcher, mFiles);
+            FileVisitor fileVisitor = new FileVisitor(pathMatcher, mFiles, file, this);
             try {
                 if (mProfileSource.isRecursive()) {
                     Files.walkFileTree(file.toPath(), fileVisitOptions, Integer.MAX_VALUE, fileVisitor);
@@ -582,12 +583,8 @@ public class Operation implements Runnable {
         return builder.toString();
     }
 
-    private void logError(String message) {
-        mNumOfErrors++;
-        mListener.onOperationError(message);
-    }
-
     private void saveToFile() {
+        mListener.onOperationLog("");
         List keys = new ArrayList(mRootFolders.keySet());
         Collections.sort(keys);
 
@@ -648,5 +645,14 @@ public class Operation implements Runnable {
         } catch (FileNotFoundException ex) {
             mListener.onOperationLog(ex.getLocalizedMessage());
         }
+    }
+
+    OperationListener getListener() {
+        return mListener;
+    }
+
+    void logError(String message) {
+        mNumOfErrors++;
+        mListener.onOperationError(message);
     }
 }
