@@ -462,7 +462,7 @@ public class Operation implements Runnable {
 
         switch (mProfilePhoto.getReference()) {
             case ABSOLUTE:
-                imageSrc = String.format("file://%s", file.getAbsolutePath());
+                imageSrc = String.format("file:///%s", file.getAbsolutePath());
                 break;
 
             case ABSOLUTE_PATH:
