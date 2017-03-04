@@ -304,11 +304,11 @@ public class Operation implements Runnable {
                     .withId(styleHighlightId);
 
             if (mProfilePlacemark.isSymbolAsPhoto()) {
-                Icon icon = KmlFactory.createIcon().withHref(String.format("%s/%s", mThumbsDir.getName(), imageId));
+                Icon icon = KmlFactory.createIcon().withHref(String.format("%s/%s.jpg", mThumbsDir.getName(), imageId));
                 normalIconStyle.setIcon(icon);
                 highlightIconStyle.setIcon(icon);
 
-                mPhotoInfo.createThumbnail(new File(mThumbsDir, imageId));
+                mPhotoInfo.createThumbnail(new File(mThumbsDir, imageId + ".jpg"));
             }
 
             folder.createAndAddStyleMap().withId(styleMapId)
