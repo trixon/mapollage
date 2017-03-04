@@ -137,6 +137,27 @@ public class ModuleSourcePanel extends ModulePanel implements FileChooserPanel.F
                 mSource.setFilePattern(patternTextField.getText());
             }
         });
+
+        excludeTextField.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                saveOption();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                saveOption();
+            }
+
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                saveOption();
+            }
+
+            private void saveOption() {
+                mSource.setExcludePattern(excludeTextField.getText());
+            }
+        });
     }
 
     private void saveSourcePath() {
@@ -151,44 +172,35 @@ public class ModuleSourcePanel extends ModulePanel implements FileChooserPanel.F
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
+        java.awt.GridBagConstraints gridBagConstraints;
 
         sourceChooserPanel = new se.trixon.almond.util.swing.dialogs.FileChooserPanel();
-        patternPanel = new javax.swing.JPanel();
-        patternLabel = new javax.swing.JLabel();
-        patternTextField = new javax.swing.JTextField();
         recursiveCheckBox = new javax.swing.JCheckBox();
         followLinksCheckBox = new javax.swing.JCheckBox();
         includeNullCoordinateCheckBox = new javax.swing.JCheckBox();
         tabbedPane = new javax.swing.JTabbedPane();
         logOutPanel = new se.trixon.almond.util.swing.LogPanel();
         logErrPanel = new se.trixon.almond.util.swing.LogPanel();
+        jPanel3 = new javax.swing.JPanel();
+        jPanel1 = new javax.swing.JPanel();
+        patternLabel = new javax.swing.JLabel();
+        patternTextField = new javax.swing.JTextField();
+        jPanel2 = new javax.swing.JPanel();
+        excludeLabel = new javax.swing.JLabel();
+        excludeTextField = new javax.swing.JTextField();
+
+        setLayout(new java.awt.GridBagLayout());
 
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("se/trixon/mapollage/ui/config/Bundle"); // NOI18N
         sourceChooserPanel.setHeader(bundle.getString("ModuleSourcePanel.sourceChooserPanel.header")); // NOI18N
-
-        patternLabel.setText(Dict.FILE_PATTERN.toString());
-
-        javax.swing.GroupLayout patternPanelLayout = new javax.swing.GroupLayout(patternPanel);
-        patternPanel.setLayout(patternPanelLayout);
-        patternPanelLayout.setHorizontalGroup(
-            patternPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(patternPanelLayout.createSequentialGroup()
-                .addGap(0, 0, 0)
-                .addGroup(patternPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(patternPanelLayout.createSequentialGroup()
-                        .addComponent(patternLabel)
-                        .addGap(0, 81, Short.MAX_VALUE))
-                    .addComponent(patternTextField))
-                .addContainerGap())
-        );
-        patternPanelLayout.setVerticalGroup(
-            patternPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(patternPanelLayout.createSequentialGroup()
-                .addComponent(patternLabel)
-                .addGap(0, 0, 0)
-                .addComponent(patternTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
-        );
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridwidth = 3;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.weightx = 1.0;
+        add(sourceChooserPanel, gridBagConstraints);
 
         recursiveCheckBox.setText(Dict.SUBDIRECTORIES.toString());
         recursiveCheckBox.setFocusable(false);
@@ -198,6 +210,11 @@ public class ModuleSourcePanel extends ModulePanel implements FileChooserPanel.F
                 recursiveCheckBoxActionPerformed(evt);
             }
         });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        add(recursiveCheckBox, gridBagConstraints);
 
         followLinksCheckBox.setText(Dict.FOLLOW_LINKS.toString());
         followLinksCheckBox.setFocusable(false);
@@ -207,6 +224,12 @@ public class ModuleSourcePanel extends ModulePanel implements FileChooserPanel.F
                 followLinksCheckBoxActionPerformed(evt);
             }
         });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 8, 0, 0);
+        add(followLinksCheckBox, gridBagConstraints);
 
         includeNullCoordinateCheckBox.setText(bundle.getString("ModuleSourcePanel.includeNullCoordinateCheckBox.text")); // NOI18N
         includeNullCoordinateCheckBox.addActionListener(new java.awt.event.ActionListener() {
@@ -214,40 +237,58 @@ public class ModuleSourcePanel extends ModulePanel implements FileChooserPanel.F
                 includeNullCoordinateCheckBoxActionPerformed(evt);
             }
         });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 8, 0, 0);
+        add(includeNullCoordinateCheckBox, gridBagConstraints);
 
         tabbedPane.setTabPlacement(javax.swing.JTabbedPane.BOTTOM);
         tabbedPane.addTab(Dict.OUTPUT.toString().toLowerCase(), logOutPanel);
         tabbedPane.addTab(Dict.Dialog.ERROR.toString().toLowerCase(), logErrPanel);
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-        this.setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(sourceChooserPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(patternPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(recursiveCheckBox)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(followLinksCheckBox)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(includeNullCoordinateCheckBox)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addComponent(tabbedPane, javax.swing.GroupLayout.Alignment.TRAILING)
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addComponent(sourceChooserPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(patternPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(recursiveCheckBox)
-                    .addComponent(followLinksCheckBox)
-                    .addComponent(includeNullCoordinateCheckBox))
-                .addGap(18, 18, 18)
-                .addComponent(tabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 322, Short.MAX_VALUE))
-        );
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(8, 0, 0, 0);
+        add(tabbedPane, gridBagConstraints);
+
+        jPanel3.setLayout(new java.awt.GridLayout(1, 0, 8, 0));
+
+        jPanel1.setLayout(new javax.swing.BoxLayout(jPanel1, javax.swing.BoxLayout.PAGE_AXIS));
+
+        patternLabel.setText(Dict.FILE_PATTERN.toString());
+        jPanel1.add(patternLabel);
+
+        patternTextField.setAlignmentX(0.0F);
+        jPanel1.add(patternTextField);
+
+        jPanel3.add(jPanel1);
+
+        jPanel2.setLayout(new javax.swing.BoxLayout(jPanel2, javax.swing.BoxLayout.PAGE_AXIS));
+
+        excludeLabel.setText(bundle.getString("ModuleSourcePanel.excludeLabel.text")); // NOI18N
+        jPanel2.add(excludeLabel);
+
+        excludeTextField.setToolTipText(bundle.getString("ModuleSourcePanel.excludeTextField.toolTipText")); // NOI18N
+        excludeTextField.setAlignmentX(0.0F);
+        jPanel2.add(excludeTextField);
+
+        jPanel3.add(jPanel2);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 8, 0, 0);
+        add(jPanel3, gridBagConstraints);
     }// </editor-fold>//GEN-END:initComponents
 
     private void recursiveCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_recursiveCheckBoxActionPerformed
@@ -263,12 +304,16 @@ public class ModuleSourcePanel extends ModulePanel implements FileChooserPanel.F
     }//GEN-LAST:event_includeNullCoordinateCheckBoxActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel excludeLabel;
+    private javax.swing.JTextField excludeTextField;
     private javax.swing.JCheckBox followLinksCheckBox;
     private javax.swing.JCheckBox includeNullCoordinateCheckBox;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
     private se.trixon.almond.util.swing.LogPanel logErrPanel;
     private se.trixon.almond.util.swing.LogPanel logOutPanel;
     private javax.swing.JLabel patternLabel;
-    private javax.swing.JPanel patternPanel;
     private javax.swing.JTextField patternTextField;
     private javax.swing.JCheckBox recursiveCheckBox;
     private se.trixon.almond.util.swing.dialogs.FileChooserPanel sourceChooserPanel;
@@ -286,6 +331,7 @@ public class ModuleSourcePanel extends ModulePanel implements FileChooserPanel.F
         }
 
         patternTextField.setText(mSource.getFilePattern());
+        excludeTextField.setText(mSource.getExcludePattern());
         recursiveCheckBox.setSelected(mSource.isRecursive());
         followLinksCheckBox.setSelected(mSource.isFollowLinks());
 

@@ -24,6 +24,7 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  *
@@ -31,6 +32,7 @@ import java.util.List;
  */
 public class FileVisitor extends SimpleFileVisitor<Path> {
 
+    private final String[] mExcludePatterns;
     private List<File> mFiles = new ArrayList<>();
     private boolean mInterrupted;
     private final Operation mOperation;
@@ -44,6 +46,7 @@ public class FileVisitor extends SimpleFileVisitor<Path> {
         mOperationListener = operation.getListener();
         mFiles = paths;
         mPathMatcher = pathMatcher;
+        mExcludePatterns = StringUtils.split(operation.getExcludePattern(), "::");
     }
 
     public boolean isInterrupted() {
@@ -65,7 +68,17 @@ public class FileVisitor extends SimpleFileVisitor<Path> {
             for (String fileName : filePaths) {
                 File file = new File(dir.toFile(), fileName);
                 if (file.isFile() && mPathMatcher.matches(file.toPath().getFileName())) {
-                    mFiles.add(file);
+                    boolean exclude = false;
+                    for (String excludePattern : mExcludePatterns) {
+                        if (StringUtils.contains(file.getAbsolutePath(), excludePattern)) {
+                            exclude = true;
+                            break;
+                        }
+                    }
+
+                    if (!exclude) {
+                        mFiles.add(file);
+                    }
                 }
             }
         }

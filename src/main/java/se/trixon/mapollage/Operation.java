@@ -651,6 +651,10 @@ public class Operation implements Runnable {
         return mListener;
     }
 
+    String getExcludePattern() {
+        return mProfileSource.getExcludePattern();
+    }
+
     void logError(String message) {
         mNumOfErrors++;
         mListener.onOperationError(message);

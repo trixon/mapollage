@@ -29,12 +29,14 @@ import se.trixon.almond.util.Dict;
  */
 public class ProfileSource extends ProfileBase {
 
+    public static final String KEY_EXCLUDE = "exclude";
     public static final String KEY_FOLLOW_LINKS = "followLinks";
     public static final String KEY_INCLUDE_NULL_COORDINATE = "includeNullCoordinate";
     public static final String KEY_PATH = "path";
     public static final String KEY_PATTERN = "pattern";
     public static final String KEY_RECURSIVE = "recursive";
     private File mDir = SystemUtils.getUserHome();
+    private String mExcludePattern = "";
     private String mFilePattern = "{*.jpg,*.JPG}";
     private boolean mFollowLinks = true;
     private boolean mIncludeNullCoordinate = false;
@@ -50,6 +52,7 @@ public class ProfileSource extends ProfileBase {
         mProfile = profile;
         mDir = getFileObject(json, KEY_PATH);
         mFilePattern = (String) json.get(KEY_PATTERN);
+        mExcludePattern = (String) json.get(KEY_EXCLUDE);
         mRecursive = getBoolean(json, KEY_RECURSIVE, mRecursive);
         mFollowLinks = getBoolean(json, KEY_FOLLOW_LINKS, mFollowLinks);
         mIncludeNullCoordinate = getBoolean(json, KEY_INCLUDE_NULL_COORDINATE, mIncludeNullCoordinate);
@@ -57,6 +60,10 @@ public class ProfileSource extends ProfileBase {
 
     public File getDir() {
         return mDir;
+    }
+
+    public String getExcludePattern() {
+        return mExcludePattern;
     }
 
     public String getFilePattern() {
@@ -68,6 +75,7 @@ public class ProfileSource extends ProfileBase {
         JSONObject json = new JSONObject();
         json.put(KEY_PATH, mDir.getAbsolutePath());
         json.put(KEY_PATTERN, mFilePattern);
+        json.put(KEY_EXCLUDE, mExcludePattern);
         json.put(KEY_FOLLOW_LINKS, mFollowLinks);
         json.put(KEY_RECURSIVE, mRecursive);
         json.put(KEY_INCLUDE_NULL_COORDINATE, mIncludeNullCoordinate);
@@ -111,20 +119,8 @@ public class ProfileSource extends ProfileBase {
         mDir = dir;
     }
 
-    @Override
-    protected ProfileInfo getProfileInfo() {
-        ProfileInfo profileInfo = new ProfileInfo();
-        LinkedHashMap<String, String> values = new LinkedHashMap<>();
-        values.put(mBundleUI.getString("ModuleSourcePanel.sourceChooserPanel.header"), mDir.getAbsolutePath());
-        values.put(Dict.FILE_PATTERN.toString(), mFilePattern);
-        values.put(Dict.SUBDIRECTORIES.toString(), String.valueOf(mRecursive));
-        values.put(Dict.FOLLOW_LINKS.toString(), String.valueOf(mFollowLinks));
-        values.put(mBundleUI.getString("ModuleSourcePanel.includeNullCoordinateCheckBox.text"), String.valueOf(mIncludeNullCoordinate));
-
-        profileInfo.setTitle(getTitle());
-        profileInfo.setValues(values);
-
-        return profileInfo;
+    public void setExcludePattern(String excludePattern) {
+        mExcludePattern = excludePattern;
     }
 
     public void setFilePattern(String filePattern) {
@@ -141,5 +137,21 @@ public class ProfileSource extends ProfileBase {
 
     public void setRecursive(boolean recursive) {
         mRecursive = recursive;
+    }
+
+    @Override
+    protected ProfileInfo getProfileInfo() {
+        ProfileInfo profileInfo = new ProfileInfo();
+        LinkedHashMap<String, String> values = new LinkedHashMap<>();
+        values.put(mBundleUI.getString("ModuleSourcePanel.sourceChooserPanel.header"), mDir.getAbsolutePath());
+        values.put(Dict.FILE_PATTERN.toString(), mFilePattern);
+        values.put(Dict.SUBDIRECTORIES.toString(), String.valueOf(mRecursive));
+        values.put(Dict.FOLLOW_LINKS.toString(), String.valueOf(mFollowLinks));
+        values.put(mBundleUI.getString("ModuleSourcePanel.includeNullCoordinateCheckBox.text"), String.valueOf(mIncludeNullCoordinate));
+
+        profileInfo.setTitle(getTitle());
+        profileInfo.setValues(values);
+
+        return profileInfo;
     }
 }
