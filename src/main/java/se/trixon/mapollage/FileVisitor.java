@@ -69,10 +69,12 @@ public class FileVisitor extends SimpleFileVisitor<Path> {
                 File file = new File(dir.toFile(), fileName);
                 if (file.isFile() && mPathMatcher.matches(file.toPath().getFileName())) {
                     boolean exclude = false;
-                    for (String excludePattern : mExcludePatterns) {
-                        if (StringUtils.contains(file.getAbsolutePath(), excludePattern)) {
-                            exclude = true;
-                            break;
+                    if (mExcludePatterns != null) {
+                        for (String excludePattern : mExcludePatterns) {
+                            if (StringUtils.contains(file.getAbsolutePath(), excludePattern)) {
+                                exclude = true;
+                                break;
+                            }
                         }
                     }
 
