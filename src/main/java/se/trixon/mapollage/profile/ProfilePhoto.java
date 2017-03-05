@@ -161,6 +161,10 @@ public class ProfilePhoto extends ProfileBase {
                 fileReference = Dict.RELATIVE.toString();
                 break;
 
+            case THUMBNAIL:
+                fileReference = Dict.THUMBNAIL.toString();
+                break;
+
         }
 
         values.put(Dict.FILE_REFERENCE.toString(), fileReference);
@@ -173,8 +177,10 @@ public class ProfilePhoto extends ProfileBase {
     }
 
     public static enum Reference {
+        //NEVER EVER change the order of the elements
         ABSOLUTE,
         ABSOLUTE_PATH,
-        RELATIVE
+        RELATIVE,
+        THUMBNAIL;
     }
 }

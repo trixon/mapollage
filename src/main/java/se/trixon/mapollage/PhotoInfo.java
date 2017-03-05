@@ -132,6 +132,10 @@ public class PhotoInfo {
         return mMetadata;
     }
 
+    public int getOrientation() {
+        return mOrientation;
+    }
+
     public Dimension getOriginalDimension() throws IOException {
         if (mOriginalDimension == null) {
             try {

@@ -101,6 +101,7 @@ public class ModulePhotoPanel extends ModulePanel {
         relativeRadioButton = new javax.swing.JRadioButton();
         absoluteRadioButton = new javax.swing.JRadioButton();
         absolutePathRadioButton = new javax.swing.JRadioButton();
+        thumbnailRadioButton = new javax.swing.JRadioButton();
 
         setLayout(new java.awt.GridBagLayout());
 
@@ -173,7 +174,7 @@ public class ModulePhotoPanel extends ModulePanel {
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 7;
+        gridBagConstraints.gridy = 8;
         gridBagConstraints.gridwidth = 3;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
@@ -189,7 +190,7 @@ public class ModulePhotoPanel extends ModulePanel {
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 8;
+        gridBagConstraints.gridy = 9;
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(8, 0, 3, 0);
@@ -203,12 +204,12 @@ public class ModulePhotoPanel extends ModulePanel {
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 224, Short.MAX_VALUE)
+            .addGap(0, 196, Short.MAX_VALUE)
         );
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 9;
+        gridBagConstraints.gridy = 10;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
@@ -232,8 +233,8 @@ public class ModulePhotoPanel extends ModulePanel {
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 3;
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.gridwidth = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         add(relativeRadioButton, gridBagConstraints);
 
@@ -246,7 +247,7 @@ public class ModulePhotoPanel extends ModulePanel {
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 4;
+        gridBagConstraints.gridy = 5;
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         add(absoluteRadioButton, gridBagConstraints);
@@ -260,10 +261,24 @@ public class ModulePhotoPanel extends ModulePanel {
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 5;
+        gridBagConstraints.gridy = 6;
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         add(absolutePathRadioButton, gridBagConstraints);
+
+        referenceButtonGroup.add(thumbnailRadioButton);
+        thumbnailRadioButton.setText(Dict.THUMBNAIL.toString());
+        thumbnailRadioButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                thumbnailRadioButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        add(thumbnailRadioButton, gridBagConstraints);
 
         bindingGroup.bind();
     }// </editor-fold>//GEN-END:initComponents
@@ -300,6 +315,10 @@ public class ModulePhotoPanel extends ModulePanel {
         mProfilePhoto.setReference(Reference.ABSOLUTE_PATH);
     }//GEN-LAST:event_absolutePathRadioButtonActionPerformed
 
+    private void thumbnailRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_thumbnailRadioButtonActionPerformed
+        mProfilePhoto.setReference(Reference.THUMBNAIL);
+    }//GEN-LAST:event_thumbnailRadioButtonActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JRadioButton absolutePathRadioButton;
     private javax.swing.JRadioButton absoluteRadioButton;
@@ -310,6 +329,7 @@ public class ModulePhotoPanel extends ModulePanel {
     private javax.swing.ButtonGroup referenceButtonGroup;
     private javax.swing.JLabel referenceLabel;
     private javax.swing.JRadioButton relativeRadioButton;
+    private javax.swing.JRadioButton thumbnailRadioButton;
     private javax.swing.JTextField urlTextField;
     private javax.swing.JCheckBox widthCheckBox;
     private javax.swing.JSpinner widthSpinner;
@@ -342,6 +362,11 @@ public class ModulePhotoPanel extends ModulePanel {
             case RELATIVE:
                 relativeRadioButton.setSelected(true);
                 relativeRadioButtonActionPerformed(null);
+                break;
+
+            case THUMBNAIL:
+                thumbnailRadioButton.setSelected(true);
+                thumbnailRadioButtonActionPerformed(null);
                 break;
         }
     }

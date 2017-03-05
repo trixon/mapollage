@@ -80,6 +80,7 @@ public class Operation implements Runnable {
     private final DateFormat mDateFormatDate = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM);
     private final File mDestinationFile;
     private final Document mDocument;
+    private final HashMap<File, File> mFileThumbMap = new HashMap<>();
     private final List<File> mFiles = new ArrayList<>();
     private final Pattern mFolderByRegexPattern;
     private final Map<String, Folder> mFolders = new HashMap<>();
@@ -307,8 +308,12 @@ public class Operation implements Runnable {
                 Icon icon = KmlFactory.createIcon().withHref(String.format("%s/%s.jpg", mThumbsDir.getName(), imageId));
                 normalIconStyle.setIcon(icon);
                 highlightIconStyle.setIcon(icon);
+            }
 
-                mPhotoInfo.createThumbnail(new File(mThumbsDir, imageId + ".jpg"));
+            if (mProfilePlacemark.isSymbolAsPhoto() || mProfilePhoto.getReference() == ProfilePhoto.Reference.THUMBNAIL) {
+                File thumbFile = new File(mThumbsDir, imageId + ".jpg");
+                mFileThumbMap.put(file, thumbFile);
+                mPhotoInfo.createThumbnail(thumbFile);
             }
 
             folder.createAndAddStyleMap().withId(styleMapId)
@@ -317,7 +322,7 @@ public class Operation implements Runnable {
 
             Placemark placemark = KmlFactory.createPlacemark()
                     .withName(getPlacemarkName(file, exifDate))
-                    .withDescription(getPlacemarkDescription(file, mPhotoInfo.getGpsDirectory(), exifDate))
+                    .withDescription(getPlacemarkDescription(file, mPhotoInfo, exifDate))
                     .withOpen(Boolean.TRUE)
                     .withStyleUrl(styleMapId);
 
@@ -378,20 +383,28 @@ public class Operation implements Runnable {
         return true;
     }
 
-    private String getDescPhoto(File sourceFile) throws IOException {
+    private String getDescPhoto(File sourceFile, int orientation) throws IOException {
         Scaler scaler = new Scaler(new Dimension(mPhotoInfo.getOriginalDimension()));
+        boolean thumbRef = mProfilePhoto.getReference() == ProfilePhoto.Reference.THUMBNAIL;
+        boolean portrait = (orientation == 6 || orientation == 8) && thumbRef;
 
         if (mProfilePhoto.isLimitWidth()) {
-            scaler.setWidth(mProfilePhoto.getWidthLimit());
+            int widthLimit = portrait ? mProfilePhoto.getHeightLimit() : mProfilePhoto.getWidthLimit();
+            scaler.setWidth(widthLimit);
         }
 
         if (mProfilePhoto.isLimitHeight()) {
-            scaler.setHeight(mProfilePhoto.getHeightLimit());
+            int heightLimit = portrait ? mProfilePhoto.getWidthLimit() : mProfilePhoto.getHeightLimit();
+            scaler.setHeight(heightLimit);
         }
 
         Dimension newDimension = scaler.getDimension();
         String imageTagFormat = "<p><img src='%s' width='%d' height='%d'></p>";
-        String imageTag = String.format(imageTagFormat, getImagePath(sourceFile), newDimension.width, newDimension.height);
+
+        int width = portrait ? newDimension.height : newDimension.width;
+        int height = portrait ? newDimension.width : newDimension.height;
+
+        String imageTag = String.format(imageTagFormat, getImagePath(sourceFile), width, height);
 
         return imageTag;
     }
@@ -474,6 +487,11 @@ public class Operation implements Runnable {
                 imageSrc = StringUtils.replace(relativePath.toString(), "..", ".", 1);
                 break;
 
+            case THUMBNAIL:
+                Path thumbPath = mDestinationFile.toPath().relativize(mFileThumbMap.get(file).toPath());
+                imageSrc = StringUtils.replace(thumbPath.toString(), "..", ".", 1);
+                break;
+
             default:
                 throw new AssertionError();
         }
@@ -493,7 +511,8 @@ public class Operation implements Runnable {
         return imageSrc;
     }
 
-    private String getPlacemarkDescription(File file, GpsDirectory gpsDirectory, Date exifDate) throws IOException {
+    private String getPlacemarkDescription(File file, PhotoInfo photoInfo, Date exifDate) throws IOException {
+        GpsDirectory gpsDirectory = photoInfo.getGpsDirectory();
         GpsDescriptor gpsDescriptor = null;
         if (gpsDirectory != null) {
             gpsDescriptor = new GpsDescriptor(gpsDirectory);
@@ -502,7 +521,7 @@ public class Operation implements Runnable {
         String desc = mProfileDescription.isCustom() ? mProfileDescription.getCustomValue() : getStaticDescription();
 
         if (StringUtils.containsIgnoreCase(desc, DescriptionSegment.PHOTO.toString())) {
-            desc = StringUtils.replace(desc, DescriptionSegment.PHOTO.toString(), getDescPhoto(file));
+            desc = StringUtils.replace(desc, DescriptionSegment.PHOTO.toString(), getDescPhoto(file, photoInfo.getOrientation()));
         }
 
         desc = StringUtils.replace(desc, DescriptionSegment.FILENAME.toString(), file.getName());
@@ -647,12 +666,12 @@ public class Operation implements Runnable {
         }
     }
 
-    OperationListener getListener() {
-        return mListener;
-    }
-
     String getExcludePattern() {
         return mProfileSource.getExcludePattern();
+    }
+
+    OperationListener getListener() {
+        return mListener;
     }
 
     void logError(String message) {
