@@ -18,9 +18,11 @@ package se.trixon.mapollage.ui.config;
 import java.awt.Component;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.border.EmptyBorder;
 import se.trixon.almond.util.swing.LogPanel;
+import se.trixon.almond.util.swing.SwingHelper;
 import se.trixon.mapollage.profile.Profile;
 
 /**
@@ -115,6 +117,9 @@ public class ConfigPanel extends javax.swing.JPanel {
         for (Component component : mModuleSourcePanel.getComponents()) {
             if (component != mModuleSourcePanel.getTabbedPane()) {
                 component.setEnabled(enabled);
+                if (component instanceof JPanel) {
+                    SwingHelper.enableComponents((JPanel) component, enabled);
+                }
             }
         }
 
