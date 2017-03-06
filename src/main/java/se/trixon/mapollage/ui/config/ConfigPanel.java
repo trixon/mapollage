@@ -18,6 +18,7 @@ package se.trixon.mapollage.ui.config;
 import java.awt.Component;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
+import javax.swing.JProgressBar;
 import javax.swing.border.EmptyBorder;
 import se.trixon.almond.util.swing.LogPanel;
 import se.trixon.mapollage.profile.Profile;
@@ -62,6 +63,10 @@ public class ConfigPanel extends javax.swing.JPanel {
 
     public LogPanel getLogOutPanel() {
         return mModuleSourcePanel.getLogOutPanel();
+    }
+
+    public JProgressBar getProgressBar() {
+        return mModuleSourcePanel.getProgressBar();
     }
 
     public int getSelectedIndex() {
@@ -121,6 +126,8 @@ public class ConfigPanel extends javax.swing.JPanel {
         if (mProfile != null) {
             tabbedPane.setEnabledAt(photoIndex, enabled && mProfile.getDescription().hasPhoto());
         }
+
+        getProgressBar().setEnabled(true);
     }
 
     private void addModulePanel(ModulePanel modulePanel) {

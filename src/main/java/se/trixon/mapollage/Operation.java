@@ -169,7 +169,11 @@ public class Operation implements Runnable {
         if (!mInterrupted && !mFiles.isEmpty()) {
             mListener.onOperationLog(String.format(mBundle.getString("found_count"), mFiles.size()));
             mListener.onOperationLog("");
+            mListener.onOperationProgressInit(mFiles.size());
+
             for (File file : mFiles) {
+                mListener.onOperationProgress(file.getAbsolutePath());
+
                 try {
                     addPhoto(file);
                 } catch (ImageProcessingException ex) {

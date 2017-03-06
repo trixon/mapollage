@@ -19,6 +19,7 @@ import java.awt.event.FocusAdapter;
 import java.io.File;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
+import javax.swing.JProgressBar;
 import javax.swing.JTabbedPane;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -72,6 +73,10 @@ public class ModuleSourcePanel extends ModulePanel implements FileChooserPanel.F
     @Override
     public ImageIcon getIcon() {
         return MaterialIcon._Image.PHOTO_LIBRARY.get(ICON_SIZE, getIconColor());
+    }
+
+    public JProgressBar getProgressBar() {
+        return progressBar;
     }
 
     @Override
@@ -188,6 +193,7 @@ public class ModuleSourcePanel extends ModulePanel implements FileChooserPanel.F
         jPanel2 = new javax.swing.JPanel();
         excludeLabel = new javax.swing.JLabel();
         excludeTextField = new javax.swing.JTextField();
+        progressBar = new javax.swing.JProgressBar();
 
         setLayout(new java.awt.GridBagLayout());
 
@@ -289,6 +295,13 @@ public class ModuleSourcePanel extends ModulePanel implements FileChooserPanel.F
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 8, 0, 0);
         add(jPanel3, gridBagConstraints);
+
+        progressBar.setString(" "); // NOI18N
+        progressBar.setStringPainted(true);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        add(progressBar, gridBagConstraints);
     }// </editor-fold>//GEN-END:initComponents
 
     private void recursiveCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_recursiveCheckBoxActionPerformed
@@ -315,6 +328,7 @@ public class ModuleSourcePanel extends ModulePanel implements FileChooserPanel.F
     private se.trixon.almond.util.swing.LogPanel logOutPanel;
     private javax.swing.JLabel patternLabel;
     private javax.swing.JTextField patternTextField;
+    private javax.swing.JProgressBar progressBar;
     private javax.swing.JCheckBox recursiveCheckBox;
     private se.trixon.almond.util.swing.dialogs.FileChooserPanel sourceChooserPanel;
     private javax.swing.JTabbedPane tabbedPane;

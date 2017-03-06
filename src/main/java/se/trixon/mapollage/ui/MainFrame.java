@@ -42,6 +42,7 @@ import javax.swing.ImageIcon;
 import javax.swing.InputMap;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
+import javax.swing.JProgressBar;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -86,6 +87,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
     private OperationListener mOperationListener;
     private LogPanel mLogErrPanel;
     private LogPanel mLogOutPanel;
+    private JProgressBar mProgressBar;
 
     /**
      * Creates new form MainFrame
@@ -144,6 +146,8 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
         String fileName = String.format("/%s/icon-1024px.png", getClass().getPackage().getName().replace(".", "/"));
         ImageIcon imageIcon = new ImageIcon(getClass().getResource(fileName));
         setIconImage(imageIcon.getImage());
+
+        mProgressBar = configPanel.getProgressBar();
 
         mModel = (DefaultComboBoxModel) profileComboBox.getModel();
         mActionManager = new ActionManager();
@@ -220,6 +224,22 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
             }
 
             @Override
+            public void onOperationProgress(String message) {
+                SwingUtilities.invokeLater(() -> {
+                    mProgressBar.setString(message);
+                    mProgressBar.setValue(mProgressBar.getValue() + 1);
+                });
+            }
+
+            @Override
+            public void onOperationProgressInit(int fileCount) {
+                mProgressBar.setIndeterminate(false);
+                mProgressBar.setMinimum(0);
+                mProgressBar.setValue(0);
+                mProgressBar.setMaximum(fileCount);
+            }
+
+            @Override
             public void onOperationStarted() {
                 setRunningState(true);
             }
@@ -240,6 +260,8 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
         cancelButton.setVisible(state);
 
         configPanel.setEnabled(!state);
+        mProgressBar.setIndeterminate(state);
+        mProgressBar.setString(" ");
     }
 
     private void populateProfiles(Profile profile, int tab) {

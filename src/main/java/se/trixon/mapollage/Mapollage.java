@@ -189,6 +189,14 @@ public class Mapollage implements OperationListener {
     }
 
     @Override
+    public void onOperationProgress(String message) {
+    }
+
+    @Override
+    public void onOperationProgressInit(int fileCount) {
+    }
+
+    @Override
     public void onOperationStarted() {
         // nvm
     }

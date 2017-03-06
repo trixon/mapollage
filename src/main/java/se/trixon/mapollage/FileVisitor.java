@@ -63,6 +63,7 @@ public class FileVisitor extends SimpleFileVisitor<Path> {
         String[] filePaths = dir.toFile().list();
 
         mOperationListener.onOperationLog(dir.toString());
+        mOperationListener.onOperationProgress(dir.toString());
 
         if (filePaths != null && filePaths.length > 0) {
             for (String fileName : filePaths) {
