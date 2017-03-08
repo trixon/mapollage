@@ -60,6 +60,14 @@ public class FileVisitor extends SimpleFileVisitor<Path> {
             return FileVisitResult.TERMINATE;
         }
 
+        if (mExcludePatterns != null) {
+            for (String excludePattern : mExcludePatterns) {
+                if (StringUtils.contains(dir.toString(), excludePattern)) {
+                    return FileVisitResult.SKIP_SUBTREE;
+                }
+            }
+        }
+
         String[] filePaths = dir.toFile().list();
 
         mOperationListener.onOperationLog(dir.toString());
