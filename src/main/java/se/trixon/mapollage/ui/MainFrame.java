@@ -473,6 +473,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
         jSeparator1 = new javax.swing.JPopupMenu.Separator();
         optionsMenuItem = new javax.swing.JMenuItem();
         jSeparator2 = new javax.swing.JPopupMenu.Separator();
+        helpMenuItem = new javax.swing.JMenuItem();
         aboutDateFormatMenuItem = new javax.swing.JMenuItem();
         aboutMenuItem = new javax.swing.JMenuItem();
         jSeparator6 = new javax.swing.JPopupMenu.Separator();
@@ -493,6 +494,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
         mPopupMenu.add(jSeparator1);
         mPopupMenu.add(optionsMenuItem);
         mPopupMenu.add(jSeparator2);
+        mPopupMenu.add(helpMenuItem);
         mPopupMenu.add(aboutDateFormatMenuItem);
         mPopupMenu.add(aboutMenuItem);
         mPopupMenu.add(jSeparator6);
@@ -608,6 +610,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
     private javax.swing.JButton cancelButton;
     private javax.swing.JMenuItem cloneMenuItem;
     private se.trixon.mapollage.ui.config.ConfigPanel configPanel;
+    private javax.swing.JMenuItem helpMenuItem;
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JPopupMenu.Separator jSeparator2;
     private javax.swing.JPopupMenu.Separator jSeparator6;
@@ -629,6 +632,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
 
         static final String ABOUT = "about";
         static final String ABOUT_DATE_FORMAT = "about_date_format";
+        static final String HELP = "help";
         static final String ADD = "add";
         static final String CANCEL = "cancel";
         static final String CLONE = "clone";
@@ -817,6 +821,23 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
 
             initAction(action, ABOUT, keyStroke, null, true);
             aboutMenuItem.setAction(action);
+
+            //help
+            keyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0);
+            action = new AlmondAction(Dict.DOCUMENTATION.toString()) {
+
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    try {
+                        Desktop.getDesktop().browse(new URI("https://trixon.se/projects/mapollage/documentation/"));
+                    } catch (URISyntaxException | IOException ex) {
+                        Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            };
+
+            initAction(action, HELP, keyStroke, null, true);
+            helpMenuItem.setAction(action);
 
             //about date format
             keyStroke = null;

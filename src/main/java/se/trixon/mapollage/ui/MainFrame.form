@@ -20,6 +20,8 @@
         </MenuItem>
         <Component class="javax.swing.JPopupMenu$Separator" name="jSeparator2">
         </Component>
+        <MenuItem class="javax.swing.JMenuItem" name="helpMenuItem">
+        </MenuItem>
         <MenuItem class="javax.swing.JMenuItem" name="aboutDateFormatMenuItem">
         </MenuItem>
         <MenuItem class="javax.swing.JMenuItem" name="aboutMenuItem">
