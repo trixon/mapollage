@@ -90,6 +90,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
     private LogPanel mLogOutPanel;
     private JProgressBar mProgressBar;
     private final Options mOptions = Options.getInstance();
+    private final StatusPanel mStatusPanel = new StatusPanel();
 
     /**
      * Creates new form MainFrame
@@ -149,7 +150,8 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
         ImageIcon imageIcon = new ImageIcon(getClass().getResource(fileName));
         setIconImage(imageIcon.getImage());
 
-        mProgressBar = configPanel.getProgressBar();
+        configPanel.addStatusPanel(mStatusPanel);
+        mProgressBar = mStatusPanel.getProgressBar();
 
         mModel = (DefaultComboBoxModel) profileComboBox.getModel();
         mActionManager = new ActionManager();
@@ -179,11 +181,11 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
         populateProfiles(null, 0);
         initListeners();
 
-        mLogErrPanel = configPanel.getLogErrPanel();
+        mLogErrPanel = mStatusPanel.getLogErrPanel();
         mLogErrPanel.getTextArea().setLineWrap(true);
         mLogErrPanel.getTextArea().setWrapStyleWord(true);
 
-        mLogOutPanel = configPanel.getLogOutPanel();
+        mLogOutPanel = mStatusPanel.getLogOutPanel();
         mLogOutPanel.getTextArea().setLineWrap(true);
         mLogOutPanel.getTextArea().setWrapStyleWord(true);
         mLogOutPanel.println(mBundleUI.getString("welcome_1"));
@@ -275,6 +277,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
         cancelButton.setVisible(state);
 
         configPanel.setEnabled(!state);
+        mProgressBar.setEnabled(true);
         mProgressBar.setIndeterminate(state);
         mProgressBar.setString(" ");
     }
@@ -417,6 +420,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
             profile.setDestinationFile(mDestination);
             profile.isValid();
 
+            mStatusPanel.reset();
             configPanel.reset();
             if (profile.hasValidRelativeSourceDest()) {
                 Operation operation = new Operation(mOperationListener, profile);

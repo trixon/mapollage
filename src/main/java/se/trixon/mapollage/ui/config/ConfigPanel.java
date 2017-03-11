@@ -20,12 +20,11 @@ import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JProgressBar;
 import javax.swing.border.EmptyBorder;
 import org.apache.commons.lang3.SystemUtils;
-import se.trixon.almond.util.swing.LogPanel;
 import se.trixon.almond.util.swing.SwingHelper;
 import se.trixon.mapollage.profile.Profile;
+import se.trixon.mapollage.ui.StatusPanel;
 
 /**
  *
@@ -41,6 +40,7 @@ public class ConfigPanel extends javax.swing.JPanel {
     private final ModulePathPanel mModuleLinePanel = new ModulePathPanel();
     private final ModuleInfoPanel mModuleInfoPanel = new ModuleInfoPanel();
     private Profile mProfile;
+    private StatusPanel mStatusPanel = new StatusPanel();
 
     /**
      * Creates new form ConfigPanel
@@ -48,6 +48,11 @@ public class ConfigPanel extends javax.swing.JPanel {
     public ConfigPanel() {
         initComponents();
         init();
+    }
+
+    public void addStatusPanel(StatusPanel statusPanel) {
+        mStatusPanel = statusPanel;
+        mModuleSourcePanel.addStatusPanel(statusPanel);
     }
 
     public void loadProfile(Profile profile) {
@@ -59,18 +64,6 @@ public class ConfigPanel extends javax.swing.JPanel {
                 modulePanel.load(profile);
             }
         }
-    }
-
-    public LogPanel getLogErrPanel() {
-        return mModuleSourcePanel.getLogErrPanel();
-    }
-
-    public LogPanel getLogOutPanel() {
-        return mModuleSourcePanel.getLogOutPanel();
-    }
-
-    public JProgressBar getProgressBar() {
-        return mModuleSourcePanel.getProgressBar();
     }
 
     public int getSelectedIndex() {
@@ -104,7 +97,6 @@ public class ConfigPanel extends javax.swing.JPanel {
     }
 
     public void reset() {
-        mModuleSourcePanel.reset();
         selectTab(0);
     }
 
@@ -117,7 +109,7 @@ public class ConfigPanel extends javax.swing.JPanel {
         super.setEnabled(enabled);
 
         for (Component component : mModuleSourcePanel.getComponents()) {
-            if (component != mModuleSourcePanel.getTabbedPane()) {
+            if (component != mStatusPanel.getTabbedPane()) {
                 component.setEnabled(enabled);
                 if (component instanceof JPanel) {
                     SwingHelper.enableComponents((JPanel) component, enabled);
@@ -133,8 +125,6 @@ public class ConfigPanel extends javax.swing.JPanel {
         if (mProfile != null) {
             tabbedPane.setEnabledAt(photoIndex, enabled && mProfile.getDescription().hasPhoto());
         }
-
-        getProgressBar().setEnabled(true);
     }
 
     private void addModulePanel(ModulePanel modulePanel) {
