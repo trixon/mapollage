@@ -35,7 +35,7 @@ import se.trixon.mapollage.profile.Profile;
  */
 public abstract class ModulePanel extends javax.swing.JPanel {
 
-    public static final int ICON_SIZE = 36;
+    public static final int ICON_SIZE = 32;
     public static final String MULTILINE_DIVIDER = "* * * * *";
     protected final ResourceBundle mBundle = BundleHelper.getBundle(ModulePanel.class, "Bundle");
     protected final String mHeaderPrefix = " + ";

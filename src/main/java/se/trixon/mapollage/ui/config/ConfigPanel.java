@@ -40,7 +40,6 @@ public class ConfigPanel extends javax.swing.JPanel {
     private final ModulePathPanel mModuleLinePanel = new ModulePathPanel();
     private final ModuleInfoPanel mModuleInfoPanel = new ModuleInfoPanel();
     private Profile mProfile;
-    private StatusPanel mStatusPanel = new StatusPanel();
 
     /**
      * Creates new form ConfigPanel
@@ -51,7 +50,6 @@ public class ConfigPanel extends javax.swing.JPanel {
     }
 
     public void addStatusPanel(StatusPanel statusPanel) {
-        mStatusPanel = statusPanel;
         mModuleSourcePanel.getStatusHolderPanel().add(statusPanel);
     }
 
@@ -119,11 +117,14 @@ public class ConfigPanel extends javax.swing.JPanel {
 
         for (int i = 1; i < tabbedPane.getTabCount(); i++) {
             tabbedPane.setEnabledAt(i, enabled);
+            tabbedPane.getTabComponentAt(i).setEnabled(enabled);
         }
 
         int photoIndex = tabbedPane.indexOfComponent(mModulePhotoPanel);
         if (mProfile != null) {
-            tabbedPane.setEnabledAt(photoIndex, enabled && mProfile.getDescription().hasPhoto());
+            final boolean photoEnabled = enabled && mProfile.getDescription().hasPhoto();
+            tabbedPane.setEnabledAt(photoIndex, photoEnabled);
+            tabbedPane.getTabComponentAt(photoIndex).setEnabled(photoEnabled);
         }
     }
 
@@ -162,7 +163,9 @@ public class ConfigPanel extends javax.swing.JPanel {
         }
 
         mModuleDescriptionPanel.setPhotoDescriptionMonitor((boolean hasPhoto) -> {
-            tabbedPane.setEnabledAt(tabbedPane.indexOfComponent(mModulePhotoPanel), hasPhoto);
+            final int photoIndex = tabbedPane.indexOfComponent(mModulePhotoPanel);
+            tabbedPane.setEnabledAt(photoIndex, hasPhoto);
+            tabbedPane.getTabComponentAt(photoIndex).setEnabled(hasPhoto);
         });
 
         setEnabled(true);

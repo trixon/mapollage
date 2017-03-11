@@ -763,7 +763,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
             addButton.setAction(action);
 
             //clone
-            keyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_C, commandMask);
+            keyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_C, commandMask + InputEvent.SHIFT_DOWN_MASK);
             action = new AlmondAction(Dict.CLONE.toString()) {
 
                 @Override
@@ -808,7 +808,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
             removeButton.setAction(action);
 
             //remove all
-            keyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, InputEvent.SHIFT_DOWN_MASK);
+            keyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, commandMask + InputEvent.SHIFT_DOWN_MASK);
             action = new AlmondAction(Dict.REMOVE_ALL.toString()) {
 
                 @Override
