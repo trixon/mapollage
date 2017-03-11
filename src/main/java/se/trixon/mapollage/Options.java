@@ -24,12 +24,14 @@ import java.util.prefs.Preferences;
  */
 public class Options {
 
+    public static final String KEY_AUTO_OPEN = "auto_open";
     public static final String KEY_DEFAULT_LAT = "deflat";
     public static final String KEY_DEFAULT_LON = "deflon";
     public static final String KEY_LOCALE = "locale";
     public static final String KEY_THUMBNAIL_BORDER_SIZE = "thumbnail_border_size";
     public static final String KEY_THUMBNAIL_SIZE = "thumbnail_size";
     private static final Locale DEFAULT_LOCALE = Locale.getDefault();
+    private final boolean DEFAULT_AUTO_OPEN = true;
     private final Double DEFAULT_LAT = 57.6;
     private final Double DEFAULT_LON = 11.3;
     private final int DEFAULT_THUMBNAIL_BORDER_SIZE = 2;
@@ -65,6 +67,14 @@ public class Options {
 
     public int getThumbnailSize() {
         return mPreferences.getInt(KEY_THUMBNAIL_SIZE, DEFAULT_THUMBNAIL_SIZE);
+    }
+
+    public boolean isAutoOpen() {
+        return mPreferences.getBoolean(KEY_AUTO_OPEN, DEFAULT_AUTO_OPEN);
+    }
+
+    public void setAutoOpen(boolean value) {
+        mPreferences.putBoolean(KEY_AUTO_OPEN, value);
     }
 
     public void setDefaultLat(Double value) {
