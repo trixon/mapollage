@@ -21,6 +21,7 @@ import java.nio.file.PathMatcher;
 import java.util.LinkedHashMap;
 import org.apache.commons.lang3.SystemUtils;
 import org.json.simple.JSONObject;
+import se.trixon.almond.util.BooleanHelper;
 import se.trixon.almond.util.Dict;
 
 /**
@@ -145,9 +146,9 @@ public class ProfileSource extends ProfileBase {
         LinkedHashMap<String, String> values = new LinkedHashMap<>();
         values.put(mBundleUI.getString("ModuleSourcePanel.sourceChooserPanel.header"), mDir.getAbsolutePath());
         values.put(Dict.FILE_PATTERN.toString(), mFilePattern);
-        values.put(Dict.SUBDIRECTORIES.toString(), String.valueOf(mRecursive));
-        values.put(Dict.FOLLOW_LINKS.toString(), String.valueOf(mFollowLinks));
-        values.put(mBundleUI.getString("ModuleSourcePanel.includeNullCoordinateCheckBox.text"), String.valueOf(mIncludeNullCoordinate));
+        values.put(Dict.SUBDIRECTORIES.toString(), BooleanHelper.asYesNo(mRecursive));
+        values.put(Dict.FOLLOW_LINKS.toString(), BooleanHelper.asYesNo(mFollowLinks));
+        values.put(mBundleUI.getString("ModuleSourcePanel.includeNullCoordinateCheckBox.text"), BooleanHelper.asYesNo(mIncludeNullCoordinate));
 
         profileInfo.setTitle(getTitle());
         profileInfo.setValues(values);

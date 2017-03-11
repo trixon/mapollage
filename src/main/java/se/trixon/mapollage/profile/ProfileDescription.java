@@ -18,6 +18,7 @@ package se.trixon.mapollage.profile;
 import java.util.LinkedHashMap;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
+import se.trixon.almond.util.BooleanHelper;
 import se.trixon.almond.util.Dict;
 
 /**
@@ -213,12 +214,12 @@ public class ProfileDescription extends ProfileBase {
         if (mCustom) {
             values.put(Dict.VALUE.toString(), mCustomValue.replaceAll("\\n", "\\\\n"));
         } else {
-            values.put(Dict.PHOTO.toString(), String.valueOf(mPhoto));
-            values.put(Dict.FILENAME.toString(), String.valueOf(mFilename));
-            values.put(Dict.DATE.toString(), String.valueOf(mDate));
-            values.put(Dict.COORDINATE.toString(), String.valueOf(mCoordinate));
-            values.put(Dict.ALTITUDE.toString(), String.valueOf(mAltitude));
-            values.put(Dict.BEARING.toString(), String.valueOf(mBearing));
+            values.put(Dict.PHOTO.toString(), BooleanHelper.asYesNo(mPhoto));
+            values.put(Dict.FILENAME.toString(), BooleanHelper.asYesNo(mFilename));
+            values.put(Dict.DATE.toString(), BooleanHelper.asYesNo(mDate));
+            values.put(Dict.COORDINATE.toString(), BooleanHelper.asYesNo(mCoordinate));
+            values.put(Dict.ALTITUDE.toString(), BooleanHelper.asYesNo(mAltitude));
+            values.put(Dict.BEARING.toString(), BooleanHelper.asYesNo(mBearing));
         }
 
         profileInfo.setTitle(getTitle());

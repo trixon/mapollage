@@ -18,6 +18,7 @@ package se.trixon.mapollage.profile;
 import java.util.LinkedHashMap;
 import org.apache.commons.lang3.SystemUtils;
 import org.json.simple.JSONObject;
+import se.trixon.almond.util.BooleanHelper;
 import se.trixon.almond.util.Dict;
 
 /**
@@ -168,7 +169,7 @@ public class ProfilePhoto extends ProfileBase {
         }
 
         values.put(Dict.FILE_REFERENCE.toString(), fileReference);
-        values.put(mBundleUI.getString("ModulePhotoPanel.lowerCaseExtCheckBox.text"), String.valueOf(mForceLowerCaseExtension));
+        values.put(mBundleUI.getString("ModulePhotoPanel.lowerCaseExtCheckBox.text"), BooleanHelper.asYesNo(mForceLowerCaseExtension));
 
         profileInfo.setTitle(getTitle());
         profileInfo.setValues(values);

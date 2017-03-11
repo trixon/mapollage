@@ -20,9 +20,13 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.ResourceBundle;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
+import se.trixon.almond.util.BooleanHelper;
+import se.trixon.almond.util.BundleHelper;
 import se.trixon.almond.util.Dict;
+import se.trixon.mapollage.ui.OptionsPanel;
 
 /**
  *
@@ -224,6 +228,7 @@ public class Profile extends ProfileBase implements Comparable<Profile> {
 
     @Override
     protected ProfileInfo getProfileInfo() {
+        ResourceBundle bundle = BundleHelper.getBundle(OptionsPanel.class, "Bundle");
         ProfileInfo profileInfo = new ProfileInfo();
         LinkedHashMap<String, String> values = new LinkedHashMap<>();
 
@@ -232,6 +237,7 @@ public class Profile extends ProfileBase implements Comparable<Profile> {
         values.put(Dict.BORDER_SIZE.toString(), String.valueOf(mOptions.getThumbnailBorderSize()));
         values.put(String.format("%s %s", Dict.DEFAULT.toString(), Dict.LATITUDE.toString()), String.valueOf(mOptions.getDefaultLat()));
         values.put(String.format("%s %s", Dict.DEFAULT.toString(), Dict.LONGITUDE.toString()), String.valueOf(mOptions.getDefaultLon()));
+        values.put(bundle.getString("OptionsPanel.autoOpenCheckBox.text"), BooleanHelper.asYesNo(mOptions.isAutoOpen()));
 
         profileInfo.setTitle(Dict.OPTIONS.toString());
         profileInfo.setValues(values);

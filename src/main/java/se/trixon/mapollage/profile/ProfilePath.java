@@ -17,6 +17,7 @@ package se.trixon.mapollage.profile;
 
 import java.util.LinkedHashMap;
 import org.json.simple.JSONObject;
+import se.trixon.almond.util.BooleanHelper;
 import se.trixon.almond.util.Dict;
 
 /**
@@ -100,7 +101,7 @@ public class ProfilePath extends ProfileBase {
     protected ProfileInfo getProfileInfo() {
         ProfileInfo profileInfo = new ProfileInfo();
         LinkedHashMap<String, String> values = new LinkedHashMap<>();
-        values.put(mBundleUI.getString("ModulePathPanel.drawPathCheckBox.text"), String.valueOf(mDrawPath));
+        values.put(mBundleUI.getString("ModulePathPanel.drawPathCheckBox.text"), BooleanHelper.asYesNo(mDrawPath));
         values.put(Dict.WIDTH.toString(), String.valueOf(mWidth));
         String[] units = new String[]{
             Dict.DO_NOT_SPLIT.toString(),
