@@ -52,7 +52,7 @@ public class ConfigPanel extends javax.swing.JPanel {
 
     public void addStatusPanel(StatusPanel statusPanel) {
         mStatusPanel = statusPanel;
-        mModuleSourcePanel.addStatusPanel(statusPanel);
+        mModuleSourcePanel.getStatusHolderPanel().add(statusPanel);
     }
 
     public void loadProfile(Profile profile) {
@@ -109,7 +109,7 @@ public class ConfigPanel extends javax.swing.JPanel {
         super.setEnabled(enabled);
 
         for (Component component : mModuleSourcePanel.getComponents()) {
-            if (component != mStatusPanel.getTabbedPane()) {
+            if (component != mModuleSourcePanel.getStatusHolderPanel()) {
                 component.setEnabled(enabled);
                 if (component instanceof JPanel) {
                     SwingHelper.enableComponents((JPanel) component, enabled);

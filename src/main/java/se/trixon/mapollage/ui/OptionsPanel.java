@@ -38,7 +38,6 @@ public class OptionsPanel extends javax.swing.JPanel {
         lonSpinner.setValue(mOptions.getDefaultLon());
         thumbnailSizeSpinner.setValue(mOptions.getThumbnailSize());
         borderSizeSpinner.setValue(mOptions.getThumbnailBorderSize());
-        autoOpenCheckBox.setSelected(mOptions.isAutoOpen());
     }
 
     void save() {
@@ -48,7 +47,6 @@ public class OptionsPanel extends javax.swing.JPanel {
         mOptions.setDefaultLon((Double) lonSpinner.getModel().getValue());
         mOptions.setThumbnailSize((int) thumbnailSizeSpinner.getModel().getValue());
         mOptions.setThumbnailBorderSize((int) borderSizeSpinner.getModel().getValue());
-        mOptions.setAutoOpen(autoOpenCheckBox.isSelected());
     }
 
     /**
@@ -75,7 +73,6 @@ public class OptionsPanel extends javax.swing.JPanel {
         borderSizeLabel = new javax.swing.JLabel();
         borderSizeSpinner = new javax.swing.JSpinner();
         jPanel1 = new javax.swing.JPanel();
-        autoOpenCheckBox = new javax.swing.JCheckBox();
 
         setLayout(new java.awt.GridBagLayout());
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -204,7 +201,7 @@ public class OptionsPanel extends javax.swing.JPanel {
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGap(0, 29, Short.MAX_VALUE)
         );
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -214,19 +211,9 @@ public class OptionsPanel extends javax.swing.JPanel {
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
         add(jPanel1, gridBagConstraints);
-
-        autoOpenCheckBox.setText(bundle.getString("OptionsPanel.autoOpenCheckBox.text")); // NOI18N
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 8;
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.insets = new java.awt.Insets(8, 0, 0, 0);
-        add(autoOpenCheckBox, gridBagConstraints);
     }// </editor-fold>//GEN-END:initComponents
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JCheckBox autoOpenCheckBox;
     private javax.swing.JLabel borderSizeLabel;
     private javax.swing.JSpinner borderSizeSpinner;
     private javax.swing.JLabel coordinateLabel;

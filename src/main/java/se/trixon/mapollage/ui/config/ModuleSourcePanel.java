@@ -19,6 +19,7 @@ import java.awt.event.FocusAdapter;
 import java.io.File;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
+import javax.swing.JPanel;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import org.apache.commons.lang3.StringUtils;
@@ -27,7 +28,6 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
 import se.trixon.almond.util.swing.dialogs.FileChooserPanel;
 import se.trixon.mapollage.profile.Profile;
 import se.trixon.mapollage.profile.ProfileSource;
-import se.trixon.mapollage.ui.StatusPanel;
 
 /**
  *
@@ -46,10 +46,6 @@ public class ModuleSourcePanel extends ModulePanel implements FileChooserPanel.F
         mTitle = Dict.SOURCE.toString();
     }
 
-    public void addStatusPanel(StatusPanel statusPanel) {
-        statusHolderPanel.add(statusPanel);
-    }
-
     public FileChooserPanel getSourceChooserPanel() {
         return sourceChooserPanel;
     }
@@ -57,6 +53,10 @@ public class ModuleSourcePanel extends ModulePanel implements FileChooserPanel.F
     @Override
     public ImageIcon getIcon() {
         return MaterialIcon._Image.PHOTO_LIBRARY.get(ICON_SIZE, getIconColor());
+    }
+
+    public JPanel getStatusHolderPanel() {
+        return statusHolderPanel;
     }
 
     @Override

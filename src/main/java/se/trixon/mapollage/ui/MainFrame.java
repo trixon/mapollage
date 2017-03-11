@@ -182,12 +182,8 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
         initListeners();
 
         mLogErrPanel = mStatusPanel.getLogErrPanel();
-        mLogErrPanel.getTextArea().setLineWrap(true);
-        mLogErrPanel.getTextArea().setWrapStyleWord(true);
-
         mLogOutPanel = mStatusPanel.getLogOutPanel();
-        mLogOutPanel.getTextArea().setLineWrap(true);
-        mLogOutPanel.getTextArea().setWrapStyleWord(true);
+
         mLogOutPanel.println(mBundleUI.getString("welcome_1"));
         mLogOutPanel.println(Mapollage.getHelp());
         mLogOutPanel.println(mBundleUI.getString("welcome_3"));
@@ -277,7 +273,6 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
         cancelButton.setVisible(state);
 
         configPanel.setEnabled(!state);
-        mProgressBar.setEnabled(true);
         mProgressBar.setIndeterminate(state);
         mProgressBar.setString(" ");
     }
