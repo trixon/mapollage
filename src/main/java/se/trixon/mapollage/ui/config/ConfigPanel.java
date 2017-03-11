@@ -169,11 +169,8 @@ public class ConfigPanel extends javax.swing.JPanel {
             }
         }
 
-        mModuleDescriptionPanel.setPhotoDescriptionMonitor(new ModuleDescriptionPanel.PhotoDescriptionMonitor() {
-            @Override
-            public void onPhotoDescriptionChange(boolean hasPhoto) {
-                tabbedPane.setEnabledAt(tabbedPane.indexOfComponent(mModulePhotoPanel), hasPhoto);
-            }
+        mModuleDescriptionPanel.setPhotoDescriptionMonitor((boolean hasPhoto) -> {
+            tabbedPane.setEnabledAt(tabbedPane.indexOfComponent(mModulePhotoPanel), hasPhoto);
         });
 
         setEnabled(true);

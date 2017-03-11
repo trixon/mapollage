@@ -36,7 +36,7 @@ public class ProfileDescription extends ProfileBase {
     public static final String KEY_EXTERNAL_FILE_VALUE = "externalFileValue";
     public static final String KEY_FILENAME = "filename";
     public static final String KEY_PHOTO = "photo";
-    private static final String sDefaultCustomValue;
+    private static final String DEFAULT_CUSTOM_VALUE;
 
     private boolean mAltitude;
     private boolean mBearing;
@@ -59,11 +59,11 @@ public class ProfileDescription extends ProfileBase {
                 .append(DescriptionSegment.ALTITUDE.toHtml())
                 .append(DescriptionSegment.BEARING.toHtml());
 
-        sDefaultCustomValue = builder.toString();
+        DEFAULT_CUSTOM_VALUE = builder.toString();
     }
 
     public static String getDefaultCustomValue() {
-        return sDefaultCustomValue;
+        return DEFAULT_CUSTOM_VALUE;
     }
 
     public ProfileDescription(Profile profile, JSONObject json) {
@@ -87,7 +87,7 @@ public class ProfileDescription extends ProfileBase {
 
     public String getCustomValue() {
         if (StringUtils.isBlank(mCustomValue)) {
-            return sDefaultCustomValue;
+            return DEFAULT_CUSTOM_VALUE;
         } else {
             return mCustomValue;
         }
@@ -227,7 +227,7 @@ public class ProfileDescription extends ProfileBase {
         return profileInfo;
     }
 
-    public static enum DescriptionSegment {
+    public enum DescriptionSegment {
         ALTITUDE, BEARING, COORDINATE, DATE, FILENAME, PHOTO;
 
         @Override
