@@ -38,6 +38,7 @@ public class OptionsPanel extends javax.swing.JPanel {
         lonSpinner.setValue(mOptions.getDefaultLon());
         thumbnailSizeSpinner.setValue(mOptions.getThumbnailSize());
         borderSizeSpinner.setValue(mOptions.getThumbnailBorderSize());
+        menuModePanel.setMenuMode(mOptions.getMenuMode());
     }
 
     void save() {
@@ -47,6 +48,7 @@ public class OptionsPanel extends javax.swing.JPanel {
         mOptions.setDefaultLon((Double) lonSpinner.getModel().getValue());
         mOptions.setThumbnailSize((int) thumbnailSizeSpinner.getModel().getValue());
         mOptions.setThumbnailBorderSize((int) borderSizeSpinner.getModel().getValue());
+        mOptions.setMenuMode(menuModePanel.getMenuMode());
     }
 
     /**
@@ -73,6 +75,7 @@ public class OptionsPanel extends javax.swing.JPanel {
         borderSizeLabel = new javax.swing.JLabel();
         borderSizeSpinner = new javax.swing.JSpinner();
         jPanel1 = new javax.swing.JPanel();
+        menuModePanel = new se.trixon.almond.util.swing.dialogs.MenuModePanel();
 
         setLayout(new java.awt.GridBagLayout());
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -87,14 +90,14 @@ public class OptionsPanel extends javax.swing.JPanel {
         localeLabel.setText(Dict.CALENDAR_LANGUAGE.toString());
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridy = 2;
         gridBagConstraints.gridwidth = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(8, 0, 0, 0);
         add(localeLabel, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridy = 3;
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
@@ -145,7 +148,7 @@ public class OptionsPanel extends javax.swing.JPanel {
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 7;
+        gridBagConstraints.gridy = 8;
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(8, 0, 0, 0);
@@ -155,7 +158,7 @@ public class OptionsPanel extends javax.swing.JPanel {
         placemarkLabel.setText(Dict.PLACEMARK.toString());
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 4;
+        gridBagConstraints.gridy = 5;
         gridBagConstraints.gridwidth = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.insets = new java.awt.Insets(8, 0, 0, 0);
@@ -164,7 +167,7 @@ public class OptionsPanel extends javax.swing.JPanel {
         thumbnailSizeLabel.setText(Dict.THUMBNAIL.toString());
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 5;
+        gridBagConstraints.gridy = 6;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(8, 0, 0, 0);
         add(thumbnailSizeLabel, gridBagConstraints);
@@ -172,14 +175,14 @@ public class OptionsPanel extends javax.swing.JPanel {
         thumbnailSizeSpinner.setModel(new javax.swing.SpinnerNumberModel(250, 100, 1200, 10));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 6;
+        gridBagConstraints.gridy = 7;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         add(thumbnailSizeSpinner, gridBagConstraints);
 
         borderSizeLabel.setText(bundle.getString("OptionsPanel.borderSizeLabel.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 5;
+        gridBagConstraints.gridy = 6;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(8, 8, 0, 0);
         add(borderSizeLabel, gridBagConstraints);
@@ -187,7 +190,7 @@ public class OptionsPanel extends javax.swing.JPanel {
         borderSizeSpinner.setModel(new javax.swing.SpinnerNumberModel(2, 0, 20, 1));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 6;
+        gridBagConstraints.gridy = 7;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 8, 0, 0);
@@ -197,20 +200,26 @@ public class OptionsPanel extends javax.swing.JPanel {
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 276, Short.MAX_VALUE)
+            .addGap(0, 294, Short.MAX_VALUE)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 29, Short.MAX_VALUE)
+            .addGap(0, 33, Short.MAX_VALUE)
         );
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 9;
+        gridBagConstraints.gridy = 10;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
         add(jPanel1, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        add(menuModePanel, gridBagConstraints);
     }// </editor-fold>//GEN-END:initComponents
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -225,6 +234,7 @@ public class OptionsPanel extends javax.swing.JPanel {
     private javax.swing.JLabel lonLabel;
     private javax.swing.JSpinner lonSpinner;
     private se.trixon.almond.util.swing.dialogs.LookAndFeelPanel lookAndFeelPanel;
+    private se.trixon.almond.util.swing.dialogs.MenuModePanel menuModePanel;
     private javax.swing.JPanel nullCoordinatePanel;
     private javax.swing.JLabel placemarkLabel;
     private javax.swing.JLabel thumbnailSizeLabel;
