@@ -22,7 +22,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import org.apache.commons.lang3.SystemUtils;
+import se.trixon.almond.util.AlmondOptions;
 import se.trixon.almond.util.swing.SwingHelper;
+import se.trixon.mapollage.Options;
 import se.trixon.mapollage.profile.Profile;
 import se.trixon.mapollage.ui.StatusPanel;
 
@@ -85,11 +87,13 @@ public class ConfigPanel extends javax.swing.JPanel {
     }
 
     public void refreshIcons() {
+        AlmondOptions almondOptions=AlmondOptions.getInstance();
+        
         for (Component component : tabbedPane.getComponents()) {
             if (component instanceof ModulePanel) {
                 ModulePanel modulePanel = (ModulePanel) component;
                 JLabel label = (JLabel) tabbedPane.getTabComponentAt(tabbedPane.indexOfComponent(modulePanel));
-                label.setIcon(SystemUtils.IS_OS_MAC ? new ImageIcon() : modulePanel.getIcon());
+                label.setIcon(almondOptions.isMacLookAndFeel() ? null : modulePanel.getIcon());
             }
         }
     }
