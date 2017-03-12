@@ -35,9 +35,9 @@ public class ProfilePhoto extends ProfileBase {
     public static final String KEY_REFERENCE = "reference";
     public static final String KEY_WIDTH_LIMIT = "widthLimit";
 
-    private String mBaseUrlValue = "http://www.domain.com/img/";
+    private String mBaseUrlValue = "https://www.domain.com/img/";
     private boolean mForceLowerCaseExtension = SystemUtils.IS_OS_WINDOWS;
-    private int mHeightLimit = 1000;
+    private int mHeightLimit = 800;
     private boolean mLimitHeight = true;
     private boolean mLimitWidth = true;
     private final Profile mProfile;

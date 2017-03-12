@@ -633,11 +633,11 @@ public class Operation implements Runnable {
             mRootFolder.getFeature().add(mRootFolders.get((String) key));
         });
 
-        if (mPathFolder != null) {
+        if (mPathFolder != null && !mPathFolder.getFeature().isEmpty()) {
             mRootFolder.getFeature().add(mPathFolder);
         }
 
-        if (mPathGapFolder != null) {
+        if (mPathGapFolder != null && !mPathGapFolder.getFeature().isEmpty()) {
             mRootFolder.getFeature().add(mPathGapFolder);
         }
 

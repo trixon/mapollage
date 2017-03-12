@@ -50,7 +50,7 @@ public class ProfilePlacemark extends ProfileBase {
     private Double mScale = 3.0;
     private int mSymbolAs = 0;
     private boolean mTimestamp = true;
-    private Double mZoom = 3.0;
+    private Double mZoom = 4.0;
 
     public ProfilePlacemark(Profile profile) {
         mProfile = profile;

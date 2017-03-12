@@ -112,7 +112,7 @@ public class StatusPanel extends javax.swing.JPanel {
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
-        gridBagConstraints.insets = new java.awt.Insets(8, 0, 0, 0);
+        gridBagConstraints.insets = new java.awt.Insets(8, 4, 0, 0);
         add(autoOpenCheckBox, gridBagConstraints);
     }// </editor-fold>//GEN-END:initComponents
 
