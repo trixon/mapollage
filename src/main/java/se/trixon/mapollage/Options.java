@@ -38,8 +38,8 @@ public class Options {
     private final Double DEFAULT_LAT = 57.6;
     private final Double DEFAULT_LON = 11.3;
     private final MenuMode DEFAULT_MENU_MODE = SystemUtils.IS_OS_MAC ? MenuMode.BAR : MenuMode.BUTTON;
-    private final int DEFAULT_THUMBNAIL_BORDER_SIZE = 2;
-    private final int DEFAULT_THUMBNAIL_SIZE = 512;
+    private final int DEFAULT_THUMBNAIL_BORDER_SIZE = 3;
+    private final int DEFAULT_THUMBNAIL_SIZE = 1000;
     private final Preferences mPreferences = Preferences.userNodeForPackage(Options.class);
 
     public static Options getInstance() {
