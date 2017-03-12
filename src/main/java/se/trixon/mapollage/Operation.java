@@ -93,6 +93,7 @@ public class Operation implements Runnable {
     private int mNumOfGps;
     private int mNumOfPlacemarks;
     private Folder mPathFolder;
+    private Folder mPathGapFolder;
     private PhotoInfo mPhotoInfo;
     private final Profile mProfile;
     private final ProfileDescription mProfileDescription;
@@ -208,11 +209,9 @@ public class Operation implements Runnable {
 
     private void addPath() {
         Collections.sort(mLineNodes, (LineNode o1, LineNode o2) -> o1.getDate().compareTo(o2.getDate()));
-        SimpleDateFormat nameDateFormat = new SimpleDateFormat("yyyyMMdd HHmmss");
 
-        mPathFolder = KmlFactory.createFolder()
-                .withName(Dict.PATH_GFX.toString())
-                .withOpen(true);
+        mPathFolder = KmlFactory.createFolder().withName(Dict.PATH_GFX.toString());
+        mPathGapFolder = KmlFactory.createFolder().withName(Dict.PATH_GAP_GFX.toString());
 
         String[] patterns = new String[]{"'NO_SPLIT'", "yyyyMMddHH", "yyyyMMdd", "yyyyww", "yyyyMM", "yyyy"};
         String pattern = patterns[mProfilePath.getSplitBy()];
@@ -228,20 +227,15 @@ public class Operation implements Runnable {
             map.get(key).add(node);
         });
 
-        boolean colorState = true;
-
+        //Add paths
         for (ArrayList<LineNode> nodes : map.values()) {
             if (nodes.size() > 1) {
-                String name = String.format("%s_%s",
-                        nameDateFormat.format(nodes.get(0).getDate()),
-                        nameDateFormat.format(nodes.get(nodes.size() - 1).getDate()));
-
                 Placemark path = mPathFolder.createAndAddPlacemark()
-                        .withName(name);
+                        .withName(LineNode.getName(nodes));
 
                 Style pathStyle = path.createAndAddStyle();
                 pathStyle.createAndSetLineStyle()
-                        .withColor(colorState ? "ff0000ff" : "ff00ffff")
+                        .withColor("ff0000ff")
                         .withWidth(mProfilePath.getWidth());
 
                 LineString line = path
@@ -252,9 +246,33 @@ public class Operation implements Runnable {
                 nodes.forEach((node) -> {
                     line.addToCoordinates(node.getLon(), node.getLat());
                 });
-
-                colorState = !colorState;
             }
+        }
+
+        //Add path gap
+        ArrayList<LineNode> previousNodes = null;
+        for (ArrayList<LineNode> nodes : map.values()) {
+            if (previousNodes != null) {
+                Placemark path = mPathGapFolder.createAndAddPlacemark()
+                        .withName(LineNode.getName(previousNodes, nodes));
+
+                Style pathStyle = path.createAndAddStyle();
+                pathStyle.createAndSetLineStyle()
+                        .withColor("ff00ffff")
+                        .withWidth(mProfilePath.getWidth());
+
+                LineString line = path
+                        .createAndSetLineString()
+                        .withExtrude(false)
+                        .withTessellate(true);
+
+                LineNode prevLast = previousNodes.get(previousNodes.size() - 1);
+                LineNode currentFirst = nodes.get(0);
+
+                line.addToCoordinates(prevLast.getLon(), prevLast.getLat());
+                line.addToCoordinates(currentFirst.getLon(), currentFirst.getLat());
+            }
+            previousNodes = nodes;
         }
     }
 
@@ -617,6 +635,10 @@ public class Operation implements Runnable {
 
         if (mPathFolder != null) {
             mRootFolder.getFeature().add(mPathFolder);
+        }
+
+        if (mPathGapFolder != null) {
+            mRootFolder.getFeature().add(mPathGapFolder);
         }
 
         if (mProfilePlacemark.isSymbolAsPhoto()) {

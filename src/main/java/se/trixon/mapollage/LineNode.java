@@ -15,6 +15,8 @@
  */
 package se.trixon.mapollage;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 /**
@@ -23,10 +25,27 @@ import java.util.Date;
  */
 public class LineNode {
 
-    private Date mDate;
+    private static SimpleDateFormat sNameDateFormat = new SimpleDateFormat("yyyyMMdd HHmmss");
 
+    private Date mDate;
     private double mLat;
     private double mLon;
+
+    public static String getName(ArrayList<LineNode> previousNodes, ArrayList<LineNode> nodes) {
+        String name = String.format("%s_%s",
+                sNameDateFormat.format(previousNodes.get(previousNodes.size() - 1).getDate()),
+                sNameDateFormat.format(nodes.get(0).getDate()));
+
+        return name;
+    }
+
+    public static String getName(ArrayList<LineNode> nodes) {
+        String name = String.format("%s_%s",
+                sNameDateFormat.format(nodes.get(0).getDate()),
+                sNameDateFormat.format(nodes.get(nodes.size() - 1).getDate()));
+
+        return name;
+    }
 
     public LineNode(Date date, double lat, double lon) {
         mDate = date;
