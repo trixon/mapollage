@@ -15,6 +15,8 @@
  */
 package se.trixon.mapollage.ui;
 
+import com.apple.eawt.AppEvent;
+import com.apple.eawt.Application;
 import java.awt.Component;
 import java.awt.Desktop;
 import java.awt.Window;
@@ -98,6 +100,9 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
     public MainFrame() {
         initComponents();
         init();
+        if (SystemUtils.IS_OS_MAC) {
+            initMac();
+        }
     }
 
     @Override
@@ -262,6 +267,23 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
                 setRunningState(true);
             }
         };
+    }
+
+    private void initMac() {
+        Application macApplication = Application.getApplication();
+        macApplication.setAboutHandler((AppEvent.AboutEvent ae) -> {
+            mActionManager.getAction(ActionManager.ABOUT).actionPerformed(null);
+        });
+
+        macApplication.setPreferencesHandler((AppEvent.PreferencesEvent pe) -> {
+            mActionManager.getAction(ActionManager.OPTIONS).actionPerformed(null);
+        });
+
+        mPopupMenu.remove(aboutMenuItem);
+        mPopupMenu.remove(optionsMenuItem);
+        mPopupMenu.remove(quitMenuItem);
+        mPopupMenu.remove(jSeparator2);
+        mPopupMenu.remove(jSeparator6);
     }
 
     private void setRunningState(boolean state) {
@@ -717,6 +739,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
             //options
             int optionsKey = SystemUtils.IS_OS_MAC ? KeyEvent.VK_COMMA : KeyEvent.VK_P;
             keyStroke = KeyStroke.getKeyStroke(optionsKey, commandMask);
+            keyStroke = SystemUtils.IS_OS_MAC ? null : keyStroke;
             action = new AlmondAction(Dict.OPTIONS.toString()) {
 
                 @Override
