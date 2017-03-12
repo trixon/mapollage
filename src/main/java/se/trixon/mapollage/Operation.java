@@ -661,8 +661,8 @@ public class Operation implements Runnable {
             String errorValue = String.valueOf(mNumOfErrors);
             summaryBuilder.append(StringUtils.rightPad(error, rightPad)).append(":").append(StringUtils.leftPad(errorValue, leftPad)).append("\n");
 
-            String timeValue = String.format("%.3f", (System.currentTimeMillis() - mStartTime) / 1000.0).trim();
-            summaryBuilder.append(StringUtils.rightPad(time, rightPad)).append(":").append(StringUtils.leftPad(timeValue, leftPad)).append(" ").append(Dict.TIME_SECONDS).append("\n");
+            String timeValue = String.valueOf(Math.round((System.currentTimeMillis() - mStartTime) / 1000.0));
+            summaryBuilder.append(StringUtils.rightPad(time, rightPad)).append(":").append(StringUtils.leftPad(timeValue, leftPad)).append(" s").append("\n");
 
             mListener.onOperationFinished(summaryBuilder.toString());
         } catch (FileNotFoundException ex) {
