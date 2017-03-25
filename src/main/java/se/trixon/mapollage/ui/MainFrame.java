@@ -332,6 +332,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
 
             configPanel.setEnabled(!state);
             mProgressBar.setString(" ");
+            mProgressBar.setIndeterminate(false);
         });
     }
 

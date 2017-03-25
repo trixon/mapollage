@@ -24,6 +24,8 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+import org.apache.commons.io.IOCase;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -55,15 +57,16 @@ public class FileVisitor extends SimpleFileVisitor<Path> {
 
     @Override
     public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
-        if (Thread.interrupted()) {
-            mInterrupted = true;
-            return FileVisitResult.TERMINATE;
-        }
-
         if (mExcludePatterns != null) {
             for (String excludePattern : mExcludePatterns) {
-                if (StringUtils.contains(dir.toString(), excludePattern)) {
-                    return FileVisitResult.SKIP_SUBTREE;
+                if (IOCase.SYSTEM.isCaseSensitive()) {
+                    if (StringUtils.contains(dir.toString(), excludePattern)) {
+                        return FileVisitResult.SKIP_SUBTREE;
+                    }
+                } else {
+                    if (StringUtils.containsIgnoreCase(dir.toString(), excludePattern)) {
+                        return FileVisitResult.SKIP_SUBTREE;
+                    }
                 }
             }
         }
@@ -75,6 +78,12 @@ public class FileVisitor extends SimpleFileVisitor<Path> {
 
         if (filePaths != null && filePaths.length > 0) {
             for (String fileName : filePaths) {
+                try {
+                    TimeUnit.NANOSECONDS.sleep(1);
+                } catch (InterruptedException ex) {
+                    mInterrupted = true;
+                    return FileVisitResult.TERMINATE;
+                }
                 File file = new File(dir.toFile(), fileName);
                 if (file.isFile() && mPathMatcher.matches(file.toPath().getFileName())) {
                     boolean exclude = false;
