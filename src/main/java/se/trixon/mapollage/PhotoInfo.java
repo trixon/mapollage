@@ -170,7 +170,7 @@ public class PhotoInfo {
             try {
                 ExifIFD0Directory rotationDirectory = mMetadata.getFirstDirectoryOfType(ExifIFD0Directory.class);
                 mOrientation = rotationDirectory.getInt(ExifSubIFDDirectory.TAG_ORIENTATION);
-            } catch (MetadataException ex) {
+            } catch (MetadataException | NullPointerException ex) {
                 mOrientation = 1;
             }
         } catch (IOException ex) {

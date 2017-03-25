@@ -178,7 +178,7 @@ public class Operation implements Runnable {
                 try {
                     addPhoto(file);
                 } catch (ImageProcessingException ex) {
-                    logError(String.format(ex.getMessage()));
+                    logError(String.format("E000 %s", ex.getMessage()));
                 } catch (IOException ex) {
                     logError(String.format("E000 %s", file.getAbsolutePath()));
                 }
