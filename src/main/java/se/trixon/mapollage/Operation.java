@@ -140,15 +140,6 @@ public class Operation implements Runnable {
         mListener.onOperationStarted();
         mListener.onOperationLog(new SimpleDateFormat().format(new Date()));
 
-        if (mProfilePlacemark.isSymbolAsPhoto()) {
-            mThumbsDir = new File(mDestinationFile.getParent() + String.format("/%s-thumbnails", FilenameUtils.getBaseName(mDestinationFile.getAbsolutePath())));
-            try {
-                FileUtils.forceMkdir(mThumbsDir);
-            } catch (IOException ex) {
-                logError(String.format("E000 %s", ex.getMessage()));
-            }
-        }
-
         String status;
         mRootFolder = mDocument.createAndAddFolder().withName(mProfileFolder.getRootName()).withOpen(true);
 
@@ -168,6 +159,15 @@ public class Operation implements Runnable {
         }
 
         if (!mInterrupted && !mFiles.isEmpty()) {
+            if (mProfilePlacemark.isSymbolAsPhoto()) {
+                mThumbsDir = new File(mDestinationFile.getParent() + String.format("/%s-thumbnails", FilenameUtils.getBaseName(mDestinationFile.getAbsolutePath())));
+                try {
+                    FileUtils.forceMkdir(mThumbsDir);
+                } catch (IOException ex) {
+                    logError(String.format("E000 %s", ex.getMessage()));
+                }
+            }
+
             mListener.onOperationLog(String.format(mBundle.getString("found_count"), mFiles.size()));
             mListener.onOperationLog("");
             mListener.onOperationProgressInit(mFiles.size());
