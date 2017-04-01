@@ -298,19 +298,22 @@ public class ModuleSourcePanel extends ModulePanel implements FileChooserPanel.F
     @Override
     public void load(Profile profile) {
         mProfile = profile;
-        mSource = profile.getSource();
 
-        try {
-            sourceChooserPanel.setPath(mSource.getDir().getAbsolutePath());
-        } catch (NullPointerException e) {
+        if (mProfile != null) {
+            mSource = profile.getSource();
+
+            try {
+                sourceChooserPanel.setPath(mSource.getDir().getAbsolutePath());
+            } catch (NullPointerException e) {
+            }
+
+            patternTextField.setText(mSource.getFilePattern());
+            excludeTextField.setText(mSource.getExcludePattern());
+            recursiveCheckBox.setSelected(mSource.isRecursive());
+            followLinksCheckBox.setSelected(mSource.isFollowLinks());
+
+            includeNullCoordinateCheckBox.setSelected(mSource.isIncludeNullCoordinate());
         }
-
-        patternTextField.setText(mSource.getFilePattern());
-        excludeTextField.setText(mSource.getExcludePattern());
-        recursiveCheckBox.setSelected(mSource.isRecursive());
-        followLinksCheckBox.setSelected(mSource.isFollowLinks());
-
-        includeNullCoordinateCheckBox.setSelected(mSource.isIncludeNullCoordinate());
     }
 
     @Override

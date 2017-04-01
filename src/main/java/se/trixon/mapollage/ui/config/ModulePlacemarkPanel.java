@@ -382,41 +382,44 @@ public class ModulePlacemarkPanel extends ModulePanel {
     @Override
     public void load(Profile profile) {
         mProfile = profile;
-        mPlacemark = mProfile.getPlacemark();
 
-        dateFormatComboBox.setSelectedItem(mPlacemark.getDatePattern());
+        if (mProfile != null) {
+            mPlacemark = mProfile.getPlacemark();
 
-        switch (mPlacemark.getNameBy()) {
-            case ProfilePlacemark.NAME_BY_FILE:
-                nameByFileRadioButton.setSelected(true);
-                nameByFileRadioButtonActionPerformed(null);
-                break;
+            dateFormatComboBox.setSelectedItem(mPlacemark.getDatePattern());
 
-            case ProfilePlacemark.NAME_BY_DATE:
-                nameByDateRadioButton.setSelected(true);
-                nameByDateRadioButtonActionPerformed(null);
-                break;
+            switch (mPlacemark.getNameBy()) {
+                case ProfilePlacemark.NAME_BY_FILE:
+                    nameByFileRadioButton.setSelected(true);
+                    nameByFileRadioButtonActionPerformed(null);
+                    break;
 
-            case ProfilePlacemark.NAME_BY_NONE:
-                nameByNoRadioButton.setSelected(true);
-                nameByNoRadioButtonActionPerformed(null);
-                break;
+                case ProfilePlacemark.NAME_BY_DATE:
+                    nameByDateRadioButton.setSelected(true);
+                    nameByDateRadioButtonActionPerformed(null);
+                    break;
+
+                case ProfilePlacemark.NAME_BY_NONE:
+                    nameByNoRadioButton.setSelected(true);
+                    nameByNoRadioButtonActionPerformed(null);
+                    break;
+            }
+
+            switch (mPlacemark.getSymbolAs()) {
+                case ProfilePlacemark.SYMBOL_AS_PHOTO:
+                    symbolPhotoRadioButton.setSelected(true);
+                    symbolPhotoRadioButtonActionPerformed(null);
+                    break;
+
+                case ProfilePlacemark.SYMBOL_AS_PIN:
+                    symbolPinRadioButton.setSelected(true);
+                    symbolPinRadioButtonActionPerformed(null);
+                    break;
+            }
+
+            scaleSpinner.setValue(mPlacemark.getScale());
+            zoomSpinner.setValue(mPlacemark.getZoom());
+            timestampCheckBox.setSelected(mPlacemark.isTimestamp());
         }
-
-        switch (mPlacemark.getSymbolAs()) {
-            case ProfilePlacemark.SYMBOL_AS_PHOTO:
-                symbolPhotoRadioButton.setSelected(true);
-                symbolPhotoRadioButtonActionPerformed(null);
-                break;
-
-            case ProfilePlacemark.SYMBOL_AS_PIN:
-                symbolPinRadioButton.setSelected(true);
-                symbolPinRadioButtonActionPerformed(null);
-                break;
-        }
-
-        scaleSpinner.setValue(mPlacemark.getScale());
-        zoomSpinner.setValue(mPlacemark.getZoom());
-        timestampCheckBox.setSelected(mPlacemark.isTimestamp());
     }
 }

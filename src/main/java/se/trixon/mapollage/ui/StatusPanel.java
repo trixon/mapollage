@@ -15,6 +15,7 @@
  */
 package se.trixon.mapollage.ui;
 
+import javax.swing.JCheckBox;
 import javax.swing.JProgressBar;
 import javax.swing.JTabbedPane;
 import se.trixon.almond.util.Dict;
@@ -37,10 +38,8 @@ public class StatusPanel extends javax.swing.JPanel {
         autoOpenCheckBox.setSelected(mOptions.isAutoOpen());
     }
 
-    public void reset() {
-        logErrPanel.clear();
-        logOutPanel.clear();
-        tabbedPane.setSelectedIndex(0);
+    public JCheckBox getAutoOpenCheckBox() {
+        return autoOpenCheckBox;
     }
 
     public JTabbedPane getTabbedPane() {
@@ -57,6 +56,12 @@ public class StatusPanel extends javax.swing.JPanel {
 
     public JProgressBar getProgressBar() {
         return progressBar;
+    }
+
+    public void reset() {
+        logErrPanel.clear();
+        logOutPanel.clear();
+        tabbedPane.setSelectedIndex(0);
     }
 
     /**

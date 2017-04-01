@@ -48,10 +48,14 @@ public class ModuleInfoPanel extends ModulePanel {
     @Override
     public void load(Profile profile) {
         mProfile = profile;
-        viewProfile(profile);
+
+        if (mProfile != null) {
+            viewProfile(profile);
+        }
     }
 
     private void viewProfile(Profile profile) {
+        logPanel.clear();
         int pos = profile.toDebugString().indexOf(Dict.SOURCE.toString());
         logPanel.println(profile.toDebugString().substring(pos));
         logPanel.scrollToTop();

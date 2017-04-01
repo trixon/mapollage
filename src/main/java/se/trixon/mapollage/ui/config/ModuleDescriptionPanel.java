@@ -107,7 +107,13 @@ public class ModuleDescriptionPanel extends ModulePanel {
         boolean hasPhoto = (photoCheckBox.isSelected() && photoCheckBox.isEnabled())
                 || (dynamicRadioButton.isSelected() && StringUtils.containsIgnoreCase(customTextArea.getText(), "+photo"));
 
-        mPhotoDescriptionMonitor.onPhotoDescriptionChange(hasPhoto);
+        if (mProfile != null) {
+            try {
+                mPhotoDescriptionMonitor.onPhotoDescriptionChange(hasPhoto);
+            } catch (NullPointerException e) {
+                // nvm
+            }
+        }
     }
 
     /**
@@ -345,20 +351,23 @@ public class ModuleDescriptionPanel extends ModulePanel {
     @Override
     public void load(Profile profile) {
         mProfile = profile;
-        mDescription = mProfile.getDescription();
-        staticRadioButton.setSelected(true);
-        altitudeCheckBox.setSelected(mDescription.hasAltitude());
-        bearingCheckBox.setSelected(mDescription.hasBearing());
-        coordinateCheckBox.setSelected(mDescription.hasCoordinate());
-        dynamicRadioButton.setSelected(mDescription.isCustom());
-        dateCheckBox.setSelected(mDescription.hasDate());
-        photoCheckBox.setSelected(mDescription.hasPhoto());
-        filenameCheckBox.setSelected(mDescription.hasFilename());
-        externalFileCheckBox.setSelected(mDescription.hasExternalFile());
-        externalFileTextField.setText(mDescription.getExternalFileValue());
-        customTextArea.setText(mDescription.getCustomValue());
 
-        descriptionModeChanged();
+        if (mProfile != null) {
+            mDescription = mProfile.getDescription();
+            staticRadioButton.setSelected(true);
+            altitudeCheckBox.setSelected(mDescription.hasAltitude());
+            bearingCheckBox.setSelected(mDescription.hasBearing());
+            coordinateCheckBox.setSelected(mDescription.hasCoordinate());
+            dynamicRadioButton.setSelected(mDescription.isCustom());
+            dateCheckBox.setSelected(mDescription.hasDate());
+            photoCheckBox.setSelected(mDescription.hasPhoto());
+            filenameCheckBox.setSelected(mDescription.hasFilename());
+            externalFileCheckBox.setSelected(mDescription.hasExternalFile());
+            externalFileTextField.setText(mDescription.getExternalFileValue());
+            customTextArea.setText(mDescription.getCustomValue());
+
+            descriptionModeChanged();
+        }
     }
 
     public interface PhotoDescriptionMonitor {

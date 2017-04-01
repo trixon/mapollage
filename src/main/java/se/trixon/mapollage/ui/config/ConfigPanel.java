@@ -58,7 +58,7 @@ public class ConfigPanel extends javax.swing.JPanel {
         for (Component component : tabbedPane.getComponents()) {
             if (component instanceof ModulePanel) {
                 ModulePanel modulePanel = (ModulePanel) component;
-                modulePanel.load(profile);
+                modulePanel.load(mProfile);
             }
         }
     }
@@ -122,11 +122,9 @@ public class ConfigPanel extends javax.swing.JPanel {
         }
 
         int photoIndex = tabbedPane.indexOfComponent(mModulePhotoPanel);
-        if (mProfile != null) {
-            final boolean photoEnabled = enabled && mProfile.getDescription().hasPhoto();
-            tabbedPane.setEnabledAt(photoIndex, photoEnabled);
-            tabbedPane.getTabComponentAt(photoIndex).setEnabled(photoEnabled);
-        }
+        boolean photoEnabled = enabled && mProfile != null && mProfile.getDescription().hasPhoto();
+        tabbedPane.setEnabledAt(photoIndex, photoEnabled);
+        tabbedPane.getTabComponentAt(photoIndex).setEnabled(photoEnabled);
     }
 
     private void addModulePanel(ModulePanel modulePanel) {
@@ -164,12 +162,11 @@ public class ConfigPanel extends javax.swing.JPanel {
         }
 
         mModuleDescriptionPanel.setPhotoDescriptionMonitor((boolean hasPhoto) -> {
+            hasPhoto = hasPhoto && mProfile != null;
             final int photoIndex = tabbedPane.indexOfComponent(mModulePhotoPanel);
             tabbedPane.setEnabledAt(photoIndex, hasPhoto);
             tabbedPane.getTabComponentAt(photoIndex).setEnabled(hasPhoto);
         });
-
-        setEnabled(true);
     }
 
     /**

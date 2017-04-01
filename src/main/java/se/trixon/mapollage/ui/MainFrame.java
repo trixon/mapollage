@@ -170,7 +170,6 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
         mModel = (DefaultComboBoxModel) profileComboBox.getModel();
         mActionManager = new ActionManager();
         mActionManager.initActions();
-        setRunningState(false);
 
         mAlmondUI.addOptionsWatcher(this);
         mAlmondUI.addWindowWatcher(this);
@@ -202,6 +201,11 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
         mLogOutPanel.println(Mapollage.getHelp());
         mLogOutPanel.println(mBundleUI.getString("welcome_3"));
         mLogOutPanel.scrollToTop();
+
+        setRunningState(false);
+        SwingUtilities.invokeLater(() -> {
+            configPanel.setEnabled(!mProfiles.isEmpty());
+        });
     }
 
     private void initListeners() {
@@ -348,8 +352,11 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
             mModel.setSelectedItem(profile);
         }
 
-        configPanel.setEnabled(!mProfiles.isEmpty());
-        configPanel.selectTab(tab);
+        SwingUtilities.invokeLater(() -> {
+            configPanel.setEnabled(!mProfiles.isEmpty());
+            configPanel.selectTab(tab);
+            mStatusPanel.getAutoOpenCheckBox().setEnabled(!mProfiles.isEmpty());
+        });
     }
 
     private void loadProfiles() {
@@ -678,11 +685,10 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
 
     private void profileComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_profileComboBoxActionPerformed
         Profile p = getSelectedProfile();
-        if (p != null) {
-            SwingUtilities.invokeLater(() -> {
-                configPanel.loadProfile(p);
-            });
-        }
+
+        SwingUtilities.invokeLater(() -> {
+            configPanel.loadProfile(p);
+        });
     }//GEN-LAST:event_profileComboBoxActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
