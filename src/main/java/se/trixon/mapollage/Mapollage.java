@@ -170,7 +170,7 @@ public class Mapollage implements OperationListener {
     }
 
     @Override
-    public void onOperationFinished(String message) {
+    public void onOperationFinished(String message, int placemarkCount) {
         // nvm
     }
 

@@ -25,7 +25,7 @@ public interface OperationListener {
 
     void onOperationFailed(String message);
 
-    void onOperationFinished(String message);
+    void onOperationFinished(String message, int placemarkCount);
 
     void onOperationInterrupted();
 

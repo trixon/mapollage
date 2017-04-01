@@ -219,16 +219,16 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
 
             @Override
             public void onOperationFailed(String message) {
-                onOperationFinished(message);
+                onOperationFinished(message, 0);
                 success = false;
             }
 
             @Override
-            public void onOperationFinished(String message) {
+            public void onOperationFinished(String message, int placemarkCount) {
                 setRunningState(false);
                 mLogOutPanel.println(message);
 
-                if (mOptions.isAutoOpen() && success) {
+                if (mOptions.isAutoOpen() && success && placemarkCount > 0) {
                     try {
                         Desktop.getDesktop().open(mDestination);
                     } catch (IOException ex) {

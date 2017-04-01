@@ -134,6 +134,13 @@ public class Operation implements Runnable {
 
     @Override
     public void run() {
+        if (!Files.isWritable(mDestinationFile.getParentFile().toPath())) {
+            mListener.onOperationLog(String.format(mBundle.getString("insufficient_privileges"), mDestinationFile.getAbsolutePath()));
+            Thread.currentThread().interrupt();
+            mListener.onOperationInterrupted();
+            return;
+        }
+
         mStartTime = System.currentTimeMillis();
         Date date = new Date(mStartTime);
         SimpleDateFormat dateFormat = new SimpleDateFormat();
@@ -335,7 +342,13 @@ public class Operation implements Runnable {
             if (mProfilePlacemark.isSymbolAsPhoto() || mProfilePhoto.getReference() == ProfilePhoto.Reference.THUMBNAIL) {
                 File thumbFile = new File(mThumbsDir, imageId + ".jpg");
                 mFileThumbMap.put(file, thumbFile);
-                mPhotoInfo.createThumbnail(thumbFile);
+                if (Files.isWritable(thumbFile.getParentFile().toPath())) {
+                    mPhotoInfo.createThumbnail(thumbFile);
+                } else {
+                    mListener.onOperationLog(String.format(mBundle.getString("insufficient_privileges"), mDestinationFile.getAbsolutePath()));
+                    Thread.currentThread().interrupt();
+                    return;
+                }
             }
 
             folder.createAndAddStyleMap().withId(styleMapId)
@@ -397,7 +410,7 @@ public class Operation implements Runnable {
         }
 
         if (mFiles.isEmpty()) {
-            mListener.onOperationFinished(Dict.FILELIST_EMPTY.toString());
+            mListener.onOperationFinished(Dict.FILELIST_EMPTY.toString(), 0);
         } else {
             Collections.sort(mFiles);
         }
@@ -686,9 +699,9 @@ public class Operation implements Runnable {
             String timeValue = String.valueOf(Math.round((System.currentTimeMillis() - mStartTime) / 1000.0));
             summaryBuilder.append(StringUtils.rightPad(time, rightPad)).append(":").append(StringUtils.leftPad(timeValue, leftPad)).append(" s").append("\n");
 
-            mListener.onOperationFinished(summaryBuilder.toString());
+            mListener.onOperationFinished(summaryBuilder.toString(), mFiles.size());
         } catch (FileNotFoundException ex) {
-            mListener.onOperationLog(ex.getLocalizedMessage());
+            mListener.onOperationFailed(ex.getLocalizedMessage());
         }
     }
 
