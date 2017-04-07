@@ -35,6 +35,7 @@ import se.trixon.almond.util.AlmondUI;
 import se.trixon.almond.util.BundleHelper;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.PomInfo;
+import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.Xlog;
 import se.trixon.mapollage.profile.Profile;
 import se.trixon.mapollage.ui.MainFrame;
@@ -208,6 +209,8 @@ public class Mapollage implements OperationListener {
 
             return;
         }
+
+        SystemHelper.setMacApplicationName("Mapollage");
 
         mAlmondUI.installDarcula();
         mAlmondUI.initLookAndFeel();
