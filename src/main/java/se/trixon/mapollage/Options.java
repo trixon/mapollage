@@ -17,8 +17,6 @@ package se.trixon.mapollage;
 
 import java.util.Locale;
 import java.util.prefs.Preferences;
-import org.apache.commons.lang3.SystemUtils;
-import se.trixon.almond.util.swing.dialogs.MenuModePanel.MenuMode;
 
 /**
  *
@@ -30,14 +28,12 @@ public class Options {
     public static final String KEY_DEFAULT_LAT = "deflat";
     public static final String KEY_DEFAULT_LON = "deflon";
     public static final String KEY_LOCALE = "locale";
-    public static final String KEY_MENU_MODE = "menu_mode";
     public static final String KEY_THUMBNAIL_BORDER_SIZE = "thumbnail_border_size";
     public static final String KEY_THUMBNAIL_SIZE = "thumbnail_size";
     private static final Locale DEFAULT_LOCALE = Locale.getDefault();
     private final boolean DEFAULT_AUTO_OPEN = true;
     private final Double DEFAULT_LAT = 57.6;
     private final Double DEFAULT_LON = 11.3;
-    private final MenuMode DEFAULT_MENU_MODE = SystemUtils.IS_OS_MAC ? MenuMode.BAR : MenuMode.BUTTON;
     private final int DEFAULT_THUMBNAIL_BORDER_SIZE = 3;
     private final int DEFAULT_THUMBNAIL_SIZE = 1000;
     private final Preferences mPreferences = Preferences.userNodeForPackage(Options.class);
@@ -59,10 +55,6 @@ public class Options {
 
     public Locale getLocale() {
         return Locale.forLanguageTag(mPreferences.get(KEY_LOCALE, DEFAULT_LOCALE.toLanguageTag()));
-    }
-
-    public MenuMode getMenuMode() {
-        return MenuMode.values()[mPreferences.getInt(KEY_MENU_MODE, DEFAULT_MENU_MODE.ordinal())];
     }
 
     public Preferences getPreferences() {
@@ -95,10 +87,6 @@ public class Options {
 
     public void setLocale(Locale locale) {
         mPreferences.put(KEY_LOCALE, locale.toLanguageTag());
-    }
-
-    public void setMenuMode(MenuMode menuMode) {
-        mPreferences.putInt(KEY_MENU_MODE, menuMode.ordinal());
     }
 
     public void setThumbnailBorderSize(int size) {

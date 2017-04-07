@@ -149,6 +149,7 @@ public class ProfileSource extends ProfileBase {
         values.put(Dict.SUBDIRECTORIES.toString(), BooleanHelper.asYesNo(mRecursive));
         values.put(Dict.FOLLOW_LINKS.toString(), BooleanHelper.asYesNo(mFollowLinks));
         values.put(mBundleUI.getString("ModuleSourcePanel.includeNullCoordinateCheckBox.text"), BooleanHelper.asYesNo(mIncludeNullCoordinate));
+        values.put(mBundleUI.getString("ModuleSourcePanel.excludeLabel.text"), mExcludePattern);
 
         profileInfo.setTitle(getTitle());
         profileInfo.setValues(values);

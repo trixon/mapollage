@@ -38,17 +38,16 @@ public class OptionsPanel extends javax.swing.JPanel {
         lonSpinner.setValue(mOptions.getDefaultLon());
         thumbnailSizeSpinner.setValue(mOptions.getThumbnailSize());
         borderSizeSpinner.setValue(mOptions.getThumbnailBorderSize());
-        menuModePanel.setMenuMode(mOptions.getMenuMode());
     }
 
     void save() {
         lookAndFeelPanel.save();
+        menuModePanel.save();
         mOptions.setLocale(localeComboBox.getSelectedItem());
         mOptions.setDefaultLat((Double) latSpinner.getModel().getValue());
         mOptions.setDefaultLon((Double) lonSpinner.getModel().getValue());
         mOptions.setThumbnailSize((int) thumbnailSizeSpinner.getModel().getValue());
         mOptions.setThumbnailBorderSize((int) borderSizeSpinner.getModel().getValue());
-        mOptions.setMenuMode(menuModePanel.getMenuMode());
     }
 
     /**

@@ -47,7 +47,6 @@ public class Mapollage implements OperationListener {
 
     public static final String HELP = "help";
     public static final String VERSION = "version";
-    private static final boolean IS_MAC = SystemUtils.IS_OS_MAC;
     private static final ResourceBundle sBundle = BundleHelper.getBundle(Mapollage.class, "Bundle");
     private static Options sOptions;
     private final AlmondUI mAlmondUI = AlmondUI.getInstance();
@@ -212,10 +211,6 @@ public class Mapollage implements OperationListener {
 
         mAlmondUI.installDarcula();
         mAlmondUI.initLookAndFeel();
-
-        if (IS_MAC) {
-            System.setProperty("apple.laf.useScreenMenuBar", "true");
-        }
 
         java.awt.EventQueue.invokeLater(() -> {
             mMainFrame = new MainFrame();

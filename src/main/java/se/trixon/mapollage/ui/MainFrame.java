@@ -45,7 +45,6 @@ import javax.swing.InputMap;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
-import javax.swing.JSeparator;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -78,7 +77,6 @@ import se.trixon.mapollage.profile.Profile;
 public class MainFrame extends javax.swing.JFrame implements AlmondOptions.AlmondOptionsWatcher {
 
     private static final boolean IS_MAC = SystemUtils.IS_OS_MAC;
-
     private final ResourceBundle mBundle = BundleHelper.getBundle(Mapollage.class, "Bundle");
     private final ResourceBundle mBundleUI = BundleHelper.getBundle(MainFrame.class, "Bundle");
     private ActionManager mActionManager;
@@ -108,7 +106,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
             initMac();
         }
 
-        if (mOptions.getMenuMode() == MenuMode.BAR) {
+        if (mAlmondOptions.getMenuMode() == MenuMode.BAR) {
             initMenuBar();
         }
     }
@@ -143,6 +141,9 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
                     }
                     action.putValue(Action.SMALL_ICON, icon);
                 }
+                break;
+
+            case MENU_MODE:
                 break;
 
             default:
@@ -301,15 +302,16 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
     private void initMenuBar() {
         setJMenuBar(menuBar);
 
-        fileMenu.add(renameMenuItem);
-        fileMenu.add(cloneMenuItem);
-        fileMenu.add(removeAllProfilesMenuItem);
-        fileMenu.add(new JSeparator());
-        if (!IS_MAC) {
-            fileMenu.add(optionsMenuItem);
-            fileMenu.add(new JSeparator());
-        }
         fileMenu.add(quitMenuItem);
+
+        profileMenu.add(removeMenuItem);
+        profileMenu.add(renameMenuItem);
+        profileMenu.add(cloneMenuItem);
+        profileMenu.add(removeAllProfilesMenuItem);
+
+        if (!IS_MAC) {
+            toolsMenu.add(optionsMenuItem);
+        }
 
         helpMenu.add(helpMenuItem);
         helpMenu.add(aboutDateFormatMenuItem);
@@ -546,6 +548,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
         bindingGroup = new org.jdesktop.beansbinding.BindingGroup();
 
         mPopupMenu = new javax.swing.JPopupMenu();
+        removeMenuItem = new javax.swing.JMenuItem();
         renameMenuItem = new javax.swing.JMenuItem();
         cloneMenuItem = new javax.swing.JMenuItem();
         removeAllProfilesMenuItem = new javax.swing.JMenuItem();
@@ -559,6 +562,9 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
         quitMenuItem = new javax.swing.JMenuItem();
         menuBar = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
+        profileMenu = new javax.swing.JMenu();
+        addMenuItem = new javax.swing.JMenuItem();
+        toolsMenu = new javax.swing.JMenu();
         helpMenu = new javax.swing.JMenu();
         topPanel = new javax.swing.JPanel();
         profileComboBox = new javax.swing.JComboBox<>();
@@ -566,10 +572,12 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
         startButton = new javax.swing.JButton();
         cancelButton = new javax.swing.JButton();
         addButton = new javax.swing.JButton();
-        removeButton = new javax.swing.JButton();
         menuButton = new javax.swing.JButton();
         configPanel = new se.trixon.mapollage.ui.config.ConfigPanel();
 
+        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("se/trixon/mapollage/ui/Bundle"); // NOI18N
+        removeMenuItem.setText(bundle.getString("MainFrame.removeMenuItem.text")); // NOI18N
+        mPopupMenu.add(removeMenuItem);
         mPopupMenu.add(renameMenuItem);
         mPopupMenu.add(cloneMenuItem);
         mPopupMenu.add(removeAllProfilesMenuItem);
@@ -585,11 +593,20 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
         fileMenu.setText(Dict.FILE_MENU.toString());
         menuBar.add(fileMenu);
 
+        profileMenu.setText(Dict.PROFILE.toString());
+
+        addMenuItem.setText(bundle.getString("MainFrame.addMenuItem.text")); // NOI18N
+        profileMenu.add(addMenuItem);
+
+        menuBar.add(profileMenu);
+
+        toolsMenu.setText(Dict.TOOLS.toString());
+        menuBar.add(toolsMenu);
+
         helpMenu.setText(Dict.HELP.toString());
         menuBar.add(helpMenu);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("se/trixon/mapollage/ui/Bundle"); // NOI18N
         setTitle(bundle.getString("MainFrame.title")); // NOI18N
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
@@ -633,11 +650,6 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
         addButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         addButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         toolBar.add(addButton);
-
-        removeButton.setFocusable(false);
-        removeButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        removeButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        toolBar.add(removeButton);
 
         menuButton.setFocusable(false);
         menuButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -695,6 +707,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
     private javax.swing.JMenuItem aboutDateFormatMenuItem;
     private javax.swing.JMenuItem aboutMenuItem;
     private javax.swing.JButton addButton;
+    private javax.swing.JMenuItem addMenuItem;
     private javax.swing.JButton cancelButton;
     private javax.swing.JMenuItem cloneMenuItem;
     private se.trixon.mapollage.ui.config.ConfigPanel configPanel;
@@ -709,12 +722,14 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
     private javax.swing.JButton menuButton;
     private javax.swing.JMenuItem optionsMenuItem;
     private javax.swing.JComboBox<Profile> profileComboBox;
+    private javax.swing.JMenu profileMenu;
     private javax.swing.JMenuItem quitMenuItem;
     private javax.swing.JMenuItem removeAllProfilesMenuItem;
-    private javax.swing.JButton removeButton;
+    private javax.swing.JMenuItem removeMenuItem;
     private javax.swing.JMenuItem renameMenuItem;
     private javax.swing.JButton startButton;
     private javax.swing.JToolBar toolBar;
+    private javax.swing.JMenu toolsMenu;
     private javax.swing.JPanel topPanel;
     private org.jdesktop.beansbinding.BindingGroup bindingGroup;
     // End of variables declaration//GEN-END:variables
@@ -768,7 +783,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
             KeyStroke keyStroke;
             int commandMask = SystemHelper.getCommandMask();
 
-            if (mOptions.getMenuMode() == MenuMode.BUTTON) {
+            if (mAlmondOptions.getMenuMode() == MenuMode.BUTTON) {
 
                 //menu
                 int menuKey = KeyEvent.VK_M;
@@ -843,6 +858,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
 
             initAction(action, ADD, keyStroke, MaterialIcon._Content.ADD, true);
             addButton.setAction(action);
+            addMenuItem.setAction(action);
 
             //clone
             keyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_C, commandMask + InputEvent.SHIFT_DOWN_MASK);
@@ -887,7 +903,7 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
             };
 
             initAction(action, REMOVE, keyStroke, MaterialIcon._Content.REMOVE, false);
-            removeButton.setAction(action);
+            removeMenuItem.setAction(action);
 
             //remove all
             keyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, commandMask + InputEvent.SHIFT_DOWN_MASK);
