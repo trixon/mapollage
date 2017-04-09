@@ -41,8 +41,6 @@ public class OptionsPanel extends javax.swing.JPanel {
     }
 
     void save() {
-        lookAndFeelPanel.save();
-        menuModePanel.save();
         mOptions.setLocale(localeComboBox.getSelectedItem());
         mOptions.setDefaultLat((Double) latSpinner.getModel().getValue());
         mOptions.setDefaultLon((Double) lonSpinner.getModel().getValue());
@@ -59,7 +57,6 @@ public class OptionsPanel extends javax.swing.JPanel {
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
-        lookAndFeelPanel = new se.trixon.almond.util.swing.dialogs.LookAndFeelPanel();
         localeLabel = new javax.swing.JLabel();
         localeComboBox = new se.trixon.almond.util.swing.LocaleComboBox();
         nullCoordinatePanel = new javax.swing.JPanel();
@@ -74,17 +71,8 @@ public class OptionsPanel extends javax.swing.JPanel {
         borderSizeLabel = new javax.swing.JLabel();
         borderSizeSpinner = new javax.swing.JSpinner();
         jPanel1 = new javax.swing.JPanel();
-        menuModePanel = new se.trixon.almond.util.swing.dialogs.MenuModePanel();
 
         setLayout(new java.awt.GridBagLayout());
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.weightx = 1.0;
-        add(lookAndFeelPanel, gridBagConstraints);
 
         localeLabel.setText(Dict.CALENDAR_LANGUAGE.toString());
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -203,7 +191,7 @@ public class OptionsPanel extends javax.swing.JPanel {
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 33, Short.MAX_VALUE)
+            .addGap(0, 35, Short.MAX_VALUE)
         );
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -213,12 +201,6 @@ public class OptionsPanel extends javax.swing.JPanel {
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
         add(jPanel1, gridBagConstraints);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        add(menuModePanel, gridBagConstraints);
     }// </editor-fold>//GEN-END:initComponents
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -232,8 +214,6 @@ public class OptionsPanel extends javax.swing.JPanel {
     private javax.swing.JLabel localeLabel;
     private javax.swing.JLabel lonLabel;
     private javax.swing.JSpinner lonSpinner;
-    private se.trixon.almond.util.swing.dialogs.LookAndFeelPanel lookAndFeelPanel;
-    private se.trixon.almond.util.swing.dialogs.MenuModePanel menuModePanel;
     private javax.swing.JPanel nullCoordinatePanel;
     private javax.swing.JLabel placemarkLabel;
     private javax.swing.JLabel thumbnailSizeLabel;
