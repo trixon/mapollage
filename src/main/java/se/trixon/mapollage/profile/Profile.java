@@ -24,7 +24,7 @@ import java.util.ResourceBundle;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 import se.trixon.almond.util.BooleanHelper;
-import se.trixon.almond.util.BundleHelper;
+import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.Dict;
 import se.trixon.mapollage.ui.OptionsPanel;
 
@@ -228,7 +228,7 @@ public class Profile extends ProfileBase implements Comparable<Profile> {
 
     @Override
     protected ProfileInfo getProfileInfo() {
-        ResourceBundle bundle = BundleHelper.getBundle(OptionsPanel.class, "Bundle");
+        ResourceBundle bundle = SystemHelper.getBundle(OptionsPanel.class, "Bundle");
         ProfileInfo profileInfo = new ProfileInfo();
         LinkedHashMap<String, String> values = new LinkedHashMap<>();
 

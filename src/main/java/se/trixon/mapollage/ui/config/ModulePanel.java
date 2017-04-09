@@ -22,7 +22,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 import javax.swing.text.JTextComponent;
 import se.trixon.almond.util.AlmondOptions;
-import se.trixon.almond.util.BundleHelper;
+import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.icons.IconColor;
 import se.trixon.almond.util.swing.dialogs.Message;
@@ -37,7 +37,7 @@ public abstract class ModulePanel extends javax.swing.JPanel {
 
     public static final int ICON_SIZE = 32;
     public static final String MULTILINE_DIVIDER = "* * * * *";
-    protected final ResourceBundle mBundle = BundleHelper.getBundle(ModulePanel.class, "Bundle");
+    protected final ResourceBundle mBundle = SystemHelper.getBundle(ModulePanel.class, "Bundle");
     protected final String mHeaderPrefix = " + ";
     protected final Options mOptions = Options.getInstance();
     protected Profile mProfile;

@@ -32,7 +32,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang3.SystemUtils;
 import se.trixon.almond.util.AlmondUI;
-import se.trixon.almond.util.BundleHelper;
+import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.PomInfo;
 import se.trixon.almond.util.SystemHelper;
@@ -48,7 +48,7 @@ public class Mapollage implements OperationListener {
 
     public static final String HELP = "help";
     public static final String VERSION = "version";
-    private static final ResourceBundle sBundle = BundleHelper.getBundle(Mapollage.class, "Bundle");
+    private static final ResourceBundle sBundle = SystemHelper.getBundle(Mapollage.class, "Bundle");
     private static Options sOptions;
     private final AlmondUI mAlmondUI = AlmondUI.getInstance();
     private MainFrame mMainFrame = null;

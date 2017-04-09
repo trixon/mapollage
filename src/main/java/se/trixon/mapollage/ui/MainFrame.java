@@ -52,7 +52,7 @@ import se.trixon.almond.util.AlmondAction;
 import se.trixon.almond.util.AlmondOptions;
 import se.trixon.almond.util.AlmondOptionsPanel;
 import se.trixon.almond.util.AlmondUI;
-import se.trixon.almond.util.BundleHelper;
+import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.PomInfo;
 import se.trixon.almond.util.SystemHelper;
@@ -78,8 +78,8 @@ import se.trixon.mapollage.profile.Profile;
 public class MainFrame extends javax.swing.JFrame {
 
     private static final boolean IS_MAC = SystemUtils.IS_OS_MAC;
-    private final ResourceBundle mBundle = BundleHelper.getBundle(Mapollage.class, "Bundle");
-    private final ResourceBundle mBundleUI = BundleHelper.getBundle(MainFrame.class, "Bundle");
+    private final ResourceBundle mBundle = SystemHelper.getBundle(Mapollage.class, "Bundle");
+    private final ResourceBundle mBundleUI = SystemHelper.getBundle(MainFrame.class, "Bundle");
     private ActionManager mActionManager;
     private final AlmondUI mAlmondUI = AlmondUI.getInstance();
     private final LinkedList<AlmondAction> mBaseActions = new LinkedList<>();
@@ -882,7 +882,7 @@ public class MainFrame extends javax.swing.JFrame {
             //about
             keyStroke = null;
             PomInfo pomInfo = new PomInfo(Mapollage.class, "se.trixon", "mapollage");
-            AboutModel aboutModel = new AboutModel(BundleHelper.getBundle(Mapollage.class, "about"), SystemHelper.getResourceAsImageIcon(MainFrame.class, "icon-1024px.png"));
+            AboutModel aboutModel = new AboutModel(SystemHelper.getBundle(Mapollage.class, "about"), SystemHelper.getResourceAsImageIcon(MainFrame.class, "icon-1024px.png"));
             aboutModel.setAppVersion(pomInfo.getVersion());
             AboutPanel aboutPanel = new AboutPanel(aboutModel);
             action = AboutPanel.getAction(MainFrame.this, aboutPanel);

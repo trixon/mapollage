@@ -57,7 +57,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
-import se.trixon.almond.util.BundleHelper;
+import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.Scaler;
 import se.trixon.mapollage.profile.Profile;
@@ -121,7 +121,7 @@ public class Operation implements Runnable {
 
         mFolderByRegexPattern = Pattern.compile(mProfileFolder.getRegex());
 
-        mBundle = BundleHelper.getBundle(Operation.class, "Bundle");
+        mBundle = SystemHelper.getBundle(Operation.class, "Bundle");
         mDocument = mKml.createAndSetDocument().withOpen(true);
         mBalloonStyle = KmlFactory.createBalloonStyle()
                 .withId("BalloonStyleId")
