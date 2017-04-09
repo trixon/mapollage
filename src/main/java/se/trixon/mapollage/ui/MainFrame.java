@@ -61,6 +61,8 @@ import se.trixon.almond.util.swing.SwingHelper;
 import se.trixon.almond.util.swing.dialogs.MenuModePanel.MenuMode;
 import se.trixon.almond.util.swing.dialogs.Message;
 import se.trixon.almond.util.swing.dialogs.SimpleDialog;
+import se.trixon.almond.util.swing.dialogs.about.AboutModel;
+import se.trixon.almond.util.swing.dialogs.about.AboutPanel;
 import se.trixon.mapollage.Mapollage;
 import se.trixon.mapollage.Operation;
 import se.trixon.mapollage.OperationListener;
@@ -918,16 +920,11 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
 
             //about
             keyStroke = null;
-            action = new AlmondAction(Dict.ABOUT.toString()) {
-
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    PomInfo pomInfo = new PomInfo(Mapollage.class, "se.trixon", "mapollage");
-                    String versionInfo = String.format(mBundle.getString("version_info"), pomInfo.getVersion());
-                    Message.information(MainFrame.this, Dict.ABOUT.toString(), versionInfo);
-                }
-            };
-
+            PomInfo pomInfo = new PomInfo(Mapollage.class, "se.trixon", "mapollage");
+            AboutModel aboutModel = new AboutModel(BundleHelper.getBundle(Mapollage.class, "about"), SystemHelper.getResourceAsImageIcon(MainFrame.class, "icon-1024px.png"));
+            aboutModel.setAppVersion(pomInfo.getVersion());
+            AboutPanel aboutPanel = new AboutPanel(aboutModel);
+            action = AboutPanel.getAction(MainFrame.this, aboutPanel);
             initAction(action, ABOUT, keyStroke, null, true);
             aboutMenuItem.setAction(action);
 

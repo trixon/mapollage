@@ -24,7 +24,6 @@ import java.util.LinkedHashMap;
 public class ProfileInfo {
 
     private int mMaxLength = Integer.MIN_VALUE;
-    ;
     private String mTitle;
     private LinkedHashMap<String, String> mValues;
 
