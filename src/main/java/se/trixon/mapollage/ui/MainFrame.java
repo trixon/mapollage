@@ -52,13 +52,13 @@ import se.trixon.almond.util.AlmondAction;
 import se.trixon.almond.util.AlmondOptions;
 import se.trixon.almond.util.AlmondOptionsPanel;
 import se.trixon.almond.util.AlmondUI;
-import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.PomInfo;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.icons.material.MaterialIcon;
 import se.trixon.almond.util.swing.LogPanel;
 import se.trixon.almond.util.swing.SwingHelper;
+import se.trixon.almond.util.swing.dialogs.MenuModePanel;
 import se.trixon.almond.util.swing.dialogs.MenuModePanel.MenuMode;
 import se.trixon.almond.util.swing.dialogs.Message;
 import se.trixon.almond.util.swing.dialogs.SimpleDialog;
@@ -107,9 +107,7 @@ public class MainFrame extends javax.swing.JFrame {
             initMac();
         }
 
-        if (mAlmondOptions.getMenuMode() == MenuMode.BAR) {
-            initMenuBar();
-        }
+        initMenus();
     }
 
     private Profile getSelectedProfile() {
@@ -251,36 +249,49 @@ public class MainFrame extends javax.swing.JFrame {
         macApplication.setPreferencesHandler((AppEvent.PreferencesEvent pe) -> {
             mActionManager.getAction(ActionManager.OPTIONS).actionPerformed(null);
         });
-
-        mPopupMenu.remove(aboutMenuItem);
-        mPopupMenu.remove(optionsMenuItem);
-        mPopupMenu.remove(quitMenuItem);
-        mPopupMenu.remove(jSeparator2);
-        mPopupMenu.remove(jSeparator6);
     }
 
-    private void initMenuBar() {
-        setJMenuBar(menuBar);
+    private void initMenus() {
+        if (mAlmondOptions.getMenuMode() == MenuModePanel.MenuMode.BUTTON) {
+            setJMenuBar(null);
 
-        profileMenu.add(removeMenuItem);
-        profileMenu.add(renameMenuItem);
-        profileMenu.add(cloneMenuItem);
-        profileMenu.add(removeAllProfilesMenuItem);
+            mPopupMenu.add(removeMenuItem);
+            mPopupMenu.add(renameMenuItem);
+            mPopupMenu.add(cloneMenuItem);
+            mPopupMenu.add(removeAllProfilesMenuItem);
+            mPopupMenu.add(new JSeparator());
 
-        if (!IS_MAC) {
-            fileMenu.add(quitMenuItem);
-            toolsMenu.add(optionsMenuItem);
+            if (!IS_MAC) {
+                mPopupMenu.add(optionsMenuItem);
+                mPopupMenu.add(new JSeparator());
+            }
+
+            mPopupMenu.add(helpMenuItem);
+            mPopupMenu.add(aboutDateFormatMenuItem);
+
+            if (!IS_MAC) {
+                mPopupMenu.add(aboutMenuItem);
+            }
+
+            if (!IS_MAC) {
+                mPopupMenu.add(new JSeparator());
+                mPopupMenu.add(quitMenuItem);
+            }
+
+        } else {
+            if (IS_MAC) {
+                fileMenu.remove(quitMenuItem);
+                toolsMenu.remove(optionsMenuItem);
+                helpMenu.remove(aboutMenuItem);
+            }
+
+            fileMenu.setVisible(fileMenu.getComponents().length > 0 || !IS_MAC);
+            toolsMenu.setVisible(toolsMenu.getComponents().length > 0 || !IS_MAC);
         }
 
-        helpMenu.add(helpMenuItem);
-        helpMenu.add(aboutDateFormatMenuItem);
-        if (!IS_MAC) {
-            helpMenu.add(aboutMenuItem);
-        }
-
-        menuButton.setVisible(false);
-        fileMenu.setVisible(fileMenu.getComponents().length > 0 || !IS_MAC);
-        toolsMenu.setVisible(toolsMenu.getComponents().length > 0 || !IS_MAC);
+        menuButton.setVisible(mAlmondOptions.getMenuMode() == MenuModePanel.MenuMode.BUTTON);
+        SwingHelper.clearToolTipText(menuBar);
+        SwingHelper.clearToolTipText(mPopupMenu);
     }
 
     private void setRunningState(boolean state) {
@@ -510,24 +521,6 @@ public class MainFrame extends javax.swing.JFrame {
         bindingGroup = new org.jdesktop.beansbinding.BindingGroup();
 
         mPopupMenu = new javax.swing.JPopupMenu();
-        removeMenuItem = new javax.swing.JMenuItem();
-        renameMenuItem = new javax.swing.JMenuItem();
-        cloneMenuItem = new javax.swing.JMenuItem();
-        removeAllProfilesMenuItem = new javax.swing.JMenuItem();
-        jSeparator1 = new javax.swing.JPopupMenu.Separator();
-        optionsMenuItem = new javax.swing.JMenuItem();
-        jSeparator2 = new javax.swing.JPopupMenu.Separator();
-        helpMenuItem = new javax.swing.JMenuItem();
-        aboutDateFormatMenuItem = new javax.swing.JMenuItem();
-        aboutMenuItem = new javax.swing.JMenuItem();
-        jSeparator6 = new javax.swing.JPopupMenu.Separator();
-        quitMenuItem = new javax.swing.JMenuItem();
-        menuBar = new javax.swing.JMenuBar();
-        fileMenu = new javax.swing.JMenu();
-        profileMenu = new javax.swing.JMenu();
-        addMenuItem = new javax.swing.JMenuItem();
-        toolsMenu = new javax.swing.JMenu();
-        helpMenu = new javax.swing.JMenu();
         topPanel = new javax.swing.JPanel();
         profileComboBox = new javax.swing.JComboBox<>();
         toolBar = new javax.swing.JToolBar();
@@ -536,38 +529,24 @@ public class MainFrame extends javax.swing.JFrame {
         addButton = new javax.swing.JButton();
         menuButton = new javax.swing.JButton();
         configPanel = new se.trixon.mapollage.ui.config.ConfigPanel();
-
-        mPopupMenu.add(removeMenuItem);
-        mPopupMenu.add(renameMenuItem);
-        mPopupMenu.add(cloneMenuItem);
-        mPopupMenu.add(removeAllProfilesMenuItem);
-        mPopupMenu.add(jSeparator1);
-        mPopupMenu.add(optionsMenuItem);
-        mPopupMenu.add(jSeparator2);
-        mPopupMenu.add(helpMenuItem);
-        mPopupMenu.add(aboutDateFormatMenuItem);
-        mPopupMenu.add(aboutMenuItem);
-        mPopupMenu.add(jSeparator6);
-        mPopupMenu.add(quitMenuItem);
-
-        fileMenu.setText(Dict.FILE_MENU.toString());
-        menuBar.add(fileMenu);
-
-        profileMenu.setText(Dict.PROFILE.toString());
-
-        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("se/trixon/mapollage/ui/Bundle"); // NOI18N
-        addMenuItem.setText(bundle.getString("MainFrame.addMenuItem.text")); // NOI18N
-        profileMenu.add(addMenuItem);
-
-        menuBar.add(profileMenu);
-
-        toolsMenu.setText(Dict.TOOLS.toString());
-        menuBar.add(toolsMenu);
-
-        helpMenu.setText(Dict.HELP.toString());
-        menuBar.add(helpMenu);
+        menuBar = new javax.swing.JMenuBar();
+        fileMenu = new javax.swing.JMenu();
+        quitMenuItem = new javax.swing.JMenuItem();
+        profileMenu = new javax.swing.JMenu();
+        addMenuItem = new javax.swing.JMenuItem();
+        removeMenuItem = new javax.swing.JMenuItem();
+        renameMenuItem = new javax.swing.JMenuItem();
+        cloneMenuItem = new javax.swing.JMenuItem();
+        removeAllProfilesMenuItem = new javax.swing.JMenuItem();
+        toolsMenu = new javax.swing.JMenu();
+        optionsMenuItem = new javax.swing.JMenuItem();
+        helpMenu = new javax.swing.JMenu();
+        helpMenuItem = new javax.swing.JMenuItem();
+        aboutDateFormatMenuItem = new javax.swing.JMenuItem();
+        aboutMenuItem = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("se/trixon/mapollage/ui/Bundle"); // NOI18N
         setTitle(bundle.getString("MainFrame.title")); // NOI18N
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
@@ -632,6 +611,36 @@ public class MainFrame extends javax.swing.JFrame {
         getContentPane().add(topPanel, java.awt.BorderLayout.PAGE_START);
         getContentPane().add(configPanel, java.awt.BorderLayout.CENTER);
 
+        fileMenu.setText(Dict.FILE_MENU.toString());
+        fileMenu.add(quitMenuItem);
+
+        menuBar.add(fileMenu);
+
+        profileMenu.setText(Dict.PROFILE.toString());
+
+        addMenuItem.setText(bundle.getString("MainFrame.addMenuItem.text")); // NOI18N
+        profileMenu.add(addMenuItem);
+        profileMenu.add(removeMenuItem);
+        profileMenu.add(renameMenuItem);
+        profileMenu.add(cloneMenuItem);
+        profileMenu.add(removeAllProfilesMenuItem);
+
+        menuBar.add(profileMenu);
+
+        toolsMenu.setText(Dict.TOOLS.toString());
+        toolsMenu.add(optionsMenuItem);
+
+        menuBar.add(toolsMenu);
+
+        helpMenu.setText(Dict.HELP.toString());
+        helpMenu.add(helpMenuItem);
+        helpMenu.add(aboutDateFormatMenuItem);
+        helpMenu.add(aboutMenuItem);
+
+        menuBar.add(helpMenu);
+
+        setJMenuBar(menuBar);
+
         bindingGroup.bind();
 
         pack();
@@ -675,9 +684,6 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JMenu fileMenu;
     private javax.swing.JMenu helpMenu;
     private javax.swing.JMenuItem helpMenuItem;
-    private javax.swing.JPopupMenu.Separator jSeparator1;
-    private javax.swing.JPopupMenu.Separator jSeparator2;
-    private javax.swing.JPopupMenu.Separator jSeparator6;
     private javax.swing.JPopupMenu mPopupMenu;
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JButton menuButton;
@@ -937,8 +943,6 @@ public class MainFrame extends javax.swing.JFrame {
             initAction(action, QUIT, keyStroke, MaterialIcon._Content.CLEAR, true);
             quitMenuItem.setAction(action);
 
-            SwingHelper.clearToolTipText(menuBar);
-            SwingHelper.clearToolTipText(mPopupMenu);
             SwingHelper.clearText(toolBar);
         }
     }

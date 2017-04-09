@@ -7,38 +7,8 @@
       <Layout class="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout">
         <Property name="useNullLayout" type="boolean" value="true"/>
       </Layout>
-      <SubComponents>
-        <MenuItem class="javax.swing.JMenuItem" name="removeMenuItem">
-        </MenuItem>
-        <MenuItem class="javax.swing.JMenuItem" name="renameMenuItem">
-        </MenuItem>
-        <MenuItem class="javax.swing.JMenuItem" name="cloneMenuItem">
-        </MenuItem>
-        <MenuItem class="javax.swing.JMenuItem" name="removeAllProfilesMenuItem">
-        </MenuItem>
-        <Component class="javax.swing.JPopupMenu$Separator" name="jSeparator1">
-        </Component>
-        <MenuItem class="javax.swing.JMenuItem" name="optionsMenuItem">
-        </MenuItem>
-        <Component class="javax.swing.JPopupMenu$Separator" name="jSeparator2">
-        </Component>
-        <MenuItem class="javax.swing.JMenuItem" name="helpMenuItem">
-        </MenuItem>
-        <MenuItem class="javax.swing.JMenuItem" name="aboutDateFormatMenuItem">
-        </MenuItem>
-        <MenuItem class="javax.swing.JMenuItem" name="aboutMenuItem">
-        </MenuItem>
-        <Component class="javax.swing.JPopupMenu$Separator" name="jSeparator6">
-        </Component>
-        <MenuItem class="javax.swing.JMenuItem" name="quitMenuItem">
-        </MenuItem>
-      </SubComponents>
     </Container>
-    <Container class="javax.swing.JMenuBar" name="menuBar">
-
-      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout">
-        <Property name="useNullLayout" type="boolean" value="true"/>
-      </Layout>
+    <Menu class="javax.swing.JMenuBar" name="menuBar">
       <SubComponents>
         <Menu class="javax.swing.JMenu" name="fileMenu">
           <Properties>
@@ -46,6 +16,10 @@
               <Connection code="Dict.FILE_MENU.toString()" type="code"/>
             </Property>
           </Properties>
+          <SubComponents>
+            <MenuItem class="javax.swing.JMenuItem" name="quitMenuItem">
+            </MenuItem>
+          </SubComponents>
         </Menu>
         <Menu class="javax.swing.JMenu" name="profileMenu">
           <Properties>
@@ -61,6 +35,14 @@
                 </Property>
               </Properties>
             </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="removeMenuItem">
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="renameMenuItem">
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="cloneMenuItem">
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="removeAllProfilesMenuItem">
+            </MenuItem>
           </SubComponents>
         </Menu>
         <Menu class="javax.swing.JMenu" name="toolsMenu">
@@ -69,6 +51,10 @@
               <Connection code="Dict.TOOLS.toString()" type="code"/>
             </Property>
           </Properties>
+          <SubComponents>
+            <MenuItem class="javax.swing.JMenuItem" name="optionsMenuItem">
+            </MenuItem>
+          </SubComponents>
         </Menu>
         <Menu class="javax.swing.JMenu" name="helpMenu">
           <Properties>
@@ -76,9 +62,17 @@
               <Connection code="Dict.HELP.toString()" type="code"/>
             </Property>
           </Properties>
+          <SubComponents>
+            <MenuItem class="javax.swing.JMenuItem" name="helpMenuItem">
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="aboutDateFormatMenuItem">
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="aboutMenuItem">
+            </MenuItem>
+          </SubComponents>
         </Menu>
       </SubComponents>
-    </Container>
+    </Menu>
   </NonVisualComponents>
   <Properties>
     <Property name="defaultCloseOperation" type="int" value="3"/>
@@ -87,6 +81,7 @@
     </Property>
   </Properties>
   <SyntheticProperties>
+    <SyntheticProperty name="menuBar" type="java.lang.String" value="menuBar"/>
     <SyntheticProperty name="formSizePolicy" type="int" value="1"/>
     <SyntheticProperty name="generateCenter" type="boolean" value="false"/>
   </SyntheticProperties>
