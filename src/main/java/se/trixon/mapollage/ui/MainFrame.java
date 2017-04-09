@@ -18,7 +18,6 @@ package se.trixon.mapollage.ui;
 import com.apple.eawt.AppEvent;
 import com.apple.eawt.Application;
 import java.awt.Desktop;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
@@ -38,7 +37,6 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ActionMap;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.InputMap;
 import javax.swing.JComponent;
@@ -77,7 +75,7 @@ import se.trixon.mapollage.profile.Profile;
  *
  * @author Patrik Karlsson
  */
-public class MainFrame extends javax.swing.JFrame implements AlmondOptions.AlmondOptionsWatcher {
+public class MainFrame extends javax.swing.JFrame {
 
     private static final boolean IS_MAC = SystemUtils.IS_OS_MAC;
     private final ResourceBundle mBundle = BundleHelper.getBundle(Mapollage.class, "Bundle");
@@ -114,46 +112,6 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
         }
     }
 
-    @Override
-    public void onAlmondOptions(AlmondOptions.AlmondOptionsEvent almondOptionsEvent) {
-        switch (almondOptionsEvent) {
-            case ICON_THEME:
-                mAllActions.stream().forEach((almondAction) -> {
-                    almondAction.updateIcon();
-                });
-
-                configPanel.refreshIcons();
-
-                break;
-
-            case LOOK_AND_FEEL:
-                for (Window window : Window.getWindows()) {
-                    SwingUtilities.updateComponentTreeUI(window);
-                }
-                SwingUtilities.updateComponentTreeUI(mPopupMenu);
-                configPanel.refreshIcons();
-                break;
-
-            case MENU_ICONS:
-                ActionMap actionMap = getRootPane().getActionMap();
-                for (Object key : actionMap.allKeys()) {
-                    Action action = actionMap.get(key);
-                    Icon icon = null;
-                    if (mAlmondOptions.isDisplayMenuIcons()) {
-                        icon = (Icon) action.getValue(AlmondAction.ALMOND_SMALL_ICON_KEY);
-                    }
-                    action.putValue(Action.SMALL_ICON, icon);
-                }
-                break;
-
-            case MENU_MODE:
-                break;
-
-            default:
-                throw new AssertionError();
-        }
-    }
-
     private Profile getSelectedProfile() {
         if (mModel.getSize() == 0) {
             return new Profile();
@@ -175,7 +133,6 @@ public class MainFrame extends javax.swing.JFrame implements AlmondOptions.Almon
         mActionManager = new ActionManager();
         mActionManager.initActions();
 
-        mAlmondUI.addOptionsWatcher(this);
         mAlmondUI.addWindowWatcher(this);
         mAlmondUI.initoptions();
 
