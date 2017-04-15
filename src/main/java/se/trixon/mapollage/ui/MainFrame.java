@@ -45,7 +45,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
-import se.trixon.almond.util.AlmondAction;
 import se.trixon.almond.util.AlmondOptions;
 import se.trixon.almond.util.AlmondOptionsPanel;
 import se.trixon.almond.util.AlmondUI;
@@ -77,8 +76,6 @@ public class MainFrame extends javax.swing.JFrame {
     private final ResourceBundle mBundleUI = SystemHelper.getBundle(MainFrame.class, "Bundle");
     private ActionManager mActionManager;
     private final AlmondUI mAlmondUI = AlmondUI.getInstance();
-    private final LinkedList<AlmondAction> mBaseActions = new LinkedList<>();
-    private final LinkedList<AlmondAction> mAllActions = new LinkedList<>();
     private final AlmondOptions mAlmondOptions = AlmondOptions.getInstance();
     private Thread mOperationThread;
     private final ProfileManager mProfileManager = ProfileManager.getInstance();
@@ -173,21 +170,28 @@ public class MainFrame extends javax.swing.JFrame {
         action = AboutPanel.getAction(MainFrame.this, aboutPanel);
         getRootPane().getActionMap().put(ActionManager.ABOUT, action);
 
-        optionsMenuItem.setAction(mActionManager.getAction(ActionManager.OPTIONS));
+        //File
+        quitMenuItem.setAction(mActionManager.getAction(ActionManager.QUIT));
+
+        //Profile
         addMenuItem.setAction(mActionManager.getAction(ActionManager.ADD));
         cloneMenuItem.setAction(mActionManager.getAction(ActionManager.CLONE));
+        renameMenuItem.setAction(mActionManager.getAction(ActionManager.RENAME));
         removeMenuItem.setAction(mActionManager.getAction(ActionManager.REMOVE));
         removeAllMenuItem.setAction(mActionManager.getAction(ActionManager.REMOVE_ALL));
-        aboutMenuItem.setAction(mActionManager.getAction(ActionManager.ABOUT));
+
+        //Tools
+        optionsMenuItem.setAction(mActionManager.getAction(ActionManager.OPTIONS));
+
+        //Help
         helpMenuItem.setAction(mActionManager.getAction(ActionManager.HELP));
         aboutDateFormatMenuItem.setAction(mActionManager.getAction(ActionManager.ABOUT_DATE_FORMAT));
-        quitMenuItem.setAction(mActionManager.getAction(ActionManager.QUIT));
-        renameMenuItem.setAction(mActionManager.getAction(ActionManager.RENAME));
+        aboutMenuItem.setAction(mActionManager.getAction(ActionManager.ABOUT));
 
+        //Toolbar
         addButton.setAction(mActionManager.getAction(ActionManager.ADD));
         startButton.setAction(mActionManager.getAction(ActionManager.START));
         cancelButton.setAction(mActionManager.getAction(ActionManager.CANCEL));
-
         menuButton.setAction(mActionManager.getAction(ActionManager.MENU));
 
         SwingHelper.clearText(toolBar);
