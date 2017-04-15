@@ -19,14 +19,11 @@ import com.apple.eawt.AppEvent;
 import com.apple.eawt.Application;
 import java.awt.Desktop;
 import java.awt.event.ActionEvent;
-import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -55,11 +52,9 @@ import se.trixon.almond.util.AlmondUI;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.PomInfo;
 import se.trixon.almond.util.SystemHelper;
-import se.trixon.almond.util.icons.material.MaterialIcon;
 import se.trixon.almond.util.swing.LogPanel;
 import se.trixon.almond.util.swing.SwingHelper;
 import se.trixon.almond.util.swing.dialogs.MenuModePanel;
-import se.trixon.almond.util.swing.dialogs.MenuModePanel.MenuMode;
 import se.trixon.almond.util.swing.dialogs.Message;
 import se.trixon.almond.util.swing.dialogs.SimpleDialog;
 import se.trixon.almond.util.swing.dialogs.about.AboutModel;
@@ -102,6 +97,11 @@ public class MainFrame extends javax.swing.JFrame {
      */
     public MainFrame() {
         initComponents();
+
+        mAlmondUI.addWindowWatcher(this);
+        mAlmondUI.initoptions();
+
+        initActions();
         init();
         if (IS_MAC) {
             initMac();
@@ -128,26 +128,6 @@ public class MainFrame extends javax.swing.JFrame {
         mProgressBar = mStatusPanel.getProgressBar();
 
         mModel = (DefaultComboBoxModel) profileComboBox.getModel();
-        mActionManager = new ActionManager();
-        mActionManager.initActions();
-
-        mAlmondUI.addWindowWatcher(this);
-        mAlmondUI.initoptions();
-
-        InputMap inputMap = mPopupMenu.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
-        ActionMap actionMap = mPopupMenu.getActionMap();
-        Action action = new AbstractAction("HideMenu") {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                mPopupMenu.setVisible(false);
-            }
-        };
-
-        String key = "HideMenu";
-        actionMap.put(key, action);
-        KeyStroke keyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
-        inputMap.put(keyStroke, key);
 
         loadProfiles();
         populateProfiles(null, 0);
@@ -165,6 +145,53 @@ public class MainFrame extends javax.swing.JFrame {
         SwingUtilities.invokeLater(() -> {
             configPanel.setEnabled(!mProfiles.isEmpty());
         });
+    }
+
+    private void initActions() {
+        mActionManager = ActionManager.getInstance().init(getRootPane().getActionMap(), getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW));
+
+        InputMap inputMap = mPopupMenu.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+        ActionMap actionMap = mPopupMenu.getActionMap();
+        Action action = new AbstractAction("HideMenu") {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                mPopupMenu.setVisible(false);
+            }
+        };
+
+        String key = "HideMenu";
+        actionMap.put(key, action);
+        KeyStroke keyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
+        inputMap.put(keyStroke, key);
+
+        //about
+        PomInfo pomInfo = new PomInfo(Mapollage.class, "se.trixon", "mapollage");
+        AboutModel aboutModel = new AboutModel(SystemHelper.getBundle(Mapollage.class, "about"), SystemHelper.getResourceAsImageIcon(MainFrame.class, "icon-1024px.png"));
+        aboutModel.setAppVersion(pomInfo.getVersion());
+        AboutPanel aboutPanel = new AboutPanel(aboutModel);
+        action = AboutPanel.getAction(MainFrame.this, aboutPanel);
+        getRootPane().getActionMap().put(ActionManager.ABOUT, action);
+
+        optionsMenuItem.setAction(mActionManager.getAction(ActionManager.OPTIONS));
+        addMenuItem.setAction(mActionManager.getAction(ActionManager.ADD));
+        cloneMenuItem.setAction(mActionManager.getAction(ActionManager.CLONE));
+        removeMenuItem.setAction(mActionManager.getAction(ActionManager.REMOVE));
+        removeAllMenuItem.setAction(mActionManager.getAction(ActionManager.REMOVE_ALL));
+        aboutMenuItem.setAction(mActionManager.getAction(ActionManager.ABOUT));
+        helpMenuItem.setAction(mActionManager.getAction(ActionManager.HELP));
+        aboutDateFormatMenuItem.setAction(mActionManager.getAction(ActionManager.ABOUT_DATE_FORMAT));
+        quitMenuItem.setAction(mActionManager.getAction(ActionManager.QUIT));
+        renameMenuItem.setAction(mActionManager.getAction(ActionManager.RENAME));
+
+        addButton.setAction(mActionManager.getAction(ActionManager.ADD));
+        startButton.setAction(mActionManager.getAction(ActionManager.START));
+        cancelButton.setAction(mActionManager.getAction(ActionManager.CANCEL));
+
+        menuButton.setAction(mActionManager.getAction(ActionManager.MENU));
+
+        SwingHelper.clearText(toolBar);
+
     }
 
     private void initListeners() {
@@ -238,6 +265,68 @@ public class MainFrame extends javax.swing.JFrame {
                 setRunningState(true);
             }
         };
+
+        mActionManager.addAppListener(new ActionManager.AppListener() {
+            @Override
+            public void onCancel(ActionEvent actionEvent) {
+                mOperationThread.interrupt();
+            }
+
+            @Override
+            public void onMenu(ActionEvent actionEvent) {
+                if (actionEvent.getSource() != menuButton) {
+                    menuButtonMousePressed(null);
+                }
+            }
+
+            @Override
+            public void onOptions(ActionEvent actionEvent) {
+                showOptions();
+            }
+
+            @Override
+            public void onQuit(ActionEvent actionEvent) {
+                quit();
+            }
+
+            @Override
+            public void onStart(ActionEvent actionEvent) {
+                if (!mProfiles.isEmpty()) {
+                    profileRun();
+                }
+            }
+        });
+
+        mActionManager.addProfileListener(new ActionManager.ProfileListener() {
+            @Override
+            public void onAdd(ActionEvent actionEvent) {
+                profileAdd(null);
+            }
+
+            @Override
+            public void onClone(ActionEvent actionEvent) {
+                try {
+                    profileClone();
+                } catch (CloneNotSupportedException ex) {
+                    Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+
+            @Override
+            public void onEdit(ActionEvent actionEvent) {
+                profileRename(getSelectedProfile().getName());
+            }
+
+            @Override
+            public void onRemove(ActionEvent actionEvent) {
+                profileRemove();
+            }
+
+            @Override
+            public void onRemoveAll(ActionEvent actionEvent) {
+                profileRemoveAll();
+            }
+        });
     }
 
     private void initMac() {
@@ -256,7 +345,7 @@ public class MainFrame extends javax.swing.JFrame {
             mPopupMenu.add(removeMenuItem);
             mPopupMenu.add(renameMenuItem);
             mPopupMenu.add(cloneMenuItem);
-            mPopupMenu.add(removeAllProfilesMenuItem);
+            mPopupMenu.add(removeAllMenuItem);
             mPopupMenu.add(new JSeparator());
 
             if (!IS_MAC) {
@@ -510,9 +599,8 @@ public class MainFrame extends javax.swing.JFrame {
     }
 
     /**
-     * This method is called from within the constructor to initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is always
-     * regenerated by the Form Editor.
+     * This method is called from within the constructor to initialize the form. WARNING: Do NOT
+     * modify this code. The content of this method is always regenerated by the Form Editor.
      */
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -529,7 +617,7 @@ public class MainFrame extends javax.swing.JFrame {
         removeMenuItem = new javax.swing.JMenuItem();
         renameMenuItem = new javax.swing.JMenuItem();
         cloneMenuItem = new javax.swing.JMenuItem();
-        removeAllProfilesMenuItem = new javax.swing.JMenuItem();
+        removeAllMenuItem = new javax.swing.JMenuItem();
         toolsMenu = new javax.swing.JMenu();
         optionsMenuItem = new javax.swing.JMenuItem();
         helpMenu = new javax.swing.JMenu();
@@ -558,7 +646,7 @@ public class MainFrame extends javax.swing.JFrame {
         profileMenu.add(removeMenuItem);
         profileMenu.add(renameMenuItem);
         profileMenu.add(cloneMenuItem);
-        profileMenu.add(removeAllProfilesMenuItem);
+        profileMenu.add(removeAllMenuItem);
 
         menuBar.add(profileMenu);
 
@@ -689,7 +777,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JComboBox<Profile> profileComboBox;
     private javax.swing.JMenu profileMenu;
     private javax.swing.JMenuItem quitMenuItem;
-    private javax.swing.JMenuItem removeAllProfilesMenuItem;
+    private javax.swing.JMenuItem removeAllMenuItem;
     private javax.swing.JMenuItem removeMenuItem;
     private javax.swing.JMenuItem renameMenuItem;
     private javax.swing.JButton startButton;
@@ -698,250 +786,4 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JPanel topPanel;
     private org.jdesktop.beansbinding.BindingGroup bindingGroup;
     // End of variables declaration//GEN-END:variables
-
-    class ActionManager {
-
-        static final String ABOUT = "about";
-        static final String ABOUT_DATE_FORMAT = "about_date_format";
-        static final String HELP = "help";
-        static final String ADD = "add";
-        static final String CANCEL = "cancel";
-        static final String CLONE = "clone";
-        static final String MENU = "menu";
-        static final String OPTIONS = "options";
-        static final String QUIT = "quit";
-        static final String REMOVE = "remove";
-        static final String REMOVE_ALL = "remove_all";
-        static final String RENAME = "rename";
-        static final String START = "start";
-
-        private ActionManager() {
-            initActions();
-        }
-
-        Action getAction(String key) {
-            return getRootPane().getActionMap().get(key);
-        }
-
-        private void initAction(AlmondAction action, String key, KeyStroke keyStroke, Enum iconEnum, boolean baseAction) {
-            InputMap inputMap = getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
-            ActionMap actionMap = getRootPane().getActionMap();
-
-            action.putValue(Action.ACCELERATOR_KEY, keyStroke);
-            action.putValue(Action.SHORT_DESCRIPTION, action.getValue(Action.NAME));
-            action.putValue("hideActionText", true);
-            action.setIconEnum(iconEnum);
-            action.updateIcon();
-
-            inputMap.put(keyStroke, key);
-            actionMap.put(key, action);
-
-            if (baseAction) {
-                mBaseActions.add(action);
-            }
-
-            mAllActions.add(action);
-        }
-
-        private void initActions() {
-            AlmondAction action;
-            KeyStroke keyStroke;
-            int commandMask = SystemHelper.getCommandMask();
-
-            if (mAlmondOptions.getMenuMode() == MenuMode.BUTTON) {
-
-                //menu
-                int menuKey = KeyEvent.VK_M;
-                keyStroke = KeyStroke.getKeyStroke(menuKey, commandMask);
-                action = new AlmondAction(Dict.MENU.toString()) {
-
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        if (e.getSource() != menuButton) {
-                            menuButtonMousePressed(null);
-                        }
-                    }
-                };
-
-                initAction(action, MENU, keyStroke, MaterialIcon._Navigation.MENU, true);
-                menuButton.setAction(action);
-            }
-
-            //options
-            int optionsKey = IS_MAC ? KeyEvent.VK_COMMA : KeyEvent.VK_P;
-            keyStroke = KeyStroke.getKeyStroke(optionsKey, commandMask);
-            keyStroke = IS_MAC ? null : keyStroke;
-            action = new AlmondAction(Dict.OPTIONS.toString()) {
-
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    showOptions();
-                }
-            };
-
-            initAction(action, OPTIONS, keyStroke, MaterialIcon._Action.SETTINGS, true);
-            optionsMenuItem.setAction(action);
-
-            //start
-            keyStroke = null;
-            action = new AlmondAction(Dict.START.toString()) {
-
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    if (!mProfiles.isEmpty()) {
-                        profileRun();
-                    }
-                }
-            };
-
-            initAction(action, START, keyStroke, MaterialIcon._Av.PLAY_ARROW, false);
-            startButton.setAction(action);
-
-            //cancel
-            keyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
-            action = new AlmondAction(Dict.CANCEL.toString()) {
-
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    mOperationThread.interrupt();
-                }
-            };
-
-            initAction(action, CANCEL, keyStroke, MaterialIcon._Content.CLEAR, false);
-            cancelButton.setAction(action);
-
-            //add
-            keyStroke = null;
-
-            action = new AlmondAction(Dict.ADD.toString()) {
-
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    profileAdd(null);
-                }
-            };
-
-            initAction(action, ADD, keyStroke, MaterialIcon._Content.ADD, true);
-            addButton.setAction(action);
-            addMenuItem.setAction(action);
-
-            //clone
-            keyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_C, commandMask + InputEvent.SHIFT_DOWN_MASK);
-            action = new AlmondAction(Dict.CLONE.toString()) {
-
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    try {
-                        profileClone();
-                    } catch (CloneNotSupportedException ex) {
-                        Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                }
-            };
-
-            initAction(action, CLONE, keyStroke, MaterialIcon._Content.CONTENT_COPY, false);
-            cloneMenuItem.setAction(action);
-
-            //rename
-            keyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_R, commandMask);
-            action = new AlmondAction(Dict.RENAME.toString()) {
-
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    if (!mProfiles.isEmpty()) {
-                        profileRename(getSelectedProfile().getName());
-                    }
-                }
-            };
-
-            initAction(action, RENAME, keyStroke, MaterialIcon._Editor.MODE_EDIT, false);
-            renameMenuItem.setAction(action);
-
-            //remove
-            keyStroke = null;
-            action = new AlmondAction(Dict.REMOVE.toString()) {
-
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    profileRemove();
-                }
-            };
-
-            initAction(action, REMOVE, keyStroke, MaterialIcon._Content.REMOVE, false);
-            removeMenuItem.setAction(action);
-
-            //remove all
-            keyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, commandMask + InputEvent.SHIFT_DOWN_MASK);
-            action = new AlmondAction(Dict.REMOVE_ALL.toString()) {
-
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    profileRemoveAll();
-                }
-            };
-
-            initAction(action, REMOVE_ALL, keyStroke, MaterialIcon._Content.CLEAR, false);
-            removeAllProfilesMenuItem.setAction(action);
-
-            //about
-            keyStroke = null;
-            PomInfo pomInfo = new PomInfo(Mapollage.class, "se.trixon", "mapollage");
-            AboutModel aboutModel = new AboutModel(SystemHelper.getBundle(Mapollage.class, "about"), SystemHelper.getResourceAsImageIcon(MainFrame.class, "icon-1024px.png"));
-            aboutModel.setAppVersion(pomInfo.getVersion());
-            AboutPanel aboutPanel = new AboutPanel(aboutModel);
-            action = AboutPanel.getAction(MainFrame.this, aboutPanel);
-            initAction(action, ABOUT, keyStroke, null, true);
-            aboutMenuItem.setAction(action);
-
-            //help
-            keyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0);
-            action = new AlmondAction(Dict.DOCUMENTATION.toString()) {
-
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    try {
-                        Desktop.getDesktop().browse(new URI("https://trixon.se/projects/mapollage/documentation/"));
-                    } catch (URISyntaxException | IOException ex) {
-                        Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                }
-            };
-
-            initAction(action, HELP, keyStroke, null, true);
-            helpMenuItem.setAction(action);
-
-            //about date format
-            keyStroke = null;
-            String title = String.format(Dict.ABOUT_S.toString(), Dict.DATE_PATTERN.toString().toLowerCase());
-            action = new AlmondAction(title) {
-
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    try {
-                        Desktop.getDesktop().browse(new URI("https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html"));
-                    } catch (URISyntaxException | IOException ex) {
-                        Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                }
-            };
-
-            initAction(action, ABOUT_DATE_FORMAT, keyStroke, null, true);
-            aboutDateFormatMenuItem.setAction(action);
-
-            //quit
-            keyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_Q, commandMask);
-            action = new AlmondAction(Dict.QUIT.toString()) {
-
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    quit();
-                }
-            };
-
-            initAction(action, QUIT, keyStroke, MaterialIcon._Content.CLEAR, true);
-            quitMenuItem.setAction(action);
-
-            SwingHelper.clearText(toolBar);
-        }
-    }
 }

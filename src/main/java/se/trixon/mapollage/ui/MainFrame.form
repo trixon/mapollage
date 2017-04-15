@@ -45,7 +45,7 @@
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="cloneMenuItem">
             </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="removeAllProfilesMenuItem">
+            <MenuItem class="javax.swing.JMenuItem" name="removeAllMenuItem">
             </MenuItem>
           </SubComponents>
         </Menu>
