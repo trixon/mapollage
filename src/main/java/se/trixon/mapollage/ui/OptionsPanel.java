@@ -33,7 +33,7 @@ public class OptionsPanel extends javax.swing.JPanel {
     public OptionsPanel() {
         initComponents();
         thumbnailSizeSpinner.setEditor(new JSpinner.NumberEditor(thumbnailSizeSpinner, "#"));
-        localeComboBox.setSelectedItem(mOptions.getLocale());
+        localeComboBox.setSelectedLocale(mOptions.getLocale());
         latSpinner.setValue(mOptions.getDefaultLat());
         lonSpinner.setValue(mOptions.getDefaultLon());
         thumbnailSizeSpinner.setValue(mOptions.getThumbnailSize());
@@ -41,7 +41,7 @@ public class OptionsPanel extends javax.swing.JPanel {
     }
 
     void save() {
-        mOptions.setLocale(localeComboBox.getSelectedItem());
+        mOptions.setLocale(localeComboBox.getSelectedLocale());
         mOptions.setDefaultLat((Double) latSpinner.getModel().getValue());
         mOptions.setDefaultLon((Double) lonSpinner.getModel().getValue());
         mOptions.setThumbnailSize((int) thumbnailSizeSpinner.getModel().getValue());
