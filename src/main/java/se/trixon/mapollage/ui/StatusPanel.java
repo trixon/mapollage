@@ -15,6 +15,7 @@
  */
 package se.trixon.mapollage.ui;
 
+import java.util.prefs.PreferenceChangeEvent;
 import javax.swing.JCheckBox;
 import javax.swing.JProgressBar;
 import javax.swing.JTabbedPane;
@@ -35,6 +36,15 @@ public class StatusPanel extends javax.swing.JPanel {
      */
     public StatusPanel() {
         initComponents();
+        mOptions.getPreferences().addPreferenceChangeListener((PreferenceChangeEvent evt) -> {
+            if (evt.getKey().equalsIgnoreCase(Options.KEY_WORD_WRAP)) {
+                logOutPanel.setWordWrap(mOptions.isWordWrap());
+                logErrPanel.setWordWrap(mOptions.isWordWrap());
+            }
+        });
+
+        logOutPanel.setWordWrap(mOptions.isWordWrap());
+        logErrPanel.setWordWrap(mOptions.isWordWrap());
         autoOpenCheckBox.setSelected(mOptions.isAutoOpen());
     }
 

@@ -38,6 +38,7 @@ public class OptionsPanel extends javax.swing.JPanel {
         lonSpinner.setValue(mOptions.getDefaultLon());
         thumbnailSizeSpinner.setValue(mOptions.getThumbnailSize());
         borderSizeSpinner.setValue(mOptions.getThumbnailBorderSize());
+        wordWrapCheckBox.setSelected(mOptions.isWordWrap());
     }
 
     void save() {
@@ -46,6 +47,7 @@ public class OptionsPanel extends javax.swing.JPanel {
         mOptions.setDefaultLon((Double) lonSpinner.getModel().getValue());
         mOptions.setThumbnailSize((int) thumbnailSizeSpinner.getModel().getValue());
         mOptions.setThumbnailBorderSize((int) borderSizeSpinner.getModel().getValue());
+        mOptions.setWordWrap(wordWrapCheckBox.isSelected());
     }
 
     /**
@@ -70,6 +72,7 @@ public class OptionsPanel extends javax.swing.JPanel {
         thumbnailSizeSpinner = new javax.swing.JSpinner();
         borderSizeLabel = new javax.swing.JLabel();
         borderSizeSpinner = new javax.swing.JSpinner();
+        wordWrapCheckBox = new javax.swing.JCheckBox();
         jPanel1 = new javax.swing.JPanel();
 
         setLayout(new java.awt.GridBagLayout());
@@ -183,15 +186,22 @@ public class OptionsPanel extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(0, 8, 0, 0);
         add(borderSizeSpinner, gridBagConstraints);
 
+        wordWrapCheckBox.setText(Dict.DYNAMIC_WORD_WRAP.toString());
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(8, 0, 0, 0);
+        add(wordWrapCheckBox, gridBagConstraints);
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 294, Short.MAX_VALUE)
+            .addGap(0, 0, Short.MAX_VALUE)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 35, Short.MAX_VALUE)
+            .addGap(0, 19, Short.MAX_VALUE)
         );
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -218,5 +228,6 @@ public class OptionsPanel extends javax.swing.JPanel {
     private javax.swing.JLabel placemarkLabel;
     private javax.swing.JLabel thumbnailSizeLabel;
     private javax.swing.JSpinner thumbnailSizeSpinner;
+    private javax.swing.JCheckBox wordWrapCheckBox;
     // End of variables declaration//GEN-END:variables
 }

@@ -116,7 +116,6 @@ public class MainFrame extends javax.swing.JFrame {
     }
 
     private void init() {
-
         String fileName = String.format("/%s/icon-1024px.png", getClass().getPackage().getName().replace(".", "/"));
         ImageIcon imageIcon = new ImageIcon(getClass().getResource(fileName));
         setIconImage(imageIcon.getImage());

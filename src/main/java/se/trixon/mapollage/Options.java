@@ -30,7 +30,9 @@ public class Options {
     public static final String KEY_LOCALE = "locale";
     public static final String KEY_THUMBNAIL_BORDER_SIZE = "thumbnail_border_size";
     public static final String KEY_THUMBNAIL_SIZE = "thumbnail_size";
+    public static final String KEY_WORD_WRAP = "word_wrap";
     private static final Locale DEFAULT_LOCALE = Locale.getDefault();
+    private static final boolean DEFAULT_WORD_WRAP = false;
     private final boolean DEFAULT_AUTO_OPEN = true;
     private final Double DEFAULT_LAT = 57.6;
     private final Double DEFAULT_LON = 11.3;
@@ -73,6 +75,10 @@ public class Options {
         return mPreferences.getBoolean(KEY_AUTO_OPEN, DEFAULT_AUTO_OPEN);
     }
 
+    public boolean isWordWrap() {
+        return mPreferences.getBoolean(KEY_WORD_WRAP, DEFAULT_WORD_WRAP);
+    }
+
     public void setAutoOpen(boolean value) {
         mPreferences.putBoolean(KEY_AUTO_OPEN, value);
     }
@@ -95,6 +101,10 @@ public class Options {
 
     public void setThumbnailSize(int size) {
         mPreferences.putInt(KEY_THUMBNAIL_SIZE, size);
+    }
+
+    public void setWordWrap(boolean value) {
+        mPreferences.putBoolean(KEY_WORD_WRAP, value);
     }
 
     private static class Holder {
