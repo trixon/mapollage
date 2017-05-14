@@ -154,7 +154,7 @@ public class ActionManager extends AlmondActionManager {
         initAction(action, ADD, keyStroke, MaterialIcon._Content.ADD, true);
 
         //clone
-        keyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_C, commandMask);
+        keyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_C, commandMask + InputEvent.SHIFT_DOWN_MASK);
         action = new AlmondAction(Dict.CLONE.toString()) {
 
             @Override
@@ -171,7 +171,7 @@ public class ActionManager extends AlmondActionManager {
         initAction(action, CLONE, keyStroke, MaterialIcon._Content.CONTENT_COPY, false);
 
         //edit
-        keyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_E, commandMask);
+        keyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_E, commandMask + InputEvent.SHIFT_DOWN_MASK);
         action = new AlmondAction(Dict.RENAME.toString()) {
 
             @Override
