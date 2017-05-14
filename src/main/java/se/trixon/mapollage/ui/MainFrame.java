@@ -642,9 +642,6 @@ public class MainFrame extends javax.swing.JFrame {
         menuBar.add(fileMenu);
 
         profileMenu.setText(Dict.PROFILE.toString());
-
-        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("se/trixon/mapollage/ui/Bundle"); // NOI18N
-        addMenuItem.setText(bundle.getString("MainFrame.addMenuItem.text")); // NOI18N
         profileMenu.add(addMenuItem);
         profileMenu.add(removeMenuItem);
         profileMenu.add(renameMenuItem);
@@ -666,6 +663,7 @@ public class MainFrame extends javax.swing.JFrame {
         menuBar.add(helpMenu);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("se/trixon/mapollage/ui/Bundle"); // NOI18N
         setTitle(bundle.getString("MainFrame.title")); // NOI18N
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {

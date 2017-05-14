@@ -57,9 +57,9 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
-import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.Scaler;
+import se.trixon.almond.util.SystemHelper;
 import se.trixon.mapollage.profile.Profile;
 import se.trixon.mapollage.profile.ProfileDescription;
 import se.trixon.mapollage.profile.ProfileDescription.DescriptionSegment;
@@ -379,6 +379,7 @@ public class Operation implements Runnable {
     }
 
     private boolean generateFileList() throws IOException {
+        mListener.onOperationLog("");
         mListener.onOperationLog(Dict.GENERATING_FILELIST.toString());
         PathMatcher pathMatcher = mProfileSource.getPathMatcher();
 
