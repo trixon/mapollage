@@ -134,7 +134,6 @@ public class MainFrame extends javax.swing.JFrame {
 
         mLogOutPanel.println(mBundleUI.getString("welcome_1"));
         mLogOutPanel.println(Mapollage.getHelp());
-        mLogOutPanel.println(mBundleUI.getString("welcome_3"));
         mLogOutPanel.scrollToTop();
 
         setRunningState(false);

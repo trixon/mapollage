@@ -32,7 +32,6 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang3.SystemUtils;
 import se.trixon.almond.util.AlmondUI;
-import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.PomInfo;
 import se.trixon.almond.util.SystemHelper;
@@ -282,8 +281,7 @@ public class Mapollage implements OperationListener {
         sOptions.addOption(viewProfile);
         sOptions.addOption(profile);
 
-        sOptions.addOption(gui);
-
+//        sOptions.addOption(gui);
         sOptions.addOption(help);
         sOptions.addOption(version);
     }
