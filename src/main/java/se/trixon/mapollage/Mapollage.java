@@ -68,7 +68,7 @@ public class Mapollage implements OperationListener {
         formatter.printHelp("xxx", sOptions, false);
         System.out.flush();
         System.setOut(defaultStdOut);
-        sb.append(baos.toString().replace("usage: xxx" + SystemUtils.LINE_SEPARATOR, "")).append("\n")
+        sb.append(baos.toString().replace("usage: xxx" + System.lineSeparator(), "")).append("\n")
                 .append(sBundle.getString("help_footer"));
 
         return sb.toString();
