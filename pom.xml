@@ -150,7 +150,7 @@
                                 <filter>
                                     <artifact>com.bulenkov:darcula</artifact>
                                     <includes>
-                                        <include>com/bulenkov/**</include>
+                                        <include>*/**</include>
                                     </includes>
                                 </filter>
                                 <filter>
