@@ -27,6 +27,8 @@ import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.icons.material.MaterialIcon;
 import se.trixon.mapollage.profile.Profile;
 import se.trixon.mapollage.profile.ProfilePlacemark;
+import se.trixon.mapollage.profile.ProfilePlacemark.NameBy;
+import se.trixon.mapollage.profile.ProfilePlacemark.SymbolAs;
 
 /**
  *
@@ -53,7 +55,7 @@ public class ModulePlacemarkPanel extends ModulePanel {
 
     @Override
     public boolean hasValidSettings() {
-        if (mInvalidDateFormat && mPlacemark.getNameBy() == 1) {
+        if (mInvalidDateFormat && mPlacemark.getNameBy() == ProfilePlacemark.NameBy.FILE) {
             invalidSettings(Dict.INVALID_DATE_PATTERN.toString());
 
             return false;
@@ -142,7 +144,7 @@ public class ModulePlacemarkPanel extends ModulePanel {
         timestampCheckBox = new javax.swing.JCheckBox();
         jPanel4 = new javax.swing.JPanel();
 
-        setLayout(new java.awt.GridLayout(1, 0, 8, 0));
+        setLayout(new java.awt.GridLayout(1, 0, 16, 0));
 
         jPanel2.setLayout(new java.awt.GridBagLayout());
 
@@ -325,15 +327,15 @@ public class ModulePlacemarkPanel extends ModulePanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void nameByFileRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nameByFileRadioButtonActionPerformed
-        mPlacemark.setNameBy(ProfilePlacemark.NAME_BY_FILE);
+        mPlacemark.setNameBy(NameBy.FILE);
     }//GEN-LAST:event_nameByFileRadioButtonActionPerformed
 
     private void nameByNoRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nameByNoRadioButtonActionPerformed
-        mPlacemark.setNameBy(ProfilePlacemark.NAME_BY_NONE);
+        mPlacemark.setNameBy(NameBy.NONE);
     }//GEN-LAST:event_nameByNoRadioButtonActionPerformed
 
     private void nameByDateRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nameByDateRadioButtonActionPerformed
-        mPlacemark.setNameBy(ProfilePlacemark.NAME_BY_DATE);
+        mPlacemark.setNameBy(NameBy.DATE);
     }//GEN-LAST:event_nameByDateRadioButtonActionPerformed
 
     private void scaleSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_scaleSpinnerStateChanged
@@ -345,11 +347,11 @@ public class ModulePlacemarkPanel extends ModulePanel {
     }//GEN-LAST:event_zoomSpinnerStateChanged
 
     private void symbolPhotoRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_symbolPhotoRadioButtonActionPerformed
-        mPlacemark.setSymbolAs(ProfilePlacemark.SYMBOL_AS_PHOTO);
+        mPlacemark.setSymbolAs(SymbolAs.PHOTO);
     }//GEN-LAST:event_symbolPhotoRadioButtonActionPerformed
 
     private void symbolPinRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_symbolPinRadioButtonActionPerformed
-        mPlacemark.setSymbolAs(ProfilePlacemark.SYMBOL_AS_PIN);
+        mPlacemark.setSymbolAs(SymbolAs.PIN);
     }//GEN-LAST:event_symbolPinRadioButtonActionPerformed
 
     private void timestampCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_timestampCheckBoxActionPerformed
@@ -389,29 +391,29 @@ public class ModulePlacemarkPanel extends ModulePanel {
             dateFormatComboBox.setSelectedItem(mPlacemark.getDatePattern());
 
             switch (mPlacemark.getNameBy()) {
-                case ProfilePlacemark.NAME_BY_FILE:
+                case FILE:
                     nameByFileRadioButton.setSelected(true);
                     nameByFileRadioButtonActionPerformed(null);
                     break;
 
-                case ProfilePlacemark.NAME_BY_DATE:
+                case DATE:
                     nameByDateRadioButton.setSelected(true);
                     nameByDateRadioButtonActionPerformed(null);
                     break;
 
-                case ProfilePlacemark.NAME_BY_NONE:
+                case NONE:
                     nameByNoRadioButton.setSelected(true);
                     nameByNoRadioButtonActionPerformed(null);
                     break;
             }
 
             switch (mPlacemark.getSymbolAs()) {
-                case ProfilePlacemark.SYMBOL_AS_PHOTO:
+                case PHOTO:
                     symbolPhotoRadioButton.setSelected(true);
                     symbolPhotoRadioButtonActionPerformed(null);
                     break;
 
-                case ProfilePlacemark.SYMBOL_AS_PIN:
+                case PIN:
                     symbolPinRadioButton.setSelected(true);
                     symbolPinRadioButtonActionPerformed(null);
                     break;

@@ -15,8 +15,8 @@
  */
 package se.trixon.mapollage.profile;
 
+import com.google.gson.annotations.SerializedName;
 import java.util.LinkedHashMap;
-import org.json.simple.JSONObject;
 import se.trixon.almond.util.BooleanHelper;
 import se.trixon.almond.util.Dict;
 
@@ -26,44 +26,19 @@ import se.trixon.almond.util.Dict;
  */
 public class ProfilePath extends ProfileBase {
 
-    public static final String KEY_DRAW_PATH = "drawPath";
-    public static final String KEY_SPLIT_BY = "splitBy";
-    public static final String KEY_WIDTH = "width";
-    public static final int SPLIT_BY_DAY = 2;
-    public static final int SPLIT_BY_HOUR = 1;
-    public static final int SPLIT_BY_MONTH = 4;
-    public static final int SPLIT_BY_NONE = 0;
-    public static final int SPLIT_BY_WEEK = 3;
-    public static final int SPLIT_BY_YEAR = 5;
-
+    @SerializedName("draw_path")
     private boolean mDrawPath = true;
-    private final Profile mProfile;
-    private int mSplitBy = SPLIT_BY_MONTH;
+    private transient final Profile mProfile;
+    @SerializedName("split_by")
+    private SplitBy mSplitBy = SplitBy.MONTH;
+    @SerializedName("width")
     private Double mWidth = 2.0;
 
     public ProfilePath(Profile profile) {
         mProfile = profile;
     }
 
-    public ProfilePath(Profile profile, JSONObject json) {
-        mProfile = profile;
-        mDrawPath = getBoolean(json, KEY_DRAW_PATH, mDrawPath);
-        mWidth = getDouble(json, KEY_WIDTH, mWidth);
-        mSplitBy = getInt(json, KEY_SPLIT_BY, mSplitBy);
-
-    }
-
-    @Override
-    public JSONObject getJson() {
-        JSONObject json = new JSONObject();
-        json.put(KEY_DRAW_PATH, mDrawPath);
-        json.put(KEY_WIDTH, mWidth);
-        json.put(KEY_SPLIT_BY, mSplitBy);
-
-        return json;
-    }
-
-    public int getSplitBy() {
+    public SplitBy getSplitBy() {
         return mSplitBy;
     }
 
@@ -89,7 +64,7 @@ public class ProfilePath extends ProfileBase {
         mDrawPath = drawPath;
     }
 
-    public void setSplitBy(int splitBy) {
+    public void setSplitBy(SplitBy splitBy) {
         mSplitBy = splitBy;
     }
 
@@ -97,25 +72,46 @@ public class ProfilePath extends ProfileBase {
         mWidth = width;
     }
 
+    private String getLabel(SplitBy splitBy) {
+        switch (splitBy) {
+            case NONE:
+                return Dict.DO_NOT_SPLIT.toString();
+            case HOUR:
+                return Dict.Time.HOUR.toString();
+            case DAY:
+                return Dict.Time.DAY.toString();
+            case WEEK:
+                return Dict.Time.WEEK.toString();
+            case MONTH:
+                return Dict.Time.MONTH.toString();
+            case YEAR:
+                return Dict.Time.YEAR.toString();
+            default:
+                return null;
+        }
+    }
+
     @Override
     protected ProfileInfo getProfileInfo() {
         ProfileInfo profileInfo = new ProfileInfo();
         LinkedHashMap<String, String> values = new LinkedHashMap<>();
-        values.put(mBundleUI.getString("ModulePathPanel.drawPathCheckBox.text"), BooleanHelper.asYesNo(mDrawPath));
+        values.put(BUNDLE_UI.getString("ModulePathPanel.drawPathCheckBox.text"), BooleanHelper.asYesNo(mDrawPath));
         values.put(Dict.WIDTH.toString(), String.valueOf(mWidth));
-        String[] units = new String[]{
-            Dict.DO_NOT_SPLIT.toString(),
-            Dict.Time.HOUR.toString(),
-            Dict.Time.DAY.toString(),
-            Dict.Time.WEEK.toString(),
-            Dict.Time.MONTH.toString(),
-            Dict.Time.YEAR.toString()
-        };
-        values.put(Dict.SPLIT_BY.toString(), units[mSplitBy]);
+
+        values.put(Dict.SPLIT_BY.toString(), getLabel(mSplitBy));
 
         profileInfo.setTitle(getTitle());
         profileInfo.setValues(values);
 
         return profileInfo;
+    }
+
+    public enum SplitBy {
+        NONE,
+        HOUR,
+        DAY,
+        WEEK,
+        MONTH,
+        YEAR;
     }
 }

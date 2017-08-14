@@ -31,6 +31,7 @@ import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.icons.material.MaterialIcon;
 import se.trixon.mapollage.profile.Profile;
 import se.trixon.mapollage.profile.ProfileFolder;
+import se.trixon.mapollage.profile.ProfileFolder.FolderBy;
 
 /**
  *
@@ -57,13 +58,13 @@ public class ModuleFoldersPanel extends ModulePanel {
 
     @Override
     public boolean hasValidSettings() {
-        if (mInvalidDateFormat && mFolder.getFoldersBy() == 1) {
+        if (mInvalidDateFormat && mFolder.getFoldersBy() == FolderBy.DATE) {
             invalidSettings(Dict.INVALID_DATE_PATTERN.toString());
 
             return false;
         }
 
-        if (mFolder.getFoldersBy() == ProfileFolder.FOLDER_BY_REGEX) {
+        if (mFolder.getFoldersBy() == FolderBy.REGEX) {
             try {
                 Pattern pattern = Pattern.compile(mFolder.getRegex());
             } catch (PatternSyntaxException e) {
@@ -343,19 +344,19 @@ public class ModuleFoldersPanel extends ModulePanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void folderByDirectoryRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_folderByDirectoryRadioButtonActionPerformed
-        mFolder.setFoldersBy(ProfileFolder.FOLDER_BY_DIR);
+        mFolder.setFoldersBy(FolderBy.DIR);
     }//GEN-LAST:event_folderByDirectoryRadioButtonActionPerformed
 
     private void folderByDateRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_folderByDateRadioButtonActionPerformed
-        mFolder.setFoldersBy(ProfileFolder.FOLDER_BY_DATE);
+        mFolder.setFoldersBy(FolderBy.DATE);
     }//GEN-LAST:event_folderByDateRadioButtonActionPerformed
 
     private void folderByRegexRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_folderByRegexRadioButtonActionPerformed
-        mFolder.setFoldersBy(ProfileFolder.FOLDER_BY_REGEX);
+        mFolder.setFoldersBy(FolderBy.REGEX);
     }//GEN-LAST:event_folderByRegexRadioButtonActionPerformed
 
     private void folderByNoneRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_folderByNoneRadioButtonActionPerformed
-        mFolder.setFoldersBy(ProfileFolder.FOLDER_BY_NONE);
+        mFolder.setFoldersBy(FolderBy.NONE);
     }//GEN-LAST:event_folderByNoneRadioButtonActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -395,15 +396,15 @@ public class ModuleFoldersPanel extends ModulePanel {
             JRadioButton folderByRadioButton;
 
             switch (mFolder.getFoldersBy()) {
-                case ProfileFolder.FOLDER_BY_DIR:
+                case DIR:
                     folderByRadioButton = folderByDirectoryRadioButton;
                     break;
 
-                case ProfileFolder.FOLDER_BY_DATE:
+                case DATE:
                     folderByRadioButton = folderByDateRadioButton;
                     break;
 
-                case ProfileFolder.FOLDER_BY_REGEX:
+                case REGEX:
                     folderByRadioButton = folderByRegexRadioButton;
                     break;
 

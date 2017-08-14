@@ -15,9 +15,9 @@
  */
 package se.trixon.mapollage.profile;
 
+import com.google.gson.annotations.SerializedName;
 import java.text.SimpleDateFormat;
 import java.util.LinkedHashMap;
-import org.json.simple.JSONObject;
 import se.trixon.almond.util.Dict;
 
 /**
@@ -26,43 +26,26 @@ import se.trixon.almond.util.Dict;
  */
 public class ProfileFolder extends ProfileBase {
 
-    public static final int FOLDER_BY_DATE = 2;
-    public static final int FOLDER_BY_DIR = 1;
-    public static final int FOLDER_BY_NONE = 0;
-    public static final int FOLDER_BY_REGEX = 3;
-
-    public static final String KEY_CREATE_FOLDERS = "createFolders";
-    public static final String KEY_DATE_PATTERN = "datePattern";
-    public static final String KEY_FOLDERS_BY = "foldersBy";
-    public static final String KEY_REGEX = "regex";
-    public static final String KEY_REGEX_DEFAULT = "regexDefault";
-    public static final String KEY_ROOT_DESCRIPTION = "rootDescription";
-    public static final String KEY_ROOT_NAME = "rootName";
-
     private static final String FOLDER_NAME = "folder-name";
     private static final String ROOT_NAME = "root-name";
 
+    @SerializedName("date_pattern")
     private String mDatePattern = "yyyy-ww";
-    private SimpleDateFormat mFolderDateFormat;
-    private int mFoldersBy = FOLDER_BY_DIR;
-    private final Profile mProfile;
+    private transient SimpleDateFormat mFolderDateFormat;
+    @SerializedName("folders_by")
+    private FolderBy mFoldersBy = FolderBy.DIR;
+    private transient final Profile mProfile;
+    @SerializedName("regex")
     private String mRegex = "\\d{8}";
+    @SerializedName("regex_default")
     private String mRegexDefault = "12345678";
+    @SerializedName("root_description")
     private String mRootDescription = "";
+    @SerializedName("root_name")
     private String mRootName = "";
 
     public ProfileFolder(Profile profile) {
         mProfile = profile;
-    }
-
-    public ProfileFolder(Profile profile, JSONObject json) {
-        mProfile = profile;
-        mRootName = (String) json.get(KEY_ROOT_NAME);
-        mRootDescription = (String) json.get(KEY_ROOT_DESCRIPTION);
-        mFoldersBy = getInt(json, KEY_FOLDERS_BY, mFoldersBy);
-        mDatePattern = (String) json.get(KEY_DATE_PATTERN);
-        mRegex = (String) json.get(KEY_REGEX);
-        mRegexDefault = (String) json.get(KEY_REGEX_DEFAULT);
     }
 
     public String getDatePattern() {
@@ -73,22 +56,8 @@ public class ProfileFolder extends ProfileBase {
         return mFolderDateFormat;
     }
 
-    public int getFoldersBy() {
+    public FolderBy getFoldersBy() {
         return mFoldersBy;
-    }
-
-    @Override
-    public JSONObject getJson() {
-        JSONObject json = new JSONObject();
-
-        json.put(KEY_ROOT_NAME, mRootName);
-        json.put(KEY_ROOT_DESCRIPTION, mRootDescription);
-        json.put(KEY_FOLDERS_BY, mFoldersBy);
-        json.put(KEY_DATE_PATTERN, mDatePattern);
-        json.put(KEY_REGEX, mRegex);
-        json.put(KEY_REGEX_DEFAULT, mRegexDefault);
-
-        return json;
     }
 
     public String getRegex() {
@@ -116,15 +85,15 @@ public class ProfileFolder extends ProfileBase {
     public boolean isValid() {
         boolean valid = true;
         if (mRootName == null) {
-            addValidationError(String.format(mBundle.getString("invalid_value"), ROOT_NAME, mRootName));
+            addValidationError(String.format(BUNDLE.getString("invalid_value"), ROOT_NAME, mRootName));
             valid = false;
         }
 
-        if (mFoldersBy == FOLDER_BY_DATE) {
+        if (mFoldersBy == FolderBy.DATE) {
             try {
                 mFolderDateFormat = new SimpleDateFormat(mDatePattern, mOptions.getLocale());
-            } catch (Exception e) {
-                addValidationError(String.format(mBundle.getString("invalid_value"), FOLDER_NAME, mDatePattern));
+            } catch (IllegalArgumentException e) {
+                addValidationError(String.format(BUNDLE.getString("invalid_value"), FOLDER_NAME, mDatePattern));
                 valid = false;
             }
         }
@@ -140,7 +109,7 @@ public class ProfileFolder extends ProfileBase {
         mFolderDateFormat = folderDateFormat;
     }
 
-    public void setFoldersBy(int foldersBy) {
+    public void setFoldersBy(FolderBy foldersBy) {
         mFoldersBy = foldersBy;
     }
 
@@ -164,29 +133,36 @@ public class ProfileFolder extends ProfileBase {
     protected ProfileInfo getProfileInfo() {
         ProfileInfo profileInfo = new ProfileInfo();
         LinkedHashMap<String, String> values = new LinkedHashMap<>();
-        values.put(mBundleUI.getString("ModuleFoldersPanel.rootNameLabel.text"), mRootName);
-        values.put(mBundleUI.getString("ModuleFoldersPanel.rootDescriptionLabel.text"), mRootDescription.replaceAll("\\n", "\\\\n"));
-        String foldersBy = mBundleUI.getString("ModuleFoldersPanel.folderByNoneRadioButton.text");
+        values.put(BUNDLE_UI.getString("ModuleFoldersPanel.rootNameLabel.text"), mRootName);
+        values.put(BUNDLE_UI.getString("ModuleFoldersPanel.rootDescriptionLabel.text"), mRootDescription.replaceAll("\\n", "\\\\n"));
+        String foldersBy = BUNDLE_UI.getString("ModuleFoldersPanel.folderByNoneRadioButton.text");
 
         switch (mFoldersBy) {
-            case FOLDER_BY_DATE:
+            case DATE:
                 foldersBy = mDatePattern;
                 break;
 
-            case FOLDER_BY_DIR:
-                foldersBy = mBundleUI.getString("ModuleFoldersPanel.folderByDirectoryRadioButton.text");
+            case DIR:
+                foldersBy = BUNDLE_UI.getString("ModuleFoldersPanel.folderByDirectoryRadioButton.text");
                 break;
 
-            case FOLDER_BY_REGEX:
+            case REGEX:
                 foldersBy = mRegex;
                 break;
         }
 
-        values.put(mBundleUI.getString("ModuleFoldersPanel.folderByLabel.text"), foldersBy);
+        values.put(BUNDLE_UI.getString("ModuleFoldersPanel.folderByLabel.text"), foldersBy);
 
         profileInfo.setTitle(getTitle());
         profileInfo.setValues(values);
 
         return profileInfo;
+    }
+
+    public enum FolderBy {
+        NONE,
+        DIR,
+        DATE,
+        REGEX
     }
 }

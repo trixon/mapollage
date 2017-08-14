@@ -15,11 +15,8 @@
  */
 package se.trixon.mapollage.profile;
 
-import java.io.File;
-import java.util.Map;
 import java.util.ResourceBundle;
 import org.apache.commons.lang3.StringUtils;
-import org.json.simple.JSONObject;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.mapollage.Mapollage;
 import se.trixon.mapollage.Options;
@@ -32,11 +29,13 @@ import se.trixon.mapollage.ui.config.ConfigPanel;
 public abstract class ProfileBase {
 
     protected static StringBuilder sValidationErrorBuilder;
-    protected final ResourceBundle mBundle = SystemHelper.getBundle(Mapollage.class, "Bundle");
-    protected final ResourceBundle mBundleUI = SystemHelper.getBundle(ConfigPanel.class, "Bundle");
-    protected final Options mOptions = Options.getInstance();
 
-    public abstract JSONObject getJson();
+    protected static final ResourceBundle BUNDLE = SystemHelper.getBundle(Mapollage.class, "Bundle");
+    protected static final ResourceBundle BUNDLE_UI = SystemHelper.getBundle(ConfigPanel.class, "Bundle");
+    protected static final Options mOptions = Options.getInstance();
+
+    public ProfileBase() {
+    }
 
     public abstract String getTitle();
 
@@ -51,57 +50,17 @@ public abstract class ProfileBase {
 
         builder.append(profileInfo.getTitle()).append("\n");
 
-        for (Map.Entry<String, String> entry : profileInfo.getValues().entrySet()) {
+        profileInfo.getValues().entrySet().forEach((entry) -> {
             String key = entry.getKey();
             String value = entry.getValue();
             builder.append(StringUtils.leftPad(key, maxLength)).append(separator).append(value).append("\n");
-        }
+        });
 
         return builder.toString();
     }
 
     protected void addValidationError(String string) {
         sValidationErrorBuilder.append(string).append("\n");
-    }
-
-    protected boolean getBoolean(JSONObject object, String key, boolean defaultValue) {
-        try {
-            return (boolean) object.get(key);
-        } catch (NullPointerException e) {
-            return defaultValue;
-        }
-    }
-
-    protected Double getDouble(JSONObject object, String key, Double defaultValue) {
-        if (object != null && object.containsKey(key)) {
-            try {
-                Double d = ((Double) object.get(key));
-                return d;
-            } catch (Exception e) {
-            }
-
-        }
-
-        return defaultValue;
-    }
-
-    protected File getFileObject(JSONObject object, String key) {
-        try {
-            return new File((String) object.get(key));
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    protected int getInt(JSONObject object, String key, int defaultValue) {
-        try {
-            return ((Long) object.get(key)).intValue();
-
-        } catch (ClassCastException e) {
-            return (Integer) object.get(key);
-        } catch (NullPointerException e) {
-            return defaultValue;
-        }
     }
 
     protected abstract ProfileInfo getProfileInfo();

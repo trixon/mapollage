@@ -15,9 +15,9 @@
  */
 package se.trixon.mapollage.profile;
 
+import com.google.gson.annotations.SerializedName;
 import java.util.LinkedHashMap;
 import org.apache.commons.lang3.StringUtils;
-import org.json.simple.JSONObject;
 import se.trixon.almond.util.BooleanHelper;
 import se.trixon.almond.util.Dict;
 
@@ -27,29 +27,29 @@ import se.trixon.almond.util.Dict;
  */
 public class ProfileDescription extends ProfileBase {
 
-    public static final String KEY_ALTITUDE = "altitude";
-    public static final String KEY_BEARING = "bearing";
-    public static final String KEY_COORDINATE = "coordinate";
-    public static final String KEY_CUSTOM = "custom";
-    public static final String KEY_CUSTOM_VALUE = "customValue";
-    public static final String KEY_DATE = "date";
-    public static final String KEY_EXTERNAL_FILE = "externalFile";
-    public static final String KEY_EXTERNAL_FILE_VALUE = "externalFileValue";
-    public static final String KEY_FILENAME = "filename";
-    public static final String KEY_PHOTO = "photo";
     private static final String DEFAULT_CUSTOM_VALUE;
 
+    @SerializedName("altitude")
     private boolean mAltitude;
+    @SerializedName("bearing")
     private boolean mBearing;
+    @SerializedName("coordinate")
     private boolean mCoordinate = true;
+    @SerializedName("custom")
     private boolean mCustom;
+    @SerializedName("custom_value")
     private String mCustomValue;
+    @SerializedName("date")
     private boolean mDate = true;
-    private boolean mExternalFile;
-    private String mExternalFileValue = "description.csv";
+    @SerializedName("external_file")
+    private transient boolean mExternalFile;
+    @SerializedName("external_file_value")
+    private transient String mExternalFileValue = "description.csv";
+    @SerializedName("filename")
     private boolean mFilename = true;
+    @SerializedName("photo")
     private boolean mPhoto = true;
-    private final Profile mProfile;
+    private transient final Profile mProfile;
 
     static {
         StringBuilder builder = new StringBuilder();
@@ -67,21 +67,6 @@ public class ProfileDescription extends ProfileBase {
         return DEFAULT_CUSTOM_VALUE;
     }
 
-    public ProfileDescription(Profile profile, JSONObject json) {
-        mProfile = profile;
-        mAltitude = getBoolean(json, KEY_ALTITUDE, mAltitude);
-        mBearing = getBoolean(json, KEY_BEARING, mBearing);
-        mCoordinate = getBoolean(json, KEY_COORDINATE, mCoordinate);
-        mCustom = getBoolean(json, KEY_CUSTOM, mCustom);
-        mDate = getBoolean(json, KEY_DATE, mDate);
-        mExternalFile = getBoolean(json, KEY_EXTERNAL_FILE, mExternalFile);
-        mFilename = getBoolean(json, KEY_FILENAME, mFilename);
-        mPhoto = getBoolean(json, KEY_PHOTO, mPhoto);
-
-        mCustomValue = (String) json.get(KEY_CUSTOM_VALUE);
-        mExternalFileValue = (String) json.get(KEY_EXTERNAL_FILE_VALUE);
-    }
-
     public ProfileDescription(final Profile profile) {
         mProfile = profile;
     }
@@ -96,23 +81,6 @@ public class ProfileDescription extends ProfileBase {
 
     public String getExternalFileValue() {
         return mExternalFileValue;
-    }
-
-    @Override
-    public JSONObject getJson() {
-        JSONObject json = new JSONObject();
-        json.put(KEY_ALTITUDE, mAltitude);
-        json.put(KEY_BEARING, mBearing);
-        json.put(KEY_COORDINATE, mCoordinate);
-        json.put(KEY_CUSTOM, mCustom);
-        json.put(KEY_CUSTOM_VALUE, mCustomValue);
-        json.put(KEY_DATE, mDate);
-        json.put(KEY_EXTERNAL_FILE, mExternalFile);
-        json.put(KEY_EXTERNAL_FILE_VALUE, mExternalFileValue);
-        json.put(KEY_FILENAME, mFilename);
-        json.put(KEY_PHOTO, mPhoto);
-
-        return json;
     }
 
     @Override

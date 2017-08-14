@@ -15,12 +15,12 @@
  */
 package se.trixon.mapollage.profile;
 
+import com.google.gson.annotations.SerializedName;
 import java.io.File;
 import java.nio.file.FileSystems;
 import java.nio.file.PathMatcher;
 import java.util.LinkedHashMap;
 import org.apache.commons.lang3.SystemUtils;
-import org.json.simple.JSONObject;
 import se.trixon.almond.util.BooleanHelper;
 import se.trixon.almond.util.Dict;
 
@@ -30,33 +30,23 @@ import se.trixon.almond.util.Dict;
  */
 public class ProfileSource extends ProfileBase {
 
-    public static final String KEY_EXCLUDE = "exclude";
-    public static final String KEY_FOLLOW_LINKS = "followLinks";
-    public static final String KEY_INCLUDE_NULL_COORDINATE = "includeNullCoordinate";
-    public static final String KEY_PATH = "path";
-    public static final String KEY_PATTERN = "pattern";
-    public static final String KEY_RECURSIVE = "recursive";
+    @SerializedName("source")
     private File mDir = SystemUtils.getUserHome();
+    @SerializedName("exclude_pattern")
     private String mExcludePattern = "";
+    @SerializedName("file_pattern")
     private String mFilePattern = "{*.jpg,*.JPG}";
+    @SerializedName("follow_links")
     private boolean mFollowLinks = true;
+    @SerializedName("include_null_coordinates")
     private boolean mIncludeNullCoordinate = false;
-    private PathMatcher mPathMatcher;
-    private final Profile mProfile;
+    private transient PathMatcher mPathMatcher;
+    private transient final Profile mProfile;
+    @SerializedName("recursive")
     private boolean mRecursive = true;
 
     public ProfileSource(Profile profile) {
         mProfile = profile;
-    }
-
-    public ProfileSource(Profile profile, JSONObject json) {
-        mProfile = profile;
-        mDir = getFileObject(json, KEY_PATH);
-        mFilePattern = (String) json.get(KEY_PATTERN);
-        mExcludePattern = (String) json.get(KEY_EXCLUDE);
-        mRecursive = getBoolean(json, KEY_RECURSIVE, mRecursive);
-        mFollowLinks = getBoolean(json, KEY_FOLLOW_LINKS, mFollowLinks);
-        mIncludeNullCoordinate = getBoolean(json, KEY_INCLUDE_NULL_COORDINATE, mIncludeNullCoordinate);
     }
 
     public File getDir() {
@@ -69,19 +59,6 @@ public class ProfileSource extends ProfileBase {
 
     public String getFilePattern() {
         return mFilePattern;
-    }
-
-    @Override
-    public JSONObject getJson() {
-        JSONObject json = new JSONObject();
-        json.put(KEY_PATH, mDir.getAbsolutePath());
-        json.put(KEY_PATTERN, mFilePattern);
-        json.put(KEY_EXCLUDE, mExcludePattern);
-        json.put(KEY_FOLLOW_LINKS, mFollowLinks);
-        json.put(KEY_RECURSIVE, mRecursive);
-        json.put(KEY_INCLUDE_NULL_COORDINATE, mIncludeNullCoordinate);
-
-        return json;
     }
 
     public PathMatcher getPathMatcher() {
@@ -144,12 +121,12 @@ public class ProfileSource extends ProfileBase {
     protected ProfileInfo getProfileInfo() {
         ProfileInfo profileInfo = new ProfileInfo();
         LinkedHashMap<String, String> values = new LinkedHashMap<>();
-        values.put(mBundleUI.getString("ModuleSourcePanel.sourceChooserPanel.header"), mDir.getAbsolutePath());
+        values.put(BUNDLE_UI.getString("ModuleSourcePanel.sourceChooserPanel.header"), mDir.getAbsolutePath());
         values.put(Dict.FILE_PATTERN.toString(), mFilePattern);
         values.put(Dict.SUBDIRECTORIES.toString(), BooleanHelper.asYesNo(mRecursive));
         values.put(Dict.FOLLOW_LINKS.toString(), BooleanHelper.asYesNo(mFollowLinks));
-        values.put(mBundleUI.getString("ModuleSourcePanel.includeNullCoordinateCheckBox.text"), BooleanHelper.asYesNo(mIncludeNullCoordinate));
-        values.put(mBundleUI.getString("ModuleSourcePanel.excludeLabel.text"), mExcludePattern);
+        values.put(BUNDLE_UI.getString("ModuleSourcePanel.includeNullCoordinateCheckBox.text"), BooleanHelper.asYesNo(mIncludeNullCoordinate));
+        values.put(BUNDLE_UI.getString("ModuleSourcePanel.excludeLabel.text"), mExcludePattern);
 
         profileInfo.setTitle(getTitle());
         profileInfo.setValues(values);

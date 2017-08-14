@@ -15,9 +15,9 @@
  */
 package se.trixon.mapollage.profile;
 
+import com.google.gson.annotations.SerializedName;
 import java.util.LinkedHashMap;
 import org.apache.commons.lang3.SystemUtils;
-import org.json.simple.JSONObject;
 import se.trixon.almond.util.BooleanHelper;
 import se.trixon.almond.util.Dict;
 
@@ -27,36 +27,24 @@ import se.trixon.almond.util.Dict;
  */
 public class ProfilePhoto extends ProfileBase {
 
-    public static final String KEY_BASE_URL_VALUE = "baseUrlValue";
-    public static final String KEY_FORCE_LOWER_CASE_EXTENSION = "forceLowerCaseExtension";
-    public static final String KEY_HEIGHT_LIMIT = "heightLimit";
-    public static final String KEY_LIMIT_HEIGHT = "limitHeight";
-    public static final String KEY_LIMIT_WIDTH = "limitWidth";
-    public static final String KEY_REFERENCE = "reference";
-    public static final String KEY_WIDTH_LIMIT = "widthLimit";
-
+    @SerializedName("base_url_value")
     private String mBaseUrlValue = "https://www.domain.com/img/";
+    @SerializedName("force_lower_case_extension")
     private boolean mForceLowerCaseExtension = SystemUtils.IS_OS_WINDOWS;
+    @SerializedName("height_limit")
     private int mHeightLimit = 800;
+    @SerializedName("limit_height")
     private boolean mLimitHeight = true;
+    @SerializedName("limit_width")
     private boolean mLimitWidth = true;
-    private final Profile mProfile;
+    private transient final Profile mProfile;
+    @SerializedName("reference")
     private Reference mReference = Reference.ABSOLUTE;
+    @SerializedName("width_limit")
     private int mWidthLimit = 1000;
 
     public ProfilePhoto(Profile profile) {
         mProfile = profile;
-    }
-
-    public ProfilePhoto(Profile profile, JSONObject json) {
-        mProfile = profile;
-        mHeightLimit = getInt(json, KEY_HEIGHT_LIMIT, mHeightLimit);
-        mWidthLimit = getInt(json, KEY_WIDTH_LIMIT, mWidthLimit);
-        mLimitHeight = getBoolean(json, KEY_LIMIT_HEIGHT, mLimitHeight);
-        mLimitWidth = getBoolean(json, KEY_LIMIT_WIDTH, mLimitWidth);
-        mForceLowerCaseExtension = getBoolean(json, KEY_FORCE_LOWER_CASE_EXTENSION, mForceLowerCaseExtension);
-        mReference = Reference.values()[getInt(json, KEY_REFERENCE, Reference.ABSOLUTE.ordinal())];
-        mBaseUrlValue = (String) json.get(KEY_BASE_URL_VALUE);
     }
 
     public String getBaseUrlValue() {
@@ -65,20 +53,6 @@ public class ProfilePhoto extends ProfileBase {
 
     public int getHeightLimit() {
         return mHeightLimit;
-    }
-
-    @Override
-    public JSONObject getJson() {
-        JSONObject json = new JSONObject();
-        json.put(KEY_REFERENCE, mReference.ordinal());
-        json.put(KEY_BASE_URL_VALUE, mBaseUrlValue);
-        json.put(KEY_FORCE_LOWER_CASE_EXTENSION, mForceLowerCaseExtension);
-        json.put(KEY_LIMIT_HEIGHT, mLimitHeight);
-        json.put(KEY_HEIGHT_LIMIT, mHeightLimit);
-        json.put(KEY_LIMIT_WIDTH, mLimitWidth);
-        json.put(KEY_WIDTH_LIMIT, mWidthLimit);
-
-        return json;
     }
 
     public Reference getReference() {
@@ -144,8 +118,8 @@ public class ProfilePhoto extends ProfileBase {
         ProfileInfo profileInfo = new ProfileInfo();
         LinkedHashMap<String, String> values = new LinkedHashMap<>();
 
-        values.put(mBundleUI.getString("ModulePhotoPanel.widthCheckBox.text"), mLimitWidth ? String.valueOf(mWidthLimit) : "-");
-        values.put(mBundleUI.getString("ModulePhotoPanel.heightCheckBox.text"), mLimitHeight ? String.valueOf(mHeightLimit) : "-");
+        values.put(BUNDLE_UI.getString("ModulePhotoPanel.widthCheckBox.text"), mLimitWidth ? String.valueOf(mWidthLimit) : "-");
+        values.put(BUNDLE_UI.getString("ModulePhotoPanel.heightCheckBox.text"), mLimitHeight ? String.valueOf(mHeightLimit) : "-");
 
         String fileReference = null;
 
@@ -165,11 +139,10 @@ public class ProfilePhoto extends ProfileBase {
             case THUMBNAIL:
                 fileReference = Dict.THUMBNAIL.toString();
                 break;
-
         }
 
         values.put(Dict.FILE_REFERENCE.toString(), fileReference);
-        values.put(mBundleUI.getString("ModulePhotoPanel.lowerCaseExtCheckBox.text"), BooleanHelper.asYesNo(mForceLowerCaseExtension));
+        values.put(BUNDLE_UI.getString("ModulePhotoPanel.lowerCaseExtCheckBox.text"), BooleanHelper.asYesNo(mForceLowerCaseExtension));
 
         profileInfo.setTitle(getTitle());
         profileInfo.setValues(values);

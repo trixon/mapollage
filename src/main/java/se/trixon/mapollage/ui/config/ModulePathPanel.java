@@ -23,6 +23,7 @@ import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.icons.material.MaterialIcon;
 import se.trixon.mapollage.profile.Profile;
 import se.trixon.mapollage.profile.ProfilePath;
+import se.trixon.mapollage.profile.ProfilePath.SplitBy;
 
 /**
  *
@@ -61,32 +62,32 @@ public class ModulePathPanel extends ModulePanel {
             widthSpinner.setValue(mPath.getWidth());
 
             switch (mPath.getSplitBy()) {
-                case ProfilePath.SPLIT_BY_HOUR:
+                case HOUR:
                     hourRadioButton.setSelected(true);
                     hourRadioButtonActionPerformed(null);
                     break;
 
-                case ProfilePath.SPLIT_BY_DAY:
+                case DAY:
                     dayRadioButton.setSelected(true);
                     dayRadioButtonActionPerformed(null);
                     break;
 
-                case ProfilePath.SPLIT_BY_WEEK:
+                case WEEK:
                     weekRadioButton.setSelected(true);
                     weekRadioButtonActionPerformed(null);
                     break;
 
-                case ProfilePath.SPLIT_BY_MONTH:
+                case MONTH:
                     monthRadioButton.setSelected(true);
                     monthRadioButtonActionPerformed(null);
                     break;
 
-                case ProfilePath.SPLIT_BY_YEAR:
+                case YEAR:
                     yearRadioButton.setSelected(true);
                     yearRadioButtonActionPerformed(null);
                     break;
 
-                case ProfilePath.SPLIT_BY_NONE:
+                case NONE:
                     noSplitRadioButton.setSelected(true);
                     noSplitRadioButtonActionPerformed(null);
                     break;
@@ -306,27 +307,27 @@ public class ModulePathPanel extends ModulePanel {
     }//GEN-LAST:event_widthSpinnerStateChanged
 
     private void hourRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hourRadioButtonActionPerformed
-        mPath.setSplitBy(ProfilePath.SPLIT_BY_HOUR);
+        mPath.setSplitBy(SplitBy.HOUR);
     }//GEN-LAST:event_hourRadioButtonActionPerformed
 
     private void dayRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dayRadioButtonActionPerformed
-        mPath.setSplitBy(ProfilePath.SPLIT_BY_DAY);
+        mPath.setSplitBy(SplitBy.DAY);
     }//GEN-LAST:event_dayRadioButtonActionPerformed
 
     private void weekRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_weekRadioButtonActionPerformed
-        mPath.setSplitBy(ProfilePath.SPLIT_BY_WEEK);
+        mPath.setSplitBy(SplitBy.WEEK);
     }//GEN-LAST:event_weekRadioButtonActionPerformed
 
     private void monthRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_monthRadioButtonActionPerformed
-        mPath.setSplitBy(ProfilePath.SPLIT_BY_MONTH);
+        mPath.setSplitBy(SplitBy.MONTH);
     }//GEN-LAST:event_monthRadioButtonActionPerformed
 
     private void yearRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_yearRadioButtonActionPerformed
-        mPath.setSplitBy(ProfilePath.SPLIT_BY_YEAR);
+        mPath.setSplitBy(SplitBy.YEAR);
     }//GEN-LAST:event_yearRadioButtonActionPerformed
 
     private void noSplitRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_noSplitRadioButtonActionPerformed
-        mPath.setSplitBy(ProfilePath.SPLIT_BY_NONE);
+        mPath.setSplitBy(SplitBy.NONE);
     }//GEN-LAST:event_noSplitRadioButtonActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

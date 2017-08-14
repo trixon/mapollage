@@ -79,7 +79,7 @@ public class MainFrame extends javax.swing.JFrame {
     private final AlmondOptions mAlmondOptions = AlmondOptions.getInstance();
     private Thread mOperationThread;
     private final ProfileManager mProfileManager = ProfileManager.getInstance();
-    private final LinkedList<Profile> mProfiles = mProfileManager.getProfiles();
+    private LinkedList<Profile> mProfiles = mProfileManager.getProfiles();
     private DefaultComboBoxModel mModel;
     private File mDestination;
     private OperationListener mOperationListener;
@@ -294,7 +294,11 @@ public class MainFrame extends javax.swing.JFrame {
             @Override
             public void onStart(ActionEvent actionEvent) {
                 if (!mProfiles.isEmpty()) {
-                    profileRun();
+                    try {
+                        profileRun();
+                    } catch (CloneNotSupportedException ex) {
+                        Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
             }
         });
@@ -428,6 +432,7 @@ public class MainFrame extends javax.swing.JFrame {
 
         try {
             mProfileManager.load();
+            mProfiles = mProfileManager.getProfiles();
         } catch (IOException ex) {
             Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -452,7 +457,7 @@ public class MainFrame extends javax.swing.JFrame {
 
     private void profileClone() throws CloneNotSupportedException {
         Profile original = getSelectedProfile();
-        Profile p = new Profile(original.getJson());
+        Profile p = original.clone();
         mProfiles.add(p);
         populateProfiles(p, configPanel.getSelectedIndex());
         String s = requestProfileName(Dict.Dialog.TITLE_PROFILE_CLONE.toString(), p.getName());
@@ -512,9 +517,9 @@ public class MainFrame extends javax.swing.JFrame {
         }
     }
 
-    private void profileRun() {
+    private void profileRun() throws CloneNotSupportedException {
         saveProfiles();
-        Profile profile = new Profile(getSelectedProfile().getJson());
+        Profile profile = getSelectedProfile().clone();
 
         if (profile.isValid()) {
             requestKmlFileObject();

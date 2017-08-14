@@ -15,10 +15,10 @@
  */
 package se.trixon.mapollage.profile;
 
+import com.google.gson.annotations.SerializedName;
 import java.text.SimpleDateFormat;
 import java.util.LinkedHashMap;
 import org.apache.commons.cli.CommandLine;
-import org.json.simple.JSONObject;
 import se.trixon.almond.util.Dict;
 
 /**
@@ -27,43 +27,27 @@ import se.trixon.almond.util.Dict;
  */
 public class ProfilePlacemark extends ProfileBase {
 
-    public static final String KEY_DATE_PATTERN = "datePattern";
-    public static final String KEY_NAME_BY = "nameBy";
-    public static final String KEY_SCALE = "scale";
-    public static final String KEY_SYMBOL_AS = "symbolAs";
-    public static final String KEY_TIMESTAMP = "timestamp";
-    public static final String KEY_ZOOM = "zoom";
-    public static final int NAME_BY_DATE = 2;
-    public static final int NAME_BY_FILE = 1;
-    public static final int NAME_BY_NONE = 0;
-    public static final int SYMBOL_AS_PHOTO = 0;
-    public static final int SYMBOL_AS_PIN = 1;
-
     private static final String COORDINATE = "coordinate";
     private static final String PLACEMARK_NAME = "placemark-name";
 
-    private String[] mCoordinate;
-    private SimpleDateFormat mDateFormat;
+    private transient String[] mCoordinate;
+    private transient SimpleDateFormat mDateFormat;
+    @SerializedName("date_pattern")
     private String mDatePattern = "yyyy-MM-dd HH.mm";
-    private int mNameBy;
-    private final Profile mProfile;
+    @SerializedName("name_by")
+    private NameBy mNameBy = NameBy.NONE;
+    private transient final Profile mProfile;
+    @SerializedName("scale")
     private Double mScale = 3.0;
-    private int mSymbolAs = 0;
+    @SerializedName("symbol_as")
+    private SymbolAs mSymbolAs = SymbolAs.PHOTO;
+    @SerializedName("time_stamp")
     private boolean mTimestamp = true;
+    @SerializedName("zoom")
     private Double mZoom = 4.0;
 
     public ProfilePlacemark(Profile profile) {
         mProfile = profile;
-    }
-
-    public ProfilePlacemark(Profile profile, JSONObject json) {
-        mProfile = profile;
-        mScale = (Double) json.get(KEY_SCALE);
-        mZoom = (Double) json.get(KEY_ZOOM);
-        mNameBy = getInt(json, KEY_NAME_BY, mNameBy);
-        mSymbolAs = getInt(json, KEY_SYMBOL_AS, mSymbolAs);
-        mDatePattern = (String) json.get(KEY_DATE_PATTERN);
-        mTimestamp = getBoolean(json, KEY_TIMESTAMP, mTimestamp);
     }
 
     public ProfilePlacemark(final Profile profile, CommandLine commandLine) {
@@ -87,20 +71,7 @@ public class ProfilePlacemark extends ProfileBase {
         return mDatePattern;
     }
 
-    @Override
-    public JSONObject getJson() {
-        JSONObject json = new JSONObject();
-        json.put(KEY_SCALE, mScale);
-        json.put(KEY_ZOOM, mZoom);
-        json.put(KEY_SYMBOL_AS, mSymbolAs);
-        json.put(KEY_NAME_BY, mNameBy);
-        json.put(KEY_DATE_PATTERN, mDatePattern);
-        json.put(KEY_TIMESTAMP, mTimestamp);
-
-        return json;
-    }
-
-    public int getNameBy() {
+    public NameBy getNameBy() {
         return mNameBy;
     }
 
@@ -108,7 +79,7 @@ public class ProfilePlacemark extends ProfileBase {
         return mScale;
     }
 
-    public int getSymbolAs() {
+    public SymbolAs getSymbolAs() {
         return mSymbolAs;
     }
 
@@ -122,7 +93,7 @@ public class ProfilePlacemark extends ProfileBase {
     }
 
     public boolean isSymbolAsPhoto() {
-        return mSymbolAs == SYMBOL_AS_PHOTO;
+        return mSymbolAs == SymbolAs.PHOTO;
     }
 
     public boolean isTimestamp() {
@@ -131,11 +102,11 @@ public class ProfilePlacemark extends ProfileBase {
 
     @Override
     public boolean isValid() {
-        if (mNameBy == NAME_BY_DATE) {
+        if (mNameBy == NameBy.DATE) {
             try {
                 mDateFormat = new SimpleDateFormat(mDatePattern, mOptions.getLocale());
-            } catch (Exception e) {
-                addValidationError(String.format(mBundle.getString("invalid_value"), PLACEMARK_NAME, mDatePattern));
+            } catch (IllegalArgumentException e) {
+                addValidationError(String.format(BUNDLE.getString("invalid_value"), PLACEMARK_NAME, mDatePattern));
             }
         }
 
@@ -154,7 +125,7 @@ public class ProfilePlacemark extends ProfileBase {
         mDatePattern = datePattern;
     }
 
-    public void setNameBy(int nameBy) {
+    public void setNameBy(NameBy nameBy) {
         mNameBy = nameBy;
     }
 
@@ -162,7 +133,7 @@ public class ProfilePlacemark extends ProfileBase {
         mScale = scale;
     }
 
-    public void setSymbolAs(int symbolAs) {
+    public void setSymbolAs(SymbolAs symbolAs) {
         mSymbolAs = symbolAs;
     }
 
@@ -179,21 +150,20 @@ public class ProfilePlacemark extends ProfileBase {
         ProfileInfo profileInfo = new ProfileInfo();
         LinkedHashMap<String, String> values = new LinkedHashMap<>();
 
-        String nameBy = mBundleUI.getString("ModulePlacemarkPanel.nameByNoRadioButton.text");
+        String nameBy = BUNDLE_UI.getString("ModulePlacemarkPanel.nameByNoRadioButton.text");
 
         switch (mNameBy) {
-            case NAME_BY_DATE:
+            case DATE:
                 nameBy = mDatePattern;
                 break;
 
-            case NAME_BY_FILE:
+            case FILE:
                 nameBy = Dict.FILENAME.toString();
                 break;
-
         }
 
-        values.put(mBundleUI.getString("ModulePlacemarkPanel.nameByLabel.text"), nameBy);
-        values.put(Dict.SYMBOL.toString(), mSymbolAs == SYMBOL_AS_PHOTO ? Dict.PHOTO.toString() : Dict.PIN.toString());
+        values.put(BUNDLE_UI.getString("ModulePlacemarkPanel.nameByLabel.text"), nameBy);
+        values.put(Dict.SYMBOL.toString(), mSymbolAs == SymbolAs.PHOTO ? Dict.PHOTO.toString() : Dict.PIN.toString());
         values.put(Dict.SCALE.toString(), String.valueOf(mScale));
         values.put(Dict.ZOOM.toString(), String.valueOf(mZoom));
 
@@ -201,5 +171,16 @@ public class ProfilePlacemark extends ProfileBase {
         profileInfo.setValues(values);
 
         return profileInfo;
+    }
+
+    public enum NameBy {
+        NONE,
+        FILE,
+        DATE;
+    }
+
+    public enum SymbolAs {
+        PHOTO,
+        PIN;
     }
 }

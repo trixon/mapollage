@@ -15,6 +15,9 @@
  */
 package se.trixon.mapollage.profile;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.annotations.SerializedName;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -22,47 +25,40 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
 import org.apache.commons.lang3.StringUtils;
-import org.json.simple.JSONObject;
 import se.trixon.almond.util.BooleanHelper;
-import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.SystemHelper;
 import se.trixon.mapollage.ui.OptionsPanel;
 
 /**
  *
  * @author Patrik Karlsson
  */
-public class Profile extends ProfileBase implements Comparable<Profile> {
+public class Profile extends ProfileBase implements Comparable<Profile>, Cloneable {
 
-    private static final String KEY_DESCRIPTION = "description";
-    private static final String KEY_FOLDER = "folder";
-    private static final String KEY_NAME = "name";
-    private static final String KEY_PATH = "path";
-    private static final String KEY_PHOTO = "photo";
-    private static final String KEY_PLACEMARK = "placemark";
-    private static final String KEY_SOURCE = "source";
+    private static final Gson GSON = new GsonBuilder()
+            .setVersion(1.0)
+            .serializeNulls()
+            .setPrettyPrinting()
+            .create();
 
+    @SerializedName("description")
     private ProfileDescription mDescription = new ProfileDescription(this);
-    private File mDestinationFile;
+    private transient File mDestinationFile;
+    @SerializedName("folder")
     private ProfileFolder mFolder = new ProfileFolder(this);
+    @SerializedName("name")
     private String mName;
+    @SerializedName("path")
     private ProfilePath mPath = new ProfilePath(this);
+    @SerializedName("photo")
     private ProfilePhoto mPhoto = new ProfilePhoto(this);
+    @SerializedName("placemark")
     private ProfilePlacemark mPlacemark = new ProfilePlacemark(this);
+    @SerializedName("source")
     private ProfileSource mSource = new ProfileSource(this);
 
     public Profile() {
-    }
-
-    public Profile(JSONObject json) {
-        setName((String) json.get(KEY_NAME));
-
-        setSource(new ProfileSource(this, (JSONObject) json.get(KEY_SOURCE)));
-        setFolder(new ProfileFolder(this, (JSONObject) json.get(KEY_FOLDER)));
-        setPlacemark(new ProfilePlacemark(this, (JSONObject) json.get(KEY_PLACEMARK)));
-        setDescription(new ProfileDescription(this, (JSONObject) json.get(KEY_DESCRIPTION)));
-        setPhoto(new ProfilePhoto(this, (JSONObject) json.get(KEY_PHOTO)));
-        setPath(new ProfilePath(this, (JSONObject) json.get(KEY_PATH)));
     }
 
     @Override
@@ -80,21 +76,6 @@ public class Profile extends ProfileBase implements Comparable<Profile> {
 
     public ProfileFolder getFolder() {
         return mFolder;
-    }
-
-    @Override
-    public JSONObject getJson() {
-        JSONObject json = new JSONObject();
-        json.put(KEY_NAME, getName());
-
-        json.put(KEY_SOURCE, getSource().getJson());
-        json.put(KEY_FOLDER, getFolder().getJson());
-        json.put(KEY_PLACEMARK, getPlacemark().getJson());
-        json.put(KEY_DESCRIPTION, getDescription().getJson());
-        json.put(KEY_PHOTO, getPhoto().getJson());
-        json.put(KEY_PATH, getPath().getJson());
-
-        return json;
     }
 
     public String getName() {
@@ -224,6 +205,13 @@ public class Profile extends ProfileBase implements Comparable<Profile> {
     @Override
     public String toString() {
         return mName;
+    }
+
+    @Override
+    public Profile clone() throws CloneNotSupportedException {
+        super.clone();
+        String json = GSON.toJson(this);
+        return GSON.fromJson(json, Profile.class);
     }
 
     @Override

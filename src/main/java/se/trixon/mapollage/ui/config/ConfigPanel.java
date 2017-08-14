@@ -167,6 +167,8 @@ public class ConfigPanel extends javax.swing.JPanel {
             tabbedPane.setEnabledAt(photoIndex, hasPhoto);
             tabbedPane.getTabComponentAt(photoIndex).setEnabled(hasPhoto);
         });
+
+        refreshIcons();
     }
 
     /**

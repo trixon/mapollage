@@ -17,13 +17,10 @@ package se.trixon.mapollage;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.Collections;
 import java.util.LinkedList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.commons.io.FileUtils;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
 import se.trixon.almond.util.Xlog;
 import se.trixon.mapollage.profile.Profile;
 
@@ -33,14 +30,9 @@ import se.trixon.mapollage.profile.Profile;
  */
 public class ProfileManager {
 
-    private static final String KEY_PROFILES = "profiles";
-    private static final String KEY_VERSION = "version";
-
-    private static final int VERSION = 1;
     private final File mDirectory;
     private final File mProfileFile;
-    private final LinkedList<Profile> mProfiles = new LinkedList<>();
-    private int mVersion;
+    private ProfilesJson mProfilesHolder;
 
     public static ProfileManager getInstance() {
         return Holder.INSTANCE;
@@ -48,7 +40,7 @@ public class ProfileManager {
 
     private ProfileManager() {
         mDirectory = new File(System.getProperty("user.home"), ".config/mapollage");
-        mProfileFile = new File(mDirectory, "mapollage.profiles");
+        mProfileFile = new File(mDirectory, "mapollage2.profiles");
 
         try {
             FileUtils.forceMkdir(mDirectory);
@@ -58,7 +50,7 @@ public class ProfileManager {
     }
 
     public Profile getProfile(String name) {
-        for (Profile profile : mProfiles) {
+        for (Profile profile : mProfilesHolder.getProfiles()) {
             if (profile.getName().equalsIgnoreCase(name)) {
                 return profile;
             }
@@ -68,51 +60,36 @@ public class ProfileManager {
     }
 
     public LinkedList<Profile> getProfiles() {
-        return mProfiles;
+        if (mProfilesHolder == null) {
+            try {
+                load();
+            } catch (IOException ex) {
+                mProfilesHolder = new ProfilesJson();
+                Logger.getLogger(ProfileManager.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+        return mProfilesHolder.getProfiles();
     }
 
     public int getVersion() {
-        return mVersion;
+        return mProfilesHolder.getFileFormatVersion();
     }
 
     public boolean hasProfiles() {
-        return !mProfiles.isEmpty();
+        return !mProfilesHolder.getProfiles().isEmpty();
     }
 
     public void load() throws IOException {
         if (mProfileFile.exists()) {
-            JSONObject jsonObject = (JSONObject) JSONValue.parse(FileUtils.readFileToString(mProfileFile, Charset.defaultCharset()));
-            mVersion = getInt(jsonObject, KEY_VERSION);
-            JSONArray array = (JSONArray) jsonObject.get(KEY_PROFILES);
-
-            mProfiles.clear();
-
-            for (Object arrayItem : array) {
-                JSONObject object = (JSONObject) arrayItem;
-                mProfiles.add(new Profile(object));
-            }
-
-            Collections.sort(mProfiles);
+            mProfilesHolder = ProfilesJson.open(mProfileFile);
+        } else {
+            mProfilesHolder = new ProfilesJson();
         }
     }
 
     public void save() throws IOException {
-        JSONArray array = new JSONArray();
-
-        for (Profile profile : mProfiles) {
-            array.add(profile.getJson());
-        }
-
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put(KEY_PROFILES, array);
-        jsonObject.put(KEY_VERSION, VERSION);
-
-        String jsonString = jsonObject.toJSONString();
-        FileUtils.writeStringToFile(mProfileFile, jsonString, Charset.defaultCharset());
-    }
-
-    private int getInt(JSONObject object, String key) {
-        return ((Long) object.get(key)).intValue();
+        mProfilesHolder.save(mProfileFile);
     }
 
     private static class Holder {

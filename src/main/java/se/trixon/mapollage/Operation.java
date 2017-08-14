@@ -214,14 +214,32 @@ public class Operation implements Runnable {
         }
     }
 
+    private String getPattern(ProfilePath.SplitBy splitBy) {
+        switch (splitBy) {
+            case NONE:
+                return "'NO_SPLIT'";
+            case HOUR:
+                return "yyyyMMddHH";
+            case DAY:
+                return "yyyyMMdd";
+            case WEEK:
+                return "yyyyww";
+            case MONTH:
+                return "yyyyMM";
+            case YEAR:
+                return "yyyy";
+            default:
+                return null;
+        }
+    }
+
     private void addPath() {
         Collections.sort(mLineNodes, (LineNode o1, LineNode o2) -> o1.getDate().compareTo(o2.getDate()));
 
         mPathFolder = KmlFactory.createFolder().withName(Dict.PATH_GFX.toString());
         mPathGapFolder = KmlFactory.createFolder().withName(Dict.PATH_GAP_GFX.toString());
 
-        String[] patterns = new String[]{"'NO_SPLIT'", "yyyyMMddHH", "yyyyMMdd", "yyyyww", "yyyyMM", "yyyy"};
-        String pattern = patterns[mProfilePath.getSplitBy()];
+        String pattern = getPattern(mProfilePath.getSplitBy());
         SimpleDateFormat dateFormat = new SimpleDateFormat(pattern);
 
         TreeMap<String, ArrayList<LineNode>> map = new TreeMap<>();
@@ -450,18 +468,18 @@ public class Operation implements Runnable {
         Folder folder = null;
 
         switch (mProfileFolder.getFoldersBy()) {
-            case ProfileFolder.FOLDER_BY_DIR:
+            case DIR:
                 Path relativePath = mProfileSource.getDir().toPath().relativize(file.getParentFile().toPath());
                 key = relativePath.toString();
                 folder = getFolder(key);
                 break;
 
-            case ProfileFolder.FOLDER_BY_DATE:
+            case DATE:
                 key = mProfileFolder.getFolderDateFormat().format(date);
                 folder = getFolder(key);
                 break;
 
-            case ProfileFolder.FOLDER_BY_REGEX:
+            case REGEX:
                 key = mProfileFolder.getRegexDefault();
                 Matcher matcher = mFolderByRegexPattern.matcher(file.getParent());
                 if (matcher.find()) {
@@ -470,7 +488,7 @@ public class Operation implements Runnable {
                 folder = getFolder(key);
                 break;
 
-            case ProfileFolder.FOLDER_BY_NONE:
+            case NONE:
                 folder = mRootFolder;
                 break;
         }
@@ -582,7 +600,7 @@ public class Operation implements Runnable {
         String name;
 
         switch (mProfilePlacemark.getNameBy()) {
-            case ProfilePlacemark.NAME_BY_DATE:
+            case DATE:
                 try {
                     name = mProfilePlacemark.getDateFormat().format(exifDate);
                 } catch (IllegalArgumentException ex) {
@@ -593,11 +611,11 @@ public class Operation implements Runnable {
                 }
                 break;
 
-            case ProfilePlacemark.NAME_BY_FILE:
+            case FILE:
                 name = FilenameUtils.getBaseName(file.getAbsolutePath());
                 break;
 
-            case ProfilePlacemark.NAME_BY_NONE:
+            case NONE:
                 name = "";
                 break;
 

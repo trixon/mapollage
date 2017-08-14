@@ -303,7 +303,7 @@ public class ModuleSourcePanel extends ModulePanel implements FileChooserPanel.F
             mSource = profile.getSource();
 
             try {
-                sourceChooserPanel.setPath(mSource.getDir().getAbsolutePath());
+                sourceChooserPanel.setPath(mSource.getDir().getPath());
             } catch (NullPointerException e) {
             }
 
