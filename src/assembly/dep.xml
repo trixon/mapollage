@@ -3,8 +3,6 @@
           xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
     <id>bin</id>
     <formats>
-        <format>tar.gz</format>
-        <format>tar.bz2</format>
         <format>zip</format>
     </formats>
     <fileSets>
@@ -13,6 +11,7 @@
             <outputDirectory></outputDirectory>
             <includes>
                 <include>LICENSE*</include>
+                <include>README</include>
                 <include>mapollage.png</include>
             </includes>
         </fileSet>
@@ -21,6 +20,8 @@
             <outputDirectory></outputDirectory>
             <includes>
                 <include>mapollage*.jar</include>
+                <include>*.exe</include>
+                <include>*.ico</include>
             </includes>
         </fileSet>
     </fileSets>

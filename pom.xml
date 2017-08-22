@@ -10,6 +10,8 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <netbeans.hint.license>apache20</netbeans.hint.license>
+        <copyright>(c) 2017 Patrik Karlsson</copyright>
+        <exeVersion>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}.0</exeVersion>
     </properties>
     <description>Mapollage is a photo kml generator for Google Earth</description>
     <url>https://trixon.se/</url>
@@ -187,6 +189,71 @@
                     <target>1.8</target>
                     <showDeprecation>true</showDeprecation>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <id>parse-version</id>
+                        <goals>
+                            <goal>parse-version</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.akathist.maven.plugins.launch4j</groupId>
+                <artifactId>launch4j-maven-plugin</artifactId>
+                <version>1.7.19</version>
+                <executions>
+                    <execution>
+                        <id>l4j-gui</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>launch4j</goal>
+                        </goals>
+                        <configuration>
+                            <headerType>gui</headerType>
+                            <dontWrapJar>false</dontWrapJar>
+                            <jar>target/${project.name}-${project.version}.jar</jar>
+                            <outfile>target/${project.name}.exe</outfile>
+                            <errTitle>Java not found</errTitle>
+                            <chdir>.</chdir>
+                            <priority>normal</priority>
+                            <downloadUrl>http://java.com/download</downloadUrl>
+                            <stayAlive>false</stayAlive>
+                            <restartOnCrash>false</restartOnCrash>
+                            <icon>${project.name}.ico</icon>
+
+                            <jre>
+                                <bundledJre64Bit>false</bundledJre64Bit>
+                                <bundledJreAsFallback>false</bundledJreAsFallback>
+                                <minVersion>1.8.0</minVersion>
+                                <jdkPreference>preferJre</jdkPreference>
+                                <runtimeBits>64/32</runtimeBits>
+                            </jre>
+
+                            <singleInstance>
+                                <mutexName>${project.name}</mutexName>
+                                <windowTitle>${project.name}</windowTitle>
+                            </singleInstance>
+
+                            <versionInfo>
+                                <fileVersion>${exeVersion}</fileVersion>
+                                <txtFileVersion>${project.version}</txtFileVersion>
+                                <fileDescription>${project.description}</fileDescription>
+                                <copyright>${copyright}</copyright>
+                                <productVersion>${exeVersion}</productVersion>
+                                <txtProductVersion>${project.version}</txtProductVersion>
+                                <productName>${project.name}</productName>
+                                <internalName>${project.name}</internalName>
+                                <originalFilename>${project.name}.exe</originalFilename>
+                            </versionInfo>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
