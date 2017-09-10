@@ -81,6 +81,8 @@ public class ActionManager extends AlmondActionManager {
             };
 
             initAction(action, MENU, keyStroke, MaterialIcon._Navigation.MENU, true);
+            keyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_CONTEXT_MENU, 0);
+            mInputMap.put(keyStroke, MENU);
         }
 
         //options
