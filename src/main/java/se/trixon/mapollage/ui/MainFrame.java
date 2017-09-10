@@ -187,7 +187,6 @@ public class MainFrame extends javax.swing.JFrame {
         aboutMenuItem.setAction(mActionManager.getAction(ActionManager.ABOUT));
 
         //Toolbar
-        addButton.setAction(mActionManager.getAction(ActionManager.ADD));
         startButton.setAction(mActionManager.getAction(ActionManager.START));
         cancelButton.setAction(mActionManager.getAction(ActionManager.CANCEL));
         menuButton.setAction(mActionManager.getAction(ActionManager.MENU));
@@ -348,6 +347,7 @@ public class MainFrame extends javax.swing.JFrame {
 
     private void initMenus() {
         if (mAlmondOptions.getMenuMode() == MenuModePanel.MenuMode.BUTTON) {
+            mPopupMenu.add(addMenuItem);
             mPopupMenu.add(removeMenuItem);
             mPopupMenu.add(renameMenuItem);
             mPopupMenu.add(cloneMenuItem);
@@ -636,7 +636,6 @@ public class MainFrame extends javax.swing.JFrame {
         toolBar = new javax.swing.JToolBar();
         startButton = new javax.swing.JButton();
         cancelButton = new javax.swing.JButton();
-        addButton = new javax.swing.JButton();
         menuButton = new javax.swing.JButton();
         configPanel = new se.trixon.mapollage.ui.config.ConfigPanel();
 
@@ -707,11 +706,6 @@ public class MainFrame extends javax.swing.JFrame {
         cancelButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         toolBar.add(cancelButton);
 
-        addButton.setFocusable(false);
-        addButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        addButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        toolBar.add(addButton);
-
         menuButton.setFocusable(false);
         menuButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         menuButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -767,7 +761,6 @@ public class MainFrame extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutDateFormatMenuItem;
     private javax.swing.JMenuItem aboutMenuItem;
-    private javax.swing.JButton addButton;
     private javax.swing.JMenuItem addMenuItem;
     private javax.swing.JButton cancelButton;
     private javax.swing.JMenuItem cloneMenuItem;
