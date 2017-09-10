@@ -16,17 +16,23 @@
 package se.trixon.mapollage;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import org.apache.commons.io.IOCase;
 import org.apache.commons.lang3.StringUtils;
+import se.trixon.mapollage.profile.ProfileDescription.DescriptionMode;
 
 /**
  *
@@ -34,13 +40,17 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class FileVisitor extends SimpleFileVisitor<Path> {
 
+    private final Properties mDefaultDescProperties = new Properties();
+    private final HashMap<String, Properties> mDirToDesc;
     private final String[] mExcludePatterns;
+    private final String mExternalFileValue;
     private List<File> mFiles = new ArrayList<>();
     private boolean mInterrupted;
     private final Operation mOperation;
     private final OperationListener mOperationListener;
     private final PathMatcher mPathMatcher;
     private final File mStartDir;
+    private final boolean mUseExternalDescription;
 
     public FileVisitor(PathMatcher pathMatcher, List<File> paths, File startDir, Operation operation) {
         mStartDir = startDir;
@@ -49,6 +59,21 @@ public class FileVisitor extends SimpleFileVisitor<Path> {
         mFiles = paths;
         mPathMatcher = pathMatcher;
         mExcludePatterns = StringUtils.split(operation.getExcludePattern(), "::");
+        mDirToDesc = operation.getDirToDesc();
+
+        final DescriptionMode mode = operation.getProfileDescription().getMode();
+        mUseExternalDescription = mode == DescriptionMode.EXTERNAL;
+        mExternalFileValue = operation.getProfileDescription().getExternalFileValue();
+        if (mode == DescriptionMode.EXTERNAL) {
+            try {
+                File file = new File(startDir, mExternalFileValue);
+                if (file.isFile()) {
+                    mDefaultDescProperties.load(new InputStreamReader(new FileInputStream(file), Charset.defaultCharset()));
+                }
+            } catch (IOException ex) {
+                // nvm
+            }
+        }
     }
 
     public boolean isInterrupted() {
@@ -77,6 +102,21 @@ public class FileVisitor extends SimpleFileVisitor<Path> {
         mOperationListener.onOperationProgress(dir.toString());
 
         if (filePaths != null && filePaths.length > 0) {
+            if (mUseExternalDescription) {
+                Properties p = new Properties(mDefaultDescProperties);
+
+                try {
+                    File file = new File(dir.toFile(), mExternalFileValue);
+                    if (file.isFile()) {
+                        p.load(new InputStreamReader(new FileInputStream(file), Charset.defaultCharset()));
+                    }
+                } catch (IOException ex) {
+                    // nvm
+                }
+
+                mDirToDesc.put(dir.toFile().getAbsolutePath(), p);
+            }
+
             for (String fileName : filePaths) {
                 try {
                     TimeUnit.NANOSECONDS.sleep(1);

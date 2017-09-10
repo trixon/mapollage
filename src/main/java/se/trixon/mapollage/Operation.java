@@ -49,8 +49,10 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.TreeMap;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.io.FileUtils;
@@ -75,10 +77,13 @@ import se.trixon.mapollage.profile.ProfileSource;
  */
 public class Operation implements Runnable {
 
+    private static final Logger LOGGER = Logger.getLogger(Operation.class.getName());
+
     private final BalloonStyle mBalloonStyle;
     private final ResourceBundle mBundle;
     private final DateFormat mDateFormatDate = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM);
     private final File mDestinationFile;
+    private final HashMap<String, Properties> mDirToDesc = new HashMap<>();
     private final Document mDocument;
     private final HashMap<File, File> mFileThumbMap = new HashMap<>();
     private final List<File> mFiles = new ArrayList<>();
@@ -211,25 +216,6 @@ public class Operation implements Runnable {
 
         if (mNumOfErrors > 0) {
             logError(mBundle.getString("error_description"));
-        }
-    }
-
-    private String getPattern(ProfilePath.SplitBy splitBy) {
-        switch (splitBy) {
-            case NONE:
-                return "'NO_SPLIT'";
-            case HOUR:
-                return "yyyyMMddHH";
-            case DAY:
-                return "yyyyMMdd";
-            case WEEK:
-                return "yyyyww";
-            case MONTH:
-                return "yyyyMM";
-            case YEAR:
-                return "yyyy";
-            default:
-                return null;
         }
     }
 
@@ -463,6 +449,25 @@ public class Operation implements Runnable {
         return imageTag;
     }
 
+    private String getExternalDescription(File file) {
+        Properties p = mDirToDesc.get(file.getParent());
+        final String key = FilenameUtils.getBaseName(file.getName());
+        String desc = p.getProperty(key);
+        if (desc == null) {
+            if (mProfileDescription.isDefaultTo()) {
+                if (mProfileDescription.getDefaultMode() == ProfileDescription.DescriptionMode.CUSTOM) {
+                    desc = mProfileDescription.getCustomValue();
+                } else if (mProfileDescription.getDefaultMode() == ProfileDescription.DescriptionMode.STATIC) {
+                    desc = getStaticDescription();
+                }
+            } else {
+                desc = "&nbsp;";
+            }
+        }
+
+        return desc;
+    }
+
     private Folder getFolder(File file, Date date) {
         String key;
         Folder folder = null;
@@ -565,6 +570,25 @@ public class Operation implements Runnable {
         return imageSrc;
     }
 
+    private String getPattern(ProfilePath.SplitBy splitBy) {
+        switch (splitBy) {
+            case NONE:
+                return "'NO_SPLIT'";
+            case HOUR:
+                return "yyyyMMddHH";
+            case DAY:
+                return "yyyyMMdd";
+            case WEEK:
+                return "yyyyww";
+            case MONTH:
+                return "yyyyMM";
+            case YEAR:
+                return "yyyy";
+            default:
+                return null;
+        }
+    }
+
     private String getPlacemarkDescription(File file, PhotoInfo photoInfo, Date exifDate) throws IOException {
         GpsDirectory gpsDirectory = photoInfo.getGpsDirectory();
         GpsDescriptor gpsDescriptor = null;
@@ -572,7 +596,20 @@ public class Operation implements Runnable {
             gpsDescriptor = new GpsDescriptor(gpsDirectory);
         }
 
-        String desc = mProfileDescription.isCustom() ? mProfileDescription.getCustomValue() : getStaticDescription();
+        String desc = "";
+        switch (mProfileDescription.getMode()) {
+            case CUSTOM:
+                desc = mProfileDescription.getCustomValue();
+                break;
+
+            case EXTERNAL:
+                desc = getExternalDescription(file);
+                break;
+
+            case STATIC:
+                desc = getStaticDescription();
+                break;
+        }
 
         if (StringUtils.containsIgnoreCase(desc, DescriptionSegment.PHOTO.toString())) {
             desc = StringUtils.replace(desc, DescriptionSegment.PHOTO.toString(), getDescPhoto(file, photoInfo.getOrientation()));
@@ -724,12 +761,20 @@ public class Operation implements Runnable {
         }
     }
 
+    HashMap<String, Properties> getDirToDesc() {
+        return mDirToDesc;
+    }
+
     String getExcludePattern() {
         return mProfileSource.getExcludePattern();
     }
 
     OperationListener getListener() {
         return mListener;
+    }
+
+    ProfileDescription getProfileDescription() {
+        return mProfileDescription;
     }
 
     void logError(String message) {

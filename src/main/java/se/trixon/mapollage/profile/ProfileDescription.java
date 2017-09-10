@@ -28,6 +28,7 @@ import se.trixon.almond.util.Dict;
 public class ProfileDescription extends ProfileBase {
 
     private static final String DEFAULT_CUSTOM_VALUE;
+    private static final String DEFAULT_EXTERNAL_FILE = "mapollage_descriptions.txt";
 
     @SerializedName("altitude")
     private boolean mAltitude;
@@ -35,18 +36,20 @@ public class ProfileDescription extends ProfileBase {
     private boolean mBearing;
     @SerializedName("coordinate")
     private boolean mCoordinate = true;
-    @SerializedName("custom")
-    private boolean mCustom;
     @SerializedName("custom_value")
     private String mCustomValue;
     @SerializedName("date")
     private boolean mDate = true;
-    @SerializedName("external_file")
-    private transient boolean mExternalFile;
-    @SerializedName("external_file_value")
-    private transient String mExternalFileValue = "description.csv";
+    @SerializedName("defaultMode")
+    private DescriptionMode mDefaultMode = DescriptionMode.STATIC;
+    @SerializedName("defaultTo")
+    private boolean mDefaultTo = true;
+    @SerializedName("externalFileValue")
+    private String mExternalFileValue;
     @SerializedName("filename")
     private boolean mFilename = true;
+    @SerializedName("mode")
+    private DescriptionMode mMode = DescriptionMode.STATIC;
     @SerializedName("photo")
     private boolean mPhoto = true;
     private transient final Profile mProfile;
@@ -79,8 +82,22 @@ public class ProfileDescription extends ProfileBase {
         }
     }
 
+    public DescriptionMode getDefaultMode() {
+        return mDefaultMode;
+    }
+
     public String getExternalFileValue() {
+        if (mExternalFileValue == null) {
+            mExternalFileValue = DEFAULT_EXTERNAL_FILE;
+        }
         return mExternalFileValue;
+    }
+
+    public DescriptionMode getMode() {
+        if (mMode == null) {
+            mMode = DescriptionMode.STATIC;
+        }
+        return mMode;
     }
 
     @Override
@@ -104,10 +121,6 @@ public class ProfileDescription extends ProfileBase {
         return mDate;
     }
 
-    public boolean hasExternalFile() {
-        return mExternalFile;
-    }
-
     public boolean hasFilename() {
         return mFilename;
     }
@@ -117,14 +130,15 @@ public class ProfileDescription extends ProfileBase {
     }
 
     public boolean hasPhotoStaticOrDynamic() {
-        boolean hasPhoto = (isCustom() && StringUtils.containsIgnoreCase(mCustomValue, "+photo"))
-                || (!isCustom() && hasPhoto());
+        boolean hasPhoto = (mMode == DescriptionMode.CUSTOM && StringUtils.containsIgnoreCase(mCustomValue, "+photo"))
+                || (mMode != DescriptionMode.STATIC && hasPhoto())
+                || mMode == DescriptionMode.EXTERNAL;
 
         return hasPhoto;
     }
 
-    public boolean isCustom() {
-        return mCustom;
+    public boolean isDefaultTo() {
+        return mDefaultTo;
     }
 
     @Override
@@ -144,10 +158,6 @@ public class ProfileDescription extends ProfileBase {
         mCoordinate = coordinate;
     }
 
-    public void setCustom(boolean custom) {
-        mCustom = custom;
-    }
-
     public void setCustomValue(String customValue) {
         mCustomValue = customValue;
     }
@@ -156,8 +166,12 @@ public class ProfileDescription extends ProfileBase {
         mDate = date;
     }
 
-    public void setExternalFile(boolean externalFile) {
-        mExternalFile = externalFile;
+    public void setDefaultMode(DescriptionMode defaultMode) {
+        mDefaultMode = defaultMode;
+    }
+
+    public void setDefaultTo(boolean defaultTo) {
+        mDefaultTo = defaultTo;
     }
 
     public void setExternalFileValue(String externalFileValue) {
@@ -168,6 +182,10 @@ public class ProfileDescription extends ProfileBase {
         mFilename = filename;
     }
 
+    public void setMode(DescriptionMode mode) {
+        mMode = mode;
+    }
+
     public void setPhoto(boolean photo) {
         mPhoto = photo;
     }
@@ -176,24 +194,58 @@ public class ProfileDescription extends ProfileBase {
     protected ProfileInfo getProfileInfo() {
         ProfileInfo profileInfo = new ProfileInfo();
         LinkedHashMap<String, String> values = new LinkedHashMap<>();
+        String mode = null;
+        if (null != mMode) {
+            switch (mMode) {
+                case CUSTOM:
+                    mode = Dict.CUSTOMIZED.toString();
+                    break;
+                case EXTERNAL:
+                    mode = Dict.EXTERNAL_FILE.toString();
+                    break;
+                case STATIC:
+                    mode = Dict.STATIC.toString();
+                    break;
+            }
+        }
+        values.put(Dict.TYPE.toString(), mode);
 
-        values.put(Dict.TYPE.toString(), mCustom ? Dict.CUSTOMIZED.toString() : Dict.STATIC.toString());
+        if (null != mMode) {
+            switch (mMode) {
+                case CUSTOM:
+                    values.put(Dict.VALUE.toString(), mCustomValue.replaceAll("\\n", "\\\\n"));
+                    break;
 
-        if (mCustom) {
-            values.put(Dict.VALUE.toString(), mCustomValue.replaceAll("\\n", "\\\\n"));
-        } else {
-            values.put(Dict.PHOTO.toString(), BooleanHelper.asYesNo(mPhoto));
-            values.put(Dict.FILENAME.toString(), BooleanHelper.asYesNo(mFilename));
-            values.put(Dict.DATE.toString(), BooleanHelper.asYesNo(mDate));
-            values.put(Dict.COORDINATE.toString(), BooleanHelper.asYesNo(mCoordinate));
-            values.put(Dict.ALTITUDE.toString(), BooleanHelper.asYesNo(mAltitude));
-            values.put(Dict.BEARING.toString(), BooleanHelper.asYesNo(mBearing));
+                case EXTERNAL:
+                    values.put(Dict.FILE.toString(), mExternalFileValue);
+                    if (mDefaultTo) {
+                        String defaultValue = Dict.CUSTOMIZED.toString();
+                        if (mMode == DescriptionMode.STATIC) {
+                            defaultValue = Dict.STATIC.toString();
+                        }
+                        values.put(Dict.DEFAULT.toString(), defaultValue);
+                    }
+                    break;
+
+                case STATIC:
+                    values.put(Dict.PHOTO.toString(), BooleanHelper.asYesNo(mPhoto));
+                    values.put(Dict.FILENAME.toString(), BooleanHelper.asYesNo(mFilename));
+                    values.put(Dict.DATE.toString(), BooleanHelper.asYesNo(mDate));
+                    values.put(Dict.COORDINATE.toString(), BooleanHelper.asYesNo(mCoordinate));
+                    values.put(Dict.ALTITUDE.toString(), BooleanHelper.asYesNo(mAltitude));
+                    values.put(Dict.BEARING.toString(), BooleanHelper.asYesNo(mBearing));
+                    break;
+            }
         }
 
         profileInfo.setTitle(getTitle());
         profileInfo.setValues(values);
 
         return profileInfo;
+    }
+
+    public enum DescriptionMode {
+        CUSTOM, EXTERNAL, STATIC,
     }
 
     public enum DescriptionSegment {

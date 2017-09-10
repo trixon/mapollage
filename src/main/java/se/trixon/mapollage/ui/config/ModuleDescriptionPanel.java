@@ -25,6 +25,7 @@ import se.trixon.almond.util.icons.material.MaterialIcon;
 import se.trixon.almond.util.swing.SwingHelper;
 import se.trixon.mapollage.profile.Profile;
 import se.trixon.mapollage.profile.ProfileDescription;
+import se.trixon.mapollage.profile.ProfileDescription.DescriptionMode;
 import se.trixon.mapollage.profile.ProfileDescription.DescriptionSegment;
 
 /**
@@ -34,6 +35,7 @@ import se.trixon.mapollage.profile.ProfileDescription.DescriptionSegment;
 public class ModuleDescriptionPanel extends ModulePanel {
 
     private ProfileDescription mDescription;
+    private DescriptionMode mMode;
     private PhotoDescriptionMonitor mPhotoDescriptionMonitor;
 
     /**
@@ -43,8 +45,6 @@ public class ModuleDescriptionPanel extends ModulePanel {
         initComponents();
         mTitle = Dict.DESCRIPTION.toString();
         init();
-        externalFileCheckBox.setVisible(false);
-        externalFileTextField.setVisible(false);
     }
 
     @Override
@@ -62,11 +62,25 @@ public class ModuleDescriptionPanel extends ModulePanel {
     }
 
     private void descriptionModeChanged() {
-        final boolean dynamic = dynamicRadioButton.isSelected();
-        mDescription.setCustom(dynamic);
-        customTextArea.setEnabled(dynamic);
-        defaultButton.setEnabled(dynamic);
-        SwingHelper.enableComponents(staticPanel, !dynamic);
+        if (customRadioButton.isSelected()) {
+            mMode = DescriptionMode.CUSTOM;
+        } else if (externalRadioButton.isSelected()) {
+            mMode = DescriptionMode.EXTERNAL;
+        } else if (staticRadioButton.isSelected()) {
+            mMode = DescriptionMode.STATIC;
+        }
+
+        mDescription.setMode(mMode);
+
+        externalFileTextField.setEnabled(mMode == DescriptionMode.EXTERNAL);
+        defaultToCheckBox.setEnabled(mMode == DescriptionMode.EXTERNAL);
+        defaultCustomRadioButton.setEnabled(defaultToCheckBox.isSelected() && mMode == DescriptionMode.EXTERNAL);
+        defaultStaticRadioButton.setEnabled(defaultToCheckBox.isSelected() && mMode == DescriptionMode.EXTERNAL);
+
+        customTextArea.setEnabled(mMode == DescriptionMode.CUSTOM);
+        defaultButton.setEnabled(mMode == DescriptionMode.CUSTOM);
+
+        SwingHelper.enableComponents(staticPanel, mMode == DescriptionMode.STATIC);
         notifyPhotoDescriptionListener();
     }
 
@@ -105,7 +119,8 @@ public class ModuleDescriptionPanel extends ModulePanel {
 
     private void notifyPhotoDescriptionListener() {
         boolean hasPhoto = (photoCheckBox.isSelected() && photoCheckBox.isEnabled())
-                || (dynamicRadioButton.isSelected() && StringUtils.containsIgnoreCase(customTextArea.getText(), "+photo"));
+                || (customRadioButton.isSelected() && StringUtils.containsIgnoreCase(customTextArea.getText(), "+photo"))
+                || mMode == DescriptionMode.EXTERNAL;
 
         if (mProfile != null) {
             try {
@@ -126,11 +141,12 @@ public class ModuleDescriptionPanel extends ModulePanel {
         java.awt.GridBagConstraints gridBagConstraints;
         bindingGroup = new org.jdesktop.beansbinding.BindingGroup();
 
-        externalFileCheckBox = new javax.swing.JCheckBox();
-        externalFileTextField = new javax.swing.JTextField();
         buttonGroup = new javax.swing.ButtonGroup();
+        defaultButtonGroup = new javax.swing.ButtonGroup();
+        externalRadioButton = new javax.swing.JRadioButton();
+        externalFileTextField = new javax.swing.JTextField();
         jPanel1 = new javax.swing.JPanel();
-        dynamicRadioButton = new javax.swing.JRadioButton();
+        customRadioButton = new javax.swing.JRadioButton();
         defaultButton = new javax.swing.JButton();
         customScrollPane = new javax.swing.JScrollPane();
         customTextArea = new javax.swing.JTextArea();
@@ -143,34 +159,48 @@ public class ModuleDescriptionPanel extends ModulePanel {
         coordinateCheckBox = new javax.swing.JCheckBox();
         altitudeCheckBox = new javax.swing.JCheckBox();
         bearingCheckBox = new javax.swing.JCheckBox();
+        defaultToCheckBox = new javax.swing.JCheckBox();
+        defaultStaticRadioButton = new javax.swing.JRadioButton();
+        defaultCustomRadioButton = new javax.swing.JRadioButton();
 
-        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("se/trixon/mapollage/ui/config/Bundle"); // NOI18N
-        externalFileCheckBox.setText(bundle.getString("ModuleDescriptionPanel.externalFileCheckBox.text")); // NOI18N
-        externalFileCheckBox.addActionListener(new java.awt.event.ActionListener() {
+        setLayout(new java.awt.GridBagLayout());
+
+        buttonGroup.add(externalRadioButton);
+        externalRadioButton.setText(Dict.EXTERNAL_FILE.toString());
+        externalRadioButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                externalFileCheckBoxActionPerformed(evt);
+                externalRadioButtonActionPerformed(evt);
             }
         });
-
-        org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, externalFileCheckBox, org.jdesktop.beansbinding.ELProperty.create("${selected}"), externalFileTextField, org.jdesktop.beansbinding.BeanProperty.create("enabled"));
-        bindingGroup.addBinding(binding);
-
-        setLayout(new java.awt.GridLayout(1, 0, 8, 0));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        add(externalRadioButton, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(4, 0, 0, 0);
+        add(externalFileTextField, gridBagConstraints);
 
         jPanel1.setLayout(new java.awt.GridBagLayout());
 
-        buttonGroup.add(dynamicRadioButton);
-        dynamicRadioButton.setText(Dict.CUSTOMIZED.toString());
-        dynamicRadioButton.addActionListener(new java.awt.event.ActionListener() {
+        buttonGroup.add(customRadioButton);
+        customRadioButton.setText(Dict.CUSTOMIZED.toString());
+        customRadioButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                dynamicRadioButtonActionPerformed(evt);
+                customRadioButtonActionPerformed(evt);
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        jPanel1.add(dynamicRadioButton, gridBagConstraints);
+        jPanel1.add(customRadioButton, gridBagConstraints);
 
         defaultButton.setText(Dict.RESET.toString());
         defaultButton.addActionListener(new java.awt.event.ActionListener() {
@@ -200,7 +230,16 @@ public class ModuleDescriptionPanel extends ModulePanel {
         gridBagConstraints.insets = new java.awt.Insets(0, 8, 0, 0);
         jPanel1.add(customScrollPane, gridBagConstraints);
 
-        add(jPanel1);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(8, 0, 8, 0);
+        add(jPanel1, gridBagConstraints);
 
         jPanel2.setLayout(new java.awt.GridBagLayout());
 
@@ -213,6 +252,7 @@ public class ModuleDescriptionPanel extends ModulePanel {
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 4, 0);
         jPanel2.add(staticRadioButton, gridBagConstraints);
 
         staticPanel.setLayout(new javax.swing.BoxLayout(staticPanel, javax.swing.BoxLayout.PAGE_AXIS));
@@ -280,7 +320,62 @@ public class ModuleDescriptionPanel extends ModulePanel {
         gridBagConstraints.weighty = 1.0;
         jPanel2.add(staticPanel, gridBagConstraints);
 
-        add(jPanel2);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        add(jPanel2, gridBagConstraints);
+
+        java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("se/trixon/mapollage/ui/config/Bundle"); // NOI18N
+        defaultToCheckBox.setText(bundle.getString("ModuleDescriptionPanel.defaultToCheckBox.text")); // NOI18N
+        defaultToCheckBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                defaultToCheckBoxActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        gridBagConstraints.weightx = 1.0;
+        add(defaultToCheckBox, gridBagConstraints);
+
+        defaultButtonGroup.add(defaultStaticRadioButton);
+        defaultStaticRadioButton.setText(Dict.STATIC.toString());
+
+        org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, defaultToCheckBox, org.jdesktop.beansbinding.ELProperty.create("${selected}"), defaultStaticRadioButton, org.jdesktop.beansbinding.BeanProperty.create("enabled"));
+        bindingGroup.addBinding(binding);
+
+        defaultStaticRadioButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                defaultStaticRadioButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        gridBagConstraints.insets = new java.awt.Insets(0, 8, 0, 8);
+        add(defaultStaticRadioButton, gridBagConstraints);
+
+        defaultButtonGroup.add(defaultCustomRadioButton);
+        defaultCustomRadioButton.setText(Dict.CUSTOMIZED.toString());
+
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ, defaultToCheckBox, org.jdesktop.beansbinding.ELProperty.create("${selected}"), defaultCustomRadioButton, org.jdesktop.beansbinding.BeanProperty.create("enabled"));
+        bindingGroup.addBinding(binding);
+
+        defaultCustomRadioButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                defaultCustomRadioButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        add(defaultCustomRadioButton, gridBagConstraints);
 
         bindingGroup.bind();
     }// </editor-fold>//GEN-END:initComponents
@@ -310,14 +405,9 @@ public class ModuleDescriptionPanel extends ModulePanel {
         mDescription.setFilename(filenameCheckBox.isSelected());
     }//GEN-LAST:event_filenameCheckBoxActionPerformed
 
-    private void externalFileCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_externalFileCheckBoxActionPerformed
-        mDescription.setExternalFile(externalFileCheckBox.isSelected());
-        externalFileTextField.setEnabled(externalFileCheckBox.isSelected());
-    }//GEN-LAST:event_externalFileCheckBoxActionPerformed
-
-    private void dynamicRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dynamicRadioButtonActionPerformed
+    private void customRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_customRadioButtonActionPerformed
         descriptionModeChanged();
-    }//GEN-LAST:event_dynamicRadioButtonActionPerformed
+    }//GEN-LAST:event_customRadioButtonActionPerformed
 
     private void staticRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_staticRadioButtonActionPerformed
         descriptionModeChanged();
@@ -327,18 +417,38 @@ public class ModuleDescriptionPanel extends ModulePanel {
         customTextArea.setText(ProfileDescription.getDefaultCustomValue());
     }//GEN-LAST:event_defaultButtonActionPerformed
 
+    private void externalRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_externalRadioButtonActionPerformed
+        descriptionModeChanged();
+    }//GEN-LAST:event_externalRadioButtonActionPerformed
+
+    private void defaultStaticRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_defaultStaticRadioButtonActionPerformed
+        mDescription.setDefaultMode(DescriptionMode.STATIC);
+    }//GEN-LAST:event_defaultStaticRadioButtonActionPerformed
+
+    private void defaultCustomRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_defaultCustomRadioButtonActionPerformed
+        mDescription.setDefaultMode(DescriptionMode.CUSTOM);
+    }//GEN-LAST:event_defaultCustomRadioButtonActionPerformed
+
+    private void defaultToCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_defaultToCheckBoxActionPerformed
+        mDescription.setDefaultTo(defaultToCheckBox.isSelected());
+    }//GEN-LAST:event_defaultToCheckBoxActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBox altitudeCheckBox;
     private javax.swing.JCheckBox bearingCheckBox;
     private javax.swing.ButtonGroup buttonGroup;
     private javax.swing.JCheckBox coordinateCheckBox;
+    private javax.swing.JRadioButton customRadioButton;
     private javax.swing.JScrollPane customScrollPane;
     private javax.swing.JTextArea customTextArea;
     private javax.swing.JCheckBox dateCheckBox;
     private javax.swing.JButton defaultButton;
-    private javax.swing.JRadioButton dynamicRadioButton;
-    private javax.swing.JCheckBox externalFileCheckBox;
+    private javax.swing.ButtonGroup defaultButtonGroup;
+    private javax.swing.JRadioButton defaultCustomRadioButton;
+    private javax.swing.JRadioButton defaultStaticRadioButton;
+    private javax.swing.JCheckBox defaultToCheckBox;
     private javax.swing.JTextField externalFileTextField;
+    private javax.swing.JRadioButton externalRadioButton;
     private javax.swing.JCheckBox filenameCheckBox;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
@@ -358,13 +468,33 @@ public class ModuleDescriptionPanel extends ModulePanel {
             altitudeCheckBox.setSelected(mDescription.hasAltitude());
             bearingCheckBox.setSelected(mDescription.hasBearing());
             coordinateCheckBox.setSelected(mDescription.hasCoordinate());
-            dynamicRadioButton.setSelected(mDescription.isCustom());
             dateCheckBox.setSelected(mDescription.hasDate());
             photoCheckBox.setSelected(mDescription.hasPhoto());
             filenameCheckBox.setSelected(mDescription.hasFilename());
-            externalFileCheckBox.setSelected(mDescription.hasExternalFile());
             externalFileTextField.setText(mDescription.getExternalFileValue());
             customTextArea.setText(mDescription.getCustomValue());
+
+            defaultToCheckBox.setSelected(mDescription.isDefaultTo());
+            mMode = mDescription.getMode();
+            switch (mMode) {
+                case CUSTOM:
+                    customRadioButton.setSelected(true);
+                    break;
+                case EXTERNAL:
+                    externalRadioButton.setSelected(true);
+                    break;
+                case STATIC:
+                    staticRadioButton.setSelected(true);
+                    break;
+
+                default:
+                    throw new AssertionError();
+            }
+            if (mDescription.getDefaultMode() == DescriptionMode.CUSTOM) {
+                defaultCustomRadioButton.setSelected(true);
+            } else {
+                defaultStaticRadioButton.setSelected(true);
+            }
 
             descriptionModeChanged();
         }
