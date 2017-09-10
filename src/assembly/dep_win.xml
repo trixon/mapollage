@@ -10,8 +10,9 @@
             <directory>${project.basedir}</directory>
             <outputDirectory></outputDirectory>
             <includes>
-                <include>LICENSE*</include>
+                <include>LICENSE</include>
                 <include>README</include>
+                <include>*.ico</include>
                 <include>*.png</include>
             </includes>
         </fileSet>
@@ -20,7 +21,6 @@
             <outputDirectory></outputDirectory>
             <includes>
                 <include>*.exe</include>
-                <include>*.ico</include>
             </includes>
         </fileSet>
     </fileSets>
