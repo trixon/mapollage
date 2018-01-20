@@ -38,7 +38,10 @@ public class OptionsPanel extends javax.swing.JPanel {
         lonSpinner.setValue(mOptions.getDefaultLon());
         thumbnailSizeSpinner.setValue(mOptions.getThumbnailSize());
         borderSizeSpinner.setValue(mOptions.getThumbnailBorderSize());
+        cleanNs2CheckBox.setSelected(mOptions.isCleanNs2());
+        cleanSpaceCheckBox.setSelected(mOptions.isCleanSpace());
         wordWrapCheckBox.setSelected(mOptions.isWordWrap());
+        logKmlCheckBox.setSelected(mOptions.isLogKml());
     }
 
     void save() {
@@ -47,7 +50,10 @@ public class OptionsPanel extends javax.swing.JPanel {
         mOptions.setDefaultLon((Double) lonSpinner.getModel().getValue());
         mOptions.setThumbnailSize((int) thumbnailSizeSpinner.getModel().getValue());
         mOptions.setThumbnailBorderSize((int) borderSizeSpinner.getModel().getValue());
+        mOptions.setCleanNs2(cleanNs2CheckBox.isSelected());
+        mOptions.setCleanSpace(cleanSpaceCheckBox.isSelected());
         mOptions.setWordWrap(wordWrapCheckBox.isSelected());
+        mOptions.setLogKml(logKmlCheckBox.isSelected());
     }
 
     /**
@@ -72,7 +78,12 @@ public class OptionsPanel extends javax.swing.JPanel {
         thumbnailSizeSpinner = new javax.swing.JSpinner();
         borderSizeLabel = new javax.swing.JLabel();
         borderSizeSpinner = new javax.swing.JSpinner();
+        cleanLabel = new javax.swing.JLabel();
+        cleanNs2CheckBox = new javax.swing.JCheckBox();
+        cleanSpaceCheckBox = new javax.swing.JCheckBox();
+        logLabel = new javax.swing.JLabel();
         wordWrapCheckBox = new javax.swing.JCheckBox();
+        logKmlCheckBox = new javax.swing.JCheckBox();
         jPanel1 = new javax.swing.JPanel();
 
         setLayout(new java.awt.GridBagLayout());
@@ -80,14 +91,14 @@ public class OptionsPanel extends javax.swing.JPanel {
         localeLabel.setText(Dict.CALENDAR_LANGUAGE.toString());
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridy = 0;
         gridBagConstraints.gridwidth = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(8, 0, 0, 0);
         add(localeLabel, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 3;
+        gridBagConstraints.gridy = 1;
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
@@ -138,7 +149,7 @@ public class OptionsPanel extends javax.swing.JPanel {
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 8;
+        gridBagConstraints.gridy = 6;
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(8, 0, 0, 0);
@@ -148,8 +159,8 @@ public class OptionsPanel extends javax.swing.JPanel {
         placemarkLabel.setText(Dict.PLACEMARK.toString());
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 5;
-        gridBagConstraints.gridwidth = 3;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.insets = new java.awt.Insets(8, 0, 0, 0);
         add(placemarkLabel, gridBagConstraints);
@@ -157,7 +168,7 @@ public class OptionsPanel extends javax.swing.JPanel {
         thumbnailSizeLabel.setText(Dict.THUMBNAIL.toString());
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 6;
+        gridBagConstraints.gridy = 4;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(8, 0, 0, 0);
         add(thumbnailSizeLabel, gridBagConstraints);
@@ -165,14 +176,14 @@ public class OptionsPanel extends javax.swing.JPanel {
         thumbnailSizeSpinner.setModel(new javax.swing.SpinnerNumberModel(250, 100, 1200, 10));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 7;
+        gridBagConstraints.gridy = 5;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         add(thumbnailSizeSpinner, gridBagConstraints);
 
         borderSizeLabel.setText(bundle.getString("OptionsPanel.borderSizeLabel.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 6;
+        gridBagConstraints.gridy = 4;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(8, 8, 0, 0);
         add(borderSizeLabel, gridBagConstraints);
@@ -180,18 +191,62 @@ public class OptionsPanel extends javax.swing.JPanel {
         borderSizeSpinner.setModel(new javax.swing.SpinnerNumberModel(2, 0, 20, 1));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 7;
+        gridBagConstraints.gridy = 5;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 8, 0, 0);
         add(borderSizeSpinner, gridBagConstraints);
 
+        cleanLabel.setFont(cleanLabel.getFont().deriveFont((cleanLabel.getFont().getStyle() | java.awt.Font.ITALIC), cleanLabel.getFont().getSize()+3));
+        cleanLabel.setText(bundle.getString("OptionsPanel.cleanLabel.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 7;
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(8, 0, 0, 0);
+        add(cleanLabel, gridBagConstraints);
+
+        cleanNs2CheckBox.setText(bundle.getString("OptionsPanel.cleanNs2CheckBox.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 8;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        add(cleanNs2CheckBox, gridBagConstraints);
+
+        cleanSpaceCheckBox.setText(bundle.getString("OptionsPanel.cleanSpaceCheckBox.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 9;
+        add(cleanSpaceCheckBox, gridBagConstraints);
+
+        logLabel.setFont(logLabel.getFont().deriveFont((logLabel.getFont().getStyle() | java.awt.Font.ITALIC), logLabel.getFont().getSize()+3));
+        logLabel.setText(Dict.LOG.toString());
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 10;
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(8, 0, 0, 0);
+        add(logLabel, gridBagConstraints);
+
         wordWrapCheckBox.setText(Dict.DYNAMIC_WORD_WRAP.toString());
         gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 11;
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(8, 0, 0, 0);
         add(wordWrapCheckBox, gridBagConstraints);
+
+        logKmlCheckBox.setText(bundle.getString("OptionsPanel.logKmlCheckBox.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 12;
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(8, 0, 0, 0);
+        add(logKmlCheckBox, gridBagConstraints);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -201,12 +256,12 @@ public class OptionsPanel extends javax.swing.JPanel {
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 19, Short.MAX_VALUE)
+            .addGap(0, 0, Short.MAX_VALUE)
         );
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 10;
+        gridBagConstraints.gridy = 12;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
@@ -216,12 +271,17 @@ public class OptionsPanel extends javax.swing.JPanel {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel borderSizeLabel;
     private javax.swing.JSpinner borderSizeSpinner;
+    private javax.swing.JLabel cleanLabel;
+    private javax.swing.JCheckBox cleanNs2CheckBox;
+    private javax.swing.JCheckBox cleanSpaceCheckBox;
     private javax.swing.JLabel coordinateLabel;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JLabel latLabel;
     private javax.swing.JSpinner latSpinner;
     private se.trixon.almond.util.swing.LocaleComboBox localeComboBox;
     private javax.swing.JLabel localeLabel;
+    private javax.swing.JCheckBox logKmlCheckBox;
+    private javax.swing.JLabel logLabel;
     private javax.swing.JLabel lonLabel;
     private javax.swing.JSpinner lonSpinner;
     private javax.swing.JPanel nullCoordinatePanel;

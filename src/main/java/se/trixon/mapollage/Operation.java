@@ -34,8 +34,8 @@ import de.micromata.opengis.kml.v_2_2_0.StyleState;
 import de.micromata.opengis.kml.v_2_2_0.TimeStamp;
 import java.awt.Dimension;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -97,6 +97,7 @@ public class Operation implements Runnable {
     private int mNumOfExif;
     private int mNumOfGps;
     private int mNumOfPlacemarks;
+    private Options mOptions = Options.getInstance();
     private Folder mPathFolder;
     private Folder mPathGapFolder;
     private PhotoInfo mPhotoInfo;
@@ -153,7 +154,7 @@ public class Operation implements Runnable {
         mListener.onOperationLog(new SimpleDateFormat().format(new Date()));
 
         String status;
-        mRootFolder = mDocument.createAndAddFolder().withName(mProfileFolder.getRootName()).withOpen(true);
+        mRootFolder = mDocument.createAndAddFolder().withName(getSafeXmlString(mProfileFolder.getRootName())).withOpen(true);
 
         String href = "<a href=\"https://trixon.se/mapollage/\">Mapollage</a>";
         String description = String.format("<p>%s %s, %s</p>%s",
@@ -161,7 +162,7 @@ public class Operation implements Runnable {
                 href,
                 dateFormat.format(date),
                 mProfileFolder.getRootDescription().replaceAll("\\n", "<br />"));
-        mRootFolder.setDescription(description);
+        mRootFolder.setDescription(getSafeXmlString(description));
 
         mListener.onOperationProcessingStarted();
         try {
@@ -360,10 +361,14 @@ public class Operation implements Runnable {
                     .addToPair(KmlFactory.createPair().withKey(StyleState.HIGHLIGHT).withStyleUrl(styleHighlightId));
 
             Placemark placemark = KmlFactory.createPlacemark()
-                    .withName(getPlacemarkName(file, exifDate))
-                    .withDescription(getPlacemarkDescription(file, mPhotoInfo, exifDate))
+                    .withName(getSafeXmlString(getPlacemarkName(file, exifDate)))
                     .withOpen(Boolean.TRUE)
                     .withStyleUrl(styleMapId);
+
+            String desc = getPlacemarkDescription(file, mPhotoInfo, exifDate);
+            if (!StringUtils.isBlank(desc)) {
+                placemark.setDescription(desc);
+            }
 
             placemark.createAndSetPoint()
                     .addToCoordinates(mPhotoInfo.getLon(), mPhotoInfo.getLat())
@@ -522,7 +527,7 @@ public class Operation implements Runnable {
 
     private Folder getFolder(String key, Folder parent, String name) {
         if (!mFolders.containsKey(key)) {
-            Folder folder = parent.createAndAddFolder().withName(name);
+            Folder folder = parent.createAndAddFolder().withName(getSafeXmlString(name));
             mFolders.put(key, folder);
         }
 
@@ -606,28 +611,36 @@ public class Operation implements Runnable {
                 desc = getExternalDescription(file);
                 break;
 
+            case NONE:
+                //Do nothing
+                break;
+
             case STATIC:
                 desc = getStaticDescription();
                 break;
         }
 
-        if (StringUtils.containsIgnoreCase(desc, DescriptionSegment.PHOTO.toString())) {
-            desc = StringUtils.replace(desc, DescriptionSegment.PHOTO.toString(), getDescPhoto(file, photoInfo.getOrientation()));
-        }
+        if (mProfileDescription.getMode() != ProfileDescription.DescriptionMode.NONE) {
+            if (StringUtils.containsIgnoreCase(desc, DescriptionSegment.PHOTO.toString())) {
+                desc = StringUtils.replace(desc, DescriptionSegment.PHOTO.toString(), getDescPhoto(file, photoInfo.getOrientation()));
+            }
 
-        desc = StringUtils.replace(desc, DescriptionSegment.FILENAME.toString(), file.getName());
-        desc = StringUtils.replace(desc, DescriptionSegment.DATE.toString(), mDateFormatDate.format(exifDate));
+            desc = StringUtils.replace(desc, DescriptionSegment.FILENAME.toString(), file.getName());
+            desc = StringUtils.replace(desc, DescriptionSegment.DATE.toString(), mDateFormatDate.format(exifDate));
 
-        if (gpsDirectory != null && gpsDescriptor != null) {
-            desc = StringUtils.replace(desc, DescriptionSegment.ALTITUDE.toString(), gpsDescriptor.getGpsAltitudeDescription());
-            desc = StringUtils.replace(desc, DescriptionSegment.COORDINATE.toString(), gpsDescriptor.getDegreesMinutesSecondsDescription());
+            if (gpsDirectory != null && gpsDescriptor != null) {
+                desc = StringUtils.replace(desc, DescriptionSegment.ALTITUDE.toString(), gpsDescriptor.getGpsAltitudeDescription());
+                desc = StringUtils.replace(desc, DescriptionSegment.COORDINATE.toString(), gpsDescriptor.getDegreesMinutesSecondsDescription());
 
-            String bearing = gpsDescriptor.getGpsDirectionDescription(GpsDirectory.TAG_DEST_BEARING);
-            desc = StringUtils.replace(desc, DescriptionSegment.BEARING.toString(), bearing == null ? "" : bearing);
-        } else {
-            desc = StringUtils.replace(desc, DescriptionSegment.ALTITUDE.toString(), "");
-            desc = StringUtils.replace(desc, DescriptionSegment.COORDINATE.toString(), "");
-            desc = StringUtils.replace(desc, DescriptionSegment.BEARING.toString(), "");
+                String bearing = gpsDescriptor.getGpsDirectionDescription(GpsDirectory.TAG_DEST_BEARING);
+                desc = StringUtils.replace(desc, DescriptionSegment.BEARING.toString(), bearing == null ? "" : bearing);
+            } else {
+                desc = StringUtils.replace(desc, DescriptionSegment.ALTITUDE.toString(), "");
+                desc = StringUtils.replace(desc, DescriptionSegment.COORDINATE.toString(), "");
+                desc = StringUtils.replace(desc, DescriptionSegment.BEARING.toString(), "");
+            }
+
+            desc = getSafeXmlString(desc);
         }
 
         return desc;
@@ -661,6 +674,14 @@ public class Operation implements Runnable {
         }
 
         return name;
+    }
+
+    private String getSafeXmlString(String s) {
+        if (StringUtils.containsAny(s, '<', '>', '&')) {
+            s = new StringBuilder("<![CDATA[").append(s).append("]]>").toString();
+        }
+
+        return s;
     }
 
     private String getStaticDescription() {
@@ -714,10 +735,36 @@ public class Operation implements Runnable {
             mListener.onOperationLog("\n" + String.format(mBundle.getString("stored_thumbnails"), mThumbsDir.getAbsolutePath()));
         }
 
-        mListener.onOperationLog(String.format(Dict.SAVING.toString(), mDestinationFile.getAbsolutePath()));
-
         try {
-            mKml.marshal(mDestinationFile);
+            StringWriter stringWriter = new StringWriter();
+            mKml.marshal(stringWriter);
+            String kmlString = stringWriter.toString();
+
+            if (mOptions.isCleanNs2()) {
+                mListener.onOperationLog(mBundle.getString("clean_ns2"));
+                kmlString = StringUtils.replace(kmlString, "xmlns:ns2=", "xmlns=");
+                kmlString = StringUtils.replace(kmlString, "<ns2:", "<");
+                kmlString = StringUtils.replace(kmlString, "</ns2:", "</");
+            }
+
+            if (mOptions.isCleanSpace()) {
+                mListener.onOperationLog(mBundle.getString("clean_space"));
+                kmlString = StringUtils.replace(kmlString, "        ", "\t");
+                kmlString = StringUtils.replace(kmlString, "    ", "\t");
+            }
+
+            kmlString = StringUtils.replaceEach(kmlString,
+                    new String[]{"&lt;", "&gt;", "&amp;"},
+                    new String[]{"<", ">", ""});
+
+            if (mOptions.isLogKml()) {
+                mListener.onOperationLog("\n");
+                mListener.onOperationLog(kmlString);
+                mListener.onOperationLog("\n");
+            }
+
+            mListener.onOperationLog(String.format(Dict.SAVING.toString(), mDestinationFile.getAbsolutePath()));
+            FileUtils.writeStringToFile(mDestinationFile, kmlString, "utf-8");
 
             String files = mBundle.getString("status_files");
             String exif = mBundle.getString("status_exif");
@@ -756,7 +803,7 @@ public class Operation implements Runnable {
             summaryBuilder.append(StringUtils.rightPad(time, rightPad)).append(":").append(StringUtils.leftPad(timeValue, leftPad)).append(" s").append("\n");
 
             mListener.onOperationFinished(summaryBuilder.toString(), mFiles.size());
-        } catch (FileNotFoundException ex) {
+        } catch (IOException ex) {
             mListener.onOperationFailed(ex.getLocalizedMessage());
         }
     }

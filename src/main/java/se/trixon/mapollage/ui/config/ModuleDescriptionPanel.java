@@ -49,7 +49,7 @@ public class ModuleDescriptionPanel extends ModulePanel {
 
     @Override
     public ImageIcon getIcon() {
-        return MaterialIcon._Action.DESCRIPTION.get(ICON_SIZE, getIconColor());
+        return MaterialIcon._Action.DESCRIPTION.get(ICON_SIZE);
     }
 
     @Override
@@ -68,6 +68,8 @@ public class ModuleDescriptionPanel extends ModulePanel {
             mMode = DescriptionMode.EXTERNAL;
         } else if (staticRadioButton.isSelected()) {
             mMode = DescriptionMode.STATIC;
+        } else if (noneRadioButton.isSelected()) {
+            mMode = DescriptionMode.NONE;
         }
 
         mDescription.setMode(mMode);
@@ -143,6 +145,7 @@ public class ModuleDescriptionPanel extends ModulePanel {
 
         buttonGroup = new javax.swing.ButtonGroup();
         defaultButtonGroup = new javax.swing.ButtonGroup();
+        noneRadioButton = new javax.swing.JRadioButton();
         externalRadioButton = new javax.swing.JRadioButton();
         externalFileTextField = new javax.swing.JTextField();
         jPanel1 = new javax.swing.JPanel();
@@ -165,6 +168,21 @@ public class ModuleDescriptionPanel extends ModulePanel {
 
         setLayout(new java.awt.GridBagLayout());
 
+        buttonGroup.add(noneRadioButton);
+        noneRadioButton.setText(Dict.NONE.toString());
+        noneRadioButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                noneRadioButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 4, 0);
+        add(noneRadioButton, gridBagConstraints);
+
         buttonGroup.add(externalRadioButton);
         externalRadioButton.setText(Dict.EXTERNAL_FILE.toString());
         externalRadioButton.addActionListener(new java.awt.event.ActionListener() {
@@ -174,12 +192,12 @@ public class ModuleDescriptionPanel extends ModulePanel {
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridy = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         add(externalRadioButton, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 3;
+        gridBagConstraints.gridy = 4;
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
@@ -232,7 +250,7 @@ public class ModuleDescriptionPanel extends ModulePanel {
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridy = 2;
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
@@ -322,7 +340,7 @@ public class ModuleDescriptionPanel extends ModulePanel {
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridy = 1;
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
@@ -337,7 +355,7 @@ public class ModuleDescriptionPanel extends ModulePanel {
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridy = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
         gridBagConstraints.weightx = 1.0;
         add(defaultToCheckBox, gridBagConstraints);
@@ -355,7 +373,7 @@ public class ModuleDescriptionPanel extends ModulePanel {
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridy = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
         gridBagConstraints.insets = new java.awt.Insets(0, 8, 0, 8);
         add(defaultStaticRadioButton, gridBagConstraints);
@@ -373,7 +391,7 @@ public class ModuleDescriptionPanel extends ModulePanel {
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
-        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridy = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
         add(defaultCustomRadioButton, gridBagConstraints);
 
@@ -433,6 +451,10 @@ public class ModuleDescriptionPanel extends ModulePanel {
         mDescription.setDefaultTo(defaultToCheckBox.isSelected());
     }//GEN-LAST:event_defaultToCheckBoxActionPerformed
 
+    private void noneRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_noneRadioButtonActionPerformed
+        descriptionModeChanged();
+    }//GEN-LAST:event_noneRadioButtonActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBox altitudeCheckBox;
     private javax.swing.JCheckBox bearingCheckBox;
@@ -452,6 +474,7 @@ public class ModuleDescriptionPanel extends ModulePanel {
     private javax.swing.JCheckBox filenameCheckBox;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JRadioButton noneRadioButton;
     private javax.swing.JCheckBox photoCheckBox;
     private javax.swing.JPanel staticPanel;
     private javax.swing.JRadioButton staticRadioButton;
@@ -480,9 +503,14 @@ public class ModuleDescriptionPanel extends ModulePanel {
                 case CUSTOM:
                     customRadioButton.setSelected(true);
                     break;
+
                 case EXTERNAL:
                     externalRadioButton.setSelected(true);
                     break;
+
+                case NONE:
+                    noneRadioButton.setSelected(true);
+
                 case STATIC:
                     staticRadioButton.setSelected(true);
                     break;

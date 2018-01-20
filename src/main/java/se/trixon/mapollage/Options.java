@@ -25,13 +25,19 @@ import java.util.prefs.Preferences;
 public class Options {
 
     public static final String KEY_AUTO_OPEN = "auto_open";
+    public static final String KEY_CLEAN_NS2 = "clean_ns2";
+    public static final String KEY_CLEAN_SPACE = "clean_space";
     public static final String KEY_DEFAULT_LAT = "deflat";
     public static final String KEY_DEFAULT_LON = "deflon";
     public static final String KEY_LOCALE = "locale";
+    public static final String KEY_LOG_KML = "log_kml";
     public static final String KEY_THUMBNAIL_BORDER_SIZE = "thumbnail_border_size";
     public static final String KEY_THUMBNAIL_SIZE = "thumbnail_size";
     public static final String KEY_WORD_WRAP = "word_wrap";
+    private static final boolean DEFAULT_CLEAN_NS2 = true;
+    private static final boolean DEFAULT_CLEAN_SPACE = true;
     private static final Locale DEFAULT_LOCALE = Locale.getDefault();
+    private static final boolean DEFAULT_LOG_KML = false;
     private static final boolean DEFAULT_WORD_WRAP = false;
     private final boolean DEFAULT_AUTO_OPEN = true;
     private final Double DEFAULT_LAT = 57.6;
@@ -75,12 +81,32 @@ public class Options {
         return mPreferences.getBoolean(KEY_AUTO_OPEN, DEFAULT_AUTO_OPEN);
     }
 
+    public boolean isCleanNs2() {
+        return mPreferences.getBoolean(KEY_CLEAN_NS2, DEFAULT_CLEAN_NS2);
+    }
+
+    public boolean isCleanSpace() {
+        return mPreferences.getBoolean(KEY_CLEAN_SPACE, DEFAULT_CLEAN_SPACE);
+    }
+
+    public boolean isLogKml() {
+        return mPreferences.getBoolean(KEY_LOG_KML, DEFAULT_LOG_KML);
+    }
+
     public boolean isWordWrap() {
         return mPreferences.getBoolean(KEY_WORD_WRAP, DEFAULT_WORD_WRAP);
     }
 
     public void setAutoOpen(boolean value) {
         mPreferences.putBoolean(KEY_AUTO_OPEN, value);
+    }
+
+    public void setCleanNs2(boolean value) {
+        mPreferences.putBoolean(KEY_CLEAN_NS2, value);
+    }
+
+    public void setCleanSpace(boolean value) {
+        mPreferences.putBoolean(KEY_CLEAN_SPACE, value);
     }
 
     public void setDefaultLat(Double value) {
@@ -93,6 +119,10 @@ public class Options {
 
     public void setLocale(Locale locale) {
         mPreferences.put(KEY_LOCALE, locale.toLanguageTag());
+    }
+
+    public void setLogKml(boolean value) {
+        mPreferences.putBoolean(KEY_LOG_KML, value);
     }
 
     public void setThumbnailBorderSize(int size) {

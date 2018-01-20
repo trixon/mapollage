@@ -200,9 +200,15 @@ public class ProfileDescription extends ProfileBase {
                 case CUSTOM:
                     mode = Dict.CUSTOMIZED.toString();
                     break;
+
                 case EXTERNAL:
                     mode = Dict.EXTERNAL_FILE.toString();
                     break;
+
+                case NONE:
+                    mode = Dict.NONE.toString();
+                    break;
+
                 case STATIC:
                     mode = Dict.STATIC.toString();
                     break;
@@ -245,7 +251,7 @@ public class ProfileDescription extends ProfileBase {
     }
 
     public enum DescriptionMode {
-        CUSTOM, EXTERNAL, STATIC,
+        CUSTOM, EXTERNAL, NONE, STATIC,
     }
 
     public enum DescriptionSegment {
