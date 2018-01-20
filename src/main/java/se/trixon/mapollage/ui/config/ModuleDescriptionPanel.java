@@ -510,6 +510,7 @@ public class ModuleDescriptionPanel extends ModulePanel {
 
                 case NONE:
                     noneRadioButton.setSelected(true);
+                    break;
 
                 case STATIC:
                     staticRadioButton.setSelected(true);
