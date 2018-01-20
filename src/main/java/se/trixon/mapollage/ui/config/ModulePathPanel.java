@@ -43,7 +43,7 @@ public class ModulePathPanel extends ModulePanel {
 
     @Override
     public ImageIcon getIcon() {
-        return MaterialIcon._Action.TIMELINE.get(ICON_SIZE, getIconColor());
+        return MaterialIcon._Action.TIMELINE.get(ICON_SIZE);
     }
 
     @Override

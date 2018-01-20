@@ -50,7 +50,7 @@ public class ModulePlacemarkPanel extends ModulePanel {
 
     @Override
     public ImageIcon getIcon() {
-        return MaterialIcon._Maps.PLACE.get(ICON_SIZE, getIconColor());
+        return MaterialIcon._Maps.PLACE.get(ICON_SIZE);
     }
 
     @Override

@@ -53,7 +53,7 @@ public class ModuleFoldersPanel extends ModulePanel {
 
     @Override
     public ImageIcon getIcon() {
-        return MaterialIcon._File.FOLDER_OPEN.get(ICON_SIZE, getIconColor());
+        return MaterialIcon._File.FOLDER_OPEN.get(ICON_SIZE);
     }
 
     @Override

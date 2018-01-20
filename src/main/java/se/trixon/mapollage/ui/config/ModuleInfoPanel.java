@@ -37,7 +37,7 @@ public class ModuleInfoPanel extends ModulePanel {
 
     @Override
     public ImageIcon getIcon() {
-        return MaterialIcon._Action.INFO_OUTLINE.get(ICON_SIZE, getIconColor());
+        return MaterialIcon._Action.INFO_OUTLINE.get(ICON_SIZE);
     }
 
     @Override

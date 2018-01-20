@@ -44,7 +44,7 @@ public class ModulePhotoPanel extends ModulePanel {
 
     @Override
     public ImageIcon getIcon() {
-        return MaterialIcon._Image.PHOTO.get(ICON_SIZE, getIconColor());
+        return MaterialIcon._Image.PHOTO.get(ICON_SIZE);
     }
 
     @Override

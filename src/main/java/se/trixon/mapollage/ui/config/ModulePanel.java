@@ -21,10 +21,8 @@ import java.util.prefs.PreferenceChangeEvent;
 import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 import javax.swing.text.JTextComponent;
-import se.trixon.almond.util.AlmondOptions;
-import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.Dict;
-import se.trixon.almond.util.icons.IconColor;
+import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.swing.dialogs.Message;
 import se.trixon.mapollage.Options;
 import se.trixon.mapollage.profile.Profile;
@@ -58,10 +56,6 @@ public abstract class ModulePanel extends javax.swing.JPanel {
     }
 
     public abstract ImageIcon getIcon();
-
-    public IconColor getIconColor() {
-        return AlmondOptions.getInstance().getIconColor();
-    }
 
     public JTextComponent getTextComponent(JComboBox comboBox) {
         return (JTextComponent) comboBox.getEditor().getEditorComponent();

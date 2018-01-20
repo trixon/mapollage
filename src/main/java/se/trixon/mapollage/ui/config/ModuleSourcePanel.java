@@ -52,7 +52,7 @@ public class ModuleSourcePanel extends ModulePanel implements FileChooserPanel.F
 
     @Override
     public ImageIcon getIcon() {
-        return MaterialIcon._Image.PHOTO_LIBRARY.get(ICON_SIZE, getIconColor());
+        return MaterialIcon._Image.PHOTO_LIBRARY.get(ICON_SIZE);
     }
 
     public JPanel getStatusHolderPanel() {
