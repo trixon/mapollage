@@ -18,9 +18,7 @@ package se.trixon.mapollage;
 import com.drew.imaging.ImageProcessingException;
 import com.drew.metadata.exif.GpsDescriptor;
 import com.drew.metadata.exif.GpsDirectory;
-import de.micromata.opengis.kml.v_2_2_0.AltitudeMode;
 import de.micromata.opengis.kml.v_2_2_0.BalloonStyle;
-import de.micromata.opengis.kml.v_2_2_0.DisplayMode;
 import de.micromata.opengis.kml.v_2_2_0.Document;
 import de.micromata.opengis.kml.v_2_2_0.Folder;
 import de.micromata.opengis.kml.v_2_2_0.Icon;
@@ -132,10 +130,9 @@ public class Operation implements Runnable {
         mBalloonStyle = KmlFactory.createBalloonStyle()
                 .withId("BalloonStyleId")
                 //aabbggrr
-                .withBgColor("FF272420")
-                .withTextColor("FFEEEEEE")
-                .withText("$[description]")
-                .withDisplayMode(DisplayMode.DEFAULT);
+                .withBgColor("ff272420")
+                .withTextColor("ffeeeeee")
+                .withText("$[description]");
     }
 
     @Override
@@ -320,23 +317,27 @@ public class Operation implements Runnable {
             Folder folder = getFolder(file, exifDate);
 
             String imageId = String.format("%08x", FileUtils.checksumCRC32(file));
-            String styleNormalId = String.format("s_%s-pushpin", imageId);
-            String styleHighlightId = String.format("s_%s-pushpin_hl", imageId);
-            String styleMapId = String.format("m_%s-pushpin", imageId);
+            String styleNormalId = String.format("s_%s", imageId);
+            String styleHighlightId = String.format("s_%s_hl", imageId);
+            String styleMapId = String.format("m_%s", imageId);
             double highlightZoom = mProfilePlacemark.getZoom() * mProfilePlacemark.getScale();
 
-            IconStyle normalIconStyle = folder.createAndAddStyle().withId(styleNormalId).createAndSetIconStyle().withScale(mProfilePlacemark.getScale());
-            IconStyle highlightIconStyle = folder.createAndAddStyle().withId(styleHighlightId).createAndSetIconStyle().withScale(highlightZoom);
-
-            folder.createAndAddStyle()
-                    .withBalloonStyle(mBalloonStyle)
-                    .withIconStyle(normalIconStyle)
+            Style normalStyle = mDocument
+                    .createAndAddStyle()
                     .withId(styleNormalId);
 
-            folder.createAndAddStyle()
+            IconStyle normalIconStyle = normalStyle
+                    .createAndSetIconStyle()
+                    .withScale(mProfilePlacemark.getScale());
+
+            Style highlightStyle = mDocument
+                    .createAndAddStyle()
                     .withBalloonStyle(mBalloonStyle)
-                    .withIconStyle(highlightIconStyle)
                     .withId(styleHighlightId);
+
+            IconStyle highlightIconStyle = highlightStyle
+                    .createAndSetIconStyle()
+                    .withScale(highlightZoom);
 
             if (mProfilePlacemark.isSymbolAsPhoto()) {
                 Icon icon = KmlFactory.createIcon().withHref(String.format("%s/%s.jpg", mThumbsDir.getName(), imageId));
@@ -356,14 +357,14 @@ public class Operation implements Runnable {
                 }
             }
 
-            folder.createAndAddStyleMap().withId(styleMapId)
-                    .addToPair(KmlFactory.createPair().withKey(StyleState.NORMAL).withStyleUrl(styleNormalId))
-                    .addToPair(KmlFactory.createPair().withKey(StyleState.HIGHLIGHT).withStyleUrl(styleHighlightId));
+            mDocument.createAndAddStyleMap().withId(styleMapId)
+                    .addToPair(KmlFactory.createPair().withKey(StyleState.NORMAL).withStyleUrl("#" + styleNormalId))
+                    .addToPair(KmlFactory.createPair().withKey(StyleState.HIGHLIGHT).withStyleUrl("#" + styleHighlightId));
 
             Placemark placemark = KmlFactory.createPlacemark()
                     .withName(getSafeXmlString(getPlacemarkName(file, exifDate)))
                     .withOpen(Boolean.TRUE)
-                    .withStyleUrl(styleMapId);
+                    .withStyleUrl("#" + styleMapId);
 
             String desc = getPlacemarkDescription(file, mPhotoInfo, exifDate);
             if (!StringUtils.isBlank(desc)) {
@@ -371,8 +372,7 @@ public class Operation implements Runnable {
             }
 
             placemark.createAndSetPoint()
-                    .addToCoordinates(mPhotoInfo.getLon(), mPhotoInfo.getLat())
-                    .setAltitudeMode(AltitudeMode.CLAMP_TO_GROUND);
+                    .addToCoordinates(mPhotoInfo.getLon(), mPhotoInfo.getLat(), 0F);
 
             if (mProfilePlacemark.isTimestamp()) {
                 TimeStamp timeStamp = KmlFactory.createTimeStamp();
