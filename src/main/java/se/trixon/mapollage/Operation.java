@@ -112,6 +112,7 @@ public class Operation implements Runnable {
     private Folder mPathGapFolder;
     private PhotoInfo mPhotoInfo;
     private Folder mPolygonFolder;
+    private final HashMap<Folder, Folder> mPolygonRemovals = new HashMap<>();
     private final Profile mProfile;
     private final ProfileDescription mProfileDescription;
     private final ProfileFolder mProfileFolder;
@@ -401,8 +402,7 @@ public class Operation implements Runnable {
         mListener.onOperationLog(file.getAbsolutePath());
     }
 
-    private void addPolygon(Folder polygonFolder) {
-        ArrayList<Coordinate> coordinates = mFolderPolygonInputs.get(polygonFolder);
+    private void addPolygon(String name, ArrayList<Coordinate> coordinates, Folder polygonFolder) {
         List<Point2D.Double> inputs = new ArrayList<>();
         coordinates.forEach((coordinate) -> {
             inputs.add(new Point2D.Double(coordinate.getLongitude(), coordinate.getLatitude()));
@@ -412,7 +412,7 @@ public class Operation implements Runnable {
             List<Point2D.Double> convexHull = GrahamScan.getConvexHullDouble(inputs);
             Placemark placemark = polygonFolder
                     .createAndAddPlacemark()
-                    .withName(polygonFolder.getName());
+                    .withName(name);
 
             Style style = placemark.createAndAddStyle();
             LineStyle lineStyle = style.createAndSetLineStyle()
@@ -437,27 +437,37 @@ public class Operation implements Runnable {
     }
 
     private void addPolygons() {
-        mPolygonFolder = KmlFactory.createFolder().withName("Polygons").withOpen(true);
+        mPolygonFolder = KmlFactory.createFolder().withName(Dict.POLYGON.toString()).withOpen(false);
         addPolygons(mPolygonFolder, mRootFolder.getFeature());
+
+        scanForFolderRemoval(mPolygonFolder);
+//        while (scanForFolderRemoval(mPolygonFolder, false)) {
+//            //
+//        }
+
+        for (Folder folder : mPolygonRemovals.keySet()) {
+            Folder parentFolder = mPolygonRemovals.get(folder);
+            parentFolder.getFeature().remove(folder);
+        }
+
         mRootFolder.getFeature().add(mPolygonFolder);
     }
 
-    private void addPolygons(Folder parent, List<Feature> features) {
+    private void addPolygons(Folder polygonParent, List<Feature> features) {
         for (Feature feature : features) {
             if (feature instanceof Folder) {
                 Folder folder = (Folder) feature;
 
                 if (folder != mPathFolder && folder != mPathGapFolder && folder != mPolygonFolder) {
                     System.out.println("ENTER FOLDER=" + folder.getName());
-                    Folder parentFolder = (Folder) parent;
-                    System.out.println("PARENT FOLDER=" + parentFolder.getName());
-                    Folder polygonFolder = parentFolder.createAndAddFolder().withName(folder.getName()).withOpen(true);
+                    System.out.println("PARENT FOLDER=" + polygonParent.getName());
+                    Folder polygonFolder = polygonParent.createAndAddFolder().withName(folder.getName()).withOpen(true);
                     mFolderPolygonInputs.put(polygonFolder, new ArrayList<>());
                     addPolygons(polygonFolder, folder.getFeature());
                     System.out.println("POLYGON FOLDER=" + polygonFolder.getName() + " CONTAINS");
 
                     if (mFolderPolygonInputs.get(polygonFolder) != null) {
-                        addPolygon(polygonFolder);
+                        addPolygon(folder.getName(), mFolderPolygonInputs.get(polygonFolder), polygonParent);
                     }
                     System.out.println("EXIT FOLDER=" + folder.getName());
                     System.out.println("");
@@ -466,11 +476,11 @@ public class Operation implements Runnable {
 
             if (feature instanceof Placemark) {
                 Placemark placemark = (Placemark) feature;
-                System.out.println("PLACEMARK=" + placemark.getName() + "(PARENT=)" + parent.getName());
+                System.out.println("PLACEMARK=" + placemark.getName() + "(PARENT=)" + polygonParent.getName());
 
                 Point point = (Point) placemark.getGeometry();
                 point.getCoordinates().forEach((coordinate) -> {
-                    mFolderPolygonInputs.get(parent).add(coordinate);
+                    mFolderPolygonInputs.get(polygonParent).add(coordinate);
                 });
 
             }
@@ -897,6 +907,34 @@ public class Operation implements Runnable {
             mListener.onOperationFailed(ex.getLocalizedMessage());
         }
     }
+
+    private void scanForFolderRemoval(Folder folder) {
+        for (Feature feature : folder.getFeature()) {
+            if (feature instanceof Folder) {
+                Folder subFolder = (Folder) feature;
+                if (subFolder.getFeature().isEmpty()) {
+                    mPolygonRemovals.put(subFolder, folder);
+                } else {
+                    scanForFolderRemoval(subFolder);
+                }
+            }
+        }
+    }
+//    private boolean scanForFolderRemoval(Folder folder, boolean hadEmpty) {
+//        for (Feature feature : folder.getFeature()) {
+//            if (feature instanceof Folder) {
+//                Folder subFolder = (Folder) feature;
+//                if (subFolder.getFeature().isEmpty()) {
+//                    mPolygonRemovals.put(subFolder, folder);
+//                    hadEmpty = true;
+//                } else {
+//                    scanForFolderRemoval(subFolder, hadEmpty);
+//                }
+//            }
+//        }
+//
+//        return hadEmpty;
+//    }
 
     HashMap<String, Properties> getDirToDesc() {
         return mDirToDesc;

@@ -129,6 +129,7 @@
                                     <artifact>se.trixon.almond:almond-util</artifact>
                                     <includes>
                                         <include>se/trixon/almond/util/*</include>
+                                        <include>se/trixon/almond/util/ext/**</include>
                                         <include>se/trixon/almond/util/swing/**</include>
                                         <include>se/trixon/almond/util/icons/*</include>
                                         <include>se/trixon/almond/util/icons/material/*</include>
