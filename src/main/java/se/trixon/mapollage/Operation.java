@@ -337,7 +337,6 @@ public class Operation implements Runnable {
             String styleNormalId = String.format("s_%s", imageId);
             String styleHighlightId = String.format("s_%s_hl", imageId);
             String styleMapId = String.format("m_%s", imageId);
-            double highlightZoom = mProfilePlacemark.getZoom() * mProfilePlacemark.getScale();
 
             Style normalStyle = mDocument
                     .createAndAddStyle()
@@ -345,7 +344,7 @@ public class Operation implements Runnable {
 
             IconStyle normalIconStyle = normalStyle
                     .createAndSetIconStyle()
-                    .withScale(mProfilePlacemark.getScale());
+                    .withScale(1.0);
 
             Style highlightStyle = mDocument
                     .createAndAddStyle()
@@ -354,12 +353,16 @@ public class Operation implements Runnable {
 
             IconStyle highlightIconStyle = highlightStyle
                     .createAndSetIconStyle()
-                    .withScale(highlightZoom);
+                    .withScale(1.1);
 
             if (mProfilePlacemark.isSymbolAsPhoto()) {
                 Icon icon = KmlFactory.createIcon().withHref(String.format("%s/%s.jpg", mThumbsDir.getName(), imageId));
                 normalIconStyle.setIcon(icon);
+                normalIconStyle.setScale(mProfilePlacemark.getScale());
+
+                double highlightZoom = mProfilePlacemark.getZoom() * mProfilePlacemark.getScale();
                 highlightIconStyle.setIcon(icon);
+                highlightIconStyle.setScale(highlightZoom);
             }
 
             if (mProfilePlacemark.isSymbolAsPhoto() || mProfilePhoto.getReference() == ProfilePhoto.Reference.THUMBNAIL) {

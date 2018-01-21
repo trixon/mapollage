@@ -240,7 +240,7 @@ public class ModulePlacemarkPanel extends ModulePanel {
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridy = 2;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.insets = new java.awt.Insets(6, 0, 0, 0);
         jPanel1.add(symbolPhotoRadioButton, gridBagConstraints);
@@ -254,12 +254,16 @@ public class ModulePlacemarkPanel extends ModulePanel {
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridy = 1;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.insets = new java.awt.Insets(6, 0, 0, 0);
         jPanel1.add(symbolPinRadioButton, gridBagConstraints);
 
         scaleLabel.setText(Dict.SCALE.toString());
+
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, symbolPhotoRadioButton, org.jdesktop.beansbinding.ELProperty.create("${selected}"), scaleLabel, org.jdesktop.beansbinding.BeanProperty.create("enabled"));
+        bindingGroup.addBinding(binding);
+
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 3;
@@ -269,6 +273,10 @@ public class ModulePlacemarkPanel extends ModulePanel {
 
         scaleSpinner.setModel(new javax.swing.SpinnerNumberModel(0.5d, 0.5d, 10.0d, 0.1d));
         scaleSpinner.setPreferredSize(new java.awt.Dimension(96, 26));
+
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, symbolPhotoRadioButton, org.jdesktop.beansbinding.ELProperty.create("${selected}"), scaleSpinner, org.jdesktop.beansbinding.BeanProperty.create("enabled"));
+        bindingGroup.addBinding(binding);
+
         scaleSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 scaleSpinnerStateChanged(evt);
@@ -281,6 +289,10 @@ public class ModulePlacemarkPanel extends ModulePanel {
         jPanel1.add(scaleSpinner, gridBagConstraints);
 
         zoomLabel.setText(Dict.ZOOM.toString());
+
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, symbolPhotoRadioButton, org.jdesktop.beansbinding.ELProperty.create("${selected}"), zoomLabel, org.jdesktop.beansbinding.BeanProperty.create("enabled"));
+        bindingGroup.addBinding(binding);
+
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 5;
@@ -290,6 +302,10 @@ public class ModulePlacemarkPanel extends ModulePanel {
 
         zoomSpinner.setModel(new javax.swing.SpinnerNumberModel(2.0d, 1.0d, 10.0d, 0.1d));
         zoomSpinner.setPreferredSize(new java.awt.Dimension(96, 26));
+
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, symbolPhotoRadioButton, org.jdesktop.beansbinding.ELProperty.create("${selected}"), zoomSpinner, org.jdesktop.beansbinding.BeanProperty.create("enabled"));
+        bindingGroup.addBinding(binding);
+
         zoomSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 zoomSpinnerStateChanged(evt);
