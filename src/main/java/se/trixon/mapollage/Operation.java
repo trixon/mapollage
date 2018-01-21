@@ -19,18 +19,28 @@ import com.drew.imaging.ImageProcessingException;
 import com.drew.metadata.exif.GpsDescriptor;
 import com.drew.metadata.exif.GpsDirectory;
 import de.micromata.opengis.kml.v_2_2_0.BalloonStyle;
+import de.micromata.opengis.kml.v_2_2_0.Boundary;
+import de.micromata.opengis.kml.v_2_2_0.ColorMode;
+import de.micromata.opengis.kml.v_2_2_0.Coordinate;
 import de.micromata.opengis.kml.v_2_2_0.Document;
+import de.micromata.opengis.kml.v_2_2_0.Feature;
 import de.micromata.opengis.kml.v_2_2_0.Folder;
 import de.micromata.opengis.kml.v_2_2_0.Icon;
 import de.micromata.opengis.kml.v_2_2_0.IconStyle;
 import de.micromata.opengis.kml.v_2_2_0.Kml;
 import de.micromata.opengis.kml.v_2_2_0.KmlFactory;
 import de.micromata.opengis.kml.v_2_2_0.LineString;
+import de.micromata.opengis.kml.v_2_2_0.LineStyle;
+import de.micromata.opengis.kml.v_2_2_0.LinearRing;
 import de.micromata.opengis.kml.v_2_2_0.Placemark;
+import de.micromata.opengis.kml.v_2_2_0.Point;
+import de.micromata.opengis.kml.v_2_2_0.PolyStyle;
+import de.micromata.opengis.kml.v_2_2_0.Polygon;
 import de.micromata.opengis.kml.v_2_2_0.Style;
 import de.micromata.opengis.kml.v_2_2_0.StyleState;
 import de.micromata.opengis.kml.v_2_2_0.TimeStamp;
 import java.awt.Dimension;
+import java.awt.geom.Point2D;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -60,6 +70,7 @@ import org.apache.commons.lang3.SystemUtils;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.Scaler;
 import se.trixon.almond.util.SystemHelper;
+import se.trixon.almond.util.ext.GrahamScan;
 import se.trixon.mapollage.profile.Profile;
 import se.trixon.mapollage.profile.ProfileDescription;
 import se.trixon.mapollage.profile.ProfileDescription.DescriptionSegment;
@@ -86,6 +97,7 @@ public class Operation implements Runnable {
     private final HashMap<File, File> mFileThumbMap = new HashMap<>();
     private final List<File> mFiles = new ArrayList<>();
     private final Pattern mFolderByRegexPattern;
+    private final HashMap<Folder, ArrayList<Coordinate>> mFolderPolygonInputs = new HashMap<>();
     private final Map<String, Folder> mFolders = new HashMap<>();
     private boolean mInterrupted = false;
     private final Kml mKml = new Kml();
@@ -99,6 +111,7 @@ public class Operation implements Runnable {
     private Folder mPathFolder;
     private Folder mPathGapFolder;
     private PhotoInfo mPhotoInfo;
+    private Folder mPolygonFolder;
     private final Profile mProfile;
     private final ProfileDescription mProfileDescription;
     private final ProfileFolder mProfileFolder;
@@ -209,6 +222,7 @@ public class Operation implements Runnable {
             mListener.onOperationLog("\n" + status);
             mListener.onOperationInterrupted();
         } else if (!mFiles.isEmpty()) {
+            addPolygons();
             saveToFile();
         }
 
@@ -385,6 +399,82 @@ public class Operation implements Runnable {
         }
 
         mListener.onOperationLog(file.getAbsolutePath());
+    }
+
+    private void addPolygon(Folder polygonFolder) {
+        ArrayList<Coordinate> coordinates = mFolderPolygonInputs.get(polygonFolder);
+        List<Point2D.Double> inputs = new ArrayList<>();
+        coordinates.forEach((coordinate) -> {
+            inputs.add(new Point2D.Double(coordinate.getLongitude(), coordinate.getLatitude()));
+        });
+
+        try {
+            List<Point2D.Double> convexHull = GrahamScan.getConvexHullDouble(inputs);
+            Placemark placemark = polygonFolder
+                    .createAndAddPlacemark()
+                    .withName(polygonFolder.getName());
+
+            Style style = placemark.createAndAddStyle();
+            LineStyle lineStyle = style.createAndSetLineStyle()
+                    .withColor("00000000")
+                    .withWidth(0.0);
+
+            PolyStyle polyStyle = style.createAndSetPolyStyle()
+                    .withColor("ccffffff")
+                    .withColorMode(ColorMode.RANDOM);
+
+            Polygon polygon = placemark.createAndSetPolygon();
+            Boundary boundary = polygon.createAndSetOuterBoundaryIs();
+            LinearRing linearRing = boundary.createAndSetLinearRing();
+
+            convexHull.forEach((node) -> {
+                linearRing.addToCoordinates(node.x, node.y);
+
+            });
+        } catch (IllegalArgumentException e) {
+            System.err.println(e);
+        }
+    }
+
+    private void addPolygons() {
+        mPolygonFolder = KmlFactory.createFolder().withName("Polygons").withOpen(true);
+        addPolygons(mPolygonFolder, mRootFolder.getFeature());
+        mRootFolder.getFeature().add(mPolygonFolder);
+    }
+
+    private void addPolygons(Folder parent, List<Feature> features) {
+        for (Feature feature : features) {
+            if (feature instanceof Folder) {
+                Folder folder = (Folder) feature;
+
+                if (folder != mPathFolder && folder != mPathGapFolder && folder != mPolygonFolder) {
+                    System.out.println("ENTER FOLDER=" + folder.getName());
+                    Folder parentFolder = (Folder) parent;
+                    System.out.println("PARENT FOLDER=" + parentFolder.getName());
+                    Folder polygonFolder = parentFolder.createAndAddFolder().withName(folder.getName()).withOpen(true);
+                    mFolderPolygonInputs.put(polygonFolder, new ArrayList<>());
+                    addPolygons(polygonFolder, folder.getFeature());
+                    System.out.println("POLYGON FOLDER=" + polygonFolder.getName() + " CONTAINS");
+
+                    if (mFolderPolygonInputs.get(polygonFolder) != null) {
+                        addPolygon(polygonFolder);
+                    }
+                    System.out.println("EXIT FOLDER=" + folder.getName());
+                    System.out.println("");
+                }
+            }
+
+            if (feature instanceof Placemark) {
+                Placemark placemark = (Placemark) feature;
+                System.out.println("PLACEMARK=" + placemark.getName() + "(PARENT=)" + parent.getName());
+
+                Point point = (Point) placemark.getGeometry();
+                point.getCoordinates().forEach((coordinate) -> {
+                    mFolderPolygonInputs.get(parent).add(coordinate);
+                });
+
+            }
+        }
     }
 
     private boolean generateFileList() throws IOException {
