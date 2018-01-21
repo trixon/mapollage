@@ -59,6 +59,7 @@ public class ModulePathPanel extends ModulePanel {
             mPath = profile.getPath();
 
             drawPathCheckBox.setSelected(mPath.isDrawPath());
+            drawPolygonCheckBox.setSelected(mPath.isDrawPolygon());
             widthSpinner.setValue(mPath.getWidth());
 
             switch (mPath.getSplitBy()) {
@@ -125,6 +126,7 @@ public class ModulePathPanel extends ModulePanel {
         monthRadioButton = new javax.swing.JRadioButton();
         yearRadioButton = new javax.swing.JRadioButton();
         noSplitRadioButton = new javax.swing.JRadioButton();
+        drawPolygonCheckBox = new javax.swing.JCheckBox();
         jPanel1 = new javax.swing.JPanel();
 
         setLayout(new java.awt.GridBagLayout());
@@ -276,6 +278,14 @@ public class ModulePathPanel extends ModulePanel {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         add(noSplitRadioButton, gridBagConstraints);
 
+        drawPolygonCheckBox.setText(bundle.getString("ModulePathPanel.drawPolygonCheckBox.text")); // NOI18N
+        drawPolygonCheckBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                drawPolygonCheckBoxActionPerformed(evt);
+            }
+        });
+        add(drawPolygonCheckBox, new java.awt.GridBagConstraints());
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -330,9 +340,14 @@ public class ModulePathPanel extends ModulePanel {
         mPath.setSplitBy(SplitBy.NONE);
     }//GEN-LAST:event_noSplitRadioButtonActionPerformed
 
+    private void drawPolygonCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_drawPolygonCheckBoxActionPerformed
+        mPath.setDrawPolygon(drawPolygonCheckBox.isSelected());
+    }//GEN-LAST:event_drawPolygonCheckBoxActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JRadioButton dayRadioButton;
     private javax.swing.JCheckBox drawPathCheckBox;
+    private javax.swing.JCheckBox drawPolygonCheckBox;
     private javax.swing.JRadioButton hourRadioButton;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JRadioButton monthRadioButton;

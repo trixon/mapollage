@@ -26,6 +26,8 @@ import se.trixon.almond.util.Dict;
  */
 public class ProfilePath extends ProfileBase {
 
+    @SerializedName("draw_polygon")
+    private boolean mDrawPolygon = true;
     @SerializedName("draw_path")
     private boolean mDrawPath = true;
     private transient final Profile mProfile;
@@ -55,6 +57,10 @@ public class ProfilePath extends ProfileBase {
         return mDrawPath;
     }
 
+    public boolean isDrawPolygon() {
+        return mDrawPolygon;
+    }
+
     @Override
     public boolean isValid() {
         return true;
@@ -62,6 +68,10 @@ public class ProfilePath extends ProfileBase {
 
     public void setDrawPath(boolean drawPath) {
         mDrawPath = drawPath;
+    }
+
+    public void setDrawPolygon(boolean drawPolygon) {
+        mDrawPolygon = drawPolygon;
     }
 
     public void setSplitBy(SplitBy splitBy) {
@@ -96,6 +106,7 @@ public class ProfilePath extends ProfileBase {
         ProfileInfo profileInfo = new ProfileInfo();
         LinkedHashMap<String, String> values = new LinkedHashMap<>();
         values.put(BUNDLE_UI.getString("ModulePathPanel.drawPathCheckBox.text"), BooleanHelper.asYesNo(mDrawPath));
+        values.put(BUNDLE_UI.getString("ModulePathPanel.drawPolygonCheckBox.text"), BooleanHelper.asYesNo(mDrawPolygon));
         values.put(Dict.WIDTH.toString(), String.valueOf(mWidth));
 
         values.put(Dict.SPLIT_BY.toString(), getLabel(mSplitBy));

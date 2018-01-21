@@ -223,7 +223,9 @@ public class Operation implements Runnable {
             mListener.onOperationLog("\n" + status);
             mListener.onOperationInterrupted();
         } else if (!mFiles.isEmpty()) {
-            addPolygons();
+            if (mProfilePath.isDrawPolygon()) {
+                addPolygons();
+            }
             saveToFile();
         }
 
