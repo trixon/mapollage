@@ -10,7 +10,7 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <netbeans.hint.license>apache20</netbeans.hint.license>
-        <copyright>(c) 2018 Patrik Karlsson</copyright>
+        <copyright>(c) 2018 Patrik Karlström</copyright>
         <exeVersion>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}.0</exeVersion>
     </properties>
     <description>Mapollage is a photo kml generator for Google Earth</description>
@@ -22,13 +22,13 @@
         </license>
     </licenses>
     <organization>
-        <name>Patrik Karlsson</name>
+        <name>Patrik Karlström</name>
         <url>https://trixon.se</url>
     </organization>
     <developers>
         <developer>
             <id>trixon</id>
-            <name>Patrik Karlsson</name>
+            <name>Patrik Karlström</name>
             <roles>
                 <role>architect</role>
                 <role>developer</role>
