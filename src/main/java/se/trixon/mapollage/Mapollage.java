@@ -37,6 +37,7 @@ import se.trixon.almond.util.PomInfo;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.Xlog;
 import se.trixon.mapollage.profile.Profile;
+import se.trixon.mapollage.ui.MainApp;
 import se.trixon.mapollage.ui.MainFrame;
 
 /**
@@ -52,6 +53,7 @@ public class Mapollage implements OperationListener {
     private final AlmondUI mAlmondUI = AlmondUI.getInstance();
     private MainFrame mMainFrame = null;
     private final ProfileManager mProfileManager = ProfileManager.getInstance();
+    private static String[] sArgs;
 
     public static String getHelp() {
         PrintStream defaultStdOut = System.out;
@@ -78,18 +80,19 @@ public class Mapollage implements OperationListener {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        new Mapollage(args);
+        sArgs = args;
+        new Mapollage();
     }
 
-    public Mapollage(String[] args) {
+    public Mapollage() {
         initOptions();
-        if (args.length == 0) {
+        if (sArgs.length == 0) {
             System.out.println(sBundle.getString("hint_tui"));
             displayGui();
         } else {
             try {
                 CommandLineParser commandLineParser = new DefaultParser();
-                CommandLine commandLine = commandLineParser.parse(sOptions, args);
+                CommandLine commandLine = commandLineParser.parse(sOptions, sArgs);
 
                 if (commandLine.hasOption(HELP)) {
                     displayHelp();
@@ -209,15 +212,9 @@ public class Mapollage implements OperationListener {
             return;
         }
 
-        SystemHelper.setMacApplicationName("Mapollage");
-
-        mAlmondUI.installDarcula();
-        mAlmondUI.initLookAndFeel();
-
-        java.awt.EventQueue.invokeLater(() -> {
-            mMainFrame = new MainFrame();
-            mMainFrame.setVisible(true);
-        });
+        new Thread(() -> {
+            MainApp.main(sArgs);
+        }).start();
     }
 
     private void displayHelp() {
