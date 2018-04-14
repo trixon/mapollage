@@ -68,7 +68,6 @@ import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
-import org.apache.commons.io.FileUtils;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionGroup;
 import org.controlsfx.control.action.ActionUtils;
@@ -84,13 +83,12 @@ import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.control.LocaleComboBox;
 import se.trixon.almond.util.fx.control.LogPanel;
 import se.trixon.almond.util.fx.dialogs.about.AboutPane;
-import se.trixon.filebydate.FileByDate;
-import se.trixon.filebydate.NameCase;
-import se.trixon.filebydate.Operation;
-import se.trixon.filebydate.OperationListener;
-import se.trixon.filebydate.Options;
-import se.trixon.filebydate.Profile;
-import se.trixon.filebydate.ProfileManager;
+import se.trixon.mapollage.Mapollage;
+import se.trixon.mapollage.Operation;
+import se.trixon.mapollage.OperationListener;
+import se.trixon.mapollage.Options;
+import se.trixon.mapollage.ProfileManager;
+import se.trixon.mapollage.profile.Profile;
 
 /**
  *
@@ -98,7 +96,7 @@ import se.trixon.filebydate.ProfileManager;
  */
 public class MainApp extends Application {
 
-    public static final String APP_TITLE = "FileByDate";
+    public static final String APP_TITLE = "Mapollage";
     private static final int ICON_SIZE_PROFILE = 32;
     private static final int ICON_SIZE_TOOLBAR = 48;
     private static final Logger LOGGER = Logger.getLogger(MainApp.class.getName());
@@ -123,7 +121,6 @@ public class MainApp extends Application {
     private Thread mOperationThread;
     private final Options mOptions = Options.getInstance();
     private Action mOptionsAction;
-    private PreviewPanel mPreviewPanel;
     private final ProfileManager mProfileManager = ProfileManager.getInstance();
     private LinkedList<Profile> mProfiles;
     private BorderPane mRoot;
@@ -141,7 +138,7 @@ public class MainApp extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         mStage = stage;
-        stage.getIcons().add(new Image(MainApp.class.getResourceAsStream("calendar-icon-1024px.png")));
+        stage.getIcons().add(new Image(MainApp.class.getResourceAsStream("icon-1024px.png")));
 
         mAlmondFX.addStageWatcher(stage, MainApp.class);
         createUI();
@@ -177,10 +174,7 @@ public class MainApp extends Application {
 
         mListView.setPlaceholder(welcomeLabel);
 
-        mPreviewPanel = new PreviewPanel();
-
         mRoot.setCenter(mListView);
-        mRoot.setBottom(mPreviewPanel);
 
         mStage.setScene(scene);
         mLogPanel.setWrapText(mOptions.isWordWrap());
@@ -278,13 +272,13 @@ public class MainApp extends Application {
 
         //help
         mHelpAction = new Action(Dict.HELP.toString(), (ActionEvent event) -> {
-            SystemHelper.browse("https://trixon.se/projects/filebydate/documentation/");
+            SystemHelper.browse("https://trixon.se/projects/mapollage/documentation/");
         });
         mHelpAction.setAccelerator(KeyCombination.keyCombination("F1"));
 
         //about
-        PomInfo pomInfo = new PomInfo(FileByDate.class, "se.trixon", "filebydate");
-        AboutModel aboutModel = new AboutModel(SystemHelper.getBundle(FileByDate.class, "about"), SystemHelper.getResourceAsImageView(MainApp.class, "calendar-icon-1024px.png"));
+        PomInfo pomInfo = new PomInfo(Mapollage.class, "se.trixon", "mapollage");
+        AboutModel aboutModel = new AboutModel(SystemHelper.getBundle(Mapollage.class, "about"), SystemHelper.getResourceAsImageView(MainApp.class, "icon-1024px.png"));
         aboutModel.setAppVersion(pomInfo.getVersion());
         mAboutAction = AboutPane.getAction(mStage, aboutModel);
 
@@ -303,33 +297,48 @@ public class MainApp extends Application {
     private void initListeners() {
         mOperationListener = new OperationListener() {
             @Override
-            public void onOperationFailed(String message) {
+            public void onOperationError(String message) {
+                throw new UnsupportedOperationException("Not supported yet.");
             }
 
             @Override
-            public void onOperationFinished(String message) {
-                mLogPanel.println(Dict.DONE.toString());
-                populateProfiles(null);
-                setRunningState(RunState.CLOSEABLE);
+            public void onOperationFailed(String message) {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            @Override
+            public void onOperationFinished(String message, int placemarkCount) {
+                throw new UnsupportedOperationException("Not supported yet.");
             }
 
             @Override
             public void onOperationInterrupted() {
-                setRunningState(RunState.CLOSEABLE);
+                throw new UnsupportedOperationException("Not supported yet.");
             }
 
             @Override
             public void onOperationLog(String message) {
-                mLogPanel.println(message);
+                throw new UnsupportedOperationException("Not supported yet.");
             }
 
             @Override
             public void onOperationProcessingStarted() {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            @Override
+            public void onOperationProgress(String message) {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+
+            @Override
+            public void onOperationProgressInit(int fileCount) {
+                throw new UnsupportedOperationException("Not supported yet.");
             }
 
             @Override
             public void onOperationStarted() {
-                setRunningState(RunState.CANCELABLE);
+                throw new UnsupportedOperationException("Not supported yet.");
             }
         };
 
@@ -347,8 +356,6 @@ public class MainApp extends Application {
             mListView.getSelectionModel().select(profile);
             mListView.scrollTo(profile);
         }
-
-        mPreviewPanel.setVisible(!mListView.getSelectionModel().isEmpty());
     }
 
     private void postInit() {
@@ -367,16 +374,16 @@ public class MainApp extends Application {
             title = Dict.ADD.toString();
             addNew = true;
             profile = new Profile();
-            profile.setSourceDir(FileUtils.getUserDirectory());
-            profile.setDestDir(FileUtils.getUserDirectory());
-            profile.setFilePattern("{*.jpg,*.JPG}");
-            profile.setDatePattern("yyyy/MM/yyyy-MM-dd");
-            profile.setOperation(0);
-            profile.setFollowLinks(true);
-            profile.setRecursive(true);
-            profile.setReplaceExisting(false);
-            profile.setCaseBase(NameCase.UNCHANGED);
-            profile.setCaseExt(NameCase.UNCHANGED);
+//            profile.setSourceDir(FileUtils.getUserDirectory());
+//            profile.setDestDir(FileUtils.getUserDirectory());
+//            profile.setFilePattern("{*.jpg,*.JPG}");
+//            profile.setDatePattern("yyyy/MM/yyyy-MM-dd");
+//            profile.setOperation(0);
+//            profile.setFollowLinks(true);
+//            profile.setRecursive(true);
+//            profile.setReplaceExisting(false);
+//            profile.setCaseBase(NameCase.UNCHANGED);
+//            profile.setCaseExt(NameCase.UNCHANGED);
         } else if (clone) {
             title = Dict.CLONE.toString();
             profile.setLastRun(0);
@@ -433,10 +440,8 @@ public class MainApp extends Application {
         alert.setGraphic(null);
         alert.setHeaderText(null);
 
-        PreviewPanel previewPanel = new PreviewPanel();
-        previewPanel.load(profile);
         final DialogPane dialogPane = alert.getDialogPane();
-        dialogPane.setContent(previewPanel);
+//        dialogPane.setContent(previewPanel);
 
         ButtonType runButtonType = new ButtonType(Dict.RUN.toString());
         ButtonType dryRunButtonType = new ButtonType(Dict.DRY_RUN.toString(), ButtonData.OK_DONE);
@@ -446,7 +451,7 @@ public class MainApp extends Application {
         Optional<ButtonType> result = alert.showAndWait();
         if (result.get() != cancelButtonType) {
             boolean dryRun = result.get() == dryRunButtonType;
-            profile.setDryRun(dryRun);
+//            profile.setDryRun(dryRun);
             mLogPanel.clear();
             mRoot.setCenter(mLogPanel);
             mIndicator.setProfile(profile);
@@ -455,7 +460,7 @@ public class MainApp extends Application {
                 mLastRunProfile = profile;
                 mOperationThread = new Thread(() -> {
                     Operation operation = new Operation(mOperationListener, profile);
-                    operation.start();
+//                    operation.start();
                 });
                 mOperationThread.setName("Operation");
                 mOperationThread.start();
@@ -580,7 +585,7 @@ public class MainApp extends Application {
             setText(null);
 
             mNameLabel.setText(profile.getName());
-            mDescLabel.setText("🖉 " + profile.getDescription());
+            mDescLabel.setText("🖉 " + profile.getDescriptionString());
             String lastRun = "-";
             if (profile.getLastRun() != 0) {
                 lastRun = mSimpleDateFormat.format(new Date(profile.getLastRun()));
@@ -661,7 +666,6 @@ public class MainApp extends Application {
                 }
 
                 selectListItem();
-                mPreviewPanel.load(getSelectedProfile());
                 mFadeInTransition.playFromStart();
             });
 

@@ -42,12 +42,9 @@ import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.control.FileChooserPane;
 import se.trixon.almond.util.fx.control.FileChooserPane.ObjectMode;
-import se.trixon.filebydate.DateSource;
-import se.trixon.filebydate.NameCase;
-import se.trixon.filebydate.Operation.Command;
-import se.trixon.filebydate.Options;
-import se.trixon.filebydate.Profile;
-import se.trixon.filebydate.ProfileManager;
+import se.trixon.mapollage.Options;
+import se.trixon.mapollage.ProfileManager;
+import se.trixon.mapollage.profile.Profile;
 
 /**
  *

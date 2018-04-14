@@ -21,7 +21,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
-import se.trixon.filebydate.Profile;
+import se.trixon.mapollage.profile.Profile;
 
 /**
  *
@@ -45,6 +45,6 @@ public class ProfileIndicator extends VBox {
 
     public void setProfile(Profile profile) {
         mNameLabel.setText(profile.getName());
-        mDescLabel.setText(profile.getDescription());
+        mDescLabel.setText(profile.getDescriptionString());
     }
 }

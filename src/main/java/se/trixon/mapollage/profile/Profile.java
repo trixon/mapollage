@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.commons.lang3.StringUtils;
 import se.trixon.almond.util.BooleanHelper;
 import se.trixon.almond.util.Dict;
@@ -57,6 +59,10 @@ public class Profile extends ProfileBase implements Comparable<Profile>, Cloneab
     private ProfilePlacemark mPlacemark = new ProfilePlacemark(this);
     @SerializedName("source")
     private ProfileSource mSource = new ProfileSource(this);
+    @SerializedName("last_run")
+    private long mLastRun;
+    @SerializedName("descriptionString")
+    private String mDescriptionString;
 
     public Profile() {
     }
@@ -68,6 +74,10 @@ public class Profile extends ProfileBase implements Comparable<Profile>, Cloneab
 
     public ProfileDescription getDescription() {
         return mDescription;
+    }
+
+    public String getDescriptionString() {
+        return mDescriptionString;
     }
 
     public File getDestinationFile() {
@@ -136,6 +146,10 @@ public class Profile extends ProfileBase implements Comparable<Profile>, Cloneab
 
     public void setDescription(ProfileDescription description) {
         mDescription = description;
+    }
+
+    public void setDescriptionString(String descriptionString) {
+        this.mDescriptionString = descriptionString;
     }
 
     public void setDestinationFile(File destinationFile) {
@@ -208,10 +222,23 @@ public class Profile extends ProfileBase implements Comparable<Profile>, Cloneab
     }
 
     @Override
-    public Profile clone() throws CloneNotSupportedException {
-        super.clone();
-        String json = GSON.toJson(this);
-        return GSON.fromJson(json, Profile.class);
+    public Profile clone() {
+        try {
+            super.clone();
+            String json = GSON.toJson(this);
+            return GSON.fromJson(json, Profile.class);
+        } catch (CloneNotSupportedException ex) {
+            Logger.getLogger(Profile.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+    }
+
+    public long getLastRun() {
+        return mLastRun;
+    }
+
+    public void setLastRun(long lastRun) {
+        mLastRun = lastRun;
     }
 
     @Override
