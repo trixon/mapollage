@@ -35,4 +35,8 @@ public class InformationTab extends BaseTab {
     public boolean hasValidSettings() {
         return true;
     }
+
+    @Override
+    public void save() {
+    }
 }

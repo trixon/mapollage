@@ -15,9 +15,15 @@
  */
 package se.trixon.mapollage.ui;
 
+import java.util.ArrayList;
+import javafx.beans.value.ObservableValue;
+import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.layout.Region;
+import org.controlsfx.validation.ValidationResult;
+import org.controlsfx.validation.ValidationSupport;
 import se.trixon.mapollage.profile.Profile;
 import se.trixon.mapollage.ui.config.BaseTab;
 import se.trixon.mapollage.ui.config.FoldersTab;
@@ -39,33 +45,38 @@ public class ProfileEditor extends TabPane {
     private PathTab mPathTab;
     private PhotoTab mPhotoTab;
     private PlacemarkTab mPlacemarkTab;
-
     private Profile mProfile;
     private SourceTab mSourceTab;
+    private final ArrayList<BaseTab> mTabs = new ArrayList<>();
+    private final ValidationSupport mValidationSupport = new ValidationSupport();
 
     public ProfileEditor() {
-        init();
+        createUI();
     }
 
     public ProfileEditor(Tab... tabs) {
         super(tabs);
-        init();
+        createUI();
     }
 
     public ProfileEditor(Profile profile) {
         mProfile = profile;
-        init();
+        createUI();
     }
 
     public void save() {
-
+        mTabs.forEach((tab) -> {
+            tab.save();
+        });
     }
 
-    private void init() {
+    private void createUI() {
         final double TAB_SIZE = BaseTab.ICON_SIZE * 1.5;
         setTabMaxHeight(TAB_SIZE);
         setTabMinHeight(TAB_SIZE);
         setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
+
+        BaseTab.setValidationSupport(mValidationSupport);
 
         mSourceTab = new SourceTab(mProfile);
         mFoldersTab = new FoldersTab(mProfile);
@@ -80,6 +91,27 @@ public class ProfileEditor extends TabPane {
         getTabs().add(mPlacemarkTab);
         getTabs().add(mPhotoTab);
         getTabs().add(mInformationTab);
+
+        getTabs().forEach((tab) -> {
+            mTabs.add((BaseTab) tab);
+        });
+
+        final int size = 8;
+        Insets insets = new Insets(size, size, size, size);
+        mTabs.forEach((tab) -> {
+            try {
+                Region r = (Region) tab.getContent();
+                r.setPadding(insets);
+
+            } catch (Exception e) {
+            }
+        });
+
+        mValidationSupport.validationResultProperty().addListener((ObservableValue<? extends ValidationResult> observable, ValidationResult oldValue, ValidationResult newValue) -> {
+            mOkButton.setDisable(mValidationSupport.isInvalid());
+        });
+
+        mValidationSupport.initInitialDecoration();
     }
 
     void setOkButton(Button button) {

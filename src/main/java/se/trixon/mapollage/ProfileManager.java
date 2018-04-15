@@ -21,6 +21,7 @@ import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import se.trixon.almond.util.Xlog;
 import se.trixon.mapollage.profile.Profile;
 
@@ -78,6 +79,15 @@ public class ProfileManager {
 
     public boolean hasProfiles() {
         return !mProfilesHolder.getProfiles().isEmpty();
+    }
+
+    public boolean isValid(String oldName, String newName) {
+        if (StringUtils.isBlank(newName)) {
+            return false;
+        }
+
+        Profile profileByName = getProfile(newName.trim());
+        return profileByName == null || profileByName == getProfile(oldName);
     }
 
     public void load() throws IOException {

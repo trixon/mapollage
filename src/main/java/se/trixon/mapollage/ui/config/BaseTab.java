@@ -24,8 +24,10 @@ import javafx.scene.paint.Color;
 import org.controlsfx.glyphfont.Glyph;
 import org.controlsfx.glyphfont.GlyphFont;
 import org.controlsfx.glyphfont.GlyphFontRegistry;
+import org.controlsfx.validation.ValidationSupport;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.mapollage.Options;
+import se.trixon.mapollage.ProfileManager;
 import se.trixon.mapollage.profile.Profile;
 
 /**
@@ -36,13 +38,20 @@ public abstract class BaseTab extends Tab {
 
     public static final int ICON_SIZE = 32;
     public static final String MULTILINE_DIVIDER = "* * * * *";
+    protected static ValidationSupport sValidationSupport;
     private final GlyphFont mFontAwesome = GlyphFontRegistry.font("FontAwesome");
     private final Color mIconColor = Color.BLACK;
     protected final ResourceBundle mBundle = SystemHelper.getBundle(BaseTab.class, "Bundle");
     protected final String mHeaderPrefix = " + ";
+    protected final Insets mInsets = new Insets(8, 0, 0, 0);
     protected final Options mOptions = Options.getInstance();
     protected Profile mProfile;
+    protected final ProfileManager mProfileManager = ProfileManager.getInstance();
     protected String mTitle;
+
+    public static void setValidationSupport(ValidationSupport validationSupport) {
+        BaseTab.sValidationSupport = validationSupport;
+    }
 
     public BaseTab() {
         mOptions.getPreferences().addPreferenceChangeListener((PreferenceChangeEvent evt) -> {
@@ -62,6 +71,8 @@ public abstract class BaseTab extends Tab {
 
     public void onPreferenceChange(PreferenceChangeEvent evt) {
     }
+
+    public abstract void save();
 
     public void setTitle(String title) {
         mTitle = title;
