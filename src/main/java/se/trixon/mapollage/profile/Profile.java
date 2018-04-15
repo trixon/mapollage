@@ -46,9 +46,13 @@ public class Profile extends ProfileBase implements Comparable<Profile>, Cloneab
 
     @SerializedName("description")
     private ProfileDescription mDescription = new ProfileDescription(this);
+    @SerializedName("descriptionString")
+    private String mDescriptionString;
     private transient File mDestinationFile;
     @SerializedName("folder")
     private ProfileFolder mFolder = new ProfileFolder(this);
+    @SerializedName("last_run")
+    private long mLastRun;
     @SerializedName("name")
     private String mName;
     @SerializedName("path")
@@ -59,12 +63,20 @@ public class Profile extends ProfileBase implements Comparable<Profile>, Cloneab
     private ProfilePlacemark mPlacemark = new ProfilePlacemark(this);
     @SerializedName("source")
     private ProfileSource mSource = new ProfileSource(this);
-    @SerializedName("last_run")
-    private long mLastRun;
-    @SerializedName("descriptionString")
-    private String mDescriptionString;
 
     public Profile() {
+    }
+
+    @Override
+    public Profile clone() {
+        try {
+            super.clone();
+            String json = GSON.toJson(this);
+            return GSON.fromJson(json, Profile.class);
+        } catch (CloneNotSupportedException ex) {
+            Logger.getLogger(Profile.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
     }
 
     @Override
@@ -86,6 +98,10 @@ public class Profile extends ProfileBase implements Comparable<Profile>, Cloneab
 
     public ProfileFolder getFolder() {
         return mFolder;
+    }
+
+    public long getLastRun() {
+        return mLastRun;
     }
 
     public String getName() {
@@ -160,6 +176,10 @@ public class Profile extends ProfileBase implements Comparable<Profile>, Cloneab
         mFolder = folder;
     }
 
+    public void setLastRun(long lastRun) {
+        mLastRun = lastRun;
+    }
+
     public void setName(String name) {
         mName = name;
     }
@@ -216,29 +236,42 @@ public class Profile extends ProfileBase implements Comparable<Profile>, Cloneab
         return builder.toString();
     }
 
+    public String toInfoString() {
+        ArrayList<ProfileInfo> profileInfos = new ArrayList<>();
+        profileInfos.add(mSource.getProfileInfo());
+        profileInfos.add(mFolder.getProfileInfo());
+        profileInfos.add(mPath.getProfileInfo());
+        profileInfos.add(mPlacemark.getProfileInfo());
+        profileInfos.add(mDescription.getProfileInfo());
+        profileInfos.add(mPhoto.getProfileInfo());
+        profileInfos.add(getProfileInfo());
+
+        int maxLength = Integer.MIN_VALUE;
+        for (ProfileInfo profileInfo : profileInfos) {
+            maxLength = Math.max(maxLength, profileInfo.getMaxLength());
+        }
+        maxLength = maxLength + 3;
+
+        String separator = " : ";
+        StringBuilder builder = new StringBuilder();
+        for (ProfileInfo profileInfo : profileInfos) {
+            builder.append(profileInfo.getTitle()).append("\n");
+
+            for (Map.Entry<String, String> entry : profileInfo.getValues().entrySet()) {
+                String key = entry.getKey();
+                String value = entry.getValue();
+                builder.append(StringUtils.leftPad(key, maxLength)).append(separator).append(value).append("\n");
+            }
+
+            builder.append("\n");
+        }
+
+        return builder.toString().trim();
+    }
+
     @Override
     public String toString() {
         return mName;
-    }
-
-    @Override
-    public Profile clone() {
-        try {
-            super.clone();
-            String json = GSON.toJson(this);
-            return GSON.fromJson(json, Profile.class);
-        } catch (CloneNotSupportedException ex) {
-            Logger.getLogger(Profile.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
-        }
-    }
-
-    public long getLastRun() {
-        return mLastRun;
-    }
-
-    public void setLastRun(long lastRun) {
-        mLastRun = lastRun;
     }
 
     @Override

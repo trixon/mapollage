@@ -148,7 +148,7 @@ public class MainApp extends Application {
         mStage.show();
         mListView.requestFocus();
         initAccelerators();
-        profileEdit(mProfiles.getFirst());
+        //profileEdit(mProfiles.getFirst());
     }
 
     private void adjustButtonWidth(Stream<Node> stream, double prefWidth) {
@@ -615,6 +615,12 @@ public class MainApp extends Application {
             });
             runAction.setGraphic(mFontAwesome.create(FontAwesome.Glyph.PLAY).size(ICON_SIZE_PROFILE).color(mIconColor));
 
+            Action infoAction = new Action(Dict.INFORMATION.toString(), (ActionEvent event) -> {
+                profileInfo(getSelectedProfile());
+                mListView.requestFocus();
+            });
+            infoAction.setGraphic(mFontAwesome.create(FontAwesome.Glyph.INFO).size(ICON_SIZE_PROFILE).color(mIconColor));
+
             Action editAction = new Action(Dict.EDIT.toString(), (ActionEvent event) -> {
                 profileEdit(getSelectedProfile());
                 mListView.requestFocus();
@@ -640,6 +646,7 @@ public class MainApp extends Application {
                     runAction,
                     editAction,
                     cloneAction,
+                    infoAction,
                     removeAction
             );
 
@@ -683,6 +690,25 @@ public class MainApp extends Application {
             Profile p = getSelectedProfile().clone();
             p.setName(null);
             profileEdit(p);
+        }
+
+        private void profileInfo(Profile profile) {
+            String title = Dict.INFORMATION.toString();
+            Alert alert = new Alert(AlertType.INFORMATION);
+            alert.initOwner(mStage);
+
+            alert.setTitle(title);
+            alert.setHeaderText(String.format("%s\n%s", profile.getName(), profile.getDescriptionString()));
+            alert.setContentText(profile.toDebugString());
+            alert.setResizable(true);
+            LogPanel logPanel = new LogPanel(profile.toInfoString());
+            logPanel.setFont(Font.font("monospaced"));
+            logPanel.setPrefSize(800, 800);
+
+            final DialogPane dialogPane = alert.getDialogPane();
+            dialogPane.setContent(logPanel);
+
+            FxHelper.showAndWait(alert, mStage);
         }
 
         private void selectListItem() {

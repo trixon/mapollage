@@ -17,6 +17,7 @@ package se.trixon.mapollage.ui;
 
 import java.util.ArrayList;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.Tab;
@@ -27,7 +28,6 @@ import org.controlsfx.validation.ValidationSupport;
 import se.trixon.mapollage.profile.Profile;
 import se.trixon.mapollage.ui.config.BaseTab;
 import se.trixon.mapollage.ui.config.FoldersTab;
-import se.trixon.mapollage.ui.config.InformationTab;
 import se.trixon.mapollage.ui.config.PathTab;
 import se.trixon.mapollage.ui.config.PhotoTab;
 import se.trixon.mapollage.ui.config.PlacemarkTab;
@@ -40,7 +40,6 @@ import se.trixon.mapollage.ui.config.SourceTab;
 public class ProfileEditor extends TabPane {
 
     private FoldersTab mFoldersTab;
-    private InformationTab mInformationTab;
     private Button mOkButton;
     private PathTab mPathTab;
     private PhotoTab mPhotoTab;
@@ -83,16 +82,15 @@ public class ProfileEditor extends TabPane {
         mPathTab = new PathTab(mProfile);
         mPlacemarkTab = new PlacemarkTab(mProfile);
         mPhotoTab = new PhotoTab(mProfile);
-        mInformationTab = new InformationTab(mProfile);
 
-        getTabs().add(mSourceTab);
-        getTabs().add(mFoldersTab);
-        getTabs().add(mPathTab);
-        getTabs().add(mPlacemarkTab);
-        getTabs().add(mPhotoTab);
-        getTabs().add(mInformationTab);
+        final ObservableList<Tab> tabs = getTabs();
+        tabs.add(mSourceTab);
+        tabs.add(mFoldersTab);
+        tabs.add(mPathTab);
+        tabs.add(mPlacemarkTab);
+        tabs.add(mPhotoTab);
 
-        getTabs().forEach((tab) -> {
+        tabs.forEach((tab) -> {
             mTabs.add((BaseTab) tab);
         });
 
