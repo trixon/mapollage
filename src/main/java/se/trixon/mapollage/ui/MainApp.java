@@ -148,7 +148,7 @@ public class MainApp extends Application {
         mStage.show();
         mListView.requestFocus();
         initAccelerators();
-        //profileEdit(mProfiles.getFirst());
+        profileEdit(mProfiles.getFirst());
     }
 
     private void adjustButtonWidth(Stream<Node> stream, double prefWidth) {
@@ -392,16 +392,17 @@ public class MainApp extends Application {
         alert.setTitle(title);
         alert.setGraphic(null);
         alert.setHeaderText(null);
+        alert.setResizable(true);
 
-        ProfilePane profilePane = new ProfilePane(profile);
+        ProfileEditor profileEditor = new ProfileEditor(profile);
 
         final DialogPane dialogPane = alert.getDialogPane();
-        dialogPane.setContent(profilePane);
-        profilePane.setOkButton((Button) dialogPane.lookupButton(ButtonType.OK));
+        dialogPane.setContent(profileEditor);
+        profileEditor.setOkButton((Button) dialogPane.lookupButton(ButtonType.OK));
 
         Optional<ButtonType> result = FxHelper.showAndWait(alert, mStage);
         if (result.get() == ButtonType.OK) {
-            profilePane.save();
+            profileEditor.save();
             if (addNew || clone) {
                 mProfiles.add(profile);
             }
