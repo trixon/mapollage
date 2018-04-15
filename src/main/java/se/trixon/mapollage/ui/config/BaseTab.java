@@ -20,6 +20,7 @@ import java.util.ResourceBundle;
 import java.util.prefs.PreferenceChangeEvent;
 import javafx.geometry.Insets;
 import javafx.scene.control.Tab;
+import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import org.controlsfx.glyphfont.Glyph;
 import org.controlsfx.glyphfont.GlyphFont;
@@ -41,9 +42,9 @@ public abstract class BaseTab extends Tab {
     protected static ValidationSupport sValidationSupport;
     private final GlyphFont mFontAwesome = GlyphFontRegistry.font("FontAwesome");
     private final Color mIconColor = Color.BLACK;
+    private final Insets mTopInsets = new Insets(8, 0, 0, 0);
     protected final ResourceBundle mBundle = SystemHelper.getBundle(BaseTab.class, "Bundle");
     protected final String mHeaderPrefix = " + ";
-    protected final Insets mInsets = new Insets(8, 0, 0, 0);
     protected final Options mOptions = Options.getInstance();
     protected Profile mProfile;
     protected final ProfileManager mProfileManager = ProfileManager.getInstance();
@@ -76,6 +77,12 @@ public abstract class BaseTab extends Tab {
 
     public void setTitle(String title) {
         mTitle = title;
+    }
+
+    protected void addTopPadding(Region... regions) {
+        for (Region region : regions) {
+            region.setPadding(mTopInsets);
+        }
     }
 
     protected void append(StringBuilder sb, String key, String value) {

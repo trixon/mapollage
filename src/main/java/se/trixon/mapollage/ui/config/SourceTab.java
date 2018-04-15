@@ -97,11 +97,13 @@ public class SourceTab extends BaseTab {
 
         mhBox.getChildren().addAll(mRecursiveCheckBox, mLinksCheckBox, mIncludeCheckBox);
 
-        descLabel.setPadding(mInsets);
-        mSourceChooser.setPadding(mInsets);
-        filePatternLabel.setPadding(mInsets);
-        excludeLabel.setPadding(mInsets);
-        mhBox.setPadding(mInsets);
+        addTopPadding(
+                descLabel,
+                mSourceChooser,
+                filePatternLabel,
+                excludeLabel,
+                mhBox
+        );
 
         mvBox.getChildren().addAll(
                 nameLabel,
