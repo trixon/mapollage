@@ -26,10 +26,10 @@ import se.trixon.almond.util.Dict;
  */
 public class ProfilePath extends ProfileBase {
 
-    @SerializedName("draw_polygon")
-    private boolean mDrawPolygon = true;
     @SerializedName("draw_path")
     private boolean mDrawPath = true;
+    @SerializedName("draw_polygon")
+    private boolean mDrawPolygon = true;
     private transient final Profile mProfile;
     @SerializedName("split_by")
     private SplitBy mSplitBy = SplitBy.MONTH;
@@ -105,8 +105,8 @@ public class ProfilePath extends ProfileBase {
     protected ProfileInfo getProfileInfo() {
         ProfileInfo profileInfo = new ProfileInfo();
         LinkedHashMap<String, String> values = new LinkedHashMap<>();
-        values.put(BUNDLE_UI.getString("ModulePathPanel.drawPathCheckBox.text"), BooleanHelper.asYesNo(mDrawPath));
         values.put(BUNDLE_UI.getString("ModulePathPanel.drawPolygonCheckBox.text"), BooleanHelper.asYesNo(mDrawPolygon));
+        values.put(BUNDLE_UI.getString("ModulePathPanel.drawPathCheckBox.text"), BooleanHelper.asYesNo(mDrawPath));
         values.put(Dict.WIDTH.toString(), String.valueOf(mWidth));
 
         values.put(Dict.SPLIT_BY.toString(), getLabel(mSplitBy));
