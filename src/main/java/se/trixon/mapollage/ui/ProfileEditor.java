@@ -27,6 +27,7 @@ import org.controlsfx.validation.ValidationResult;
 import org.controlsfx.validation.ValidationSupport;
 import se.trixon.mapollage.profile.Profile;
 import se.trixon.mapollage.ui.config.BaseTab;
+import se.trixon.mapollage.ui.config.DescriptionTab;
 import se.trixon.mapollage.ui.config.FoldersTab;
 import se.trixon.mapollage.ui.config.PathTab;
 import se.trixon.mapollage.ui.config.PhotoTab;
@@ -46,6 +47,7 @@ public class ProfileEditor extends TabPane {
     private PlacemarkTab mPlacemarkTab;
     private Profile mProfile;
     private SourceTab mSourceTab;
+    private DescriptionTab mDescriptionTab;
     private final ArrayList<BaseTab> mTabs = new ArrayList<>();
     private final ValidationSupport mValidationSupport = new ValidationSupport();
 
@@ -81,6 +83,7 @@ public class ProfileEditor extends TabPane {
         mFoldersTab = new FoldersTab(mProfile);
         mPathTab = new PathTab(mProfile);
         mPlacemarkTab = new PlacemarkTab(mProfile);
+        mDescriptionTab = new DescriptionTab(mProfile);
         mPhotoTab = new PhotoTab(mProfile);
 
         final ObservableList<Tab> tabs = getTabs();
@@ -88,6 +91,7 @@ public class ProfileEditor extends TabPane {
         tabs.add(mFoldersTab);
         tabs.add(mPathTab);
         tabs.add(mPlacemarkTab);
+        tabs.add(mDescriptionTab);
         tabs.add(mPhotoTab);
 
         tabs.forEach((tab) -> {
