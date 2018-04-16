@@ -147,6 +147,8 @@ public class DescriptionTab extends BaseTab {
 
         //gp.setBackground(FxHelper.createBackground(Color.BISQUE));
         GridPane.setHgrow(mExternalRadioButton, Priority.ALWAYS);
+        GridPane.setVgrow(mCustomTextArea, Priority.ALWAYS);
+        GridPane.setFillHeight(mCustomTextArea, true);
 
         Insets topInsets = new Insets(8, 0, 0, 0);
         GridPane.setMargin(mCustomTextArea, topInsets);

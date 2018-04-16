@@ -31,8 +31,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Tooltip;
-import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import org.apache.commons.lang3.StringUtils;
@@ -51,7 +49,6 @@ import static se.trixon.mapollage.ui.config.BaseTab.sValidationSupport;
 public class FoldersTab extends BaseTab {
 
     private ComboBox<String> mDatePatternComboBox = new ComboBox<>();
-    private ProfileFolder mFolder;
     private RadioButton mFolderByDateRadioButton = new RadioButton(Dict.DATE_PATTERN.toString());
     private RadioButton mFolderByDirectoryRadioButton = new RadioButton(mBundle.getString("ModuleFoldersPanel.folderByDirectoryRadioButton.text"));
     private RadioButton mFolderByNoneRadioButton = new RadioButton(mBundle.getString("ModuleFoldersPanel.folderByNoneRadioButton.text"));
@@ -66,7 +63,6 @@ public class FoldersTab extends BaseTab {
         setText(Dict.FOLDERS.toString());
         setGraphic(FontAwesome.Glyph.FOLDER_ALT.getChar());
         mProfile = profile;
-        mFolder = mProfile.getFolder();
         createUI();
         initValidation();
         load();
@@ -79,11 +75,13 @@ public class FoldersTab extends BaseTab {
 
     @Override
     public void save() {
-        mFolder.setRootName(mRootNameTextField.getText());
-        mFolder.setRootDescription(mRootDescTextArea.getText());
-        mFolder.setDatePattern(mDatePatternComboBox.getValue());
-        mFolder.setRegex(mRegexTextField.getText());
-        mFolder.setRegexDefault(mRegexDefaultTextField.getText());
+        ProfileFolder p = mProfile.getFolder();
+
+        p.setRootName(mRootNameTextField.getText());
+        p.setRootDescription(mRootDescTextArea.getText());
+        p.setDatePattern(mDatePatternComboBox.getValue());
+        p.setRegex(mRegexTextField.getText());
+        p.setRegexDefault(mRegexDefaultTextField.getText());
 
         FolderBy folderBy = null;
         Toggle t = mToggleGroup.getSelectedToggle();
@@ -97,25 +95,14 @@ public class FoldersTab extends BaseTab {
             folderBy = FolderBy.NONE;
         }
 
-        mFolder.setFoldersBy(folderBy);
+        p.setFoldersBy(folderBy);
     }
 
     private void createUI() {
         VBox leftBox = new VBox();
         VBox rightBox = new VBox();
 
-        GridPane gridPane = new GridPane();
-        gridPane.addRow(0, leftBox, rightBox);
-        double width = 50;
-        ColumnConstraints col1 = new ColumnConstraints();
-        col1.setPercentWidth(width);
-        ColumnConstraints col2 = new ColumnConstraints();
-        col2.setPercentWidth(width);
-        gridPane.getColumnConstraints().addAll(col1, col2);
-        GridPane.setMargin(leftBox, new Insets(0, 8, 0, 0));
-        GridPane.setMargin(rightBox, new Insets(0, 0, 0, 8));
-        GridPane.setFillHeight(leftBox, Boolean.TRUE);
-        setContent(gridPane);
+        setContent(leftBox);
 
         //Left Pane
         Label rootNameLabel = new Label(mBundle.getString("ModuleFoldersPanel.rootNameLabel.text"));
@@ -126,7 +113,8 @@ public class FoldersTab extends BaseTab {
                 rootNameLabel,
                 mRootNameTextField,
                 rootDescLabel,
-                mRootDescTextArea
+                mRootDescTextArea,
+                rightBox
         );
 
         VBox.setVgrow(mRootDescTextArea, Priority.ALWAYS);
@@ -160,7 +148,8 @@ public class FoldersTab extends BaseTab {
                 mFolderByDateRadioButton,
                 mFolderByRegexRadioButton,
                 regexLabel,
-                mFolderByNoneRadioButton
+                mFolderByNoneRadioButton,
+                rightBox
         );
 
         Insets leftInsets = new Insets(0, 0, 0, 24);
@@ -216,15 +205,17 @@ public class FoldersTab extends BaseTab {
     }
 
     private void load() {
-        mRootNameTextField.setText(mFolder.getRootName());
-        mRootDescTextArea.setText(mFolder.getRootDescription());
-        mDatePatternComboBox.setValue(mFolder.getDatePattern());
-        mRegexTextField.setText(mFolder.getRegex());
-        mRegexDefaultTextField.setText(mFolder.getRegexDefault());
+        ProfileFolder p = mProfile.getFolder();
+
+        mRootNameTextField.setText(p.getRootName());
+        mRootDescTextArea.setText(p.getRootDescription());
+        mDatePatternComboBox.setValue(p.getDatePattern());
+        mRegexTextField.setText(p.getRegex());
+        mRegexDefaultTextField.setText(p.getRegexDefault());
 
         RadioButton folderByRadioButton;
 
-        switch (mFolder.getFoldersBy()) {
+        switch (p.getFoldersBy()) {
             case DIR:
                 folderByRadioButton = mFolderByDirectoryRadioButton;
                 break;
