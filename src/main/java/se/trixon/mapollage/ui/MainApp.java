@@ -46,7 +46,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
@@ -59,7 +58,6 @@ import javafx.scene.input.KeyCombination;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -80,7 +78,6 @@ import se.trixon.almond.util.PomInfo;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.AlmondFx;
 import se.trixon.almond.util.fx.FxHelper;
-import se.trixon.almond.util.fx.control.LocaleComboBox;
 import se.trixon.almond.util.fx.control.LogPanel;
 import se.trixon.almond.util.fx.dialogs.about.AboutPane;
 import se.trixon.mapollage.Mapollage;
@@ -198,24 +195,13 @@ public class MainApp extends Application {
         alert.setGraphic(null);
         alert.setHeaderText(null);
 
-        Label label = new Label(Dict.CALENDAR_LANGUAGE.toString());
-        LocaleComboBox localeComboBox = new LocaleComboBox();
-        CheckBox checkBox = new CheckBox(Dict.DYNAMIC_WORD_WRAP.toString());
-        GridPane gridPane = new GridPane();
-        //gridPane.setGridLinesVisible(true);
-        gridPane.addColumn(0, label, localeComboBox, checkBox);
-        GridPane.setMargin(checkBox, new Insets(16, 0, 0, 0));
-
         final DialogPane dialogPane = alert.getDialogPane();
-        dialogPane.setContent(gridPane);
-
-        localeComboBox.setLocale(mOptions.getLocale());
-        checkBox.setSelected(mOptions.isWordWrap());
+        OptionsPane optionsPane = new OptionsPane();
+        dialogPane.setContent(optionsPane);
 
         Optional<ButtonType> result = FxHelper.showAndWait(alert, mStage);
         if (result.get() == ButtonType.OK) {
-            mOptions.setLocale(localeComboBox.getLocale());
-            mOptions.setWordWrap(checkBox.isSelected());
+            optionsPane.save();
         }
     }
 
