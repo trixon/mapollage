@@ -20,6 +20,7 @@ import java.util.ResourceBundle;
 import java.util.prefs.PreferenceChangeEvent;
 import javafx.geometry.Insets;
 import javafx.scene.control.Tab;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import org.controlsfx.glyphfont.Glyph;
@@ -77,6 +78,12 @@ public abstract class BaseTab extends Tab {
 
     public void setTitle(String title) {
         mTitle = title;
+    }
+
+    protected void addTopMargin(Region... regions) {
+        for (Region region : regions) {
+            GridPane.setMargin(region, mTopInsets);
+        }
     }
 
     protected void addTopPadding(Region... regions) {
