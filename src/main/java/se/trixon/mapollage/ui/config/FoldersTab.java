@@ -48,16 +48,16 @@ import static se.trixon.mapollage.ui.config.BaseTab.sValidationSupport;
  */
 public class FoldersTab extends BaseTab {
 
-    private ComboBox<String> mDatePatternComboBox = new ComboBox<>();
-    private RadioButton mFolderByDateRadioButton = new RadioButton(Dict.DATE_PATTERN.toString());
-    private RadioButton mFolderByDirectoryRadioButton = new RadioButton(mBundle.getString("ModuleFoldersPanel.folderByDirectoryRadioButton.text"));
-    private RadioButton mFolderByNoneRadioButton = new RadioButton(mBundle.getString("ModuleFoldersPanel.folderByNoneRadioButton.text"));
-    private RadioButton mFolderByRegexRadioButton = new RadioButton(mBundle.getString("ModuleFoldersPanel.folderByRegexRadioButton.text"));
-    private TextField mRegexDefaultTextField = new TextField();
-    private TextField mRegexTextField = new TextField();
-    private TextArea mRootDescTextArea = new TextArea();
-    private TextField mRootNameTextField = new TextField();
-    private ToggleGroup mToggleGroup = new ToggleGroup();
+    private final ComboBox<String> mDatePatternComboBox = new ComboBox<>();
+    private final RadioButton mFolderByDateRadioButton = new RadioButton(Dict.DATE_PATTERN.toString());
+    private final RadioButton mFolderByDirectoryRadioButton = new RadioButton(mBundle.getString("ModuleFoldersPanel.folderByDirectoryRadioButton.text"));
+    private final RadioButton mFolderByNoneRadioButton = new RadioButton(mBundle.getString("ModuleFoldersPanel.folderByNoneRadioButton.text"));
+    private final RadioButton mFolderByRegexRadioButton = new RadioButton(mBundle.getString("ModuleFoldersPanel.folderByRegexRadioButton.text"));
+    private final TextField mRegexDefaultTextField = new TextField();
+    private final TextField mRegexTextField = new TextField();
+    private final TextArea mRootDescTextArea = new TextArea();
+    private final TextField mRootNameTextField = new TextField();
+    private final ToggleGroup mToggleGroup = new ToggleGroup();
 
     public FoldersTab(Profile profile) {
         setText(Dict.FOLDERS.toString());
@@ -69,8 +69,36 @@ public class FoldersTab extends BaseTab {
     }
 
     @Override
-    public boolean hasValidSettings() {
-        return true;
+    public void load() {
+        ProfileFolder p = mProfile.getFolder();
+
+        mRootNameTextField.setText(p.getRootName());
+        mRootDescTextArea.setText(p.getRootDescription());
+        mDatePatternComboBox.setValue(p.getDatePattern());
+        mRegexTextField.setText(p.getRegex());
+        mRegexDefaultTextField.setText(p.getRegexDefault());
+
+        RadioButton folderByRadioButton;
+
+        switch (p.getFoldersBy()) {
+            case DIR:
+                folderByRadioButton = mFolderByDirectoryRadioButton;
+                break;
+
+            case DATE:
+                folderByRadioButton = mFolderByDateRadioButton;
+                break;
+
+            case REGEX:
+                folderByRadioButton = mFolderByRegexRadioButton;
+                break;
+
+            default:
+                folderByRadioButton = mFolderByNoneRadioButton;
+                break;
+        }
+
+        mToggleGroup.selectToggle(folderByRadioButton);
     }
 
     @Override
@@ -202,38 +230,6 @@ public class FoldersTab extends BaseTab {
         sValidationSupport.registerValidator(mDatePatternComboBox, indicateRequired, Validator.createPredicateValidator(datePredicate, message));
         sValidationSupport.registerValidator(mRegexTextField, indicateRequired, Validator.createPredicateValidator(regexPredicate, message));
         sValidationSupport.registerValidator(mRegexDefaultTextField, indicateRequired, Validator.createPredicateValidator(regexDefaultPredicate, message));
-    }
-
-    private void load() {
-        ProfileFolder p = mProfile.getFolder();
-
-        mRootNameTextField.setText(p.getRootName());
-        mRootDescTextArea.setText(p.getRootDescription());
-        mDatePatternComboBox.setValue(p.getDatePattern());
-        mRegexTextField.setText(p.getRegex());
-        mRegexDefaultTextField.setText(p.getRegexDefault());
-
-        RadioButton folderByRadioButton;
-
-        switch (p.getFoldersBy()) {
-            case DIR:
-                folderByRadioButton = mFolderByDirectoryRadioButton;
-                break;
-
-            case DATE:
-                folderByRadioButton = mFolderByDateRadioButton;
-                break;
-
-            case REGEX:
-                folderByRadioButton = mFolderByRegexRadioButton;
-                break;
-
-            default:
-                folderByRadioButton = mFolderByNoneRadioButton;
-                break;
-        }
-
-        mToggleGroup.selectToggle(folderByRadioButton);
     }
 
     private boolean previewDateFormat() {

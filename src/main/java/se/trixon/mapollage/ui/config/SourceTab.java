@@ -36,15 +36,14 @@ import se.trixon.mapollage.profile.ProfileSource;
  */
 public class SourceTab extends BaseTab {
 
-    private TextField mDescTextField;
-    private TextField mExcludeTextField;
-    private TextField mFilePatternField;
-    private CheckBox mIncludeCheckBox;
-    private CheckBox mLinksCheckBox;
-    private TextField mNameTextField;
-    private CheckBox mRecursiveCheckBox;
-    private ProfileSource mSource;
-    private FileChooserPane mSourceChooser;
+    private final TextField mDescTextField = new TextField();
+    private final TextField mExcludeTextField = new TextField();
+    private final TextField mFilePatternField = new TextField();
+    private final CheckBox mIncludeCheckBox = new CheckBox(mBundle.getString("ModuleSourcePanel.includeNullCoordinateCheckBox.text"));
+    private final CheckBox mLinksCheckBox = new CheckBox(Dict.FOLLOW_LINKS.toString());
+    private final TextField mNameTextField = new TextField();
+    private final CheckBox mRecursiveCheckBox = new CheckBox(Dict.SUBDIRECTORIES.toString());
+    private final FileChooserPane mSourceChooser = new FileChooserPane(Dict.SELECT.toString(), Dict.IMAGE_DIRECTORY.toString(), FileChooserPane.ObjectMode.DIRECTORY, SelectionMode.SINGLE);
     private final HBox mhBox = new HBox(8);
     private final VBox mvBox = new VBox();
 
@@ -52,7 +51,6 @@ public class SourceTab extends BaseTab {
         setText(Dict.SOURCE.toString());
         setGraphic(FontAwesome.Glyph.FILE_IMAGE_ALT.getChar());
         mProfile = profile;
-        mSource = mProfile.getSource();
 
         createUI();
         initValidation();
@@ -60,40 +58,44 @@ public class SourceTab extends BaseTab {
     }
 
     @Override
-    public boolean hasValidSettings() {
-        return true;
+    public void load() {
+        ProfileSource p = mProfile.getSource();
+
+        mNameTextField.setText(mProfile.getName());
+        mDescTextField.setText(mProfile.getDescriptionString());
+
+        mSourceChooser.setPath(p.getDir());
+        mExcludeTextField.setText(p.getExcludePattern());
+        mFilePatternField.setText(p.getFilePattern());
+
+        mRecursiveCheckBox.setSelected(p.isRecursive());
+        mLinksCheckBox.setSelected(p.isFollowLinks());
+        mIncludeCheckBox.setSelected(p.isIncludeNullCoordinate());
     }
 
     @Override
     public void save() {
+        ProfileSource p = mProfile.getSource();
+
         mProfile.setName(mNameTextField.getText());
         mProfile.setDescriptionString(mDescTextField.getText());
 
-        mSource.setDir(mSourceChooser.getPath());
-        mSource.setExcludePattern(mExcludeTextField.getText());
-        mSource.setFilePattern(mFilePatternField.getText());
+        p.setDir(mSourceChooser.getPath());
+        p.setExcludePattern(mExcludeTextField.getText());
+        p.setFilePattern(mFilePatternField.getText());
 
-        mSource.setRecursive(mRecursiveCheckBox.isSelected());
-        mSource.setFollowLinks(mLinksCheckBox.isSelected());
-        mSource.setIncludeNullCoordinate(mIncludeCheckBox.isSelected());
+        p.setRecursive(mRecursiveCheckBox.isSelected());
+        p.setFollowLinks(mLinksCheckBox.isSelected());
+        p.setIncludeNullCoordinate(mIncludeCheckBox.isSelected());
     }
 
     private void createUI() {
-        mSourceChooser = new FileChooserPane(Dict.SELECT.toString(), Dict.IMAGE_DIRECTORY.toString(), FileChooserPane.ObjectMode.DIRECTORY, SelectionMode.SINGLE);
         Label nameLabel = new Label(Dict.NAME.toString());
         Label descLabel = new Label(Dict.DESCRIPTION.toString());
         Label filePatternLabel = new Label(Dict.FILE_PATTERN.toString());
         Label excludeLabel = new Label(mBundle.getString("ModuleSourcePanel.excludeLabel.text"));
 
-        mNameTextField = new TextField();
-        mDescTextField = new TextField();
-        mFilePatternField = new TextField();
-        mExcludeTextField = new TextField();
         mExcludeTextField.setTooltip(new Tooltip(mBundle.getString("ModuleSourcePanel.excludeTextField.toolTipText")));
-
-        mRecursiveCheckBox = new CheckBox(Dict.SUBDIRECTORIES.toString());
-        mLinksCheckBox = new CheckBox(Dict.FOLLOW_LINKS.toString());
-        mIncludeCheckBox = new CheckBox(mBundle.getString("ModuleSourcePanel.includeNullCoordinateCheckBox.text"));
 
         mhBox.getChildren().addAll(mRecursiveCheckBox, mLinksCheckBox, mIncludeCheckBox);
 
@@ -136,16 +138,4 @@ public class SourceTab extends BaseTab {
         sValidationSupport.registerValidator(mFilePatternField, indicateRequired, Validator.createEmptyValidator(message));
     }
 
-    private void load() {
-        mNameTextField.setText(mProfile.getName());
-        mDescTextField.setText(mProfile.getDescriptionString());
-
-        mSourceChooser.setPath(mSource.getDir());
-        mExcludeTextField.setText(mSource.getExcludePattern());
-        mFilePatternField.setText(mSource.getFilePattern());
-
-        mRecursiveCheckBox.setSelected(mSource.isRecursive());
-        mLinksCheckBox.setSelected(mSource.isFollowLinks());
-        mIncludeCheckBox.setSelected(mSource.isIncludeNullCoordinate());
-    }
 }

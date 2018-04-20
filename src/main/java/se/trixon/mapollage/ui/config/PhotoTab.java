@@ -57,8 +57,37 @@ public class PhotoTab extends BaseTab {
     }
 
     @Override
-    public boolean hasValidSettings() {
-        return true;
+    public void load() {
+        ProfilePhoto p = mProfile.getPhoto();
+
+        mMaxWidthCheckBox.setSelected(p.isLimitWidth());
+        mMaxWidthSpinner.getValueFactory().setValue(p.getWidthLimit());
+        mMaxHeightCheckBox.setSelected(p.isLimitHeight());
+        mMaxHeightSpinner.getValueFactory().setValue(p.getHeightLimit());
+
+        switch (p.getReference()) {
+            case ABSOLUTE:
+                mRefAbsoluteRadioButton.setSelected(true);
+                break;
+
+            case ABSOLUTE_PATH:
+                mRefAbsolutePathRadioButton.setSelected(true);
+                break;
+
+            case RELATIVE:
+                mRefRelativeRadioButton.setSelected(true);
+                break;
+
+            case THUMBNAIL:
+                mRefThumbnailRadioButton.setSelected(true);
+                break;
+
+            default:
+                throw new AssertionError();
+        }
+
+        mRefAbsolutePathTextField.setText(p.getBaseUrlValue());
+        mLowerCaseExtCheckBox.setSelected(p.isForceLowerCaseExtension());
     }
 
     @Override
@@ -86,6 +115,9 @@ public class PhotoTab extends BaseTab {
     private void createUI() {
         GridPane gp = new GridPane();
         setContent(gp);
+
+        mMaxHeightSpinner.setEditable(true);
+        mMaxWidthSpinner.setEditable(true);
 
         mRefAbsolutePathRadioButton.setToggleGroup(mToggleGroup);
         mRefAbsoluteRadioButton.setToggleGroup(mToggleGroup);
@@ -133,36 +165,4 @@ public class PhotoTab extends BaseTab {
         mRefAbsolutePathTextField.disableProperty().bind(mRefAbsolutePathRadioButton.selectedProperty().not());
     }
 
-    private void load() {
-        ProfilePhoto p = mProfile.getPhoto();
-
-        mMaxWidthCheckBox.setSelected(p.isLimitWidth());
-        mMaxWidthSpinner.getValueFactory().setValue(p.getWidthLimit());
-        mMaxHeightCheckBox.setSelected(p.isLimitHeight());
-        mMaxHeightSpinner.getValueFactory().setValue(p.getHeightLimit());
-
-        switch (p.getReference()) {
-            case ABSOLUTE:
-                mRefAbsoluteRadioButton.setSelected(true);
-                break;
-
-            case ABSOLUTE_PATH:
-                mRefAbsolutePathRadioButton.setSelected(true);
-                break;
-
-            case RELATIVE:
-                mRefRelativeRadioButton.setSelected(true);
-                break;
-
-            case THUMBNAIL:
-                mRefThumbnailRadioButton.setSelected(true);
-                break;
-
-            default:
-                throw new AssertionError();
-        }
-
-        mRefAbsolutePathTextField.setText(p.getBaseUrlValue());
-        mLowerCaseExtCheckBox.setSelected(p.isForceLowerCaseExtension());
-    }
 }

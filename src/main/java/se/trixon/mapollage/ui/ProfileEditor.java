@@ -102,9 +102,8 @@ public class ProfileEditor extends TabPane {
         Insets insets = new Insets(size, size, size, size);
         mTabs.forEach((tab) -> {
             try {
-                Region r = (Region) tab.getContent();
-                r.setPadding(insets);
-
+                Region region = (Region) tab.getContent();
+                region.setPadding(insets);
             } catch (Exception e) {
             }
         });

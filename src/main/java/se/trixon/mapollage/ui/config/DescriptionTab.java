@@ -40,23 +40,23 @@ import se.trixon.mapollage.profile.ProfileDescription.DescriptionMode;
  */
 public class DescriptionTab extends BaseTab {
 
-    private RadioButton mCustomRadioButton = new RadioButton(Dict.CUSTOMIZED.toString());
-    private Button mCustomResetButton = new Button(Dict.RESET.toString());
-    private TextArea mCustomTextArea = new TextArea();
-    private ToggleGroup mDefaultToggleGroup = new ToggleGroup();
-    private RadioButton mExternalCustomRadioButton = new RadioButton(Dict.CUSTOMIZED.toString());
-    private CheckBox mExternalDefaultCheckBox = new CheckBox(mBundle.getString("ModuleDescriptionPanel.defaultToCheckBox.text"));
-    private RadioButton mExternalRadioButton = new RadioButton(Dict.EXTERNAL_FILE.toString());
-    private RadioButton mExternalStaticRadioButton = new RadioButton(Dict.STATIC.toString());
-    private TextField mExternalTextField = new TextField("descriptions.txt");
-    private ToggleGroup mSourceToggleGroup = new ToggleGroup();
-    private CheckBox mStaticAltitudeCheckBox = new CheckBox(Dict.ALTITUDE.toString());
-    private CheckBox mStaticBearingCheckBox = new CheckBox(Dict.BEARING.toString());
-    private CheckBox mStaticCoordinateCheckBox = new CheckBox(Dict.COORDINATE.toString());
-    private CheckBox mStaticDateCheckBox = new CheckBox(Dict.DATE.toString());
-    private CheckBox mStaticFilenameCheckBox = new CheckBox(Dict.FILENAME.toString());
-    private CheckBox mStaticPhotoCheckBox = new CheckBox(Dict.PHOTO.toString());
-    private RadioButton mStaticRadioButton = new RadioButton(Dict.STATIC.toString());
+    private final RadioButton mCustomRadioButton = new RadioButton(Dict.CUSTOMIZED.toString());
+    private final Button mCustomResetButton = new Button(Dict.RESET.toString());
+    private final TextArea mCustomTextArea = new TextArea();
+    private final ToggleGroup mDefaultToggleGroup = new ToggleGroup();
+    private final RadioButton mExternalCustomRadioButton = new RadioButton(Dict.CUSTOMIZED.toString());
+    private final CheckBox mExternalDefaultCheckBox = new CheckBox(mBundle.getString("ModuleDescriptionPanel.defaultToCheckBox.text"));
+    private final RadioButton mExternalRadioButton = new RadioButton(Dict.EXTERNAL_FILE.toString());
+    private final RadioButton mExternalStaticRadioButton = new RadioButton(Dict.STATIC.toString());
+    private final TextField mExternalTextField = new TextField("descriptions.txt");
+    private final ToggleGroup mSourceToggleGroup = new ToggleGroup();
+    private final CheckBox mStaticAltitudeCheckBox = new CheckBox(Dict.ALTITUDE.toString());
+    private final CheckBox mStaticBearingCheckBox = new CheckBox(Dict.BEARING.toString());
+    private final CheckBox mStaticCoordinateCheckBox = new CheckBox(Dict.COORDINATE.toString());
+    private final CheckBox mStaticDateCheckBox = new CheckBox(Dict.DATE.toString());
+    private final CheckBox mStaticFilenameCheckBox = new CheckBox(Dict.FILENAME.toString());
+    private final CheckBox mStaticPhotoCheckBox = new CheckBox(Dict.PHOTO.toString());
+    private final RadioButton mStaticRadioButton = new RadioButton(Dict.STATIC.toString());
 
     public DescriptionTab(Profile profile) {
         setText(Dict.DESCRIPTION.toString());
@@ -68,8 +68,42 @@ public class DescriptionTab extends BaseTab {
     }
 
     @Override
-    public boolean hasValidSettings() {
-        return true;
+    public void load() {
+        ProfileDescription p = mProfile.getDescription();
+
+        switch (p.getMode()) {
+            case STATIC:
+                mStaticRadioButton.setSelected(true);
+                break;
+
+            case CUSTOM:
+                mCustomRadioButton.setSelected(true);
+                break;
+
+            case EXTERNAL:
+                mExternalRadioButton.setSelected(true);
+                break;
+
+            default:
+                throw new AssertionError();
+        }
+
+        if (p.getDefaultMode() == DescriptionMode.CUSTOM) {
+            mExternalCustomRadioButton.setSelected(true);
+        } else {
+            mExternalStaticRadioButton.setSelected(true);
+        }
+
+        mStaticAltitudeCheckBox.setSelected(p.hasAltitude());
+        mStaticBearingCheckBox.setSelected(p.hasBearing());
+        mStaticCoordinateCheckBox.setSelected(p.hasCoordinate());
+        mStaticDateCheckBox.setSelected(p.hasDate());
+        mStaticFilenameCheckBox.setSelected(p.hasFilename());
+        mStaticPhotoCheckBox.setSelected(p.hasPhoto());
+
+        mCustomTextArea.setText(p.getCustomValue());
+        mExternalTextField.setText(p.getExternalFileValue());
+        mExternalDefaultCheckBox.setSelected(p.isDefaultTo());
     }
 
     @Override
@@ -172,41 +206,4 @@ public class DescriptionTab extends BaseTab {
         });
     }
 
-    private void load() {
-        ProfileDescription p = mProfile.getDescription();
-
-        switch (p.getMode()) {
-            case STATIC:
-                mStaticRadioButton.setSelected(true);
-                break;
-
-            case CUSTOM:
-                mCustomRadioButton.setSelected(true);
-                break;
-
-            case EXTERNAL:
-                mExternalRadioButton.setSelected(true);
-                break;
-
-            default:
-                throw new AssertionError();
-        }
-
-        if (p.getDefaultMode() == DescriptionMode.CUSTOM) {
-            mExternalCustomRadioButton.setSelected(true);
-        } else {
-            mExternalStaticRadioButton.setSelected(true);
-        }
-
-        mStaticAltitudeCheckBox.setSelected(p.hasAltitude());
-        mStaticBearingCheckBox.setSelected(p.hasBearing());
-        mStaticCoordinateCheckBox.setSelected(p.hasCoordinate());
-        mStaticDateCheckBox.setSelected(p.hasDate());
-        mStaticFilenameCheckBox.setSelected(p.hasFilename());
-        mStaticPhotoCheckBox.setSelected(p.hasPhoto());
-
-        mCustomTextArea.setText(p.getCustomValue());
-        mExternalTextField.setText(p.getExternalFileValue());
-        mExternalDefaultCheckBox.setSelected(p.isDefaultTo());
-    }
 }

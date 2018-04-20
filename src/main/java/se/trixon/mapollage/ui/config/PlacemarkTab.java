@@ -39,39 +39,80 @@ import se.trixon.mapollage.profile.ProfilePlacemark.SymbolAs;
  */
 public class PlacemarkTab extends BaseTab {
 
-    private ComboBox<String> mDatePatternComboBox = new ComboBox<>();
-    private RadioButton mNameByDateRadioButton = new RadioButton(Dict.DATE_PATTERN.toString());
-    private RadioButton mNameByFileRadioButton = new RadioButton(Dict.FILENAME.toString());
-    private RadioButton mNameByNoRadioButton = new RadioButton(mBundle.getString("ModulePlacemarkPanel.nameByNoRadioButton.text"));
-    private ToggleGroup mNameByToggleGroup = new ToggleGroup();
-    private ProfilePlacemark mPlacemark;
-    private Spinner<Double> mScaleSpinner = new Spinner(0.5, 10.0, 1.0, 0.1);
-    private RadioButton mSymbolAsPhotoRadioButton = new RadioButton(Dict.PHOTO.toString());
-    private RadioButton mSymbolAsPinRadioButton = new RadioButton(Dict.PIN.toString());
-    private ToggleGroup mSymbolToggleGroup = new ToggleGroup();
-    private CheckBox mTimestampCheckBox = new CheckBox(mBundle.getString("ModulePlacemarkPanel.timestampCheckBox.text"));
-    private Spinner<Double> mZoomSpinner = new Spinner(1.0, 10.0, 1.0, 0.1);
+    private final ComboBox<String> mDatePatternComboBox = new ComboBox<>();
+    private final RadioButton mNameByDateRadioButton = new RadioButton(Dict.DATE_PATTERN.toString());
+    private final RadioButton mNameByFileRadioButton = new RadioButton(Dict.FILENAME.toString());
+    private final RadioButton mNameByNoRadioButton = new RadioButton(mBundle.getString("ModulePlacemarkPanel.nameByNoRadioButton.text"));
+    private final ToggleGroup mNameByToggleGroup = new ToggleGroup();
+    private final Spinner<Double> mScaleSpinner = new Spinner(0.5, 10.0, 1.0, 0.1);
+    private final RadioButton mSymbolAsPhotoRadioButton = new RadioButton(Dict.PHOTO.toString());
+    private final RadioButton mSymbolAsPinRadioButton = new RadioButton(Dict.PIN.toString());
+    private final ToggleGroup mSymbolToggleGroup = new ToggleGroup();
+    private final CheckBox mTimestampCheckBox = new CheckBox(mBundle.getString("ModulePlacemarkPanel.timestampCheckBox.text"));
+    private final Spinner<Double> mZoomSpinner = new Spinner(1.0, 10.0, 1.0, 0.1);
 
     public PlacemarkTab(Profile profile) {
         setText(Dict.PLACEMARK.toString());
         setGraphic(FontAwesome.Glyph.MAP_MARKER.getChar());
         mProfile = profile;
-        mPlacemark = mProfile.getPlacemark();
         createUI();
         load();
     }
 
     @Override
-    public boolean hasValidSettings() {
-        return true;
+    public void load() {
+        ProfilePlacemark p = mProfile.getPlacemark();
+
+        mDatePatternComboBox.setValue(p.getDatePattern());
+        mScaleSpinner.getValueFactory().setValue(p.getScale());
+        mZoomSpinner.getValueFactory().setValue(p.getZoom());
+        mTimestampCheckBox.setSelected(p.isTimestamp());
+
+        RadioButton nameByRadioButton;
+        switch (p.getNameBy()) {
+            case FILE:
+                nameByRadioButton = mNameByFileRadioButton;
+                break;
+
+            case DATE:
+                nameByRadioButton = mNameByDateRadioButton;
+                break;
+
+            case NONE:
+                nameByRadioButton = mNameByNoRadioButton;
+                break;
+
+            default:
+                throw new AssertionError();
+        }
+
+        nameByRadioButton.setSelected(true);
+
+        RadioButton symboAsRadioButton;
+        switch (p.getSymbolAs()) {
+            case PHOTO:
+                symboAsRadioButton = mSymbolAsPhotoRadioButton;
+                break;
+
+            case PIN:
+                symboAsRadioButton = mSymbolAsPinRadioButton;
+                break;
+
+            default:
+                throw new AssertionError();
+        }
+
+        symboAsRadioButton.setSelected(true);
     }
 
     @Override
     public void save() {
-        mPlacemark.setDatePattern(mDatePatternComboBox.getValue());
-        mPlacemark.setScale(mScaleSpinner.getValue());
-        mPlacemark.setZoom(mZoomSpinner.getValue());
-        mPlacemark.setTimestamp(mTimestampCheckBox.isSelected());
+        ProfilePlacemark p = mProfile.getPlacemark();
+
+        p.setDatePattern(mDatePatternComboBox.getValue());
+        p.setScale(mScaleSpinner.getValue());
+        p.setZoom(mZoomSpinner.getValue());
+        p.setTimestamp(mTimestampCheckBox.isSelected());
 
         NameBy nameBy = null;
         Toggle nameToggle = mNameByToggleGroup.getSelectedToggle();
@@ -84,7 +125,7 @@ public class PlacemarkTab extends BaseTab {
             nameBy = NameBy.NONE;
         }
 
-        mPlacemark.setNameBy(nameBy);
+        p.setNameBy(nameBy);
 
         SymbolAs symbolAs = null;
         Toggle symbolToggle = mSymbolToggleGroup.getSelectedToggle();
@@ -95,7 +136,7 @@ public class PlacemarkTab extends BaseTab {
             symbolAs = SymbolAs.PIN;
         }
 
-        mPlacemark.setSymbolAs(symbolAs);
+        p.setSymbolAs(symbolAs);
     }
 
     private void createUI() {
@@ -104,6 +145,9 @@ public class PlacemarkTab extends BaseTab {
         VBox rightBox = new VBox();
         vBox.getChildren().addAll(leftBox, rightBox);
         setContent(vBox);
+
+        mScaleSpinner.setEditable(true);
+        mZoomSpinner.setEditable(true);
 
         mNameByFileRadioButton.setToggleGroup(mNameByToggleGroup);
         mNameByDateRadioButton.setToggleGroup(mNameByToggleGroup);
@@ -158,46 +202,4 @@ public class PlacemarkTab extends BaseTab {
 
     }
 
-    private void load() {
-        mDatePatternComboBox.setValue(mPlacemark.getDatePattern());
-        mScaleSpinner.getValueFactory().setValue(mPlacemark.getScale());
-        mZoomSpinner.getValueFactory().setValue(mPlacemark.getZoom());
-        mTimestampCheckBox.setSelected(mPlacemark.isTimestamp());
-
-        RadioButton nameByRadioButton;
-        switch (mPlacemark.getNameBy()) {
-            case FILE:
-                nameByRadioButton = mNameByFileRadioButton;
-                break;
-
-            case DATE:
-                nameByRadioButton = mNameByDateRadioButton;
-                break;
-
-            case NONE:
-                nameByRadioButton = mNameByNoRadioButton;
-                break;
-
-            default:
-                throw new AssertionError();
-        }
-
-        nameByRadioButton.setSelected(true);
-
-        RadioButton symboAsRadioButton;
-        switch (mPlacemark.getSymbolAs()) {
-            case PHOTO:
-                symboAsRadioButton = mSymbolAsPhotoRadioButton;
-                break;
-
-            case PIN:
-                symboAsRadioButton = mSymbolAsPinRadioButton;
-                break;
-
-            default:
-                throw new AssertionError();
-        }
-
-        symboAsRadioButton.setSelected(true);
-    }
 }

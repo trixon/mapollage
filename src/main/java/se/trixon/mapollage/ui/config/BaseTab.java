@@ -69,7 +69,7 @@ public abstract class BaseTab extends Tab {
         return mTitle;
     }
 
-    public abstract boolean hasValidSettings();
+    public abstract void load();
 
     public void onPreferenceChange(PreferenceChangeEvent evt) {
     }

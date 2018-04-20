@@ -36,35 +36,72 @@ public class PathTab extends BaseTab {
 
     private final CheckBox mDrawPathCheckBox = new CheckBox(mBundle.getString("ModulePathPanel.drawPathCheckBox.text"));
     private final CheckBox mDrawPolygonCheckBox = new CheckBox(mBundle.getString("ModulePathPanel.drawPolygonCheckBox.text"));
-    private ProfilePath mPath;
-    private RadioButton mSplitByDayRadioButton = new RadioButton(Dict.Time.DAY.toString());
-    private RadioButton mSplitByHourRadioButton = new RadioButton(Dict.Time.HOUR.toString());
-    private RadioButton mSplitByMonthRadioButton = new RadioButton(Dict.Time.MONTH.toString());
-    private RadioButton mSplitByNoneRadioButton = new RadioButton(Dict.DO_NOT_SPLIT.toString());
-    private RadioButton mSplitByWeekRadioButton = new RadioButton(Dict.Time.WEEK.toString());
-    private RadioButton mSplitByYearRadioButton = new RadioButton(Dict.Time.YEAR.toString());
-    private ToggleGroup mToggleGroup = new ToggleGroup();
-    private Spinner<Double> mWidthSpinner = new Spinner(1.0, 10.0, 1.0, 0.1);
+    private final RadioButton mSplitByDayRadioButton = new RadioButton(Dict.Time.DAY.toString());
+    private final RadioButton mSplitByHourRadioButton = new RadioButton(Dict.Time.HOUR.toString());
+    private final RadioButton mSplitByMonthRadioButton = new RadioButton(Dict.Time.MONTH.toString());
+    private final RadioButton mSplitByNoneRadioButton = new RadioButton(Dict.DO_NOT_SPLIT.toString());
+    private final RadioButton mSplitByWeekRadioButton = new RadioButton(Dict.Time.WEEK.toString());
+    private final RadioButton mSplitByYearRadioButton = new RadioButton(Dict.Time.YEAR.toString());
+    private final ToggleGroup mToggleGroup = new ToggleGroup();
+    private final Spinner<Double> mWidthSpinner = new Spinner(1.0, 10.0, 1.0, 0.1);
 
     public PathTab(Profile profile) {
         setText(Dict.PATH_GFX.toString());
         setGraphic(FontAwesome.Glyph.CODE_FORK.getChar());
         mProfile = profile;
-        mPath = mProfile.getPath();
         createUI();
         load();
     }
 
     @Override
-    public boolean hasValidSettings() {
-        return true;
+    public void load() {
+        ProfilePath p = mProfile.getPath();
+
+        mDrawPolygonCheckBox.setSelected(p.isDrawPolygon());
+        mDrawPathCheckBox.setSelected(p.isDrawPath());
+        mWidthSpinner.getValueFactory().setValue(p.getWidth());
+
+        RadioButton splitByRadioButton;
+
+        switch (p.getSplitBy()) {
+            case HOUR:
+                splitByRadioButton = mSplitByHourRadioButton;
+                break;
+
+            case DAY:
+                splitByRadioButton = mSplitByDayRadioButton;
+                break;
+
+            case WEEK:
+                splitByRadioButton = mSplitByWeekRadioButton;
+                break;
+
+            case MONTH:
+                splitByRadioButton = mSplitByMonthRadioButton;
+                break;
+
+            case YEAR:
+                splitByRadioButton = mSplitByYearRadioButton;
+                break;
+
+            case NONE:
+                splitByRadioButton = mSplitByNoneRadioButton;
+                break;
+
+            default:
+                throw new AssertionError();
+        }
+
+        splitByRadioButton.setSelected(true);
     }
 
     @Override
     public void save() {
-        mPath.setDrawPolygon(mDrawPolygonCheckBox.isSelected());
-        mPath.setDrawPath(mDrawPathCheckBox.isSelected());
-        mPath.setWidth(mWidthSpinner.getValue());
+        ProfilePath p = mProfile.getPath();
+
+        p.setDrawPolygon(mDrawPolygonCheckBox.isSelected());
+        p.setDrawPath(mDrawPathCheckBox.isSelected());
+        p.setWidth(mWidthSpinner.getValue());
 
         SplitBy splitBy = null;
         Toggle t = mToggleGroup.getSelectedToggle();
@@ -83,7 +120,7 @@ public class PathTab extends BaseTab {
             splitBy = SplitBy.NONE;
         }
 
-        mPath.setSplitBy(splitBy);
+        p.setSplitBy(splitBy);
     }
 
     private void createUI() {
@@ -93,6 +130,8 @@ public class PathTab extends BaseTab {
         setContent(vbox);
         Label widthLabel = new Label(Dict.WIDTH.toString());
         Label splitByLabel = new Label(Dict.SPLIT_BY.toString());
+
+        mWidthSpinner.setEditable(true);
 
         mSplitByHourRadioButton.setToggleGroup(mToggleGroup);
         mSplitByDayRadioButton.setToggleGroup(mToggleGroup);
@@ -134,42 +173,4 @@ public class PathTab extends BaseTab {
         );
     }
 
-    private void load() {
-        mDrawPolygonCheckBox.setSelected(mPath.isDrawPolygon());
-        mDrawPathCheckBox.setSelected(mPath.isDrawPath());
-        mWidthSpinner.getValueFactory().setValue(mPath.getWidth());
-
-        RadioButton splitByRadioButton;
-
-        switch (mPath.getSplitBy()) {
-            case HOUR:
-                splitByRadioButton = mSplitByHourRadioButton;
-                break;
-
-            case DAY:
-                splitByRadioButton = mSplitByDayRadioButton;
-                break;
-
-            case WEEK:
-                splitByRadioButton = mSplitByWeekRadioButton;
-                break;
-
-            case MONTH:
-                splitByRadioButton = mSplitByMonthRadioButton;
-                break;
-
-            case YEAR:
-                splitByRadioButton = mSplitByYearRadioButton;
-                break;
-
-            case NONE:
-                splitByRadioButton = mSplitByNoneRadioButton;
-                break;
-
-            default:
-                throw new AssertionError();
-        }
-
-        splitByRadioButton.setSelected(true);
-    }
 }
