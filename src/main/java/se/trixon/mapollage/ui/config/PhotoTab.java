@@ -27,6 +27,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import org.controlsfx.glyphfont.FontAwesome;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.mapollage.profile.Profile;
 import se.trixon.mapollage.profile.ProfilePhoto;
 
@@ -118,6 +119,7 @@ public class PhotoTab extends BaseTab {
 
         mMaxHeightSpinner.setEditable(true);
         mMaxWidthSpinner.setEditable(true);
+        FxHelper.autoCommitSpinners(mMaxHeightSpinner, mMaxWidthSpinner);
 
         mRefAbsolutePathRadioButton.setToggleGroup(mToggleGroup);
         mRefAbsoluteRadioButton.setToggleGroup(mToggleGroup);

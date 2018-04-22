@@ -26,6 +26,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
+import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.control.LocaleComboBox;
 import se.trixon.mapollage.Options;
 
@@ -92,6 +93,13 @@ public class OptionsPanel extends GridPane {
         mDefaultLatitudeSpinner.setEditable(true);
         mThumbnailSizeSpinner.setEditable(true);
         mThumbnailBorderSizeSpinner.setEditable(true);
+
+        FxHelper.autoCommitSpinners(
+                mDefaultLatitudeSpinner,
+                mDefaultLongitudeSpinner,
+                mThumbnailBorderSizeSpinner,
+                mThumbnailSizeSpinner
+        );
 
         addColumn(0,
                 calendarLanguageLabel,

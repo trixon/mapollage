@@ -151,7 +151,7 @@ public class MainApp extends Application {
         mListView.requestFocus();
         initAccelerators();
         //profileEdit(mProfiles.getFirst());
-        //profileRun(mProfiles.getFirst());
+        profileRun(mProfiles.getFirst());
     }
 
     @Override

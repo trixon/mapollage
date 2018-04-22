@@ -24,6 +24,7 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.VBox;
 import org.controlsfx.glyphfont.FontAwesome;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.mapollage.profile.Profile;
 import se.trixon.mapollage.profile.ProfilePath;
 import se.trixon.mapollage.profile.ProfilePath.SplitBy;
@@ -132,6 +133,7 @@ public class PathTab extends BaseTab {
         Label splitByLabel = new Label(Dict.SPLIT_BY.toString());
 
         mWidthSpinner.setEditable(true);
+        FxHelper.autoCommitSpinners(mWidthSpinner);
 
         mSplitByHourRadioButton.setToggleGroup(mToggleGroup);
         mSplitByDayRadioButton.setToggleGroup(mToggleGroup);

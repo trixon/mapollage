@@ -28,6 +28,7 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.VBox;
 import org.controlsfx.glyphfont.FontAwesome;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.mapollage.profile.Profile;
 import se.trixon.mapollage.profile.ProfilePlacemark;
 import se.trixon.mapollage.profile.ProfilePlacemark.NameBy;
@@ -148,6 +149,7 @@ public class PlacemarkTab extends BaseTab {
 
         mScaleSpinner.setEditable(true);
         mZoomSpinner.setEditable(true);
+        FxHelper.autoCommitSpinners(mScaleSpinner, mZoomSpinner);
 
         mNameByFileRadioButton.setToggleGroup(mNameByToggleGroup);
         mNameByDateRadioButton.setToggleGroup(mNameByToggleGroup);
