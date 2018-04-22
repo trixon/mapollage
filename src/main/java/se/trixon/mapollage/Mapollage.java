@@ -48,12 +48,12 @@ public class Mapollage implements OperationListener {
 
     public static final String HELP = "help";
     public static final String VERSION = "version";
+    private static String[] sArgs;
     private static final ResourceBundle sBundle = SystemHelper.getBundle(Mapollage.class, "Bundle");
     private static Options sOptions;
     private final AlmondUI mAlmondUI = AlmondUI.getInstance();
     private MainFrame mMainFrame = null;
     private final ProfileManager mProfileManager = ProfileManager.getInstance();
-    private static String[] sArgs;
 
     public static String getHelp() {
         PrintStream defaultStdOut = System.out;
@@ -188,7 +188,7 @@ public class Mapollage implements OperationListener {
 
     @Override
     public void onOperationProcessingStarted() {
-        //System.out.println("Adding photos");
+        // nvm
     }
 
     @Override
@@ -196,7 +196,8 @@ public class Mapollage implements OperationListener {
     }
 
     @Override
-    public void onOperationProgressInit(int fileCount) {
+    public void onOperationProgress(int value, int max) {
+        // nvm
     }
 
     @Override

@@ -107,7 +107,7 @@ public class Operation implements Runnable {
     private int mNumOfExif;
     private int mNumOfGps;
     private int mNumOfPlacemarks;
-    private Options mOptions = Options.getInstance();
+    private final Options mOptions = Options.getInstance();
     private Folder mPathFolder;
     private Folder mPathGapFolder;
     private PhotoInfo mPhotoInfo;
@@ -194,10 +194,11 @@ public class Operation implements Runnable {
 
             mListener.onOperationLog(String.format(mBundle.getString("found_count"), mFiles.size()));
             mListener.onOperationLog("");
-            mListener.onOperationProgressInit(mFiles.size());
 
+            int progress = 0;
             for (File file : mFiles) {
                 mListener.onOperationProgress(file.getAbsolutePath());
+                mListener.onOperationProgress(++progress, mFiles.size());
 
                 try {
                     addPhoto(file);
@@ -227,6 +228,7 @@ public class Operation implements Runnable {
                 addPolygons();
             }
             saveToFile();
+            mProfile.setLastRun(System.currentTimeMillis());
         }
 
         if (mNumOfErrors > 0) {

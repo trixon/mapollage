@@ -15,6 +15,7 @@
  */
 package se.trixon.mapollage.ui;
 
+import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -27,7 +28,6 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.prefs.PreferenceChangeEvent;
 import java.util.stream.Stream;
 import javafx.animation.FadeTransition;
 import javafx.application.Application;
@@ -63,9 +63,11 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
+import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
+import org.apache.commons.io.FileUtils;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionGroup;
 import org.controlsfx.control.action.ActionUtils;
@@ -79,6 +81,7 @@ import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.AlmondFx;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.control.LogPanel;
+import se.trixon.almond.util.fx.dialogs.SimpleDialog;
 import se.trixon.almond.util.fx.dialogs.about.AboutPane;
 import se.trixon.mapollage.Mapollage;
 import se.trixon.mapollage.Operation;
@@ -104,6 +107,7 @@ public class MainApp extends Application {
     private final ResourceBundle mBundle = SystemHelper.getBundle(MainApp.class, "Bundle");
     private Action mCancelAction;
     private Font mDefaultFont;
+    private File mDestination;
     private final GlyphFont mFontAwesome = GlyphFontRegistry.font("FontAwesome");
     private Action mHelpAction;
     private Action mHomeAction;
@@ -113,13 +117,14 @@ public class MainApp extends Application {
     private Profile mLastRunProfile;
     private ListView<Profile> mListView;
     private Action mLogAction;
-    private final LogPanel mLogPanel = new LogPanel();
+    private Button mOpenButton;
     private OperationListener mOperationListener;
     private Thread mOperationThread;
     private final Options mOptions = Options.getInstance();
     private Action mOptionsAction;
     private final ProfileManager mProfileManager = ProfileManager.getInstance();
     private LinkedList<Profile> mProfiles;
+    private final ProgressPanel mProgressPanel = new ProgressPanel();
     private BorderPane mRoot;
     private Action mRunAction;
     private Stage mStage;
@@ -146,6 +151,12 @@ public class MainApp extends Application {
         mListView.requestFocus();
         initAccelerators();
         //profileEdit(mProfiles.getFirst());
+        //profileRun(mProfiles.getFirst());
+    }
+
+    @Override
+    public void stop() throws Exception {
+        profilesSave();
     }
 
     private void adjustButtonWidth(Stream<Node> stream, double prefWidth) {
@@ -169,22 +180,15 @@ public class MainApp extends Application {
         Label welcomeLabel = new Label(mBundle.getString("welcome"));
         welcomeLabel.setFont(Font.font(mDefaultFont.getName(), FontPosture.ITALIC, 18));
 
-        mListView.setPlaceholder(welcomeLabel);
-
-        mRoot.setCenter(mListView);
-
-        mStage.setScene(scene);
-        mLogPanel.setWrapText(mOptions.isWordWrap());
-
-        mOptions.getPreferences().addPreferenceChangeListener((PreferenceChangeEvent evt) -> {
-            switch (evt.getKey()) {
-                case Options.KEY_WORD_WRAP:
-                    mLogPanel.setWrapText(mOptions.isWordWrap());
-                    break;
-                default:
-            }
+        mOpenButton = mProgressPanel.getOpenButton();
+        mOpenButton.setOnAction((ActionEvent event) -> {
+            SystemHelper.desktopOpen(mDestination);
         });
 
+        mOpenButton.setGraphic(mFontAwesome.create(FontAwesome.Glyph.GLOBE).size(ICON_SIZE_TOOLBAR / 2).color(mIconColor));
+        mListView.setPlaceholder(welcomeLabel);
+        mRoot.setCenter(mListView);
+        mStage.setScene(scene);
         setRunningState(RunState.STARTABLE);
     }
 
@@ -244,7 +248,7 @@ public class MainApp extends Application {
         //log
         mLogAction = new Action(Dict.OUTPUT.toString(), (ActionEvent event) -> {
             setRunningState(RunState.CLOSEABLE);
-            mRoot.setCenter(mLogPanel);
+            mRoot.setCenter(mProgressPanel);
         });
         mLogAction.setGraphic(mFontAwesome.create(FontAwesome.Glyph.ALIGN_LEFT).size(ICON_SIZE_TOOLBAR).color(mIconColor));
         mLogAction.setDisabled(true);
@@ -258,7 +262,7 @@ public class MainApp extends Application {
 
         //help
         mHelpAction = new Action(Dict.HELP.toString(), (ActionEvent event) -> {
-            SystemHelper.browse("https://trixon.se/projects/mapollage/documentation/");
+            SystemHelper.desktopBrowse("https://trixon.se/projects/mapollage/documentation/");
         });
         mHelpAction.setAccelerator(KeyCombination.keyCombination("F1"));
 
@@ -271,7 +275,7 @@ public class MainApp extends Application {
         //about date format
         String title = String.format(Dict.ABOUT_S.toString(), Dict.DATE_PATTERN.toString().toLowerCase());
         mAboutDateFormatAction = new Action(title, (ActionEvent event) -> {
-            SystemHelper.browse("https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html");
+            SystemHelper.desktopBrowse("https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html");
         });
 
         mRunAction = new Action(Dict.RUN.toString(), (ActionEvent event) -> {
@@ -282,49 +286,67 @@ public class MainApp extends Application {
 
     private void initListeners() {
         mOperationListener = new OperationListener() {
+            private boolean mSuccess;
+
             @Override
             public void onOperationError(String message) {
-                throw new UnsupportedOperationException("Not supported yet.");
+                mProgressPanel.err(message);
             }
 
             @Override
             public void onOperationFailed(String message) {
-                throw new UnsupportedOperationException("Not supported yet.");
+                onOperationFinished(message, 0);
+                mSuccess = false;
             }
 
             @Override
             public void onOperationFinished(String message, int placemarkCount) {
-                throw new UnsupportedOperationException("Not supported yet.");
+                setRunningState(RunState.CLOSEABLE);
+                mProgressPanel.out(message);
+
+                if (mSuccess && placemarkCount > 0) {
+                    mOpenButton.setDisable(false);
+                    populateProfiles(mLastRunProfile);
+
+                    if (mOptions.isAutoOpen()) {
+                        SystemHelper.desktopOpen(mDestination);
+                    }
+                }
             }
 
             @Override
             public void onOperationInterrupted() {
-                throw new UnsupportedOperationException("Not supported yet.");
+                setRunningState(RunState.CLOSEABLE);
+                mProgressPanel.setProgress(0);
+                mSuccess = false;
             }
 
             @Override
             public void onOperationLog(String message) {
-                throw new UnsupportedOperationException("Not supported yet.");
+                mProgressPanel.out(message);
             }
 
             @Override
             public void onOperationProcessingStarted() {
-                throw new UnsupportedOperationException("Not supported yet.");
+                mProgressPanel.setProgress(-1);
             }
 
             @Override
             public void onOperationProgress(String message) {
-                throw new UnsupportedOperationException("Not supported yet.");
+                //TODO Display message on progress bar
             }
 
             @Override
-            public void onOperationProgressInit(int fileCount) {
-                throw new UnsupportedOperationException("Not supported yet.");
+            public void onOperationProgress(int value, int max) {
+                mProgressPanel.setProgress(value / (double) max);
             }
 
             @Override
             public void onOperationStarted() {
-                throw new UnsupportedOperationException("Not supported yet.");
+                mOpenButton.setDisable(true);
+                mProgressPanel.setProgress(0);
+                setRunningState(RunState.CANCELABLE);
+                mSuccess = true;
             }
         };
 
@@ -419,43 +441,11 @@ public class MainApp extends Application {
     }
 
     private void profileRun(Profile profile) {
-        String title = String.format(Dict.Dialog.TITLE_PROFILE_RUN.toString(), profile.getName());
-        Alert alert = new Alert(AlertType.CONFIRMATION);
-        alert.initOwner(mStage);
-
-        alert.setTitle(title);
-        alert.setGraphic(null);
-        alert.setHeaderText(null);
-
-        final DialogPane dialogPane = alert.getDialogPane();
-//        dialogPane.setContent(previewPanel);
-
-        ButtonType runButtonType = new ButtonType(Dict.RUN.toString());
-        ButtonType dryRunButtonType = new ButtonType(Dict.DRY_RUN.toString(), ButtonData.OK_DONE);
-        ButtonType cancelButtonType = new ButtonType(Dict.CANCEL.toString(), ButtonData.CANCEL_CLOSE);
-
-        alert.getButtonTypes().setAll(runButtonType, dryRunButtonType, cancelButtonType);
-        Optional<ButtonType> result = alert.showAndWait();
-        if (result.get() != cancelButtonType) {
-            boolean dryRun = result.get() == dryRunButtonType;
-//            profile.setDryRun(dryRun);
-            mLogPanel.clear();
-            mRoot.setCenter(mLogPanel);
-            mIndicator.setProfile(profile);
-
-            if (profile.isValid()) {
-                mLastRunProfile = profile;
-                mOperationThread = new Thread(() -> {
-                    Operation operation = new Operation(mOperationListener, profile);
-//                    operation.start();
-                });
-                mOperationThread.setName("Operation");
-                mOperationThread.start();
-            } else {
-                mLogPanel.println(profile.toDebugString());
-                mLogPanel.println(profile.getValidationError());
-                mLogPanel.println(Dict.ABORTING.toString());
-            }
+        if (profile.isValid()) {
+            requestKmlFileObject(profile);
+        } else {
+            mProgressPanel.clear();
+            mProgressPanel.out(profile.getValidationError());
         }
     }
 
@@ -473,6 +463,43 @@ public class MainApp extends Application {
             mProfileManager.save();
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private void requestKmlFileObject(Profile profile) {
+        ExtensionFilter filter = new ExtensionFilter("Keyhole Markup Language (*.kml)", "*.kml");
+        SimpleDialog.clearFilters();
+        SimpleDialog.addFilter(new ExtensionFilter(Dict.ALL_FILES.toString(), "*"));
+        SimpleDialog.addFilter(filter);
+        SimpleDialog.setFilter(filter);
+        SimpleDialog.setParent(mStage);
+        SimpleDialog.setTitle(String.format("%s %s", Dict.SAVE.toString(), profile.getName()));
+
+        if (mDestination == null) {
+            SimpleDialog.setPath(FileUtils.getUserDirectory());
+        } else {
+            SimpleDialog.setPath(mDestination.getParentFile());
+            SimpleDialog.setSelectedFile(new File(""));
+        }
+
+        if (SimpleDialog.saveFile(new String[]{"kml"})) {
+            mDestination = SimpleDialog.getPath();
+            profile.setDestinationFile(mDestination);
+            profile.isValid();
+
+            if (profile.hasValidRelativeSourceDest()) {
+                mProgressPanel.clear();
+                mRoot.setCenter(mProgressPanel);
+                mIndicator.setProfile(profile);
+                mLastRunProfile = profile;
+
+                Operation operation = new Operation(mOperationListener, profile);
+                mOperationThread = new Thread(operation);
+                mOperationThread.start();
+            } else {
+                mProgressPanel.out(mBundle.getString("invalid_relative_source_dest"));
+                mProgressPanel.out(Dict.ABORTING.toString());
+            }
         }
     }
 
@@ -685,7 +712,6 @@ public class MainApp extends Application {
 
             alert.setTitle(title);
             alert.setHeaderText(String.format("%s\n%s", profile.getName(), profile.getDescriptionString()));
-            alert.setContentText(profile.toDebugString());
             alert.setResizable(true);
             LogPanel logPanel = new LogPanel(profile.toInfoString());
             logPanel.setFont(Font.font("monospaced"));

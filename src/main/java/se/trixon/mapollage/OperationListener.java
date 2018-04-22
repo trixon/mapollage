@@ -35,7 +35,7 @@ public interface OperationListener {
 
     void onOperationProgress(String message);
 
-    void onOperationProgressInit(int fileCount);
+    void onOperationProgress(int value, int max);
 
     void onOperationStarted();
 }

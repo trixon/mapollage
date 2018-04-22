@@ -189,6 +189,19 @@ public class FoldersTab extends BaseTab {
         mDatePatternComboBox.disableProperty().bind(mFolderByDateRadioButton.selectedProperty().not());
         mRegexTextField.disableProperty().bind(mFolderByRegexRadioButton.selectedProperty().not());
         mRegexDefaultTextField.disableProperty().bind(mFolderByRegexRadioButton.selectedProperty().not());
+
+//        EventHandler eventHandler = (EventHandler) (Event event) -> {
+////            sValidationSupport.initInitialDecoration();
+//            sValidationSupport.getValidationDecorator().removeDecorations(mDatePatternComboBox);
+//
+//            sValidationSupport.redecorate();
+//            System.out.println(event);
+//        };
+//
+//        mFolderByDateRadioButton.setOnAction(eventHandler);
+//        mFolderByDirectoryRadioButton.setOnAction(eventHandler);
+//        mFolderByNoneRadioButton.setOnAction(eventHandler);
+//        mFolderByRegexRadioButton.setOnAction(eventHandler);
     }
 
     private void initValidation() {
