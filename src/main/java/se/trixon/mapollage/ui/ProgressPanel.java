@@ -26,6 +26,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -42,7 +43,7 @@ import se.trixon.mapollage.Options;
 public class ProgressPanel extends BorderPane {
 
     private final ResourceBundle mBundle = SystemHelper.getBundle(MainApp.class, "Bundle");
-    private final CheckBox mCheckBox = new CheckBox(mBundle.getString("StatusPanel.autoOpenCheckBox.text"));
+    private final CheckBox mCheckBox = new CheckBox(mBundle.getString("ProgressPanel.autoOpenCheckBox"));
     private final Tab mErrTab = new Tab(Dict.Dialog.ERROR.toString());
     private final LogPanel mLogErrPanel = new LogPanel();
     private final LogPanel mLogOutPanel = new LogPanel();
@@ -62,7 +63,7 @@ public class ProgressPanel extends BorderPane {
         mTabPane.getTabs().addAll(mOutTab, mErrTab);
 
         FxHelper.undecorateButton(mOpenButton);
-
+        mOpenButton.setTooltip(new Tooltip(Dict.OPEN.toString()));
         Insets insets = new Insets(8);
         mOpenButton.setPadding(insets);
         mProgressBar.setPadding(insets);

@@ -133,9 +133,9 @@ public class ProfileFolder extends ProfileBase {
     protected ProfileInfo getProfileInfo() {
         ProfileInfo profileInfo = new ProfileInfo();
         LinkedHashMap<String, String> values = new LinkedHashMap<>();
-        values.put(BUNDLE_UI.getString("ModuleFoldersPanel.rootNameLabel.text"), mRootName);
-        values.put(BUNDLE_UI.getString("ModuleFoldersPanel.rootDescriptionLabel.text"), mRootDescription.replaceAll("\\n", "\\\\n"));
-        String foldersBy = BUNDLE_UI.getString("ModuleFoldersPanel.folderByNoneRadioButton.text");
+        values.put(BUNDLE_UI.getString("FoldersTab.rootNameLabel"), mRootName);
+        values.put(BUNDLE_UI.getString("FoldersTab.rootDescriptionLabel"), mRootDescription.replaceAll("\\n", "\\\\n"));
+        String foldersBy = BUNDLE_UI.getString("FoldersTab.folderByNoneRadioButton");
 
         switch (mFoldersBy) {
             case DATE:
@@ -143,7 +143,7 @@ public class ProfileFolder extends ProfileBase {
                 break;
 
             case DIR:
-                foldersBy = BUNDLE_UI.getString("ModuleFoldersPanel.folderByDirectoryRadioButton.text");
+                foldersBy = BUNDLE_UI.getString("FoldersTab.folderByDirectoryRadioButton");
                 break;
 
             case REGEX:
@@ -151,7 +151,7 @@ public class ProfileFolder extends ProfileBase {
                 break;
         }
 
-        values.put(BUNDLE_UI.getString("ModuleFoldersPanel.folderByLabel.text"), foldersBy);
+        values.put(BUNDLE_UI.getString("FoldersTab.folderByLabel"), foldersBy);
 
         profileInfo.setTitle(getTitle());
         profileInfo.setValues(values);

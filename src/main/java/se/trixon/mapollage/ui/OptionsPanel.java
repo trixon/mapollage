@@ -33,23 +33,23 @@ import se.trixon.mapollage.Options;
  *
  * @author Patrik Karlström
  */
-public class OptionsPane extends GridPane {
+public class OptionsPanel extends GridPane {
 
-    private final ResourceBundle mBundle = SystemHelper.getBundle(OptionsPane.class, "Bundle");
-    private final CheckBox mCleanNs2CheckBox = new CheckBox(mBundle.getString("OptionsPanel.cleanNs2CheckBox.text"));
-    private final CheckBox mCleanSpaceCheckBox = new CheckBox(mBundle.getString("OptionsPanel.cleanSpaceCheckBox.text"));
+    private final ResourceBundle mBundle = SystemHelper.getBundle(OptionsPanel.class, "Bundle");
+    private final CheckBox mCleanNs2CheckBox = new CheckBox(mBundle.getString("OptionsPanel.cleanNs2CheckBox"));
+    private final CheckBox mCleanSpaceCheckBox = new CheckBox(mBundle.getString("OptionsPanel.cleanSpaceCheckBox"));
     private final Font mDefaultFont = Font.getDefault();
     private final Spinner<Double> mDefaultLatitudeSpinner = new Spinner(-180, 180, 0, 0.01);
     private final Spinner<Double> mDefaultLongitudeSpinner = new Spinner(-90, 90, 0, 0.01);
     private final LocaleComboBox mLocaleComboBox = new LocaleComboBox();
-    private final CheckBox mLogKmlCheckBox = new CheckBox(mBundle.getString("OptionsPanel.logKmlCheckBox.text"));
+    private final CheckBox mLogKmlCheckBox = new CheckBox(mBundle.getString("OptionsPanel.logKmlCheckBox"));
     private final Options mOptions = Options.getInstance();
     private final Spinner<Integer> mThumbnailBorderSizeSpinner = new Spinner(0, 20, 2, 1);
     private final Spinner<Integer> mThumbnailSizeSpinner = new Spinner(100, 1200, 250, 10);
     private final Insets mTopInsets = new Insets(8, 0, 0, 0);
     private final CheckBox mWordWrapCheckBox = new CheckBox(Dict.DYNAMIC_WORD_WRAP.toString());
 
-    public OptionsPane() {
+    public OptionsPanel() {
         createUI();
         load();
     }
@@ -79,9 +79,9 @@ public class OptionsPane extends GridPane {
         Label thumbnailLabel = new Label(Dict.THUMBNAIL.toString());
         Label latitudeLabel = new Label(Dict.LATITUDE.toString());
         Label longitudeLabel = new Label(Dict.LONGITUDE.toString());
-        Label borderSizeLabel = new Label(mBundle.getString("OptionsPanel.borderSizeLabel.text"));
-        Label cleanLabel = new Label(mBundle.getString("OptionsPanel.cleanLabel.text"));
-        Label defaultCoordinateLabel = new Label(mBundle.getString("OptionsPanel.coordinateLabel.text"));
+        Label borderSizeLabel = new Label(mBundle.getString("OptionsPanel.borderSizeLabel"));
+        Label cleanLabel = new Label(mBundle.getString("OptionsPanel.cleanLabel"));
+        Label defaultCoordinateLabel = new Label(mBundle.getString("OptionsPanel.coordinateLabel"));
 
         placemarkLabel.setFont(font);
         defaultCoordinateLabel.setFont(font);

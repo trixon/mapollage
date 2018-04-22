@@ -200,12 +200,12 @@ public class MainApp extends Application {
         alert.setHeaderText(null);
 
         final DialogPane dialogPane = alert.getDialogPane();
-        OptionsPane optionsPane = new OptionsPane();
-        dialogPane.setContent(optionsPane);
+        OptionsPanel optionsPanel = new OptionsPanel();
+        dialogPane.setContent(optionsPanel);
 
         Optional<ButtonType> result = FxHelper.showAndWait(alert, mStage);
         if (result.get() == ButtonType.OK) {
-            optionsPane.save();
+            optionsPanel.save();
         }
     }
 
@@ -402,15 +402,15 @@ public class MainApp extends Application {
         alert.setHeaderText(null);
         alert.setResizable(true);
 
-        ProfileEditor profileEditor = new ProfileEditor(profile);
+        ProfilePanel profilePanel = new ProfilePanel(profile);
 
         final DialogPane dialogPane = alert.getDialogPane();
-        dialogPane.setContent(profileEditor);
-        profileEditor.setOkButton((Button) dialogPane.lookupButton(ButtonType.OK));
+        dialogPane.setContent(profilePanel);
+        profilePanel.setOkButton((Button) dialogPane.lookupButton(ButtonType.OK));
 
         Optional<ButtonType> result = FxHelper.showAndWait(alert, mStage);
         if (result.get() == ButtonType.OK) {
-            profileEditor.save();
+            profilePanel.save();
             if (addNew || clone) {
                 mProfiles.add(profile);
             }

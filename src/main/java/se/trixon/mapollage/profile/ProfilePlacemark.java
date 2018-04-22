@@ -150,7 +150,7 @@ public class ProfilePlacemark extends ProfileBase {
         ProfileInfo profileInfo = new ProfileInfo();
         LinkedHashMap<String, String> values = new LinkedHashMap<>();
 
-        String nameBy = BUNDLE_UI.getString("ModulePlacemarkPanel.nameByNoRadioButton.text");
+        String nameBy = BUNDLE_UI.getString("PlacemarkTab.nameByNoRadioButton");
 
         switch (mNameBy) {
             case DATE:
@@ -162,7 +162,7 @@ public class ProfilePlacemark extends ProfileBase {
                 break;
         }
 
-        values.put(BUNDLE_UI.getString("ModulePlacemarkPanel.nameByLabel.text"), nameBy);
+        values.put(BUNDLE_UI.getString("PlacemarkTab.nameByLabel"), nameBy);
         values.put(Dict.SYMBOL.toString(), mSymbolAs == SymbolAs.PHOTO ? Dict.PHOTO.toString() : Dict.PIN.toString());
         values.put(Dict.SCALE.toString(), String.valueOf(mScale));
         values.put(Dict.ZOOM.toString(), String.valueOf(mZoom));

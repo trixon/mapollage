@@ -39,7 +39,7 @@ public class SourceTab extends BaseTab {
     private final TextField mDescTextField = new TextField();
     private final TextField mExcludeTextField = new TextField();
     private final TextField mFilePatternField = new TextField();
-    private final CheckBox mIncludeCheckBox = new CheckBox(mBundle.getString("ModuleSourcePanel.includeNullCoordinateCheckBox.text"));
+    private final CheckBox mIncludeCheckBox = new CheckBox(mBundle.getString("SourceTab.includeNullCoordinateCheckBox"));
     private final CheckBox mLinksCheckBox = new CheckBox(Dict.FOLLOW_LINKS.toString());
     private final TextField mNameTextField = new TextField();
     private final CheckBox mRecursiveCheckBox = new CheckBox(Dict.SUBDIRECTORIES.toString());
@@ -93,9 +93,9 @@ public class SourceTab extends BaseTab {
         Label nameLabel = new Label(Dict.NAME.toString());
         Label descLabel = new Label(Dict.DESCRIPTION.toString());
         Label filePatternLabel = new Label(Dict.FILE_PATTERN.toString());
-        Label excludeLabel = new Label(mBundle.getString("ModuleSourcePanel.excludeLabel.text"));
+        Label excludeLabel = new Label(mBundle.getString("SourceTab.excludeLabel"));
 
-        mExcludeTextField.setTooltip(new Tooltip(mBundle.getString("ModuleSourcePanel.excludeTextField.toolTipText")));
+        mExcludeTextField.setTooltip(new Tooltip(mBundle.getString("SourceTab.excludeTextField.toolTip")));
 
         mhBox.getChildren().addAll(mRecursiveCheckBox, mLinksCheckBox, mIncludeCheckBox);
 

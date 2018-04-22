@@ -50,9 +50,9 @@ public class FoldersTab extends BaseTab {
 
     private final ComboBox<String> mDatePatternComboBox = new ComboBox<>();
     private final RadioButton mFolderByDateRadioButton = new RadioButton(Dict.DATE_PATTERN.toString());
-    private final RadioButton mFolderByDirectoryRadioButton = new RadioButton(mBundle.getString("ModuleFoldersPanel.folderByDirectoryRadioButton.text"));
-    private final RadioButton mFolderByNoneRadioButton = new RadioButton(mBundle.getString("ModuleFoldersPanel.folderByNoneRadioButton.text"));
-    private final RadioButton mFolderByRegexRadioButton = new RadioButton(mBundle.getString("ModuleFoldersPanel.folderByRegexRadioButton.text"));
+    private final RadioButton mFolderByDirectoryRadioButton = new RadioButton(mBundle.getString("FoldersTab.folderByDirectoryRadioButton"));
+    private final RadioButton mFolderByNoneRadioButton = new RadioButton(mBundle.getString("FoldersTab.folderByNoneRadioButton"));
+    private final RadioButton mFolderByRegexRadioButton = new RadioButton(mBundle.getString("FoldersTab.folderByRegexRadioButton"));
     private final TextField mRegexDefaultTextField = new TextField();
     private final TextField mRegexTextField = new TextField();
     private final TextArea mRootDescTextArea = new TextArea();
@@ -133,8 +133,8 @@ public class FoldersTab extends BaseTab {
         setContent(leftBox);
 
         //Left Pane
-        Label rootNameLabel = new Label(mBundle.getString("ModuleFoldersPanel.rootNameLabel.text"));
-        Label rootDescLabel = new Label(mBundle.getString("ModuleFoldersPanel.rootDescriptionLabel.text"));
+        Label rootNameLabel = new Label(mBundle.getString("FoldersTab.rootNameLabel"));
+        Label rootDescLabel = new Label(mBundle.getString("FoldersTab.rootDescriptionLabel"));
         Label regexLabel = new Label(Dict.DEFAULT_VALUE.toString());
 
         leftBox.getChildren().addAll(
@@ -157,7 +157,7 @@ public class FoldersTab extends BaseTab {
         mDatePatternComboBox.setEditable(true);
         mDatePatternComboBox.setItems(FXCollections.observableList(Arrays.asList(mBundle.getString("dateFormats").split(";"))));
 
-        Label label = new Label(mBundle.getString("ModuleFoldersPanel.folderByLabel.text"));
+        Label label = new Label(mBundle.getString("FoldersTab.folderByLabel"));
         rightBox.getChildren().addAll(
                 label,
                 mFolderByDirectoryRadioButton,

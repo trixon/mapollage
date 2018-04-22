@@ -30,7 +30,7 @@ import org.apache.commons.lang3.StringUtils;
 import se.trixon.almond.util.BooleanHelper;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
-import se.trixon.mapollage.ui.OptionsPane;
+import se.trixon.mapollage.ui.OptionsPanel;
 
 /**
  *
@@ -276,7 +276,7 @@ public class Profile extends ProfileBase implements Comparable<Profile>, Cloneab
 
     @Override
     protected ProfileInfo getProfileInfo() {
-        ResourceBundle bundle = SystemHelper.getBundle(OptionsPane.class, "Bundle");
+        ResourceBundle bundle = SystemHelper.getBundle(OptionsPanel.class, "Bundle");
         ProfileInfo profileInfo = new ProfileInfo();
         LinkedHashMap<String, String> values = new LinkedHashMap<>();
 
@@ -285,7 +285,7 @@ public class Profile extends ProfileBase implements Comparable<Profile>, Cloneab
         values.put(Dict.BORDER_SIZE.toString(), String.valueOf(mOptions.getThumbnailBorderSize()));
         values.put(String.format("%s %s", Dict.DEFAULT.toString(), Dict.LATITUDE.toString()), String.valueOf(mOptions.getDefaultLat()));
         values.put(String.format("%s %s", Dict.DEFAULT.toString(), Dict.LONGITUDE.toString()), String.valueOf(mOptions.getDefaultLon()));
-        values.put(bundle.getString("StatusPanel.autoOpenCheckBox.text"), BooleanHelper.asYesNo(mOptions.isAutoOpen()));
+        values.put(bundle.getString("ProgressPanel.autoOpenCheckBox"), BooleanHelper.asYesNo(mOptions.isAutoOpen()));
 
         profileInfo.setTitle(Dict.OPTIONS.toString());
         profileInfo.setValues(values);

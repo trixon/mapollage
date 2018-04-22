@@ -38,7 +38,7 @@ import se.trixon.mapollage.ui.config.SourceTab;
  *
  * @author Patrik Karlström
  */
-public class ProfileEditor extends TabPane {
+public class ProfilePanel extends TabPane {
 
     private FoldersTab mFoldersTab;
     private Button mOkButton;
@@ -51,16 +51,16 @@ public class ProfileEditor extends TabPane {
     private final ArrayList<BaseTab> mTabs = new ArrayList<>();
     private final ValidationSupport mValidationSupport = new ValidationSupport();
 
-    public ProfileEditor() {
+    public ProfilePanel() {
         createUI();
     }
 
-    public ProfileEditor(Tab... tabs) {
+    public ProfilePanel(Tab... tabs) {
         super(tabs);
         createUI();
     }
 
-    public ProfileEditor(Profile profile) {
+    public ProfilePanel(Profile profile) {
         mProfile = profile;
         createUI();
     }

@@ -36,12 +36,12 @@ import se.trixon.mapollage.profile.ProfilePhoto;
  */
 public class PhotoTab extends BaseTab {
 
-    private final CheckBox mLowerCaseExtCheckBox = new CheckBox(mBundle.getString("ModulePhotoPanel.lowerCaseExtCheckBox.text"));
+    private final CheckBox mLowerCaseExtCheckBox = new CheckBox(mBundle.getString("PhotoTab.lowerCaseExtCheckBox"));
     private final CheckBox mMaxHeightCheckBox = new CheckBox(Dict.MAX_HEIGHT.toString());
     private final Spinner<Integer> mMaxHeightSpinner = new Spinner(1, Integer.MAX_VALUE, 400, 10);
     private final CheckBox mMaxWidthCheckBox = new CheckBox(Dict.MAX_WIDTH.toString());
     private final Spinner<Integer> mMaxWidthSpinner = new Spinner(1, Integer.MAX_VALUE, 400, 10);
-    private final RadioButton mRefAbsolutePathRadioButton = new RadioButton(mBundle.getString("ModulePhotoPanel.absolutePathRadioButton.text"));
+    private final RadioButton mRefAbsolutePathRadioButton = new RadioButton(mBundle.getString("PhotoTab.absolutePathRadioButton"));
     private final TextField mRefAbsolutePathTextField = new TextField();
     private final RadioButton mRefAbsoluteRadioButton = new RadioButton(Dict.ABSOLUTE.toString());
     private final RadioButton mRefRelativeRadioButton = new RadioButton(Dict.RELATIVE.toString());
@@ -123,7 +123,7 @@ public class PhotoTab extends BaseTab {
         mRefAbsoluteRadioButton.setToggleGroup(mToggleGroup);
         mRefRelativeRadioButton.setToggleGroup(mToggleGroup);
         mRefThumbnailRadioButton.setToggleGroup(mToggleGroup);
-        mLowerCaseExtCheckBox.setTooltip(new Tooltip(mBundle.getString("ModulePhotoPanel.lowerCaseExtCheckBox.toolTipText")));
+        mLowerCaseExtCheckBox.setTooltip(new Tooltip(mBundle.getString("PhotoTab.lowerCaseExtCheckBox.toolTip")));
 
         Label referenceLabel = new Label(Dict.FILE_REFERENCE.toString());
 

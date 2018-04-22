@@ -45,10 +45,10 @@ public class DescriptionTab extends BaseTab {
     private final TextArea mCustomTextArea = new TextArea();
     private final ToggleGroup mDefaultToggleGroup = new ToggleGroup();
     private final RadioButton mExternalCustomRadioButton = new RadioButton(Dict.CUSTOMIZED.toString());
-    private final CheckBox mExternalDefaultCheckBox = new CheckBox(mBundle.getString("ModuleDescriptionPanel.defaultToCheckBox.text"));
+    private final CheckBox mExternalDefaultCheckBox = new CheckBox(mBundle.getString("DescriptionTab.defaultToCheckBox"));
     private final RadioButton mExternalRadioButton = new RadioButton(Dict.EXTERNAL_FILE.toString());
     private final RadioButton mExternalStaticRadioButton = new RadioButton(Dict.STATIC.toString());
-    private final TextField mExternalTextField = new TextField("descriptions.txt");
+    private final TextField mExternalTextField = new TextField();
     private final ToggleGroup mSourceToggleGroup = new ToggleGroup();
     private final CheckBox mStaticAltitudeCheckBox = new CheckBox(Dict.ALTITUDE.toString());
     private final CheckBox mStaticBearingCheckBox = new CheckBox(Dict.BEARING.toString());

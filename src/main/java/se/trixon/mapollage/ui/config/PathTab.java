@@ -34,8 +34,8 @@ import se.trixon.mapollage.profile.ProfilePath.SplitBy;
  */
 public class PathTab extends BaseTab {
 
-    private final CheckBox mDrawPathCheckBox = new CheckBox(mBundle.getString("ModulePathPanel.drawPathCheckBox.text"));
-    private final CheckBox mDrawPolygonCheckBox = new CheckBox(mBundle.getString("ModulePathPanel.drawPolygonCheckBox.text"));
+    private final CheckBox mDrawPathCheckBox = new CheckBox(mBundle.getString("PathTab.drawPathCheckBox"));
+    private final CheckBox mDrawPolygonCheckBox = new CheckBox(mBundle.getString("PathTab.drawPolygonCheckBox"));
     private final RadioButton mSplitByDayRadioButton = new RadioButton(Dict.Time.DAY.toString());
     private final RadioButton mSplitByHourRadioButton = new RadioButton(Dict.Time.HOUR.toString());
     private final RadioButton mSplitByMonthRadioButton = new RadioButton(Dict.Time.MONTH.toString());

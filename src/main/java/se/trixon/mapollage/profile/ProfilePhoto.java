@@ -118,8 +118,8 @@ public class ProfilePhoto extends ProfileBase {
         ProfileInfo profileInfo = new ProfileInfo();
         LinkedHashMap<String, String> values = new LinkedHashMap<>();
 
-        values.put(BUNDLE_UI.getString("ModulePhotoPanel.widthCheckBox.text"), mLimitWidth ? String.valueOf(mWidthLimit) : "-");
-        values.put(BUNDLE_UI.getString("ModulePhotoPanel.heightCheckBox.text"), mLimitHeight ? String.valueOf(mHeightLimit) : "-");
+        values.put(Dict.MAX_WIDTH.toString(), mLimitWidth ? String.valueOf(mWidthLimit) : "-");
+        values.put(Dict.MAX_HEIGHT.toString(), mLimitHeight ? String.valueOf(mHeightLimit) : "-");
 
         String fileReference = null;
 
@@ -142,7 +142,7 @@ public class ProfilePhoto extends ProfileBase {
         }
 
         values.put(Dict.FILE_REFERENCE.toString(), fileReference);
-        values.put(BUNDLE_UI.getString("ModulePhotoPanel.lowerCaseExtCheckBox.text"), BooleanHelper.asYesNo(mForceLowerCaseExtension));
+        values.put(BUNDLE_UI.getString("PhotoTab.lowerCaseExtCheckBox"), BooleanHelper.asYesNo(mForceLowerCaseExtension));
 
         profileInfo.setTitle(getTitle());
         profileInfo.setValues(values);

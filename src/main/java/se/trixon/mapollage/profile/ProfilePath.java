@@ -105,8 +105,8 @@ public class ProfilePath extends ProfileBase {
     protected ProfileInfo getProfileInfo() {
         ProfileInfo profileInfo = new ProfileInfo();
         LinkedHashMap<String, String> values = new LinkedHashMap<>();
-        values.put(BUNDLE_UI.getString("ModulePathPanel.drawPolygonCheckBox.text"), BooleanHelper.asYesNo(mDrawPolygon));
-        values.put(BUNDLE_UI.getString("ModulePathPanel.drawPathCheckBox.text"), BooleanHelper.asYesNo(mDrawPath));
+        values.put(BUNDLE_UI.getString("PathTab.drawPolygonCheckBox"), BooleanHelper.asYesNo(mDrawPolygon));
+        values.put(BUNDLE_UI.getString("PathTab.drawPathCheckBox"), BooleanHelper.asYesNo(mDrawPath));
         values.put(Dict.WIDTH.toString(), String.valueOf(mWidth));
 
         values.put(Dict.SPLIT_BY.toString(), getLabel(mSplitBy));

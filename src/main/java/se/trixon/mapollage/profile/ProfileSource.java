@@ -121,12 +121,12 @@ public class ProfileSource extends ProfileBase {
     protected ProfileInfo getProfileInfo() {
         ProfileInfo profileInfo = new ProfileInfo();
         LinkedHashMap<String, String> values = new LinkedHashMap<>();
-        values.put(BUNDLE_UI.getString("ModuleSourcePanel.sourceChooserPanel.header"), mDir.getAbsolutePath());
+        values.put(BUNDLE_UI.getString("SourceTab.sourceChooserPanel.header"), mDir.getAbsolutePath());
         values.put(Dict.FILE_PATTERN.toString(), mFilePattern);
         values.put(Dict.SUBDIRECTORIES.toString(), BooleanHelper.asYesNo(mRecursive));
         values.put(Dict.FOLLOW_LINKS.toString(), BooleanHelper.asYesNo(mFollowLinks));
-        values.put(BUNDLE_UI.getString("ModuleSourcePanel.includeNullCoordinateCheckBox.text"), BooleanHelper.asYesNo(mIncludeNullCoordinate));
-        values.put(BUNDLE_UI.getString("ModuleSourcePanel.excludeLabel.text"), mExcludePattern);
+        values.put(BUNDLE_UI.getString("SourceTab.includeNullCoordinateCheckBox"), BooleanHelper.asYesNo(mIncludeNullCoordinate));
+        values.put(BUNDLE_UI.getString("SourceTab.excludeLabel"), mExcludePattern);
 
         profileInfo.setTitle(getTitle());
         profileInfo.setValues(values);
