@@ -123,6 +123,14 @@
                                         <include>*/**</include>
                                     </includes>
                                 </filter>
+                                <filter>
+                                    <artifact>org.controlsfx:controlsfx</artifact>
+                                    <excludes>
+                                        <exclude>org/controlsfx/control/spreadsheet/*</exclude>
+                                        <exclude>org/controlsfx/control/textfield/*</exclude>
+                                        <exclude>org/controlsfx/control/table/*</exclude>
+                                    </excludes>
+                                </filter>
                             </filters>
                         </configuration>
                     </execution>
