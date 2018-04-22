@@ -220,6 +220,7 @@ public class Profile extends ProfileBase implements Comparable<Profile>, Cloneab
         String separator = " : ";
         StringBuilder builder = new StringBuilder("\n");
         builder.append(StringUtils.leftPad(Dict.PROFILE.toString(), maxLength)).append(separator).append(mName).append("\n");
+        builder.append(StringUtils.leftPad("", maxLength)).append(separator).append(mDescriptionString).append("\n");
 
         for (ProfileInfo profileInfo : profileInfos) {
             builder.append(profileInfo.getTitle()).append("\n");
