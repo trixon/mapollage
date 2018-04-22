@@ -30,7 +30,7 @@ import org.apache.commons.lang3.StringUtils;
 import se.trixon.almond.util.BooleanHelper;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
-import se.trixon.mapollage.ui.OptionsPanel;
+import se.trixon.mapollage.ui.OptionsPane;
 
 /**
  *
@@ -276,7 +276,7 @@ public class Profile extends ProfileBase implements Comparable<Profile>, Cloneab
 
     @Override
     protected ProfileInfo getProfileInfo() {
-        ResourceBundle bundle = SystemHelper.getBundle(OptionsPanel.class, "Bundle");
+        ResourceBundle bundle = SystemHelper.getBundle(OptionsPane.class, "Bundle");
         ProfileInfo profileInfo = new ProfileInfo();
         LinkedHashMap<String, String> values = new LinkedHashMap<>();
 
