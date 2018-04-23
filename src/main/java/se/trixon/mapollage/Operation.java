@@ -162,7 +162,7 @@ public class Operation implements Runnable {
         Date date = new Date(mStartTime);
         SimpleDateFormat dateFormat = new SimpleDateFormat();
         mListener.onOperationStarted();
-        mListener.onOperationLog(new SimpleDateFormat().format(new Date()));
+        mListener.onOperationLog(new SimpleDateFormat().format(date));
 
         String status;
         mRootFolder = mDocument.createAndAddFolder().withName(getSafeXmlString(mProfileFolder.getRootName())).withOpen(true);
@@ -183,7 +183,7 @@ public class Operation implements Runnable {
         }
 
         if (!mInterrupted && !mFiles.isEmpty()) {
-            if (mProfilePlacemark.isSymbolAsPhoto()) {
+            if (isUsingThumbnails()) {
                 mThumbsDir = new File(mDestinationFile.getParent() + String.format("/%s-thumbnails", FilenameUtils.getBaseName(mDestinationFile.getAbsolutePath())));
                 try {
                     FileUtils.forceMkdir(mThumbsDir);
@@ -367,7 +367,7 @@ public class Operation implements Runnable {
                 highlightIconStyle.setScale(highlightZoom);
             }
 
-            if (mProfilePlacemark.isSymbolAsPhoto() || mProfilePhoto.getReference() == ProfilePhoto.Reference.THUMBNAIL) {
+            if (isUsingThumbnails()) {
                 File thumbFile = new File(mThumbsDir, imageId + ".jpg");
                 mFileThumbMap.put(file, thumbFile);
                 if (Files.isWritable(thumbFile.getParentFile().toPath())) {
@@ -821,6 +821,10 @@ public class Operation implements Runnable {
         return builder.toString();
     }
 
+    private boolean isUsingThumbnails() {
+        return mProfilePlacemark.isSymbolAsPhoto() || mProfilePhoto.getReference() == ProfilePhoto.Reference.THUMBNAIL;
+    }
+
     private void saveToFile() {
         mListener.onOperationLog("");
         List keys = new ArrayList(mRootFolders.keySet());
@@ -838,7 +842,7 @@ public class Operation implements Runnable {
             mRootFolder.getFeature().add(mPathGapFolder);
         }
 
-        if (mProfilePlacemark.isSymbolAsPhoto()) {
+        if (isUsingThumbnails()) {
             mListener.onOperationLog("\n" + String.format(mBundle.getString("stored_thumbnails"), mThumbsDir.getAbsolutePath()));
         }
 
