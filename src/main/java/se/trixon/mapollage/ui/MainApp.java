@@ -15,6 +15,7 @@
  */
 package se.trixon.mapollage.ui;
 
+import de.codecentric.centerdevice.MenuToolkit;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -50,6 +51,8 @@ import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.ToolBar;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
@@ -68,6 +71,7 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionGroup;
 import org.controlsfx.control.action.ActionUtils;
@@ -97,6 +101,7 @@ import se.trixon.mapollage.profile.Profile;
 public class MainApp extends Application {
 
     public static final String APP_TITLE = "Mapollage";
+    private static final boolean IS_MAC = SystemUtils.IS_OS_MAC;
     private static final int ICON_SIZE_PROFILE = 32;
     private static final int ICON_SIZE_TOOLBAR = 48;
     private static final Logger LOGGER = Logger.getLogger(MainApp.class.getName());
@@ -146,12 +151,15 @@ public class MainApp extends Application {
         createUI();
         postInit();
         initListeners();
+        if (IS_MAC) {
+            initMac();
+        }
         mStage.setTitle(APP_TITLE);
         mStage.show();
         mListView.requestFocus();
         initAccelerators();
         //profileEdit(mProfiles.getFirst());
-        profileRun(mProfiles.getFirst());
+        //profileRun(mProfiles.getFirst());
     }
 
     @Override
@@ -219,9 +227,12 @@ public class MainApp extends Application {
         accelerators.put(new KeyCodeCombination(KeyCode.N, KeyCombination.SHORTCUT_DOWN), (Runnable) () -> {
             profileEdit(null);
         });
-        accelerators.put(new KeyCodeCombination(KeyCode.COMMA, KeyCombination.SHORTCUT_DOWN), (Runnable) () -> {
-            displayOptions();
-        });
+
+        if (!IS_MAC) {
+            accelerators.put(new KeyCodeCombination(KeyCode.COMMA, KeyCombination.SHORTCUT_DOWN), (Runnable) () -> {
+                displayOptions();
+            });
+        }
     }
 
     private void initActions() {
@@ -258,7 +269,9 @@ public class MainApp extends Application {
             displayOptions();
         });
         mOptionsAction.setGraphic(mFontAwesome.create(FontAwesome.Glyph.COG).size(ICON_SIZE_TOOLBAR).color(mIconColor));
-        mOptionsAction.setAccelerator(new KeyCodeCombination(KeyCode.COMMA, KeyCombination.SHORTCUT_DOWN));
+        if (!IS_MAC) {
+            mOptionsAction.setAccelerator(new KeyCodeCombination(KeyCode.COMMA, KeyCombination.SHORTCUT_DOWN));
+        }
 
         //help
         mHelpAction = new Action(Dict.HELP.toString(), (ActionEvent event) -> {
@@ -349,7 +362,26 @@ public class MainApp extends Application {
                 mSuccess = true;
             }
         };
+    }
 
+    private void initMac() {
+        MenuToolkit menuToolkit = MenuToolkit.toolkit();
+        Menu applicationMenu = menuToolkit.createDefaultApplicationMenu(APP_TITLE);
+        menuToolkit.setApplicationMenu(applicationMenu);
+
+        applicationMenu.getItems().remove(0);
+        MenuItem aboutMenuItem = new MenuItem(String.format(Dict.ABOUT_S.toString(), APP_TITLE));
+        aboutMenuItem.setOnAction(mAboutAction);
+
+        MenuItem settingsMenuItem = new MenuItem(Dict.PREFERENCES.toString());
+        settingsMenuItem.setOnAction(mOptionsAction);
+        settingsMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.COMMA, KeyCombination.SHORTCUT_DOWN));
+
+        applicationMenu.getItems().add(0, aboutMenuItem);
+        applicationMenu.getItems().add(2, settingsMenuItem);
+
+        int cnt = applicationMenu.getItems().size();
+        applicationMenu.getItems().get(cnt - 1).setText(String.format("%s %s", Dict.QUIT.toString(), APP_TITLE));
     }
 
     private void populateProfiles(Profile profile) {
