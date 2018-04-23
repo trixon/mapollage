@@ -162,7 +162,7 @@ public class Operation implements Runnable {
         Date date = new Date(mStartTime);
         SimpleDateFormat dateFormat = new SimpleDateFormat();
         mListener.onOperationStarted();
-        mListener.onOperationLog(new SimpleDateFormat().format(date));
+        mListener.onOperationLog(dateFormat.format(date));
 
         String status;
         mRootFolder = mDocument.createAndAddFolder().withName(getSafeXmlString(mProfileFolder.getRootName())).withOpen(true);

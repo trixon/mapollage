@@ -101,9 +101,9 @@ import se.trixon.mapollage.profile.Profile;
 public class MainApp extends Application {
 
     public static final String APP_TITLE = "Mapollage";
-    private static final boolean IS_MAC = SystemUtils.IS_OS_MAC;
     private static final int ICON_SIZE_PROFILE = 32;
     private static final int ICON_SIZE_TOOLBAR = 48;
+    private static final boolean IS_MAC = SystemUtils.IS_OS_MAC;
     private static final Logger LOGGER = Logger.getLogger(MainApp.class.getName());
     private Action mAboutAction;
     private Action mAboutDateFormatAction;
@@ -324,6 +324,8 @@ public class MainApp extends Application {
                     if (mOptions.isAutoOpen()) {
                         SystemHelper.desktopOpen(mDestination);
                     }
+                } else if (0 == placemarkCount) {
+                    mProgressPanel.setProgress(1);
                 }
             }
 
@@ -356,9 +358,9 @@ public class MainApp extends Application {
 
             @Override
             public void onOperationStarted() {
+                setRunningState(RunState.CANCELABLE);
                 mOpenButton.setDisable(true);
                 mProgressPanel.setProgress(0);
-                setRunningState(RunState.CANCELABLE);
                 mSuccess = true;
             }
         };
