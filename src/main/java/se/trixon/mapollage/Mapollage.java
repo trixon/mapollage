@@ -235,7 +235,7 @@ public class Mapollage implements OperationListener {
     }
 
     private void initOptions() {
-        Option help = Option.builder("?")
+        Option help = Option.builder("h")
                 .longOpt(HELP)
                 .desc(sBundle.getString("opt_help_desc"))
                 .build();

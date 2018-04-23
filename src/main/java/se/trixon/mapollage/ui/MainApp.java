@@ -504,7 +504,7 @@ public class MainApp extends Application {
         SimpleDialog.addFilter(new ExtensionFilter(Dict.ALL_FILES.toString(), "*"));
         SimpleDialog.addFilter(filter);
         SimpleDialog.setFilter(filter);
-        SimpleDialog.setParent(mStage);
+        SimpleDialog.setOwner(mStage);
         SimpleDialog.setTitle(String.format("%s %s", Dict.SAVE.toString(), profile.getName()));
 
         if (mDestination == null) {
