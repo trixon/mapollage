@@ -416,16 +416,6 @@ public class MainApp extends Application {
             title = Dict.ADD.toString();
             addNew = true;
             profile = new Profile();
-//            profile.setSourceDir(FileUtils.getUserDirectory());
-//            profile.setDestDir(FileUtils.getUserDirectory());
-//            profile.setFilePattern("{*.jpg,*.JPG}");
-//            profile.setDatePattern("yyyy/MM/yyyy-MM-dd");
-//            profile.setOperation(0);
-//            profile.setFollowLinks(true);
-//            profile.setRecursive(true);
-//            profile.setReplaceExisting(false);
-//            profile.setCaseBase(NameCase.UNCHANGED);
-//            profile.setCaseExt(NameCase.UNCHANGED);
         } else if (clone) {
             title = Dict.CLONE.toString();
             profile.setLastRun(0);
