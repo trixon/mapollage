@@ -102,7 +102,7 @@ public class MainApp extends Application {
 
     public static final String APP_TITLE = "Mapollage";
     private static final int ICON_SIZE_PROFILE = 32;
-    private static final int ICON_SIZE_TOOLBAR = 48;
+    private static final int ICON_SIZE_TOOLBAR = 40;
     private static final boolean IS_MAC = SystemUtils.IS_OS_MAC;
     private static final Logger LOGGER = Logger.getLogger(MainApp.class.getName());
     private Action mAboutAction;
@@ -600,7 +600,7 @@ public class MainApp extends Application {
 
         private final BorderPane mBorderPane = new BorderPane();
         private final Label mDescLabel = new Label();
-        private final Duration mDuration = Duration.millis(500);
+        private final Duration mDuration = Duration.millis(200);
         private final FadeTransition mFadeInTransition = new FadeTransition();
         private final FadeTransition mFadeOutTransition = new FadeTransition();
         private final Label mLastLabel = new Label();
