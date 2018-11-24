@@ -390,7 +390,7 @@ public class MainApp extends Application {
         mItems.clear();
         Collections.sort(mProfiles);
 
-        mProfiles.stream().forEach((item) -> {
+        mProfiles.stream().forEachOrdered((item) -> {
             mItems.add(item);
         });
 
