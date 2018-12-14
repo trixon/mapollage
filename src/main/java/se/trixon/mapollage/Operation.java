@@ -466,6 +466,7 @@ public class Operation implements Runnable {
                 Folder folder = (Folder) feature;
 
                 if (folder != mPathFolder && folder != mPathGapFolder && folder != mPolygonFolder) {
+                    //TODO Why do we skip images in root folder?
                     System.out.println("ENTER FOLDER=" + folder.getName());
                     System.out.println("PARENT FOLDER=" + polygonParent.getName());
                     Folder polygonFolder = polygonParent.createAndAddFolder().withName(folder.getName()).withOpen(true);
@@ -483,13 +484,13 @@ public class Operation implements Runnable {
 
             if (feature instanceof Placemark) {
                 Placemark placemark = (Placemark) feature;
-                System.out.println("PLACEMARK=" + placemark.getName() + "(PARENT=)" + polygonParent.getName());
+                System.out.format("PLACEMARK=%s, PARENT=%s\n", placemark.getName(), polygonParent.getName());
 
                 Point point = (Point) placemark.getGeometry();
+                ArrayList<Coordinate> coordinates = mFolderPolygonInputs.computeIfAbsent(polygonParent, k -> new ArrayList<>());
                 point.getCoordinates().forEach((coordinate) -> {
-                    mFolderPolygonInputs.get(polygonParent).add(coordinate);
+                    coordinates.add(coordinate);
                 });
-
             }
         }
     }
