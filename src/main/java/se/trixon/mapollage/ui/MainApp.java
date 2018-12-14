@@ -577,6 +577,7 @@ public class MainApp extends Application {
         Platform.runLater(() -> {
             if (mToolBar == null) {
                 mToolBar = ActionUtils.createToolBar(actions, ActionUtils.ActionTextBehavior.HIDE);
+                mToolBar.setStyle("-fx-spacing: 0px;");
                 mRoot.setTop(mToolBar);
             } else {
                 mToolBar = ActionUtils.updateToolBar(mToolBar, actions, ActionUtils.ActionTextBehavior.HIDE);
@@ -690,6 +691,7 @@ public class MainApp extends Application {
             ToolBar toolBar = ActionUtils.createToolBar(actions, ActionUtils.ActionTextBehavior.HIDE);
             toolBar.setBackground(Background.EMPTY);
             toolBar.setVisible(false);
+            toolBar.setStyle("-fx-spacing: 0px;");
             adjustButtonWidth(toolBar.getItems().stream(), ICON_SIZE_PROFILE * 1.8);
 
             toolBar.getItems().stream().filter((item) -> (item instanceof ButtonBase))
