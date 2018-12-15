@@ -236,6 +236,27 @@ public class Operation implements Runnable {
         }
     }
 
+    HashMap<String, Properties> getDirToDesc() {
+        return mDirToDesc;
+    }
+
+    String getExcludePattern() {
+        return mProfileSource.getExcludePattern();
+    }
+
+    OperationListener getListener() {
+        return mListener;
+    }
+
+    ProfileDescription getProfileDescription() {
+        return mProfileDescription;
+    }
+
+    void logError(String message) {
+        mNumOfErrors++;
+        mListener.onOperationError(message);
+    }
+
     private void addPath() {
         Collections.sort(mLineNodes, (LineNode o1, LineNode o2) -> o1.getDate().compareTo(o2.getDate()));
 
@@ -466,32 +487,28 @@ public class Operation implements Runnable {
                 Folder folder = (Folder) feature;
 
                 if (folder != mPathFolder && folder != mPathGapFolder && folder != mPolygonFolder) {
-                    //TODO Why do we skip images in root folder?
-                    System.out.println("ENTER FOLDER=" + folder.getName());
-                    System.out.println("PARENT FOLDER=" + polygonParent.getName());
                     Folder polygonFolder = polygonParent.createAndAddFolder().withName(folder.getName()).withOpen(true);
                     mFolderPolygonInputs.put(polygonFolder, new ArrayList<>());
                     addPolygons(polygonFolder, folder.getFeature());
-                    System.out.println("POLYGON FOLDER=" + polygonFolder.getName() + " CONTAINS");
 
                     if (mFolderPolygonInputs.get(polygonFolder) != null) {
                         addPolygon(folder.getName(), mFolderPolygonInputs.get(polygonFolder), polygonParent);
                     }
-                    System.out.println("EXIT FOLDER=" + folder.getName());
-                    System.out.println("");
                 }
             }
 
             if (feature instanceof Placemark) {
                 Placemark placemark = (Placemark) feature;
-                System.out.format("PLACEMARK=%s, PARENT=%s\n", placemark.getName(), polygonParent.getName());
 
                 Point point = (Point) placemark.getGeometry();
                 ArrayList<Coordinate> coordinates = mFolderPolygonInputs.computeIfAbsent(polygonParent, k -> new ArrayList<>());
-                point.getCoordinates().forEach((coordinate) -> {
-                    coordinates.add(coordinate);
-                });
+                coordinates.addAll(point.getCoordinates());
             }
+        }
+
+        ArrayList<Coordinate> rootCoordinates = mFolderPolygonInputs.get(mPolygonFolder);
+        if (polygonParent == mPolygonFolder && rootCoordinates != null) {
+            addPolygon(mPolygonFolder.getName(), rootCoordinates, polygonParent);
         }
     }
 
@@ -931,41 +948,5 @@ public class Operation implements Runnable {
                 }
             }
         }
-    }
-//    private boolean scanForFolderRemoval(Folder folder, boolean hadEmpty) {
-//        for (Feature feature : folder.getFeature()) {
-//            if (feature instanceof Folder) {
-//                Folder subFolder = (Folder) feature;
-//                if (subFolder.getFeature().isEmpty()) {
-//                    mPolygonRemovals.put(subFolder, folder);
-//                    hadEmpty = true;
-//                } else {
-//                    scanForFolderRemoval(subFolder, hadEmpty);
-//                }
-//            }
-//        }
-//
-//        return hadEmpty;
-//    }
-
-    HashMap<String, Properties> getDirToDesc() {
-        return mDirToDesc;
-    }
-
-    String getExcludePattern() {
-        return mProfileSource.getExcludePattern();
-    }
-
-    OperationListener getListener() {
-        return mListener;
-    }
-
-    ProfileDescription getProfileDescription() {
-        return mProfileDescription;
-    }
-
-    void logError(String message) {
-        mNumOfErrors++;
-        mListener.onOperationError(message);
     }
 }
