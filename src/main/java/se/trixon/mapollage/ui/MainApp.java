@@ -101,7 +101,7 @@ import se.trixon.mapollage.profile.Profile;
 public class MainApp extends Application {
 
     public static final String APP_TITLE = "Mapollage";
-    private static final int ICON_SIZE_PROFILE = 32;
+    private static final int ICON_SIZE_PROFILE = 22;
     private static final int ICON_SIZE_TOOLBAR = 40;
     private static final boolean IS_MAC = SystemUtils.IS_OS_MAC;
     private static final Logger LOGGER = Logger.getLogger(MainApp.class.getName());
@@ -643,9 +643,9 @@ public class MainApp extends Application {
             String fontFamily = mDefaultFont.getFamily();
             double fontSize = mDefaultFont.getSize();
 
-            mNameLabel.setFont(Font.font(fontFamily, FontWeight.BOLD, fontSize * 2));
-            mDescLabel.setFont(Font.font(fontFamily, FontWeight.NORMAL, fontSize * 1.3));
-            mLastLabel.setFont(Font.font(fontFamily, FontWeight.NORMAL, fontSize * 1.3));
+            mNameLabel.setFont(Font.font(fontFamily, FontWeight.BOLD, fontSize * 1.4));
+            mDescLabel.setFont(Font.font(fontFamily, FontWeight.NORMAL, fontSize * 1.1));
+            mLastLabel.setFont(Font.font(fontFamily, FontWeight.NORMAL, fontSize * 1.1));
 
             Action runAction = new Action(Dict.RUN.toString(), (ActionEvent event) -> {
                 profileRun(getSelectedProfile());
