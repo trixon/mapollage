@@ -1,5 +1,5 @@
-/*
- * Copyright 2018 Patrik Karlström.
+/* 
+ * Copyright 2019 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,11 +49,9 @@ public class FileVisitor extends SimpleFileVisitor<Path> {
     private final Operation mOperation;
     private final OperationListener mOperationListener;
     private final PathMatcher mPathMatcher;
-    private final File mStartDir;
     private final boolean mUseExternalDescription;
 
     public FileVisitor(PathMatcher pathMatcher, List<File> paths, File startDir, Operation operation) {
-        mStartDir = startDir;
         mOperation = operation;
         mOperationListener = operation.getListener();
         mFiles = paths;

@@ -1,5 +1,5 @@
-/*
- * Copyright 2018 Patrik Karlström.
+/* 
+ * Copyright 2019 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -202,7 +202,7 @@ public class MainApp extends Application {
 
     private void displayOptions() {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.initOwner(mStage);
+        alert.initOwner(null);
         alert.setTitle(Dict.OPTIONS.toString());
         alert.setGraphic(null);
         alert.setHeaderText(null);
