@@ -44,6 +44,15 @@
         <developerConnection>scm:git:git@github.com:trixon/java-mapollage.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
+    <repositories>
+        <repository>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <id>bintray-trixon-maven</id>
+            <url>https://dl.bintray.com/trixon/maven</url>
+        </repository>
+    </repositories>
     <dependencies>
         <dependency>
             <groupId>commons-cli</groupId>
@@ -58,7 +67,7 @@
         <dependency>
             <groupId>se.trixon.almond</groupId>
             <artifactId>almond-util</artifactId>
-            <version>3.0.4-SNAPSHOT</version>
+            <version>3.0.4</version>
         </dependency>
         <dependency>
             <groupId>com.drewnoakes</groupId>
