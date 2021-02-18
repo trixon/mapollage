@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2019 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -47,7 +47,7 @@ public class PathTab extends BaseTab {
     private final Spinner<Double> mWidthSpinner = new Spinner(1.0, 10.0, 1.0, 0.1);
 
     public PathTab(Profile profile) {
-        setText(Dict.PATH_GFX.toString());
+        setText(Dict.Geometry.PATH.toString());
         setGraphic(FontAwesome.Glyph.CODE_FORK.getChar());
         mProfile = profile;
         createUI();
@@ -129,7 +129,7 @@ public class PathTab extends BaseTab {
         VBox pathBox = new VBox();
 
         setContent(vbox);
-        Label widthLabel = new Label(Dict.WIDTH.toString());
+        Label widthLabel = new Label(Dict.Geometry.WIDTH.toString());
         Label splitByLabel = new Label(Dict.SPLIT_BY.toString());
 
         mWidthSpinner.setEditable(true);

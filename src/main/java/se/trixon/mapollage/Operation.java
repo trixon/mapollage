@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2019 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -260,8 +260,8 @@ public class Operation implements Runnable {
     private void addPath() {
         Collections.sort(mLineNodes, (LineNode o1, LineNode o2) -> o1.getDate().compareTo(o2.getDate()));
 
-        mPathFolder = KmlFactory.createFolder().withName(Dict.PATH_GFX.toString());
-        mPathGapFolder = KmlFactory.createFolder().withName(Dict.PATH_GAP_GFX.toString());
+        mPathFolder = KmlFactory.createFolder().withName(Dict.Geometry.PATH.toString());
+        mPathGapFolder = KmlFactory.createFolder().withName(Dict.Geometry.PATH_GAP.toString());
 
         String pattern = getPattern(mProfilePath.getSplitBy());
         SimpleDateFormat dateFormat = new SimpleDateFormat(pattern);
@@ -777,14 +777,14 @@ public class Operation implements Runnable {
         switch (mProfilePlacemark.getNameBy()) {
             case DATE:
                 try {
-                    name = mProfilePlacemark.getDateFormat().format(exifDate);
-                } catch (IllegalArgumentException ex) {
-                    name = "invalid exif date";
-                } catch (NullPointerException ex) {
-                    name = "invalid exif date";
-                    logError(String.format("E011 %s", file.getAbsolutePath()));
-                }
-                break;
+                name = mProfilePlacemark.getDateFormat().format(exifDate);
+            } catch (IllegalArgumentException ex) {
+                name = "invalid exif date";
+            } catch (NullPointerException ex) {
+                name = "invalid exif date";
+                logError(String.format("E011 %s", file.getAbsolutePath()));
+            }
+            break;
 
             case FILE:
                 name = FilenameUtils.getBaseName(file.getAbsolutePath());

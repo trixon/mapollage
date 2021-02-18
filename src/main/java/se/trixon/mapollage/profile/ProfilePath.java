@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2019 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -46,7 +46,7 @@ public class ProfilePath extends ProfileBase {
 
     @Override
     public String getTitle() {
-        return Dict.PATH_GFX.toString();
+        return Dict.Geometry.PATH.toString();
     }
 
     public Double getWidth() {
@@ -107,7 +107,7 @@ public class ProfilePath extends ProfileBase {
         LinkedHashMap<String, String> values = new LinkedHashMap<>();
         values.put(BUNDLE_UI.getString("PathTab.drawPolygonCheckBox"), BooleanHelper.asYesNo(mDrawPolygon));
         values.put(BUNDLE_UI.getString("PathTab.drawPathCheckBox"), BooleanHelper.asYesNo(mDrawPath));
-        values.put(Dict.WIDTH.toString(), String.valueOf(mWidth));
+        values.put(Dict.Geometry.WIDTH.toString(), String.valueOf(mWidth));
 
         values.put(Dict.SPLIT_BY.toString(), getLabel(mSplitBy));
 
