@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2021 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -69,6 +69,12 @@ public class AppStart implements OperationListener {
                 .append(sBundle.getString("help_footer"));
 
         return sb.toString();
+    }
+
+    public static String getVersionInfo() {
+        var pomInfo = new PomInfo(AppStart.class, "se.trixon", "mapollage");
+
+        return String.format(sBundle.getString("version_info"), pomInfo.getVersion());
     }
 
     /**
@@ -229,8 +235,7 @@ public class AppStart implements OperationListener {
     }
 
     private void displayVersion() {
-        PomInfo pomInfo = new PomInfo(AppStart.class, "se.trixon", "mapollage");
-        System.out.println(String.format(sBundle.getString("version_info"), pomInfo.getVersion()));
+        System.out.println(getVersionInfo());
     }
 
     private void initOptions() {

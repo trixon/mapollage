@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2021 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,10 +25,12 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import org.controlsfx.glyphfont.FontAwesome;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
+import se.trixon.almond.util.fx.UriLabel;
 import se.trixon.mapollage.profile.Profile;
 import se.trixon.mapollage.profile.ProfilePlacemark;
 import se.trixon.mapollage.profile.ProfilePlacemark.NameBy;
@@ -40,6 +42,7 @@ import se.trixon.mapollage.profile.ProfilePlacemark.SymbolAs;
  */
 public class PlacemarkTab extends BaseTab {
 
+    private final UriLabel mDateFormatUriLabel = new UriLabel(Dict.PATTERNS.toString());
     private final ComboBox<String> mDatePatternComboBox = new ComboBox<>();
     private final RadioButton mNameByDateRadioButton = new RadioButton(Dict.DATE_PATTERN.toString());
     private final RadioButton mNameByFileRadioButton = new RadioButton(Dict.FILENAME.toString());
@@ -141,6 +144,7 @@ public class PlacemarkTab extends BaseTab {
     }
 
     private void createUI() {
+        mDateFormatUriLabel.setUri("https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/text/SimpleDateFormat.html");
         VBox vBox = new VBox();
         VBox leftBox = new VBox();
         VBox rightBox = new VBox();
@@ -165,7 +169,7 @@ public class PlacemarkTab extends BaseTab {
         leftBox.getChildren().addAll(
                 new Label(mBundle.getString("PlacemarkTab.nameByLabel")),
                 mNameByFileRadioButton,
-                mNameByDateRadioButton,
+                new HBox(8, mNameByDateRadioButton, mDateFormatUriLabel),
                 mDatePatternComboBox,
                 mNameByNoRadioButton
         );
@@ -192,6 +196,7 @@ public class PlacemarkTab extends BaseTab {
         addTopPadding(
                 mNameByFileRadioButton,
                 mNameByDateRadioButton,
+                mDateFormatUriLabel,
                 mNameByNoRadioButton,
                 rightBox,
                 mSymbolAsPhotoRadioButton,

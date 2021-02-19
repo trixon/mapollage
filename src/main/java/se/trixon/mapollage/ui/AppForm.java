@@ -46,6 +46,7 @@ import javafx.scene.text.FontWeight;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
 import se.trixon.almond.util.Dict;
@@ -55,6 +56,7 @@ import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.dialogs.SimpleDialog;
 import se.trixon.almond.util.icons.material.MaterialIcon;
 import static se.trixon.mapollage.App.ICON_SIZE_TOOLBAR;
+import se.trixon.mapollage.AppStart;
 import se.trixon.mapollage.Operation;
 import se.trixon.mapollage.OperationListener;
 import se.trixon.mapollage.Options;
@@ -175,6 +177,7 @@ public class AppForm extends BorderPane {
         });
 
         mLog.out(SystemHelper.getSystemInfo());
+        mLog.out("  " + StringUtils.replace(AppStart.getVersionInfo(), "\n", "\n  "));
 
         mAddAction = new Action(Dict.ADD.toString(), actionEvent -> {
             profileEdit(null);

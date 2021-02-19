@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2021 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -31,12 +31,14 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Tooltip;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.glyphfont.FontAwesome;
 import org.controlsfx.validation.Validator;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.fx.UriLabel;
 import se.trixon.mapollage.profile.Profile;
 import se.trixon.mapollage.profile.ProfileFolder;
 import se.trixon.mapollage.profile.ProfileFolder.FolderBy;
@@ -48,6 +50,7 @@ import static se.trixon.mapollage.ui.config.BaseTab.sValidationSupport;
  */
 public class FoldersTab extends BaseTab {
 
+    private final UriLabel mDateFormatUriLabel = new UriLabel(Dict.PATTERNS.toString());
     private final ComboBox<String> mDatePatternComboBox = new ComboBox<>();
     private final RadioButton mFolderByDateRadioButton = new RadioButton(Dict.DATE_PATTERN.toString());
     private final RadioButton mFolderByDirectoryRadioButton = new RadioButton(mBundle.getString("FoldersTab.folderByDirectoryRadioButton"));
@@ -127,6 +130,7 @@ public class FoldersTab extends BaseTab {
     }
 
     private void createUI() {
+        mDateFormatUriLabel.setUri("https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/text/SimpleDateFormat.html");
         VBox leftBox = new VBox();
         VBox rightBox = new VBox();
 
@@ -161,7 +165,7 @@ public class FoldersTab extends BaseTab {
         rightBox.getChildren().addAll(
                 label,
                 mFolderByDirectoryRadioButton,
-                mFolderByDateRadioButton,
+                new HBox(8, mFolderByDateRadioButton, mDateFormatUriLabel),
                 mDatePatternComboBox,
                 mFolderByRegexRadioButton,
                 mRegexTextField,
@@ -174,6 +178,7 @@ public class FoldersTab extends BaseTab {
                 rootDescLabel,
                 mFolderByDirectoryRadioButton,
                 mFolderByDateRadioButton,
+                mDateFormatUriLabel,
                 mFolderByRegexRadioButton,
                 regexLabel,
                 mFolderByNoneRadioButton,

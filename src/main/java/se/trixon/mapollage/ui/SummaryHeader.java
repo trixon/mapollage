@@ -50,6 +50,6 @@ public class SummaryHeader extends VBox {
         }
 
         mNameLabel.setText(profile.getName());
-//        mDescLabel.setText(profile.getDescription());
+        mDescLabel.setText(profile.getDescriptionString());
     }
 }

@@ -232,7 +232,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>se.trixon.mapollage.Mapollage</mainClass>
+                            <mainClass>se.trixon.mapollage.AppStart</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
