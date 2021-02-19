@@ -88,6 +88,7 @@ import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.control.LogPanel;
 import se.trixon.almond.util.fx.dialogs.SimpleDialog;
 import se.trixon.almond.util.fx.dialogs.about.AboutPane;
+import se.trixon.almond.util.icons.material.MaterialIcon;
 import se.trixon.mapollage.Mapollage;
 import se.trixon.mapollage.Operation;
 import se.trixon.mapollage.OperationListener;
@@ -103,7 +104,7 @@ public class MainApp extends Application {
 
     public static final String APP_TITLE = "Mapollage";
     private static final int ICON_SIZE_PROFILE = 22;
-    private static final int ICON_SIZE_TOOLBAR = 40;
+    private static final int ICON_SIZE_TOOLBAR = 32;
     private static final boolean IS_MAC = SystemUtils.IS_OS_MAC;
     private static final Logger LOGGER = Logger.getLogger(MainApp.class.getName());
     private Action mAboutAction;
@@ -140,6 +141,7 @@ public class MainApp extends Application {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        //Locale.setDefault(Locale.ENGLISH);
         launch(args);
     }
 
@@ -155,7 +157,12 @@ public class MainApp extends Application {
         if (IS_MAC) {
             initMac();
         }
+
+        updateNightMode();
+
         mStage.setTitle(APP_TITLE);
+        FxHelper.removeSceneInitFlicker(mStage);
+
         mStage.show();
         mListView.requestFocus();
         initAccelerators();
@@ -202,20 +209,23 @@ public class MainApp extends Application {
     }
 
     private void displayOptions() {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.initOwner(null);
+        var alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.initOwner(mStage);
         alert.setTitle(Dict.OPTIONS.toString());
         alert.setGraphic(null);
         alert.setHeaderText(null);
+        alert.setResizable(true);
 
-        final DialogPane dialogPane = alert.getDialogPane();
-        OptionsPanel optionsPanel = new OptionsPanel();
+        var optionsPanel = new OptionsPanel();
+        var dialogPane = alert.getDialogPane();
         dialogPane.setContent(optionsPanel);
+        FxHelper.removeSceneInitFlicker(dialogPane);
 
-        Optional<ButtonType> result = FxHelper.showAndWait(alert, mStage);
-        if (result.get() == ButtonType.OK) {
-            optionsPanel.save();
-        }
+        var button = (Button) dialogPane.lookupButton(ButtonType.OK);
+        button.setText(Dict.CLOSE.toString());
+        dialogPane.setPrefSize(400, 200);
+
+        FxHelper.showAndWait(alert, mStage);
     }
 
     private void initAccelerators() {
@@ -299,6 +309,10 @@ public class MainApp extends Application {
     }
 
     private void initListeners() {
+        mOptions.nightModeProperty().addListener((observable, oldValue, newValue) -> {
+            updateNightMode();
+        });
+
         mOperationListener = new OperationListener() {
             private boolean mSuccess;
 
@@ -592,6 +606,21 @@ public class MainApp extends Application {
                 FxHelper.undecorateButton(buttonBase);
             });
         });
+    }
+
+    private void updateNightMode() {
+        MaterialIcon.setDefaultColor(mOptions.isNightMode() ? Color.LIGHTGRAY : Color.BLACK);
+
+        mOptionsAction.setGraphic(MaterialIcon._Action.SETTINGS.getImageView(ICON_SIZE_TOOLBAR));
+        mAboutAction.setGraphic(MaterialIcon._Action.INFO_OUTLINE.getImageView(ICON_SIZE_TOOLBAR));
+        mHelpAction.setGraphic(MaterialIcon._Action.HELP_OUTLINE.getImageView(ICON_SIZE_TOOLBAR));
+
+        FxHelper.setDarkThemeEnabled(mOptions.isNightMode());
+        if (mOptions.isNightMode()) {
+            FxHelper.loadDarkTheme(mStage.getScene());
+        } else {
+            FxHelper.unloadDarkTheme(mStage.getScene());
+        }
     }
 
     public enum RunState {

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2021 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,6 +24,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
+import org.controlsfx.control.ToggleSwitch;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.FxHelper;
@@ -49,6 +50,7 @@ public class OptionsPanel extends GridPane {
     private final Spinner<Integer> mThumbnailSizeSpinner = new Spinner(100, 1200, 250, 10);
     private final Insets mTopInsets = new Insets(8, 0, 0, 0);
     private final CheckBox mWordWrapCheckBox = new CheckBox(Dict.DYNAMIC_WORD_WRAP.toString());
+    private ToggleSwitch mNightModeToggleSwitch;
 
     public OptionsPanel() {
         createUI();
@@ -93,6 +95,7 @@ public class OptionsPanel extends GridPane {
         mDefaultLatitudeSpinner.setEditable(true);
         mThumbnailSizeSpinner.setEditable(true);
         mThumbnailBorderSizeSpinner.setEditable(true);
+        mNightModeToggleSwitch = new ToggleSwitch(Dict.NIGHT_MODE.toString());
 
         FxHelper.autoCommitSpinners(
                 mDefaultLatitudeSpinner,
@@ -119,7 +122,8 @@ public class OptionsPanel extends GridPane {
                 mCleanSpaceCheckBox,
                 logLabel,
                 mWordWrapCheckBox,
-                mLogKmlCheckBox
+                mLogKmlCheckBox,
+                mNightModeToggleSwitch
         );
 
         addTopPadding(
@@ -135,6 +139,8 @@ public class OptionsPanel extends GridPane {
                 mCleanSpaceCheckBox,
                 mLogKmlCheckBox
         );
+
+        mNightModeToggleSwitch.selectedProperty().bindBidirectional(mOptions.nightModeProperty());
     }
 
     private void load() {

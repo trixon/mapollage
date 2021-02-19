@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2021 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,12 +17,16 @@ package se.trixon.mapollage;
 
 import java.util.Locale;
 import java.util.prefs.Preferences;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ChangeListener;
+import se.trixon.almond.util.OptionsBase;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class Options {
+public class Options extends OptionsBase {
 
     public static final String KEY_AUTO_OPEN = "auto_open";
     public static final String KEY_CLEAN_NS2 = "clean_ns2";
@@ -39,18 +43,27 @@ public class Options {
     private static final Locale DEFAULT_LOCALE = Locale.getDefault();
     private static final boolean DEFAULT_LOG_KML = false;
     private static final boolean DEFAULT_WORD_WRAP = false;
+    private static final String KEY_UI_NIGHTMODE = "ui.nightmode";
+    private static final String KEY_UI_WORDWRAP = "ui.wordwrap";
     private final boolean DEFAULT_AUTO_OPEN = true;
     private final Double DEFAULT_LAT = 57.6;
     private final Double DEFAULT_LON = 11.3;
     private final int DEFAULT_THUMBNAIL_BORDER_SIZE = 3;
     private final int DEFAULT_THUMBNAIL_SIZE = 1000;
-    private final Preferences mPreferences = Preferences.userNodeForPackage(Options.class);
+    private final BooleanProperty mNightModeProperty = new SimpleBooleanProperty();
+    private final BooleanProperty mWordWrapProperty = new SimpleBooleanProperty();
 
     public static Options getInstance() {
         return Holder.INSTANCE;
     }
 
     private Options() {
+        setPreferences(Preferences.userNodeForPackage(Mapollage.class));
+
+        mNightModeProperty.set(is(KEY_UI_NIGHTMODE, true));
+        mWordWrapProperty.set(is(KEY_UI_WORDWRAP, true));
+
+        initListeners();
     }
 
     public Double getDefaultLat() {
@@ -63,10 +76,6 @@ public class Options {
 
     public Locale getLocale() {
         return Locale.forLanguageTag(mPreferences.get(KEY_LOCALE, DEFAULT_LOCALE.toLanguageTag()));
-    }
-
-    public Preferences getPreferences() {
-        return mPreferences;
     }
 
     public int getThumbnailBorderSize() {
@@ -93,8 +102,16 @@ public class Options {
         return mPreferences.getBoolean(KEY_LOG_KML, DEFAULT_LOG_KML);
     }
 
+    public boolean isNightMode() {
+        return mNightModeProperty.get();
+    }
+
     public boolean isWordWrap() {
-        return mPreferences.getBoolean(KEY_WORD_WRAP, DEFAULT_WORD_WRAP);
+        return mWordWrapProperty.get();
+    }
+
+    public BooleanProperty nightModeProperty() {
+        return mNightModeProperty;
     }
 
     public void setAutoOpen(boolean value) {
@@ -125,6 +142,10 @@ public class Options {
         mPreferences.putBoolean(KEY_LOG_KML, value);
     }
 
+    public void setNightMode(boolean nightMode) {
+        mNightModeProperty.set(nightMode);
+    }
+
     public void setThumbnailBorderSize(int size) {
         mPreferences.putInt(KEY_THUMBNAIL_BORDER_SIZE, size);
     }
@@ -135,6 +156,24 @@ public class Options {
 
     public void setWordWrap(boolean value) {
         mPreferences.putBoolean(KEY_WORD_WRAP, value);
+    }
+
+    public BooleanProperty wordWrapProperty() {
+        return mWordWrapProperty;
+    }
+
+    private void initListeners() {
+        ChangeListener<Object> changeListener = (observable, oldValue, newValue) -> {
+            save();
+        };
+
+        mNightModeProperty.addListener(changeListener);
+        mWordWrapProperty.addListener(changeListener);
+    }
+
+    private void save() {
+        put(KEY_UI_NIGHTMODE, isNightMode());
+        put(KEY_UI_WORDWRAP, isWordWrap());
     }
 
     private static class Holder {
