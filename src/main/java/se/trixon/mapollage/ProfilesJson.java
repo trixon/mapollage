@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2021 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,7 +22,7 @@ import com.google.gson.annotations.SerializedName;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import org.apache.commons.io.FileUtils;
 import se.trixon.mapollage.profile.Profile;
 
@@ -41,7 +41,7 @@ public class ProfilesJson {
     @SerializedName("format_version")
     private int mFileFormatVersion;
     @SerializedName("profiles")
-    private final LinkedList<Profile> mProfiles = new LinkedList<>();
+    private final ArrayList<Profile> mProfiles = new ArrayList<>();
 
     public static ProfilesJson open(File file) throws IOException, JsonSyntaxException {
         String json = FileUtils.readFileToString(file, Charset.defaultCharset());
@@ -59,7 +59,7 @@ public class ProfilesJson {
         return mFileFormatVersion;
     }
 
-    public LinkedList<Profile> getProfiles() {
+    public ArrayList<Profile> getProfiles() {
         return mProfiles;
     }
 

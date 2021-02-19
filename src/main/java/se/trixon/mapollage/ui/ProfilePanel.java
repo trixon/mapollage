@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2021 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -40,6 +40,8 @@ import se.trixon.mapollage.ui.config.SourceTab;
  */
 public class ProfilePanel extends TabPane {
 
+    private DescriptionTab mDescriptionTab;
+
     private FoldersTab mFoldersTab;
     private Button mOkButton;
     private PathTab mPathTab;
@@ -47,7 +49,6 @@ public class ProfilePanel extends TabPane {
     private PlacemarkTab mPlacemarkTab;
     private Profile mProfile;
     private SourceTab mSourceTab;
-    private DescriptionTab mDescriptionTab;
     private final ArrayList<BaseTab> mTabs = new ArrayList<>();
     private final ValidationSupport mValidationSupport = new ValidationSupport();
 
@@ -69,6 +70,10 @@ public class ProfilePanel extends TabPane {
         mTabs.forEach((tab) -> {
             tab.save();
         });
+    }
+
+    public void setOkButton(Button button) {
+        mOkButton = button;
     }
 
     private void createUI() {
@@ -113,9 +118,5 @@ public class ProfilePanel extends TabPane {
         });
 
         mValidationSupport.initInitialDecoration();
-    }
-
-    void setOkButton(Button button) {
-        mOkButton = button;
     }
 }

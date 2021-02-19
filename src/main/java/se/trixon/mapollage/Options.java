@@ -58,7 +58,7 @@ public class Options extends OptionsBase {
     }
 
     private Options() {
-        setPreferences(Preferences.userNodeForPackage(Mapollage.class));
+        setPreferences(Preferences.userNodeForPackage(AppStart.class));
 
         mNightModeProperty.set(is(KEY_UI_NIGHTMODE, true));
         mWordWrapProperty.set(is(KEY_UI_WORDWRAP, true));

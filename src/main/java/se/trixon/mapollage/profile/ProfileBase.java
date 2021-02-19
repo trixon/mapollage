@@ -18,7 +18,7 @@ package se.trixon.mapollage.profile;
 import java.util.ResourceBundle;
 import org.apache.commons.lang3.StringUtils;
 import se.trixon.almond.util.SystemHelper;
-import se.trixon.mapollage.Mapollage;
+import se.trixon.mapollage.AppStart;
 import se.trixon.mapollage.Options;
 import se.trixon.mapollage.ui.config.BaseTab;
 
@@ -30,7 +30,7 @@ public abstract class ProfileBase {
 
     protected static StringBuilder sValidationErrorBuilder;
 
-    protected static final ResourceBundle BUNDLE = SystemHelper.getBundle(Mapollage.class, "Bundle");
+    protected static final ResourceBundle BUNDLE = SystemHelper.getBundle(AppStart.class, "Bundle");
     protected static final ResourceBundle BUNDLE_UI = SystemHelper.getBundle(BaseTab.class, "Bundle");
     protected static final Options mOptions = Options.getInstance();
 

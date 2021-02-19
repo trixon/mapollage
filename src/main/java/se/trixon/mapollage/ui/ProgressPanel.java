@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2021 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -42,7 +42,7 @@ import se.trixon.mapollage.Options;
  */
 public class ProgressPanel extends BorderPane {
 
-    private final ResourceBundle mBundle = SystemHelper.getBundle(MainApp.class, "Bundle");
+    private final ResourceBundle mBundle = SystemHelper.getBundle(AppForm.class, "Bundle");
     private final CheckBox mCheckBox = new CheckBox(mBundle.getString("ProgressPanel.autoOpenCheckBox"));
     private final Tab mErrTab = new Tab(Dict.Dialog.ERROR.toString());
     private final LogPanel mLogErrPanel = new LogPanel();
@@ -93,24 +93,24 @@ public class ProgressPanel extends BorderPane {
 
     }
 
-    public Button getOpenButton() {
-        return mOpenButton;
-    }
-
-    void clear() {
+    public void clear() {
         mLogOutPanel.clear();
         mLogErrPanel.clear();
     }
 
-    void err(String message) {
+    public void err(String message) {
         mLogErrPanel.println(message);
     }
 
-    void out(String message) {
+    public Button getOpenButton() {
+        return mOpenButton;
+    }
+
+    public void out(String message) {
         mLogOutPanel.println(message);
     }
 
-    void setProgress(double p) {
+    public void setProgress(double p) {
         Platform.runLater(() -> {
             mProgressBar.setProgress(p);
         });

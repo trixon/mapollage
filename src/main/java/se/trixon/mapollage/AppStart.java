@@ -36,18 +36,17 @@ import se.trixon.almond.util.PomInfo;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.Xlog;
 import se.trixon.mapollage.profile.Profile;
-import se.trixon.mapollage.ui.MainApp;
 
 /**
  *
  * @author Patrik Karlström
  */
-public class Mapollage implements OperationListener {
+public class AppStart implements OperationListener {
 
     public static final String HELP = "help";
     public static final String VERSION = "version";
     private static String[] sArgs;
-    private static final ResourceBundle sBundle = SystemHelper.getBundle(Mapollage.class, "Bundle");
+    private static final ResourceBundle sBundle = SystemHelper.getBundle(AppStart.class, "Bundle");
     private static Options sOptions;
     private final ProfileManager mProfileManager = ProfileManager.getInstance();
 
@@ -77,10 +76,10 @@ public class Mapollage implements OperationListener {
      */
     public static void main(String[] args) {
         sArgs = args;
-        new Mapollage();
+        new AppStart();
     }
 
-    public Mapollage() {
+    public AppStart() {
         initOptions();
         if (sArgs.length == 0) {
             System.out.println(sBundle.getString("hint_tui"));
@@ -210,7 +209,7 @@ public class Mapollage implements OperationListener {
         }
 
         new Thread(() -> {
-            MainApp.main(sArgs);
+            App.main(sArgs);
         }).start();
     }
 
@@ -230,7 +229,7 @@ public class Mapollage implements OperationListener {
     }
 
     private void displayVersion() {
-        PomInfo pomInfo = new PomInfo(Mapollage.class, "se.trixon", "mapollage");
+        PomInfo pomInfo = new PomInfo(AppStart.class, "se.trixon", "mapollage");
         System.out.println(String.format(sBundle.getString("version_info"), pomInfo.getVersion()));
     }
 
@@ -284,7 +283,7 @@ public class Mapollage implements OperationListener {
         try {
             mProfileManager.load();
         } catch (IOException ex) {
-            Logger.getLogger(Mapollage.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(AppStart.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }

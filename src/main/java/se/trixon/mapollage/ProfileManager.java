@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2021 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,7 @@ package se.trixon.mapollage;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.io.FileUtils;
@@ -60,7 +60,7 @@ public class ProfileManager {
         return null;
     }
 
-    public LinkedList<Profile> getProfiles() {
+    public ArrayList<Profile> getProfiles() {
         if (mProfilesHolder == null) {
             try {
                 load();

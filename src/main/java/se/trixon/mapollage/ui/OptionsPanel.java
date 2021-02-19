@@ -141,6 +141,8 @@ public class OptionsPanel extends GridPane {
         );
 
         mNightModeToggleSwitch.selectedProperty().bindBidirectional(mOptions.nightModeProperty());
+
+        setPrefSize(480, 360);
     }
 
     private void load() {
