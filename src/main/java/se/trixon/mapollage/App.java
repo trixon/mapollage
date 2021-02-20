@@ -62,7 +62,7 @@ public class App extends Application {
     private final Options mOptions = Options.getInstance();
     private Action mOptionsAction;
     private BorderPane mRoot;
-    private final RunStateManager mRunStateManager = RunStateManager.getInstance();
+    private final RunManager mRunManager = RunManager.getInstance();
     private Stage mStage;
 
     /**
@@ -100,7 +100,7 @@ public class App extends Application {
             displayOptions();
         });
         FxHelper.setTooltip(mOptionsAction, new KeyCodeCombination(KeyCode.COMMA, KeyCombination.SHORTCUT_DOWN));
-        mOptionsAction.disabledProperty().bind(mRunStateManager.runningProperty());
+        mOptionsAction.disabledProperty().bind(mRunManager.runningProperty());
 
         mHelpAction = new Action(Dict.HELP.toString(), actionEvent -> {
             displayHelp();

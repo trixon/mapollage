@@ -41,16 +41,16 @@ public class OptionsPanel extends GridPane {
     private final CheckBox mCleanNs2CheckBox = new CheckBox(mBundle.getString("OptionsPanel.cleanNs2CheckBox"));
     private final CheckBox mCleanSpaceCheckBox = new CheckBox(mBundle.getString("OptionsPanel.cleanSpaceCheckBox"));
     private final Font mDefaultFont = Font.getDefault();
-    private final Spinner<Double> mDefaultLongitudeSpinner = new Spinner(-180, 180, 0, 0.01);
     private final Spinner<Double> mDefaultLatitudeSpinner = new Spinner(-90, 90, 0, 0.01);
+    private final Spinner<Double> mDefaultLongitudeSpinner = new Spinner(-180, 180, 0, 0.01);
     private final LocaleComboBox mLocaleComboBox = new LocaleComboBox();
     private final CheckBox mLogKmlCheckBox = new CheckBox(mBundle.getString("OptionsPanel.logKmlCheckBox"));
+    private ToggleSwitch mNightModeToggleSwitch;
     private final Options mOptions = Options.getInstance();
     private final Spinner<Integer> mThumbnailBorderSizeSpinner = new Spinner(0, 20, 2, 1);
     private final Spinner<Integer> mThumbnailSizeSpinner = new Spinner(100, 1200, 250, 10);
     private final Insets mTopInsets = new Insets(8, 0, 0, 0);
     private final CheckBox mWordWrapCheckBox = new CheckBox(Dict.DYNAMIC_WORD_WRAP.toString());
-    private ToggleSwitch mNightModeToggleSwitch;
 
     public OptionsPanel() {
         createUI();
@@ -141,13 +141,13 @@ public class OptionsPanel extends GridPane {
         );
 
         mNightModeToggleSwitch.selectedProperty().bindBidirectional(mOptions.nightModeProperty());
+        mWordWrapCheckBox.selectedProperty().bindBidirectional(mOptions.wordWrapProperty());
 
         setPrefSize(480, 360);
     }
 
     private void load() {
         mLocaleComboBox.setLocale(mOptions.getLocale());
-        mWordWrapCheckBox.setSelected(mOptions.isWordWrap());
         mCleanNs2CheckBox.setSelected(mOptions.isCleanNs2());
         mCleanSpaceCheckBox.setSelected(mOptions.isCleanSpace());
         mDefaultLatitudeSpinner.getValueFactory().setValue(mOptions.getDefaultLat());
@@ -157,9 +157,8 @@ public class OptionsPanel extends GridPane {
         mThumbnailBorderSizeSpinner.getValueFactory().setValue(mOptions.getThumbnailBorderSize());
     }
 
-    void save() {
+    private void save() {
         mOptions.setLocale(mLocaleComboBox.getLocale());
-        mOptions.setWordWrap(mWordWrapCheckBox.isSelected());
         mOptions.setCleanNs2(mCleanNs2CheckBox.isSelected());
         mOptions.setCleanSpace(mCleanSpaceCheckBox.isSelected());
         mOptions.setDefaultLat(mDefaultLatitudeSpinner.getValue());
@@ -168,4 +167,5 @@ public class OptionsPanel extends GridPane {
         mOptions.setThumbnailSize(mThumbnailSizeSpinner.getValue());
         mOptions.setThumbnailBorderSize(mThumbnailBorderSizeSpinner.getValue());
     }
+
 }

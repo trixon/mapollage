@@ -162,7 +162,7 @@ public class Options extends OptionsBase {
     }
 
     public void setWordWrap(boolean value) {
-        mPreferences.putBoolean(KEY_WORD_WRAP, value);
+        mWordWrapProperty.set(value);
     }
 
     public BooleanProperty wordWrapProperty() {

@@ -41,7 +41,8 @@ import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.control.LogPanel;
 import static se.trixon.mapollage.App.ICON_SIZE_TOOLBAR;
 import se.trixon.mapollage.Options;
-import se.trixon.mapollage.RunStateManager;
+import se.trixon.mapollage.RunManager;
+import se.trixon.mapollage.RunStatus;
 
 /**
  *
@@ -60,7 +61,7 @@ public class StatusPanel extends BorderPane {
     private final Button mOpenButton = new Button();
     private final Options mOptions = Options.getInstance();
     private final ProgressBar mProgressBar = new ProgressBar();
-    private final RunStateManager mRunStateManager = RunStateManager.getInstance();
+    private final RunManager mRunManager = RunManager.getInstance();
     private final TabPane mTabPane = new TabPane();
 
     public StatusPanel() {
@@ -102,6 +103,10 @@ public class StatusPanel extends BorderPane {
         FxHelper.undecorateButton(mOpenButton);
         mOpenButton.setTooltip(new Tooltip(Dict.OPEN.toString()));
         mOpenButton.setGraphic(mFontAwesome.create(FontAwesome.Glyph.GLOBE).size(ICON_SIZE_TOOLBAR / 2));
+        mOpenButton.disableProperty().bind(mRunManager.runningProperty().or(mRunManager.runStatusProperty().isNotEqualTo(RunStatus.FINISHED)));
+        mOpenButton.setOnAction(actionEvent -> {
+            mRunManager.openDestination();
+        });
 
         HBox progressBox = new HBox(8, mProgressBar, mCheckBox, mOpenButton);
         HBox.setHgrow(mProgressBar, Priority.ALWAYS);
@@ -140,24 +145,17 @@ public class StatusPanel extends BorderPane {
             mLogInfoPanel.setWrapText(newValue);
         });
 
-        mOptions.nightModeProperty().addListener((observable, oldValue, newValue) -> {
-        });
-
-        mRunStateManager.profileProperty().addListener((observable, oldValue, newValue) -> {
+        mRunManager.profileProperty().addListener((observable, oldValue, newValue) -> {
             mLogInfoPanel.clear();
 
             if (newValue != null) {
-                mLogInfoPanel.println(newValue.toInfoString());
                 mNameLabel.setText(newValue.getName());
                 mDescLabel.setText(newValue.getDescriptionString());
+                mLogInfoPanel.println(newValue.toInfoString());
             } else {
                 mNameLabel.setText("");
                 mDescLabel.setText("");
             }
-        });
-
-        mRunStateManager.runStateProperty().addListener((observable, oldValue, newValue) -> {
-//            setProgress(newValue == RunState.CANCELABLE ? -1 : 1);
         });
     }
 }

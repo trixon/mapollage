@@ -15,10 +15,12 @@
  */
 package se.trixon.mapollage;
 
+import java.io.File;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.mapollage.profile.Profile;
 
@@ -26,17 +28,27 @@ import se.trixon.mapollage.profile.Profile;
  *
  * @author Patrik Karlström
  */
-public class RunStateManager {
+public class RunManager {
 
+    private final ObjectProperty<File> mDestinationProperty = new SimpleObjectProperty<>();
     private final ObjectProperty<Profile> mProfileProperty = new SimpleObjectProperty<>();
     private final ObjectProperty<RunState> mRunStateProperty = new SimpleObjectProperty<>();
+    private final ObjectProperty<RunStatus> mRunStatusProperty = new SimpleObjectProperty<>();
     private final BooleanProperty mRunningProperty = new SimpleBooleanProperty(false);
 
-    public static RunStateManager getInstance() {
+    public static RunManager getInstance() {
         return Holder.INSTANCE;
     }
 
-    private RunStateManager() {
+    private RunManager() {
+    }
+
+    public ObjectProperty<File> destinationProperty() {
+        return mDestinationProperty;
+    }
+
+    public File getDestination() {
+        return mDestinationProperty.get();
     }
 
     public Profile getProfile() {
@@ -47,8 +59,16 @@ public class RunStateManager {
         return mRunStateProperty.get();
     }
 
+    public RunStatus getRunStatus() {
+        return mRunStatusProperty.get();
+    }
+
     public boolean isRunning() {
         return mRunningProperty.get();
+    }
+
+    public void openDestination() {
+        SystemHelper.desktopOpen(getDestination());
     }
 
     public ObjectProperty<Profile> profileProperty() {
@@ -59,8 +79,16 @@ public class RunStateManager {
         return mRunStateProperty;
     }
 
+    public ObjectProperty<RunStatus> runStatusProperty() {
+        return mRunStatusProperty;
+    }
+
     public BooleanProperty runningProperty() {
         return mRunningProperty;
+    }
+
+    public void setDestination(File destination) {
+        mDestinationProperty.set(destination);
     }
 
     public void setProfile(Profile profile) {
@@ -74,8 +102,12 @@ public class RunStateManager {
         });
     }
 
+    public void setRunStatus(RunStatus runStatus) {
+        mRunStatusProperty.set(runStatus);
+    }
+
     private static class Holder {
 
-        private static final RunStateManager INSTANCE = new RunStateManager();
+        private static final RunManager INSTANCE = new RunManager();
     }
 }

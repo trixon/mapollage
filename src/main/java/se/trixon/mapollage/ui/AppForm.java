@@ -61,8 +61,9 @@ import se.trixon.mapollage.Operation;
 import se.trixon.mapollage.OperationListener;
 import se.trixon.mapollage.Options;
 import se.trixon.mapollage.ProfileManager;
+import se.trixon.mapollage.RunManager;
 import se.trixon.mapollage.RunState;
-import se.trixon.mapollage.RunStateManager;
+import se.trixon.mapollage.RunStatus;
 import se.trixon.mapollage.profile.Profile;
 
 /**
@@ -77,7 +78,6 @@ public class AppForm extends BorderPane {
     private Action mCancelAction;
     private Action mCloneAction;
     private Font mDefaultFont;
-    private File mDestination;
     private Action mEditAction;
     private ListView<Profile> mListView;
     private final Log mLog = new Log();
@@ -88,7 +88,7 @@ public class AppForm extends BorderPane {
     private ArrayList<Profile> mProfiles;
     private Action mRemoveAction;
     private Action mRunAction;
-    private final RunStateManager mRunStateManager = RunStateManager.getInstance();
+    private final RunManager mRunManager = RunManager.getInstance();
     private final StatusPanel mStatusPanel = new StatusPanel();
 
     public AppForm() {
@@ -97,7 +97,9 @@ public class AppForm extends BorderPane {
         createUI();
         initListeners();
         postInit();
-        mRunStateManager.setRunState(RunState.STARTABLE);
+        mRunManager.setRunState(RunState.STARTABLE);
+        mRunManager.setRunStatus(RunStatus.NONE);
+
         mListView.requestFocus();
 
         if (mProfileManager.hasProfiles()) {
@@ -150,8 +152,9 @@ public class AppForm extends BorderPane {
                 profileRemove(getSelectedProfile());
             }
         });
+
         accelerators.put(new KeyCodeCombination(KeyCode.ESCAPE), () -> {
-            if (mRunStateManager.isRunning()) {
+            if (mRunManager.isRunning()) {
                 mOperationThread.interrupt();
             }
         });
@@ -162,7 +165,7 @@ public class AppForm extends BorderPane {
 
         mListView = new ListView<>();
         mListView.setCellFactory(listView -> new ProfileListCell());
-        mListView.disableProperty().bind(mRunStateManager.runningProperty());
+        mListView.disableProperty().bind(mRunManager.runningProperty());
         mListView.setPrefWidth(400);
 
         var welcomeLabel = new Label(mBundle.getString("welcome"));
@@ -189,9 +192,9 @@ public class AppForm extends BorderPane {
             profileEdit(null);
         });
         FxHelper.setTooltip(mAddAction, new KeyCodeCombination(KeyCode.N, KeyCombination.SHORTCUT_DOWN));
-        mAddAction.disabledProperty().bind(mRunStateManager.runningProperty());
+        mAddAction.disabledProperty().bind(mRunManager.runningProperty());
 
-        BooleanBinding profileBooleanBinding = mRunStateManager.profileProperty().isNull().or(mRunStateManager.runningProperty());
+        BooleanBinding profileBooleanBinding = mRunManager.profileProperty().isNull().or(mRunManager.runningProperty());
 
         mRunAction = new Action(Dict.RUN.toString(), actionEvent -> {
             profileRun(getSelectedProfile());
@@ -240,7 +243,7 @@ public class AppForm extends BorderPane {
 
     private void initListeners() {
         mListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            mRunStateManager.setProfile(newValue);
+            mRunManager.setProfile(newValue);
         });
 
         mOptions.nightModeProperty().addListener((observable, oldValue, newValue) -> {
@@ -263,15 +266,15 @@ public class AppForm extends BorderPane {
 
             @Override
             public void onOperationFinished(String message, int placemarkCount) {
-                mRunStateManager.setRunState(RunState.STARTABLE);
+                mRunManager.setRunState(RunState.STARTABLE);
                 mStatusPanel.out(message);
 
                 if (mSuccess && placemarkCount > 0) {
-//                    mOpenButton.setDisable(false);
-//                    populateProfiles(mLastRunProfile);
+                    mRunManager.setRunStatus(RunStatus.FINISHED);
+                    populateProfiles(mRunManager.getProfile());
 
                     if (mOptions.isAutoOpen()) {
-                        SystemHelper.desktopOpen(mDestination);
+                        mRunManager.openDestination();
                     }
                 } else if (0 == placemarkCount) {
                     mStatusPanel.setProgress(1);
@@ -280,7 +283,8 @@ public class AppForm extends BorderPane {
 
             @Override
             public void onOperationInterrupted() {
-                mRunStateManager.setRunState(RunState.STARTABLE);
+                mRunManager.setRunState(RunState.STARTABLE);
+                mRunManager.setRunStatus(RunStatus.CANCELED);
                 mStatusPanel.setProgress(0);
                 mSuccess = false;
             }
@@ -307,8 +311,8 @@ public class AppForm extends BorderPane {
 
             @Override
             public void onOperationStarted() {
-                mRunStateManager.setRunState(RunState.CANCELABLE);
-//                mOpenButton.setDisable(true);
+                mRunManager.setRunState(RunState.CANCELABLE);
+                mRunManager.setRunStatus(RunStatus.NONE);
                 mStatusPanel.setProgress(0);
                 mSuccess = true;
             }
@@ -433,23 +437,21 @@ public class AppForm extends BorderPane {
         SimpleDialog.setOwner(getStage());
         SimpleDialog.setTitle(String.format("%s %s", Dict.SAVE.toString(), profile.getName()));
 
-        if (mDestination == null) {
+        File destination = mRunManager.getDestination();
+        if (destination == null) {
             SimpleDialog.setPath(FileUtils.getUserDirectory());
         } else {
-            SimpleDialog.setPath(mDestination.getParentFile());
+            SimpleDialog.setPath(destination.getParentFile());
             SimpleDialog.setSelectedFile(new File(""));
         }
 
         if (SimpleDialog.saveFile(new String[]{"kml"})) {
-            mDestination = SimpleDialog.getPath();
-            profile.setDestinationFile(mDestination);
+            mRunManager.setDestination(SimpleDialog.getPath());
+            profile.setDestinationFile(mRunManager.getDestination());
             profile.isValid();
 
             if (profile.hasValidRelativeSourceDest()) {
                 mStatusPanel.clear();
-//                mStatusPanel.setProfile(profile);
-//                mLastRunProfile = profile;
-
                 Operation operation = new Operation(mOperationListener, profile);
                 mOperationThread = new Thread(operation);
                 mOperationThread.start();
