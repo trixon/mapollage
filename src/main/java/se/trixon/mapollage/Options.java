@@ -28,7 +28,6 @@ import se.trixon.almond.util.OptionsBase;
  */
 public class Options extends OptionsBase {
 
-    public static final String KEY_AUTO_OPEN = "auto_open";
     public static final String KEY_CLEAN_NS2 = "clean_ns2";
     public static final String KEY_CLEAN_SPACE = "clean_space";
     public static final String KEY_DEFAULT_LAT = "deflat";
@@ -42,7 +41,9 @@ public class Options extends OptionsBase {
     private static final boolean DEFAULT_CLEAN_SPACE = true;
     private static final Locale DEFAULT_LOCALE = Locale.getDefault();
     private static final boolean DEFAULT_LOG_KML = false;
-    private static final boolean DEFAULT_WORD_WRAP = false;
+    private static final boolean DEFAULT_UI_NIGHTMODE = true;
+    private static final boolean DEFAULT_UI_WORD_WRAP = true;
+    private static final String KEY_AUTO_OPEN = "auto_open";
     private static final String KEY_UI_NIGHTMODE = "ui.nightmode";
     private static final String KEY_UI_WORDWRAP = "ui.wordwrap";
     private final boolean DEFAULT_AUTO_OPEN = true;
@@ -50,6 +51,7 @@ public class Options extends OptionsBase {
     private final Double DEFAULT_LON = 11.3;
     private final int DEFAULT_THUMBNAIL_BORDER_SIZE = 3;
     private final int DEFAULT_THUMBNAIL_SIZE = 1000;
+    private final BooleanProperty mAutoOpenProperty = new SimpleBooleanProperty();
     private final BooleanProperty mNightModeProperty = new SimpleBooleanProperty();
     private final BooleanProperty mWordWrapProperty = new SimpleBooleanProperty();
 
@@ -60,10 +62,15 @@ public class Options extends OptionsBase {
     private Options() {
         setPreferences(Preferences.userNodeForPackage(AppStart.class));
 
-        mNightModeProperty.set(is(KEY_UI_NIGHTMODE, true));
-        mWordWrapProperty.set(is(KEY_UI_WORDWRAP, true));
+        mNightModeProperty.set(is(KEY_UI_NIGHTMODE, DEFAULT_UI_NIGHTMODE));
+        mWordWrapProperty.set(is(KEY_UI_WORDWRAP, DEFAULT_UI_WORD_WRAP));
+        mAutoOpenProperty.set(is(KEY_AUTO_OPEN, DEFAULT_AUTO_OPEN));
 
         initListeners();
+    }
+
+    public BooleanProperty autoOpenProperty() {
+        return mAutoOpenProperty;
     }
 
     public Double getDefaultLat() {
@@ -87,7 +94,7 @@ public class Options extends OptionsBase {
     }
 
     public boolean isAutoOpen() {
-        return mPreferences.getBoolean(KEY_AUTO_OPEN, DEFAULT_AUTO_OPEN);
+        return mAutoOpenProperty.get();
     }
 
     public boolean isCleanNs2() {
@@ -115,7 +122,7 @@ public class Options extends OptionsBase {
     }
 
     public void setAutoOpen(boolean value) {
-        mPreferences.putBoolean(KEY_AUTO_OPEN, value);
+        mAutoOpenProperty.set(value);
     }
 
     public void setCleanNs2(boolean value) {
@@ -169,11 +176,13 @@ public class Options extends OptionsBase {
 
         mNightModeProperty.addListener(changeListener);
         mWordWrapProperty.addListener(changeListener);
+        mAutoOpenProperty.addListener(changeListener);
     }
 
     private void save() {
         put(KEY_UI_NIGHTMODE, isNightMode());
         put(KEY_UI_WORDWRAP, isWordWrap());
+        put(KEY_AUTO_OPEN, isAutoOpen());
     }
 
     private static class Holder {

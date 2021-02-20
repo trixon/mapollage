@@ -15,18 +15,32 @@
  */
 package se.trixon.mapollage.ui;
 
+import java.util.ResourceBundle;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.geometry.Side;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import org.controlsfx.glyphfont.FontAwesome;
+import org.controlsfx.glyphfont.GlyphFont;
+import org.controlsfx.glyphfont.GlyphFontRegistry;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.SystemHelper;
+import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.control.LogPanel;
+import static se.trixon.mapollage.App.ICON_SIZE_TOOLBAR;
 import se.trixon.mapollage.Options;
-import se.trixon.mapollage.RunState;
 import se.trixon.mapollage.RunStateManager;
 
 /**
@@ -35,13 +49,18 @@ import se.trixon.mapollage.RunStateManager;
  */
 public class StatusPanel extends BorderPane {
 
+    private final ResourceBundle mBundle = SystemHelper.getBundle(AppForm.class, "Bundle");
+    private final CheckBox mCheckBox = new CheckBox(mBundle.getString("ProgressPanel.autoOpenCheckBox"));
+    private final Label mDescLabel = new Label();
+    private final GlyphFont mFontAwesome = GlyphFontRegistry.font("FontAwesome");
     private final LogPanel mLogErrPanel = new LogPanel();
     private final LogPanel mLogInfoPanel = new LogPanel();
     private final LogPanel mLogOutPanel = new LogPanel();
+    private final Label mNameLabel = new Label();
+    private final Button mOpenButton = new Button();
     private final Options mOptions = Options.getInstance();
     private final ProgressBar mProgressBar = new ProgressBar();
     private final RunStateManager mRunStateManager = RunStateManager.getInstance();
-    private final SummaryHeader mSummaryHeader = new SummaryHeader();
     private final TabPane mTabPane = new TabPane();
 
     public StatusPanel() {
@@ -51,6 +70,7 @@ public class StatusPanel extends BorderPane {
 
     void clear() {
         mLogOutPanel.clear();
+        mLogErrPanel.clear();
     }
 
     void err(String message) {
@@ -68,6 +88,35 @@ public class StatusPanel extends BorderPane {
     }
 
     private void createUI() {
+        String fontFamily = Font.getDefault().getFamily();
+        double fontSize = Font.getDefault().getSize();
+
+        mNameLabel.setFont(Font.font(fontFamily, FontWeight.BOLD, fontSize * 1.6));
+        mDescLabel.setFont(Font.font(fontFamily, FontWeight.NORMAL, fontSize * 1.3));
+
+        mProgressBar.setMaxWidth(Double.MAX_VALUE);
+        mProgressBar.setProgress(0);
+
+        mCheckBox.selectedProperty().bindBidirectional(mOptions.autoOpenProperty());
+
+        FxHelper.undecorateButton(mOpenButton);
+        mOpenButton.setTooltip(new Tooltip(Dict.OPEN.toString()));
+        mOpenButton.setGraphic(mFontAwesome.create(FontAwesome.Glyph.GLOBE).size(ICON_SIZE_TOOLBAR / 2));
+
+        HBox progressBox = new HBox(8, mProgressBar, mCheckBox, mOpenButton);
+        HBox.setHgrow(mProgressBar, Priority.ALWAYS);
+        progressBox.setAlignment(Pos.CENTER);
+
+        var topBox = new VBox(
+                mNameLabel,
+                mDescLabel,
+                progressBox
+        );
+        topBox.setPadding(FxHelper.getUIScaledInsets(8));
+        topBox.setAlignment(Pos.CENTER_LEFT);
+
+        setTop(topBox);
+
         mLogOutPanel.setMonospaced();
         mLogErrPanel.setMonospaced();
         mLogInfoPanel.setMonospaced();
@@ -76,15 +125,6 @@ public class StatusPanel extends BorderPane {
         var errTab = new Tab(Dict.Dialog.ERROR.toString(), mLogErrPanel);
         var infoTab = new Tab(Dict.INFORMATION.toString(), mLogInfoPanel);
 
-        var box = new VBox(
-                mSummaryHeader,
-                mProgressBar
-        );
-
-        mProgressBar.setMaxWidth(Double.MAX_VALUE);
-        mProgressBar.setProgress(0);
-        box.setAlignment(Pos.CENTER);
-        setTop(box);
         mTabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
         mTabPane.setSide(Side.BOTTOM);
         mTabPane.getTabs().setAll(outTab, errTab, infoTab);
@@ -95,25 +135,29 @@ public class StatusPanel extends BorderPane {
 
     private void initListeners() {
         mOptions.wordWrapProperty().addListener((observable, oldValue, newValue) -> {
-            mLogOutPanel.setWrapText(mOptions.isWordWrap());
-            mLogErrPanel.setWrapText(mOptions.isWordWrap());
-            mLogInfoPanel.setWrapText(mOptions.isWordWrap());
+            mLogOutPanel.setWrapText(newValue);
+            mLogErrPanel.setWrapText(newValue);
+            mLogInfoPanel.setWrapText(newValue);
         });
 
         mOptions.nightModeProperty().addListener((observable, oldValue, newValue) -> {
-            mSummaryHeader.load(mRunStateManager.getProfile());
         });
 
         mRunStateManager.profileProperty().addListener((observable, oldValue, newValue) -> {
-            mSummaryHeader.load(newValue);
             mLogInfoPanel.clear();
+
             if (newValue != null) {
                 mLogInfoPanel.println(newValue.toInfoString());
+                mNameLabel.setText(newValue.getName());
+                mDescLabel.setText(newValue.getDescriptionString());
+            } else {
+                mNameLabel.setText("");
+                mDescLabel.setText("");
             }
         });
 
         mRunStateManager.runStateProperty().addListener((observable, oldValue, newValue) -> {
-            setProgress(newValue == RunState.CANCELABLE ? -1 : 1);
+//            setProgress(newValue == RunState.CANCELABLE ? -1 : 1);
         });
     }
 }

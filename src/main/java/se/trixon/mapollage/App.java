@@ -17,7 +17,6 @@ package se.trixon.mapollage;
 
 import de.jangassen.MenuToolkit;
 import java.util.Arrays;
-import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -56,7 +55,6 @@ public class App extends Application {
     public static final String APP_TITLE = "Mapollage";
     public static final int ICON_SIZE_TOOLBAR = 32;
     private static final boolean IS_MAC = SystemUtils.IS_OS_MAC;
-    private static final Logger LOGGER = Logger.getLogger(App.class.getName());
     private Action mAboutAction;
     private final AlmondFx mAlmondFX = AlmondFx.getInstance();
     private AppForm mAppForm;
@@ -175,116 +173,10 @@ public class App extends Application {
         }
     }
 
-//    private void initActions() {
-//        //cancel
-//        mCancelAction = new Action(Dict.CANCEL.toString(), (ActionEvent event) -> {
-//            mOperationThread.interrupt();
-//        });
-//        mCancelAction.setGraphic(mFontAwesome.create(FontAwesome.Glyph.BAN).size(ICON_SIZE_TOOLBAR).color(mIconColor));
-//
-//        //options
-//        mOptionsAction = new Action(Dict.OPTIONS.toString(), (ActionEvent event) -> {
-//            displayOptions();
-//        });
-//        mOptionsAction.setGraphic(mFontAwesome.create(FontAwesome.Glyph.COG).size(ICON_SIZE_TOOLBAR).color(mIconColor));
-//        if (!IS_MAC) {
-//            mOptionsAction.setAccelerator(new KeyCodeCombination(KeyCode.COMMA, KeyCombination.SHORTCUT_DOWN));
-//        }
-//
-//        //help
-//        mHelpAction = new Action(Dict.HELP.toString(), (ActionEvent event) -> {
-//            SystemHelper.desktopBrowse("https://trixon.se/projects/mapollage/documentation/");
-//        });
-//        mHelpAction.setAccelerator(KeyCombination.keyCombination("F1"));
-//
-//        //about
-//        PomInfo pomInfo = new PomInfo(AppStart.class, "se.trixon", "mapollage");
-//        AboutModel aboutModel = new AboutModel(SystemHelper.getBundle(AppStart.class, "about"), SystemHelperFx.getResourceAsImageView(App.class, "icon-1024px.png"));
-//        aboutModel.setAppVersion(pomInfo.getVersion());
-//        mAboutAction = AboutPane.getAction(mStage, aboutModel);
-//
-//        //about date format
-//        String title = String.format(Dict.ABOUT_S.toString(), Dict.DATE_PATTERN.toString().toLowerCase());
-//        mAboutDateFormatAction = new Action(title, (ActionEvent event) -> {
-//            SystemHelper.desktopBrowse("https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html");
-//        });
-//
-//        mRunAction = new Action(Dict.RUN.toString(), (ActionEvent event) -> {
-//            profileRun(mLastRunProfile);
-//        });
-//        mRunAction.setGraphic(mFontAwesome.create(FontAwesome.Glyph.PLAY).size(ICON_SIZE_TOOLBAR).color(mIconColor));
-//    }
     private void initListeners() {
         mOptions.nightModeProperty().addListener((observable, oldValue, newValue) -> {
             updateNightMode();
         });
-
-//        mOperationListener = new OperationListener() {
-//            private boolean mSuccess;
-//
-//            @Override
-//            public void onOperationError(String message) {
-//                mProgressPanel.err(message);
-//            }
-//
-//            @Override
-//            public void onOperationFailed(String message) {
-//                onOperationFinished(message, 0);
-//                mSuccess = false;
-//            }
-//
-//            @Override
-//            public void onOperationFinished(String message, int placemarkCount) {
-//                setRunningState(RunState.CLOSEABLE);
-//                mProgressPanel.out(message);
-//
-//                if (mSuccess && placemarkCount > 0) {
-//                    mOpenButton.setDisable(false);
-//                    populateProfiles(mLastRunProfile);
-//
-//                    if (mOptions.isAutoOpen()) {
-//                        SystemHelper.desktopOpen(mDestination);
-//                    }
-//                } else if (0 == placemarkCount) {
-//                    mProgressPanel.setProgress(1);
-//                }
-//            }
-//
-//            @Override
-//            public void onOperationInterrupted() {
-//                setRunningState(RunState.CLOSEABLE);
-//                mProgressPanel.setProgress(0);
-//                mSuccess = false;
-//            }
-//
-//            @Override
-//            public void onOperationLog(String message) {
-//                mProgressPanel.out(message);
-//            }
-//
-//            @Override
-//            public void onOperationProcessingStarted() {
-//                mProgressPanel.setProgress(-1);
-//            }
-//
-//            @Override
-//            public void onOperationProgress(String message) {
-//                //TODO Display message on progress bar
-//            }
-//
-//            @Override
-//            public void onOperationProgress(int value, int max) {
-//                mProgressPanel.setProgress(value / (double) max);
-//            }
-//
-//            @Override
-//            public void onOperationStarted() {
-//                setRunningState(RunState.CANCELABLE);
-//                mOpenButton.setDisable(true);
-//                mProgressPanel.setProgress(0);
-//                mSuccess = true;
-//            }
-//        };
     }
 
     private void initMac() {
@@ -307,58 +199,6 @@ public class App extends Application {
         applicationMenu.getItems().get(cnt - 1).setText(String.format("%s %s", Dict.QUIT.toString(), APP_TITLE));
     }
 
-//    private void populateProfiles(Profile profile) {
-//        mItems.clear();
-//        Collections.sort(mProfiles);
-//
-//        mProfiles.stream().forEachOrdered((item) -> {
-//            mItems.add(item);
-//        });
-//
-//        if (profile != null) {
-//            mListView.getSelectionModel().select(profile);
-//            mListView.scrollTo(profile);
-//        }
-//    }
-//    private void postInit() {
-//        profilesLoad();
-//        populateProfiles(null);
-//    }
-//    private void profileRemove(Profile profile) {
-//        Alert alert = new Alert(AlertType.CONFIRMATION);
-//        alert.initOwner(mStage);
-//        alert.setTitle(Dict.Dialog.TITLE_PROFILE_REMOVE.toString() + "?");
-//        String message = String.format(Dict.Dialog.MESSAGE_PROFILE_REMOVE.toString(), profile.getName());
-//        alert.setHeaderText(message);
-//
-//        ButtonType removeButtonType = new ButtonType(Dict.REMOVE.toString(), ButtonData.OK_DONE);
-//        ButtonType cancelButtonType = new ButtonType(Dict.CANCEL.toString(), ButtonData.CANCEL_CLOSE);
-//        alert.getButtonTypes().setAll(removeButtonType, cancelButtonType);
-//
-//        Optional<ButtonType> result = FxHelper.showAndWait(alert, mStage);
-//        if (result.get() == removeButtonType) {
-//            mProfiles.remove(profile);
-//            profilesSave();
-//            populateProfiles(null);
-//            mLogAction.setDisabled(mItems.isEmpty() || mLastRunProfile == null);
-//        }
-//    }
-//    private void profilesLoad() {
-//        try {
-//            mProfileManager.load();
-//            mProfiles = mProfileManager.getProfiles();
-//        } catch (IOException ex) {
-//            LOGGER.log(Level.SEVERE, null, ex);
-//        }
-//    }
-//
-//    private void profilesSave() {
-//        try {
-//            mProfileManager.save();
-//        } catch (IOException ex) {
-//            LOGGER.log(Level.SEVERE, null, ex);
-//        }
-//    }
     private void updateNightMode() {
         MaterialIcon.setDefaultColor(mOptions.isNightMode() ? Color.LIGHTGRAY : Color.BLACK);
 

@@ -113,6 +113,7 @@ public class AppForm extends BorderPane {
                 mRemoveAction,
                 ActionUtils.ACTION_SEPARATOR,
                 mRunAction,
+                mCancelAction,
                 ActionUtils.ACTION_SEPARATOR
         ));
 
@@ -147,6 +148,11 @@ public class AppForm extends BorderPane {
         accelerators.put(new KeyCodeCombination(KeyCode.DELETE), () -> {
             if (getSelectedProfile() != null) {
                 profileRemove(getSelectedProfile());
+            }
+        });
+        accelerators.put(new KeyCodeCombination(KeyCode.ESCAPE), () -> {
+            if (mRunStateManager.isRunning()) {
+                mOperationThread.interrupt();
             }
         });
     }
@@ -194,6 +200,12 @@ public class AppForm extends BorderPane {
         FxHelper.setTooltip(mRunAction, new KeyCodeCombination(KeyCode.R, KeyCombination.SHORTCUT_DOWN));
         mRunAction.disabledProperty().bind(profileBooleanBinding);
 
+        mCancelAction = new Action(Dict.STOP.toString(), actionEvent -> {
+            mOperationThread.interrupt();
+        });
+        FxHelper.setTooltip(mCancelAction, new KeyCodeCombination(KeyCode.ESCAPE));
+        mCancelAction.disabledProperty().bind(profileBooleanBinding.not());
+
         mEditAction = new Action(Dict.EDIT.toString(), actionEvent -> {
             profileEdit(getSelectedProfile());
             mListView.requestFocus();
@@ -234,6 +246,73 @@ public class AppForm extends BorderPane {
         mOptions.nightModeProperty().addListener((observable, oldValue, newValue) -> {
             updateNightMode();
         });
+
+        mOperationListener = new OperationListener() {
+            private boolean mSuccess;
+
+            @Override
+            public void onOperationError(String message) {
+                mStatusPanel.err(message);
+            }
+
+            @Override
+            public void onOperationFailed(String message) {
+                onOperationFinished(message, 0);
+                mSuccess = false;
+            }
+
+            @Override
+            public void onOperationFinished(String message, int placemarkCount) {
+                mRunStateManager.setRunState(RunState.STARTABLE);
+                mStatusPanel.out(message);
+
+                if (mSuccess && placemarkCount > 0) {
+//                    mOpenButton.setDisable(false);
+//                    populateProfiles(mLastRunProfile);
+
+                    if (mOptions.isAutoOpen()) {
+                        SystemHelper.desktopOpen(mDestination);
+                    }
+                } else if (0 == placemarkCount) {
+                    mStatusPanel.setProgress(1);
+                }
+            }
+
+            @Override
+            public void onOperationInterrupted() {
+                mRunStateManager.setRunState(RunState.STARTABLE);
+                mStatusPanel.setProgress(0);
+                mSuccess = false;
+            }
+
+            @Override
+            public void onOperationLog(String message) {
+                mStatusPanel.out(message);
+            }
+
+            @Override
+            public void onOperationProcessingStarted() {
+                mStatusPanel.setProgress(-1);
+            }
+
+            @Override
+            public void onOperationProgress(String message) {
+                //TODO Display message on progress bar
+            }
+
+            @Override
+            public void onOperationProgress(int value, int max) {
+                mStatusPanel.setProgress(value / (double) max);
+            }
+
+            @Override
+            public void onOperationStarted() {
+                mRunStateManager.setRunState(RunState.CANCELABLE);
+//                mOpenButton.setDisable(true);
+                mStatusPanel.setProgress(0);
+                mSuccess = true;
+            }
+        };
     }
 
     private void populateProfiles(Profile profile) {
@@ -324,51 +403,10 @@ public class AppForm extends BorderPane {
         } else {
             mStatusPanel.clear();
             mStatusPanel.out(profile.getValidationError());
+            mStatusPanel.out(Dict.ABORTING.toString());
         }
     }
 
-//    private void profileRun(Profile profile) {
-//        mStatusPanel.clear();
-//        String runDesc = String.format("%s '%s' (%s)", Dict.RUN.toString(), profile.getName(), profile.getDescription());
-//        mStatusPanel.out(runDesc);
-////        mStatusPanel.out(String.join(" \\\n    ", profile.getCommand()));
-//
-//        if (profile.isValid()) {
-//            String title = Dict.RUN.toString();
-//            var alert = new Alert(Alert.AlertType.CONFIRMATION);
-//            alert.initOwner(getStage());
-//            alert.setTitle(title);
-//            alert.setHeaderText(runDesc);
-//            ((Button) alert.getDialogPane().lookupButton(ButtonType.OK)).setText(Dict.RUN.toString());
-//
-//            Optional<ButtonType> result = FxHelper.showAndWait(alert, getStage());
-//            if (result.get() == ButtonType.OK) {
-//                mRunStateManager.setRunState(RunState.CANCELABLE);
-//                mLog.out("");
-////                new Thread(() -> {
-////                    var processBuilder = new ProcessBuilder(profile.getCommand()).inheritIO();
-////                    processBuilder.redirectOutput(ProcessBuilder.Redirect.PIPE);
-////                    try {
-////                        var process = processBuilder.start();
-////                        new ProcessLogThread(process.getInputStream(), 0, mLog).start();
-////                        new ProcessLogThread(process.getErrorStream(), -1, mLog).start();
-////
-////                        process.waitFor();
-////                        profile.setLastRun(System.currentTimeMillis());
-////                        profilesSave();
-////                        populateProfiles(profile);
-////                    } catch (IOException | InterruptedException ex) {
-////                        mLog.timedErr(ex.getMessage());
-////                    }
-////                    mLog.timedOut("Done.");
-////                    mRunStateManager.setRunState(RunState.STARTABLE);
-////                }).start();
-//            }
-//        } else {
-//            mStatusPanel.out(profile.getValidationError());
-//            mStatusPanel.out(Dict.ABORTING.toString());
-//        }
-//    }
     private void profilesLoad() {
         try {
             mProfileManager.load();
@@ -422,77 +460,12 @@ public class AppForm extends BorderPane {
         }
     }
 
-    private void setRunningState(RunState runState) {
-        ArrayList<Action> actions = new ArrayList<>();
-
-//        switch (runState) {
-//            case STARTABLE:
-//                actions.addAll(Arrays.asList(
-//                        mLogAction,
-//                        ActionUtils.ACTION_SPAN,
-//                        mAddAction
-//                ));
-//                mOptionsAction.setDisabled(false);
-//                break;
-//
-//            case CANCELABLE:
-//                actions.addAll(Arrays.asList(
-//                        mHomeAction,
-//                        ActionUtils.ACTION_SPAN,
-//                        mCancelAction
-//                ));
-//                mHomeAction.setDisabled(true);
-//                mOptionsAction.setDisabled(true);
-//                break;
-//
-//            case CLOSEABLE:
-//                actions.addAll(Arrays.asList(
-//                        mHomeAction,
-//                        ActionUtils.ACTION_SPAN,
-//                        mRunAction
-//                ));
-//                mHomeAction.setDisabled(false);
-//                mOptionsAction.setDisabled(false);
-//                break;
-//
-//            default:
-//                throw new AssertionError();
-//        }
-//
-//        actions.addAll(Arrays.asList(
-//                mOptionsAction,
-//                new ActionGroup(Dict.HELP.toString(), mFontAwesome.create(FontAwesome.Glyph.QUESTION).size(ICON_SIZE_TOOLBAR).color(mIconColor),
-//                        mHelpAction,
-//                        mAboutDateFormatAction,
-//                        ActionUtils.ACTION_SEPARATOR,
-//                        mAboutAction
-//                )
-//        ));
-//
-//        Platform.runLater(() -> {
-//            if (mToolBar == null) {
-//                mToolBar = ActionUtils.createToolBar(actions, ActionUtils.ActionTextBehavior.HIDE);
-//                mToolBar.setStyle("-fx-spacing: 0px;");
-//                mRoot.setTop(mToolBar);
-//            } else {
-//                mToolBar = ActionUtils.updateToolBar(mToolBar, actions, ActionUtils.ActionTextBehavior.HIDE);
-//                mToolBar.getItems().add(1, mIndicator);
-//                mIndicator.setVisible(runState != RunState.STARTABLE);
-//            }
-//
-//            adjustButtonWidth(mToolBar.getItems().stream(), ICON_SIZE_TOOLBAR * 1.5);
-//            mToolBar.getItems().stream().filter((item) -> (item instanceof ButtonBase))
-//                    .map((item) -> (ButtonBase) item).forEachOrdered((buttonBase) -> {
-//                FxHelper.undecorateButton(buttonBase);
-//            });
-//        });
-    }
-
     private void updateNightMode() {
         MaterialIcon.setDefaultColor(mOptions.isNightMode() ? Color.LIGHTGRAY : Color.BLACK);
 
         mAddAction.setGraphic(MaterialIcon._Content.ADD.getImageView(ICON_SIZE_TOOLBAR));
         mRunAction.setGraphic(MaterialIcon._Av.PLAY_ARROW.getImageView(ICON_SIZE_TOOLBAR));
+        mCancelAction.setGraphic(MaterialIcon._Av.STOP.getImageView(ICON_SIZE_TOOLBAR));
         mEditAction.setGraphic(MaterialIcon._Content.CREATE.getImageView(ICON_SIZE_TOOLBAR));
         mCloneAction.setGraphic(MaterialIcon._Content.CONTENT_COPY.getImageView(ICON_SIZE_TOOLBAR));
         mRemoveAction.setGraphic(MaterialIcon._Content.REMOVE.getImageView(ICON_SIZE_TOOLBAR));
