@@ -18,7 +18,10 @@ package se.trixon.mapollage;
 import java.util.Locale;
 import java.util.prefs.Preferences;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.Property;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import se.trixon.almond.util.OptionsBase;
 
@@ -28,15 +31,6 @@ import se.trixon.almond.util.OptionsBase;
  */
 public class Options extends OptionsBase {
 
-    public static final String KEY_CLEAN_NS2 = "clean_ns2";
-    public static final String KEY_CLEAN_SPACE = "clean_space";
-    public static final String KEY_DEFAULT_LAT = "deflat";
-    public static final String KEY_DEFAULT_LON = "deflon";
-    public static final String KEY_LOCALE = "locale";
-    public static final String KEY_LOG_KML = "log_kml";
-    public static final String KEY_THUMBNAIL_BORDER_SIZE = "thumbnail_border_size";
-    public static final String KEY_THUMBNAIL_SIZE = "thumbnail_size";
-    public static final String KEY_WORD_WRAP = "word_wrap";
     private static final boolean DEFAULT_CLEAN_NS2 = true;
     private static final boolean DEFAULT_CLEAN_SPACE = true;
     private static final Locale DEFAULT_LOCALE = Locale.getDefault();
@@ -44,6 +38,14 @@ public class Options extends OptionsBase {
     private static final boolean DEFAULT_UI_NIGHTMODE = true;
     private static final boolean DEFAULT_UI_WORD_WRAP = true;
     private static final String KEY_AUTO_OPEN = "auto_open";
+    private static final String KEY_CLEAN_NS2 = "clean_ns2";
+    private static final String KEY_CLEAN_SPACE = "clean_space";
+    private static final String KEY_DEFAULT_LAT = "deflat";
+    private static final String KEY_DEFAULT_LON = "deflon";
+    private static final String KEY_LOCALE = "locale";
+    private static final String KEY_LOG_KML = "log_kml";
+    private static final String KEY_THUMBNAIL_BORDER_SIZE = "thumbnail_border_size";
+    private static final String KEY_THUMBNAIL_SIZE = "thumbnail_size";
     private static final String KEY_UI_NIGHTMODE = "ui.nightmode";
     private static final String KEY_UI_WORDWRAP = "ui.wordwrap";
     private final boolean DEFAULT_AUTO_OPEN = true;
@@ -52,7 +54,15 @@ public class Options extends OptionsBase {
     private final int DEFAULT_THUMBNAIL_BORDER_SIZE = 3;
     private final int DEFAULT_THUMBNAIL_SIZE = 1000;
     private final BooleanProperty mAutoOpenProperty = new SimpleBooleanProperty();
+    private final BooleanProperty mCleanNS2Property = new SimpleBooleanProperty();
+    private final BooleanProperty mCleanSpaceProperty = new SimpleBooleanProperty();
+    private final Property<Double> mDefaultLatProperty = new SimpleObjectProperty<>();
+    private final Property<Double> mDefaultLonProperty = new SimpleObjectProperty<>();
+    private final ObjectProperty<Locale> mLocaleProperty = new SimpleObjectProperty<>();
+    private final BooleanProperty mLogKmlProperty = new SimpleBooleanProperty();
     private final BooleanProperty mNightModeProperty = new SimpleBooleanProperty();
+    private final Property<Integer> mThumbnailBorderSizeProperty = new SimpleObjectProperty<>();
+    private final Property<Integer> mThumbnailSizeProperty = new SimpleObjectProperty<>();
     private final BooleanProperty mWordWrapProperty = new SimpleBooleanProperty();
 
     public static Options getInstance() {
@@ -65,6 +75,16 @@ public class Options extends OptionsBase {
         mNightModeProperty.set(is(KEY_UI_NIGHTMODE, DEFAULT_UI_NIGHTMODE));
         mWordWrapProperty.set(is(KEY_UI_WORDWRAP, DEFAULT_UI_WORD_WRAP));
         mAutoOpenProperty.set(is(KEY_AUTO_OPEN, DEFAULT_AUTO_OPEN));
+        mLogKmlProperty.set(is(KEY_LOG_KML, DEFAULT_LOG_KML));
+        mCleanNS2Property.set(is(KEY_CLEAN_NS2, DEFAULT_CLEAN_NS2));
+        mCleanSpaceProperty.set(is(KEY_CLEAN_SPACE, DEFAULT_CLEAN_SPACE));
+
+        mDefaultLatProperty.setValue(getDouble(KEY_DEFAULT_LAT, DEFAULT_LAT));
+        mDefaultLonProperty.setValue(getDouble(KEY_DEFAULT_LON, DEFAULT_LON));
+
+        mThumbnailBorderSizeProperty.setValue(getInt(KEY_THUMBNAIL_BORDER_SIZE, DEFAULT_THUMBNAIL_BORDER_SIZE));
+        mThumbnailSizeProperty.setValue(getInt(KEY_THUMBNAIL_SIZE, DEFAULT_THUMBNAIL_SIZE));
+        mLocaleProperty.set(Locale.forLanguageTag(get(KEY_LOCALE, DEFAULT_LOCALE.toLanguageTag())));
 
         initListeners();
     }
@@ -73,40 +93,56 @@ public class Options extends OptionsBase {
         return mAutoOpenProperty;
     }
 
+    public BooleanProperty cleanNS2Property() {
+        return mCleanNS2Property;
+    }
+
+    public BooleanProperty cleanSpaceProperty() {
+        return mCleanSpaceProperty;
+    }
+
+    public Property<Double> defaultLatProperty() {
+        return mDefaultLatProperty;
+    }
+
+    public Property<Double> defaultLonProperty() {
+        return mDefaultLonProperty;
+    }
+
     public Double getDefaultLat() {
-        return mPreferences.getDouble(KEY_DEFAULT_LAT, DEFAULT_LAT);
+        return mDefaultLatProperty.getValue();
     }
 
     public Double getDefaultLon() {
-        return mPreferences.getDouble(KEY_DEFAULT_LON, DEFAULT_LON);
+        return mDefaultLonProperty.getValue();
     }
 
     public Locale getLocale() {
-        return Locale.forLanguageTag(mPreferences.get(KEY_LOCALE, DEFAULT_LOCALE.toLanguageTag()));
+        return localeProperty().get();
     }
 
     public int getThumbnailBorderSize() {
-        return mPreferences.getInt(KEY_THUMBNAIL_BORDER_SIZE, DEFAULT_THUMBNAIL_BORDER_SIZE);
+        return mThumbnailBorderSizeProperty.getValue();
     }
 
     public int getThumbnailSize() {
-        return mPreferences.getInt(KEY_THUMBNAIL_SIZE, DEFAULT_THUMBNAIL_SIZE);
+        return mThumbnailSizeProperty.getValue();
     }
 
     public boolean isAutoOpen() {
         return mAutoOpenProperty.get();
     }
 
-    public boolean isCleanNs2() {
-        return mPreferences.getBoolean(KEY_CLEAN_NS2, DEFAULT_CLEAN_NS2);
+    public boolean isCleanNS2() {
+        return mCleanNS2Property.get();
     }
 
     public boolean isCleanSpace() {
-        return mPreferences.getBoolean(KEY_CLEAN_SPACE, DEFAULT_CLEAN_SPACE);
+        return mCleanSpaceProperty.get();
     }
 
     public boolean isLogKml() {
-        return mPreferences.getBoolean(KEY_LOG_KML, DEFAULT_LOG_KML);
+        return mLogKmlProperty.get();
     }
 
     public boolean isNightMode() {
@@ -117,6 +153,14 @@ public class Options extends OptionsBase {
         return mWordWrapProperty.get();
     }
 
+    public ObjectProperty<Locale> localeProperty() {
+        return mLocaleProperty;
+    }
+
+    public BooleanProperty logKmlProperty() {
+        return mLogKmlProperty;
+    }
+
     public BooleanProperty nightModeProperty() {
         return mNightModeProperty;
     }
@@ -125,28 +169,28 @@ public class Options extends OptionsBase {
         mAutoOpenProperty.set(value);
     }
 
-    public void setCleanNs2(boolean value) {
-        mPreferences.putBoolean(KEY_CLEAN_NS2, value);
+    public void setCleanNS2(boolean value) {
+        mCleanNS2Property.set(value);
     }
 
     public void setCleanSpace(boolean value) {
-        mPreferences.putBoolean(KEY_CLEAN_SPACE, value);
+        mCleanSpaceProperty.set(value);
     }
 
     public void setDefaultLat(Double value) {
-        mPreferences.putDouble(KEY_DEFAULT_LAT, value);
+        mDefaultLatProperty.setValue(value);
     }
 
     public void setDefaultLon(Double value) {
-        mPreferences.putDouble(KEY_DEFAULT_LON, value);
+        mDefaultLonProperty.setValue(value);
     }
 
     public void setLocale(Locale locale) {
-        mPreferences.put(KEY_LOCALE, locale.toLanguageTag());
+        mLocaleProperty.set(locale);
     }
 
     public void setLogKml(boolean value) {
-        mPreferences.putBoolean(KEY_LOG_KML, value);
+        mLogKmlProperty.set(value);
     }
 
     public void setNightMode(boolean nightMode) {
@@ -154,15 +198,23 @@ public class Options extends OptionsBase {
     }
 
     public void setThumbnailBorderSize(int size) {
-        mPreferences.putInt(KEY_THUMBNAIL_BORDER_SIZE, size);
+        mThumbnailBorderSizeProperty.setValue(size);
     }
 
     public void setThumbnailSize(int size) {
-        mPreferences.putInt(KEY_THUMBNAIL_SIZE, size);
+        mThumbnailSizeProperty.setValue(size);
     }
 
     public void setWordWrap(boolean value) {
         mWordWrapProperty.set(value);
+    }
+
+    public Property<Integer> thumbnailBorderSizeProperty() {
+        return mThumbnailBorderSizeProperty;
+    }
+
+    public Property<Integer> thumbnailSizeProperty() {
+        return mThumbnailSizeProperty;
     }
 
     public BooleanProperty wordWrapProperty() {
@@ -177,12 +229,28 @@ public class Options extends OptionsBase {
         mNightModeProperty.addListener(changeListener);
         mWordWrapProperty.addListener(changeListener);
         mAutoOpenProperty.addListener(changeListener);
+        mLogKmlProperty.addListener(changeListener);
+        mCleanNS2Property.addListener(changeListener);
+        mCleanSpaceProperty.addListener(changeListener);
+        mDefaultLatProperty.addListener(changeListener);
+        mDefaultLonProperty.addListener(changeListener);
+        mThumbnailBorderSizeProperty.addListener(changeListener);
+        mThumbnailSizeProperty.addListener(changeListener);
+        mLocaleProperty.addListener(changeListener);
     }
 
     private void save() {
         put(KEY_UI_NIGHTMODE, isNightMode());
         put(KEY_UI_WORDWRAP, isWordWrap());
         put(KEY_AUTO_OPEN, isAutoOpen());
+        put(KEY_LOG_KML, isLogKml());
+        put(KEY_CLEAN_NS2, isCleanNS2());
+        put(KEY_CLEAN_SPACE, isCleanSpace());
+        put(KEY_DEFAULT_LAT, getDefaultLat());
+        put(KEY_DEFAULT_LON, getDefaultLon());
+        put(KEY_THUMBNAIL_BORDER_SIZE, getThumbnailBorderSize());
+        put(KEY_THUMBNAIL_SIZE, getThumbnailSize());
+        put(KEY_LOCALE, getLocale().toLanguageTag());
     }
 
     private static class Holder {

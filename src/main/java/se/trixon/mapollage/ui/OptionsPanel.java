@@ -54,7 +54,6 @@ public class OptionsPanel extends GridPane {
 
     public OptionsPanel() {
         createUI();
-        load();
     }
 
     private void addTopMargin(Region... regions) {
@@ -142,30 +141,17 @@ public class OptionsPanel extends GridPane {
 
         mNightModeToggleSwitch.selectedProperty().bindBidirectional(mOptions.nightModeProperty());
         mWordWrapCheckBox.selectedProperty().bindBidirectional(mOptions.wordWrapProperty());
+        mCleanNs2CheckBox.selectedProperty().bindBidirectional(mOptions.cleanNS2Property());
+        mCleanSpaceCheckBox.selectedProperty().bindBidirectional(mOptions.cleanSpaceProperty());
+        mLogKmlCheckBox.selectedProperty().bindBidirectional(mOptions.logKmlProperty());
+        mDefaultLatitudeSpinner.valueFactoryProperty().getValue().valueProperty().bindBidirectional(mOptions.defaultLatProperty());
+        mDefaultLongitudeSpinner.valueFactoryProperty().getValue().valueProperty().bindBidirectional(mOptions.defaultLonProperty());
+        mThumbnailBorderSizeSpinner.valueFactoryProperty().getValue().valueProperty().bindBidirectional(mOptions.thumbnailBorderSizeProperty());
+        mThumbnailSizeSpinner.valueFactoryProperty().getValue().valueProperty().bindBidirectional(mOptions.thumbnailSizeProperty());
+
+        mLocaleComboBox.valueProperty().bindBidirectional(mOptions.localeProperty());
 
         setPrefSize(480, 360);
-    }
-
-    private void load() {
-        mLocaleComboBox.setLocale(mOptions.getLocale());
-        mCleanNs2CheckBox.setSelected(mOptions.isCleanNs2());
-        mCleanSpaceCheckBox.setSelected(mOptions.isCleanSpace());
-        mDefaultLatitudeSpinner.getValueFactory().setValue(mOptions.getDefaultLat());
-        mDefaultLongitudeSpinner.getValueFactory().setValue(mOptions.getDefaultLon());
-        mLogKmlCheckBox.setSelected(mOptions.isLogKml());
-        mThumbnailSizeSpinner.getValueFactory().setValue(mOptions.getThumbnailSize());
-        mThumbnailBorderSizeSpinner.getValueFactory().setValue(mOptions.getThumbnailBorderSize());
-    }
-
-    private void save() {
-        mOptions.setLocale(mLocaleComboBox.getLocale());
-        mOptions.setCleanNs2(mCleanNs2CheckBox.isSelected());
-        mOptions.setCleanSpace(mCleanSpaceCheckBox.isSelected());
-        mOptions.setDefaultLat(mDefaultLatitudeSpinner.getValue());
-        mOptions.setDefaultLon(mDefaultLongitudeSpinner.getValue());
-        mOptions.setLogKml(mLogKmlCheckBox.isSelected());
-        mOptions.setThumbnailSize(mThumbnailSizeSpinner.getValue());
-        mOptions.setThumbnailBorderSize(mThumbnailBorderSizeSpinner.getValue());
     }
 
 }

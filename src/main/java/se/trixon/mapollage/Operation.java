@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2021 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -869,7 +869,7 @@ public class Operation implements Runnable {
             mKml.marshal(stringWriter);
             String kmlString = stringWriter.toString();
 
-            if (mOptions.isCleanNs2()) {
+            if (mOptions.isCleanNS2()) {
                 mListener.onOperationLog(mBundle.getString("clean_ns2"));
                 kmlString = StringUtils.replace(kmlString, "xmlns:ns2=", "xmlns=");
                 kmlString = StringUtils.replace(kmlString, "<ns2:", "<");
