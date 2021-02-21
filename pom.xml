@@ -256,6 +256,10 @@
                                         <include>se/trixon/almond/util/*</include>
                                         <include>se/trixon/almond/util/ext/**</include>
                                         <include>se/trixon/almond/util/fx/**</include>
+                                        <include>se/trixon/almond/util/icons/material/*</include>
+                                        <include>se/trixon/almond/util/icons/material/_action/*</include>
+                                        <include>se/trixon/almond/util/icons/material/_av/*</include>
+                                        <include>se/trixon/almond/util/icons/material/_content/*</include>
                                         <include>se/trixon/almond/util/swing/*</include>
                                     </includes>
                                 </filter>

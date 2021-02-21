@@ -61,6 +61,7 @@ public class App extends Application {
     private Action mHelpAction;
     private final Options mOptions = Options.getInstance();
     private Action mOptionsAction;
+    private OptionsPanel mOptionsPanel;
     private BorderPane mRoot;
     private final RunManager mRunManager = RunManager.getInstance();
     private Stage mStage;
@@ -136,6 +137,10 @@ public class App extends Application {
     }
 
     private void displayOptions() {
+        if (mOptionsPanel == null) {
+            mOptionsPanel = new OptionsPanel();
+        }
+
         var alert = new Alert(Alert.AlertType.INFORMATION);
         alert.initOwner(mStage);
         alert.setTitle(Dict.OPTIONS.toString());
@@ -143,14 +148,12 @@ public class App extends Application {
         alert.setHeaderText(null);
         alert.setResizable(true);
 
-        var optionsPanel = new OptionsPanel();
         var dialogPane = alert.getDialogPane();
-        dialogPane.setContent(optionsPanel);
+        dialogPane.setContent(mOptionsPanel);
         FxHelper.removeSceneInitFlicker(dialogPane);
 
         var button = (Button) dialogPane.lookupButton(ButtonType.OK);
         button.setText(Dict.CLOSE.toString());
-//        dialogPane.setPrefSize(400, 200);
 
         FxHelper.showAndWait(alert, mStage);
     }

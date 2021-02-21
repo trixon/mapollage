@@ -17,11 +17,10 @@ package se.trixon.mapollage.ui;
 
 import java.util.ResourceBundle;
 import javafx.geometry.Insets;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Region;
+import javafx.scene.layout.Priority;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import org.controlsfx.control.ToggleSwitch;
@@ -38,63 +37,91 @@ import se.trixon.mapollage.Options;
 public class OptionsPanel extends GridPane {
 
     private final ResourceBundle mBundle = SystemHelper.getBundle(OptionsPanel.class, "Bundle");
-    private final CheckBox mCleanNs2CheckBox = new CheckBox(mBundle.getString("OptionsPanel.cleanNs2CheckBox"));
-    private final CheckBox mCleanSpaceCheckBox = new CheckBox(mBundle.getString("OptionsPanel.cleanSpaceCheckBox"));
-    private final Font mDefaultFont = Font.getDefault();
+    private final ToggleSwitch mCleanNs2ToggleSwitch = new ToggleSwitch(mBundle.getString("OptionsPanel.cleanNs2ToggleSwitch"));
+    private final ToggleSwitch mCleanSpaceToggleSwitch = new ToggleSwitch(mBundle.getString("OptionsPanel.cleanSpaceToggleSwitch"));
     private final Spinner<Double> mDefaultLatitudeSpinner = new Spinner(-90, 90, 0, 0.01);
     private final Spinner<Double> mDefaultLongitudeSpinner = new Spinner(-180, 180, 0, 0.01);
     private final LocaleComboBox mLocaleComboBox = new LocaleComboBox();
-    private final CheckBox mLogKmlCheckBox = new CheckBox(mBundle.getString("OptionsPanel.logKmlCheckBox"));
-    private ToggleSwitch mNightModeToggleSwitch;
+    private final ToggleSwitch mLogKmlToggleSwitch = new ToggleSwitch(mBundle.getString("OptionsPanel.logKmlToggleSwitch"));
+    private final ToggleSwitch mNightModeToggleSwitch = new ToggleSwitch(Dict.NIGHT_MODE.toString());
     private final Options mOptions = Options.getInstance();
     private final Spinner<Integer> mThumbnailBorderSizeSpinner = new Spinner(0, 20, 2, 1);
     private final Spinner<Integer> mThumbnailSizeSpinner = new Spinner(100, 1200, 250, 10);
-    private final Insets mTopInsets = new Insets(8, 0, 0, 0);
-    private final CheckBox mWordWrapCheckBox = new CheckBox(Dict.DYNAMIC_WORD_WRAP.toString());
+    private final ToggleSwitch mWordWrapToggleSwitch = new ToggleSwitch(Dict.DYNAMIC_WORD_WRAP.toString());
 
     public OptionsPanel() {
         createUI();
     }
 
-    private void addTopMargin(Region... regions) {
-        for (Region region : regions) {
-            GridPane.setMargin(region, mTopInsets);
-        }
-    }
-
-    private void addTopPadding(Region... regions) {
-        for (Region region : regions) {
-            region.setPadding(mTopInsets);
-        }
-    }
-
     private void createUI() {
+        setHgap(32);
+        setVgap(2);
         //setGridLinesVisible(true);
-        String fontFamily = mDefaultFont.getFamily();
-        double fontSize = mDefaultFont.getSize();
+        FxHelper.autoSizeColumn(this, 2);
 
-        Font font = Font.font(fontFamily, FontPosture.ITALIC, fontSize * 1.3);
+        var calendarLanguageLabel = new Label(Dict.CALENDAR_LANGUAGE.toString());
+        var placemarkLabel = new Label(Dict.PLACEMARK.toString());
+        var logLabel = new Label(Dict.LOG.toString());
+        var thumbnailLabel = new Label(Dict.THUMBNAIL.toString());
+        var latitudeLabel = new Label(Dict.LATITUDE.toString());
+        var longitudeLabel = new Label(Dict.LONGITUDE.toString());
+        var borderSizeLabel = new Label(mBundle.getString("OptionsPanel.borderSizeLabel"));
+        var cleanLabel = new Label(mBundle.getString("OptionsPanel.cleanLabel"));
+        var defaultCoordinateLabel = new Label(mBundle.getString("OptionsPanel.coordinateLabel"));
 
-        Label calendarLanguageLabel = new Label(Dict.CALENDAR_LANGUAGE.toString());
-        Label placemarkLabel = new Label(Dict.PLACEMARK.toString());
-        Label logLabel = new Label(Dict.LOG.toString());
-        Label thumbnailLabel = new Label(Dict.THUMBNAIL.toString());
-        Label latitudeLabel = new Label(Dict.LATITUDE.toString());
-        Label longitudeLabel = new Label(Dict.LONGITUDE.toString());
-        Label borderSizeLabel = new Label(mBundle.getString("OptionsPanel.borderSizeLabel"));
-        Label cleanLabel = new Label(mBundle.getString("OptionsPanel.cleanLabel"));
-        Label defaultCoordinateLabel = new Label(mBundle.getString("OptionsPanel.coordinateLabel"));
+        var defaultFont = Font.getDefault();
+        var fontFamily = defaultFont.getFamily();
+        var fontSize = defaultFont.getSize();
+        var font = Font.font(fontFamily, FontPosture.ITALIC, fontSize * 1.3);
 
         placemarkLabel.setFont(font);
         defaultCoordinateLabel.setFont(font);
         cleanLabel.setFont(font);
         logLabel.setFont(font);
 
-        mDefaultLongitudeSpinner.setEditable(true);
-        mDefaultLatitudeSpinner.setEditable(true);
-        mThumbnailSizeSpinner.setEditable(true);
-        mThumbnailBorderSizeSpinner.setEditable(true);
-        mNightModeToggleSwitch = new ToggleSwitch(Dict.NIGHT_MODE.toString());
+        int row = 0;
+        add(calendarLanguageLabel, 0, row++, REMAINING, 1);
+        add(mLocaleComboBox, 0, row++, REMAINING, 1);
+        add(placemarkLabel, 0, row++, REMAINING, 1);
+        add(thumbnailLabel, 0, row, 1, 1);
+        add(borderSizeLabel, 1, row++, 1, 1);
+        add(mThumbnailSizeSpinner, 0, row, 1, 1);
+        add(mThumbnailBorderSizeSpinner, 1, row++, 1, 1);
+        add(defaultCoordinateLabel, 0, row++, REMAINING, 1);
+        add(latitudeLabel, 0, row, 1, 1);
+        add(longitudeLabel, 1, row++, 1, 1);
+        add(mDefaultLatitudeSpinner, 0, row, 1, 1);
+        add(mDefaultLongitudeSpinner, 1, row++, 1, 1);
+        add(cleanLabel, 0, row++, REMAINING, 1);
+        add(mCleanNs2ToggleSwitch, 0, row, 1, 1);
+        add(mCleanSpaceToggleSwitch, 1, row++, 1, 1);
+        add(logLabel, 0, row++, REMAINING, 1);
+        add(mWordWrapToggleSwitch, 0, row, 1, 1);
+        add(mLogKmlToggleSwitch, 1, row++, 1, 1);
+        add(mNightModeToggleSwitch, 0, row++, 1, 1);
+
+        FxHelper.setPadding(new Insets(8, 0, 0, 0),
+                placemarkLabel,
+                defaultCoordinateLabel,
+                cleanLabel,
+                logLabel
+        );
+
+        FxHelper.setPadding(new Insets(28, 0, 0, 0),
+                mNightModeToggleSwitch
+        );
+
+        for (var columnConstraint : getColumnConstraints()) {
+            columnConstraint.setFillWidth(true);
+            columnConstraint.setHgrow(Priority.ALWAYS);
+        }
+
+        FxHelper.setEditable(true,
+                mDefaultLongitudeSpinner,
+                mDefaultLatitudeSpinner,
+                mThumbnailSizeSpinner,
+                mThumbnailBorderSizeSpinner
+        );
 
         FxHelper.autoCommitSpinners(
                 mDefaultLatitudeSpinner,
@@ -103,55 +130,27 @@ public class OptionsPanel extends GridPane {
                 mThumbnailSizeSpinner
         );
 
-        addColumn(0,
-                calendarLanguageLabel,
-                mLocaleComboBox,
-                placemarkLabel,
-                thumbnailLabel,
-                mThumbnailSizeSpinner,
-                borderSizeLabel,
-                mThumbnailBorderSizeSpinner,
-                defaultCoordinateLabel,
-                latitudeLabel,
-                mDefaultLatitudeSpinner,
-                longitudeLabel,
-                mDefaultLongitudeSpinner,
-                cleanLabel,
-                mCleanNs2CheckBox,
-                mCleanSpaceCheckBox,
-                logLabel,
-                mWordWrapCheckBox,
-                mLogKmlCheckBox,
-                mNightModeToggleSwitch
-        );
+        mLocaleComboBox.setMaxWidth(Double.MAX_VALUE);
+        mDefaultLatitudeSpinner.setMaxWidth(Double.MAX_VALUE);
+        mDefaultLongitudeSpinner.setMaxWidth(Double.MAX_VALUE);
+        mThumbnailSizeSpinner.setMaxWidth(Double.MAX_VALUE);
+        mThumbnailBorderSizeSpinner.setMaxWidth(Double.MAX_VALUE);
+        mCleanNs2ToggleSwitch.setMaxWidth(Double.MAX_VALUE);
+        mCleanSpaceToggleSwitch.setMaxWidth(Double.MAX_VALUE);
+        mWordWrapToggleSwitch.setMaxWidth(Double.MAX_VALUE);
+        mLogKmlToggleSwitch.setMaxWidth(Double.MAX_VALUE);
+        mNightModeToggleSwitch.setMaxWidth(Double.MAX_VALUE);
 
-        addTopPadding(
-                placemarkLabel,
-                defaultCoordinateLabel,
-                borderSizeLabel,
-                longitudeLabel,
-                cleanLabel,
-                logLabel
-        );
-
-        addTopMargin(
-                mCleanSpaceCheckBox,
-                mLogKmlCheckBox
-        );
-
-        mNightModeToggleSwitch.selectedProperty().bindBidirectional(mOptions.nightModeProperty());
-        mWordWrapCheckBox.selectedProperty().bindBidirectional(mOptions.wordWrapProperty());
-        mCleanNs2CheckBox.selectedProperty().bindBidirectional(mOptions.cleanNS2Property());
-        mCleanSpaceCheckBox.selectedProperty().bindBidirectional(mOptions.cleanSpaceProperty());
-        mLogKmlCheckBox.selectedProperty().bindBidirectional(mOptions.logKmlProperty());
+        mLocaleComboBox.valueProperty().bindBidirectional(mOptions.localeProperty());
         mDefaultLatitudeSpinner.valueFactoryProperty().getValue().valueProperty().bindBidirectional(mOptions.defaultLatProperty());
         mDefaultLongitudeSpinner.valueFactoryProperty().getValue().valueProperty().bindBidirectional(mOptions.defaultLonProperty());
         mThumbnailBorderSizeSpinner.valueFactoryProperty().getValue().valueProperty().bindBidirectional(mOptions.thumbnailBorderSizeProperty());
         mThumbnailSizeSpinner.valueFactoryProperty().getValue().valueProperty().bindBidirectional(mOptions.thumbnailSizeProperty());
-
-        mLocaleComboBox.valueProperty().bindBidirectional(mOptions.localeProperty());
-
-        setPrefSize(480, 360);
+        mCleanNs2ToggleSwitch.selectedProperty().bindBidirectional(mOptions.cleanNS2Property());
+        mCleanSpaceToggleSwitch.selectedProperty().bindBidirectional(mOptions.cleanSpaceProperty());
+        mWordWrapToggleSwitch.selectedProperty().bindBidirectional(mOptions.wordWrapProperty());
+        mLogKmlToggleSwitch.selectedProperty().bindBidirectional(mOptions.logKmlProperty());
+        mNightModeToggleSwitch.selectedProperty().bindBidirectional(mOptions.nightModeProperty());
     }
 
 }
