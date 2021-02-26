@@ -187,6 +187,7 @@ public class AppForm extends BorderPane {
 
         mLog.out(SystemHelper.getSystemInfo());
         mLog.out("  " + StringUtils.replace(AppStart.getVersionInfo(), "\n", "\n  "));
+        mLog.out("\n\n  " + AppStart.sBundle.getString("hint_tui"));
 
         mAddAction = new Action(Dict.ADD.toString(), actionEvent -> {
             profileEdit(null);

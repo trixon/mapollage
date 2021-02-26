@@ -45,8 +45,8 @@ public class AppStart implements OperationListener {
 
     public static final String HELP = "help";
     public static final String VERSION = "version";
+    public static final ResourceBundle sBundle = SystemHelper.getBundle(AppStart.class, "Bundle");
     private static String[] sArgs;
-    private static final ResourceBundle sBundle = SystemHelper.getBundle(AppStart.class, "Bundle");
     private static Options sOptions;
     private final ProfileManager mProfileManager = ProfileManager.getInstance();
 
@@ -88,7 +88,6 @@ public class AppStart implements OperationListener {
     public AppStart() {
         initOptions();
         if (sArgs.length == 0) {
-            System.out.println(sBundle.getString("hint_tui"));
             displayGui();
         } else {
             try {
