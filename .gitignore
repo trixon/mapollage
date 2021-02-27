@@ -2,6 +2,7 @@
 # Created by https://www.gitignore.io/api/java,linux,maven,netbeans
 
 ### Linux ###
+*.snap
 *~
 
 # temporary files which can be created if a process still has a handle open of a deleted file
