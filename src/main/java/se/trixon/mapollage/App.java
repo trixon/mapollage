@@ -36,6 +36,7 @@ import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.PomInfo;
+import se.trixon.almond.util.SnapHelperFx;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.SystemHelperFx;
 import se.trixon.almond.util.fx.AboutModel;
@@ -94,6 +95,8 @@ public class App extends Application {
         initAccelerators();
         initListeners();
         mAppForm.initAccelerators();
+
+        SnapHelperFx.checkSnapStatus(App.class, "snap", mStage, "mapollage", "removable-media");
     }
 
     private void createUI() {
