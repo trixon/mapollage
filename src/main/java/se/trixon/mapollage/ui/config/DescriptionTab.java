@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2021 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -116,7 +116,7 @@ public class DescriptionTab extends BaseTab {
         p.setFilename(mStaticFilenameCheckBox.isSelected());
         p.setPhoto(mStaticPhotoCheckBox.isSelected());
         p.setDate(mStaticDateCheckBox.isSelected());
-
+        p.setCustomValue(mCustomTextArea.getText());
         p.setDefaultTo(mExternalDefaultCheckBox.isSelected());
 
         if (mStaticRadioButton.isSelected()) {
@@ -178,7 +178,7 @@ public class DescriptionTab extends BaseTab {
         gp.add(mCustomTextArea, col, ++row, GridPane.REMAINING, 1);
         gp.addRow(++row, mExternalRadioButton, mExternalDefaultCheckBox, mExternalStaticRadioButton, mExternalCustomRadioButton);
         gp.add(mExternalTextField, col, ++row, GridPane.REMAINING, 1);
-
+        mExternalRadioButton.setDisable(true);
         //gp.setBackground(FxHelper.createBackground(Color.BISQUE));
         GridPane.setHgrow(mExternalRadioButton, Priority.ALWAYS);
         GridPane.setVgrow(mCustomTextArea, Priority.ALWAYS);

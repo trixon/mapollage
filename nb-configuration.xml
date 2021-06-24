@@ -15,6 +15,6 @@
         -->
         <org-netbeans-modules-javascript2-requirejs.enabled>true</org-netbeans-modules-javascript2-requirejs.enabled>
         <netbeans.compile.on.save>all</netbeans.compile.on.save>
-        <netbeans.hint.jdkPlatform>JDK_11.0.10.hs-adpt</netbeans.hint.jdkPlatform>
+        <netbeans.hint.jdkPlatform>JDK_11.0.11.hs-adpt</netbeans.hint.jdkPlatform>
     </properties>
 </project-shared-configuration>

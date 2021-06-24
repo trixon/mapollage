@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2021 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -219,7 +219,8 @@ public class ProfileDescription extends ProfileBase {
         if (null != mMode) {
             switch (mMode) {
                 case CUSTOM:
-                    values.put(Dict.VALUE.toString(), mCustomValue.replaceAll("\\n", "\\\\n"));
+                    String value = mCustomValue != null ? mCustomValue.replaceAll("\\n", "\\\\n") : "";
+                    values.put(Dict.VALUE.toString(), value);
                     break;
 
                 case EXTERNAL:
