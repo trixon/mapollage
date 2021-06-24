@@ -19,26 +19,17 @@ import com.drew.imaging.ImageProcessingException;
 import com.drew.metadata.exif.GpsDescriptor;
 import com.drew.metadata.exif.GpsDirectory;
 import de.micromata.opengis.kml.v_2_2_0.BalloonStyle;
-import de.micromata.opengis.kml.v_2_2_0.Boundary;
 import de.micromata.opengis.kml.v_2_2_0.ColorMode;
 import de.micromata.opengis.kml.v_2_2_0.Coordinate;
 import de.micromata.opengis.kml.v_2_2_0.Document;
 import de.micromata.opengis.kml.v_2_2_0.Feature;
 import de.micromata.opengis.kml.v_2_2_0.Folder;
-import de.micromata.opengis.kml.v_2_2_0.Icon;
-import de.micromata.opengis.kml.v_2_2_0.IconStyle;
 import de.micromata.opengis.kml.v_2_2_0.Kml;
 import de.micromata.opengis.kml.v_2_2_0.KmlFactory;
-import de.micromata.opengis.kml.v_2_2_0.LineString;
-import de.micromata.opengis.kml.v_2_2_0.LineStyle;
-import de.micromata.opengis.kml.v_2_2_0.LinearRing;
 import de.micromata.opengis.kml.v_2_2_0.Placemark;
 import de.micromata.opengis.kml.v_2_2_0.Point;
-import de.micromata.opengis.kml.v_2_2_0.PolyStyle;
-import de.micromata.opengis.kml.v_2_2_0.Polygon;
-import de.micromata.opengis.kml.v_2_2_0.Style;
+import de.micromata.opengis.kml.v_2_2_0.Snippet;
 import de.micromata.opengis.kml.v_2_2_0.StyleState;
-import de.micromata.opengis.kml.v_2_2_0.TimeStamp;
 import java.awt.Dimension;
 import java.awt.geom.Point2D;
 import java.io.File;
@@ -47,7 +38,6 @@ import java.io.StringWriter;
 import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.PathMatcher;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -89,6 +79,7 @@ public class Operation implements Runnable {
     private static final Logger LOGGER = Logger.getLogger(Operation.class.getName());
 
     private final BalloonStyle mBalloonStyle;
+    private final Snippet mBlankSnippet = new Snippet();
     private final ResourceBundle mBundle;
     private final DateFormat mDateFormatDate = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM);
     private final File mDestinationFile;
@@ -159,8 +150,8 @@ public class Operation implements Runnable {
         }
 
         mStartTime = System.currentTimeMillis();
-        Date date = new Date(mStartTime);
-        SimpleDateFormat dateFormat = new SimpleDateFormat();
+        var date = new Date(mStartTime);
+        var dateFormat = new SimpleDateFormat();
         mListener.onOperationStarted();
         mListener.onOperationLog(dateFormat.format(date));
 
@@ -277,17 +268,17 @@ public class Operation implements Runnable {
         });
 
         //Add paths
-        for (ArrayList<LineNode> nodes : map.values()) {
+        for (var nodes : map.values()) {
             if (nodes.size() > 1) {
-                Placemark path = mPathFolder.createAndAddPlacemark()
+                var pathPlacemark = mPathFolder.createAndAddPlacemark()
                         .withName(LineNode.getName(nodes));
 
-                Style pathStyle = path.createAndAddStyle();
+                var pathStyle = pathPlacemark.createAndAddStyle();
                 pathStyle.createAndSetLineStyle()
                         .withColor("ff0000ff")
                         .withWidth(mProfilePath.getWidth());
 
-                LineString line = path
+                var line = pathPlacemark
                         .createAndSetLineString()
                         .withExtrude(false)
                         .withTessellate(true);
@@ -300,17 +291,17 @@ public class Operation implements Runnable {
 
         //Add path gap
         ArrayList<LineNode> previousNodes = null;
-        for (ArrayList<LineNode> nodes : map.values()) {
+        for (var nodes : map.values()) {
             if (previousNodes != null) {
-                Placemark path = mPathGapFolder.createAndAddPlacemark()
+                var pathPlacemark = mPathGapFolder.createAndAddPlacemark()
                         .withName(LineNode.getName(previousNodes, nodes));
 
-                Style pathStyle = path.createAndAddStyle();
+                var pathStyle = pathPlacemark.createAndAddStyle();
                 pathStyle.createAndSetLineStyle()
                         .withColor("ff00ffff")
                         .withWidth(mProfilePath.getWidth());
 
-                LineString line = path
+                var line = pathPlacemark
                         .createAndSetLineString()
                         .withExtrude(false)
                         .withTessellate(true);
@@ -348,38 +339,38 @@ public class Operation implements Runnable {
             throw new ImageProcessingException(String.format("E010 %s", file.getAbsolutePath()));
         }
 
-        Date exifDate = mPhotoInfo.getDate();
+        var exifDate = mPhotoInfo.getDate();
         if (hasLocation && mProfilePath.isDrawPath()) {
             mLineNodes.add(new LineNode(exifDate, mPhotoInfo.getLat(), mPhotoInfo.getLon()));
         }
 
         if (hasLocation || mProfileSource.isIncludeNullCoordinate()) {
-            Folder folder = getFolder(file, exifDate);
+            var folder = getFolder(file, exifDate);
 
             String imageId = String.format("%08x", FileUtils.checksumCRC32(file));
             String styleNormalId = String.format("s_%s", imageId);
             String styleHighlightId = String.format("s_%s_hl", imageId);
             String styleMapId = String.format("m_%s", imageId);
 
-            Style normalStyle = mDocument
+            var normalStyle = mDocument
                     .createAndAddStyle()
                     .withId(styleNormalId);
 
-            IconStyle normalIconStyle = normalStyle
+            var normalIconStyle = normalStyle
                     .createAndSetIconStyle()
                     .withScale(1.0);
 
-            Style highlightStyle = mDocument
+            var highlightStyle = mDocument
                     .createAndAddStyle()
                     .withBalloonStyle(mBalloonStyle)
                     .withId(styleHighlightId);
 
-            IconStyle highlightIconStyle = highlightStyle
+            var highlightIconStyle = highlightStyle
                     .createAndSetIconStyle()
                     .withScale(1.1);
 
             if (mProfilePlacemark.isSymbolAsPhoto()) {
-                Icon icon = KmlFactory.createIcon().withHref(String.format("%s/%s.jpg", mThumbsDir.getName(), imageId));
+                var icon = KmlFactory.createIcon().withHref(String.format("%s/%s.jpg", mThumbsDir.getName(), imageId));
                 normalIconStyle.setIcon(icon);
                 normalIconStyle.setScale(mProfilePlacemark.getScale());
 
@@ -389,7 +380,7 @@ public class Operation implements Runnable {
             }
 
             if (isUsingThumbnails()) {
-                File thumbFile = new File(mThumbsDir, imageId + ".jpg");
+                var thumbFile = new File(mThumbsDir, imageId + ".jpg");
                 mFileThumbMap.put(file, thumbFile);
                 if (Files.isWritable(thumbFile.getParentFile().toPath())) {
                     mPhotoInfo.createThumbnail(thumbFile);
@@ -404,9 +395,9 @@ public class Operation implements Runnable {
                     .addToPair(KmlFactory.createPair().withKey(StyleState.NORMAL).withStyleUrl("#" + styleNormalId))
                     .addToPair(KmlFactory.createPair().withKey(StyleState.HIGHLIGHT).withStyleUrl("#" + styleHighlightId));
 
-            Placemark placemark = KmlFactory.createPlacemark()
+            var placemark = KmlFactory.createPlacemark()
                     .withName(getSafeXmlString(getPlacemarkName(file, exifDate)))
-                    .withOpen(Boolean.TRUE)
+                    .withSnippet(mBlankSnippet)
                     .withStyleUrl("#" + styleMapId);
 
             String desc = getPlacemarkDescription(file, mPhotoInfo, exifDate);
@@ -418,7 +409,7 @@ public class Operation implements Runnable {
                     .addToCoordinates(mPhotoInfo.getLon(), mPhotoInfo.getLat(), 0F);
 
             if (mProfilePlacemark.isTimestamp()) {
-                TimeStamp timeStamp = KmlFactory.createTimeStamp();
+                var timeStamp = KmlFactory.createTimeStamp();
                 timeStamp.setWhen(mTimeStampDateFormat.format(exifDate));
                 placemark.setTimePrimitive(timeStamp);
             }
@@ -437,23 +428,23 @@ public class Operation implements Runnable {
         });
 
         try {
-            List<Point2D.Double> convexHull = GrahamScan.getConvexHullDouble(inputs);
-            Placemark placemark = polygonFolder
+            var convexHull = GrahamScan.getConvexHullDouble(inputs);
+            var placemark = polygonFolder
                     .createAndAddPlacemark()
                     .withName(name);
 
-            Style style = placemark.createAndAddStyle();
-            LineStyle lineStyle = style.createAndSetLineStyle()
+            var style = placemark.createAndAddStyle();
+            style.createAndSetLineStyle()
                     .withColor("00000000")
                     .withWidth(0.0);
 
-            PolyStyle polyStyle = style.createAndSetPolyStyle()
+            style.createAndSetPolyStyle()
                     .withColor("ccffffff")
                     .withColorMode(ColorMode.RANDOM);
 
-            Polygon polygon = placemark.createAndSetPolygon();
-            Boundary boundary = polygon.createAndSetOuterBoundaryIs();
-            LinearRing linearRing = boundary.createAndSetLinearRing();
+            var polygon = placemark.createAndSetPolygon();
+            var boundary = polygon.createAndSetOuterBoundaryIs();
+            var linearRing = boundary.createAndSetLinearRing();
 
             convexHull.forEach((node) -> {
                 linearRing.addToCoordinates(node.x, node.y);
@@ -473,8 +464,8 @@ public class Operation implements Runnable {
 //            //
 //        }
 
-        for (Folder folder : mPolygonRemovals.keySet()) {
-            Folder parentFolder = mPolygonRemovals.get(folder);
+        for (var folder : mPolygonRemovals.keySet()) {
+            var parentFolder = mPolygonRemovals.get(folder);
             parentFolder.getFeature().remove(folder);
         }
 
@@ -482,12 +473,12 @@ public class Operation implements Runnable {
     }
 
     private void addPolygons(Folder polygonParent, List<Feature> features) {
-        for (Feature feature : features) {
+        for (var feature : features) {
             if (feature instanceof Folder) {
-                Folder folder = (Folder) feature;
+                var folder = (Folder) feature;
 
                 if (folder != mPathFolder && folder != mPathGapFolder && folder != mPolygonFolder) {
-                    Folder polygonFolder = polygonParent.createAndAddFolder().withName(folder.getName()).withOpen(true);
+                    var polygonFolder = polygonParent.createAndAddFolder().withName(folder.getName()).withOpen(true);
                     mFolderPolygonInputs.put(polygonFolder, new ArrayList<>());
                     addPolygons(polygonFolder, folder.getFeature());
 
@@ -498,15 +489,14 @@ public class Operation implements Runnable {
             }
 
             if (feature instanceof Placemark) {
-                Placemark placemark = (Placemark) feature;
-
-                Point point = (Point) placemark.getGeometry();
+                var placemark = (Placemark) feature;
+                var point = (Point) placemark.getGeometry();
                 ArrayList<Coordinate> coordinates = mFolderPolygonInputs.computeIfAbsent(polygonParent, k -> new ArrayList<>());
                 coordinates.addAll(point.getCoordinates());
             }
         }
 
-        ArrayList<Coordinate> rootCoordinates = mFolderPolygonInputs.get(mPolygonFolder);
+        var rootCoordinates = mFolderPolygonInputs.get(mPolygonFolder);
         if (polygonParent == mPolygonFolder && rootCoordinates != null) {
             addPolygon(mPolygonFolder.getName(), rootCoordinates, polygonParent);
         }
@@ -515,7 +505,7 @@ public class Operation implements Runnable {
     private boolean generateFileList() throws IOException {
         mListener.onOperationLog("");
         mListener.onOperationLog(Dict.GENERATING_FILELIST.toString());
-        PathMatcher pathMatcher = mProfileSource.getPathMatcher();
+        var pathMatcher = mProfileSource.getPathMatcher();
 
         EnumSet<FileVisitOption> fileVisitOptions;
         if (mProfileSource.isFollowLinks()) {
@@ -524,9 +514,9 @@ public class Operation implements Runnable {
             fileVisitOptions = EnumSet.noneOf(FileVisitOption.class);
         }
 
-        File file = mProfileSource.getDir();
+        var file = mProfileSource.getDir();
         if (file.isDirectory()) {
-            FileVisitor fileVisitor = new FileVisitor(pathMatcher, mFiles, file, this);
+            var fileVisitor = new FileVisitor(pathMatcher, mFiles, file, this);
             try {
                 if (mProfileSource.isRecursive()) {
                     Files.walkFileTree(file.toPath(), fileVisitOptions, Integer.MAX_VALUE, fileVisitor);
@@ -554,7 +544,7 @@ public class Operation implements Runnable {
     }
 
     private String getDescPhoto(File sourceFile, int orientation) throws IOException {
-        Scaler scaler = new Scaler(new Dimension(mPhotoInfo.getOriginalDimension()));
+        var scaler = new Scaler(new Dimension(mPhotoInfo.getOriginalDimension()));
         boolean thumbRef = mProfilePhoto.getReference() == ProfilePhoto.Reference.THUMBNAIL;
         boolean portrait = (orientation == 6 || orientation == 8) && thumbRef;
 
@@ -568,7 +558,7 @@ public class Operation implements Runnable {
             scaler.setHeight(heightLimit);
         }
 
-        Dimension newDimension = scaler.getDimension();
+        var newDimension = scaler.getDimension();
         String imageTagFormat = "<p><img src='%s' width='%d' height='%d'></p>";
 
         int width = portrait ? newDimension.height : newDimension.width;
@@ -635,7 +625,7 @@ public class Operation implements Runnable {
         key = StringUtils.replace(key, "\\", "/");
         String[] levels = StringUtils.split(key, "/");
 
-        Folder parent = mRootFolder;
+        var parent = mRootFolder;
         String path = "";
 
         for (int i = 0; i < levels.length; i++) {
@@ -672,12 +662,12 @@ public class Operation implements Runnable {
                 break;
 
             case RELATIVE:
-                Path relativePath = mDestinationFile.toPath().relativize(file.toPath());
+                var relativePath = mDestinationFile.toPath().relativize(file.toPath());
                 imageSrc = StringUtils.replace(relativePath.toString(), "..", ".", 1);
                 break;
 
             case THUMBNAIL:
-                Path thumbPath = mDestinationFile.toPath().relativize(mFileThumbMap.get(file).toPath());
+                var thumbPath = mDestinationFile.toPath().relativize(mFileThumbMap.get(file).toPath());
                 imageSrc = StringUtils.replace(thumbPath.toString(), "..", ".", 1);
                 break;
 
@@ -720,7 +710,7 @@ public class Operation implements Runnable {
     }
 
     private String getPlacemarkDescription(File file, PhotoInfo photoInfo, Date exifDate) throws IOException {
-        GpsDirectory gpsDirectory = photoInfo.getGpsDirectory();
+        var gpsDirectory = photoInfo.getGpsDirectory();
         GpsDescriptor gpsDescriptor = null;
         if (gpsDirectory != null) {
             gpsDescriptor = new GpsDescriptor(gpsDirectory);
@@ -845,7 +835,7 @@ public class Operation implements Runnable {
 
     private void saveToFile() {
         mListener.onOperationLog("");
-        List keys = new ArrayList(mRootFolders.keySet());
+        var keys = new ArrayList(mRootFolders.keySet());
         Collections.sort(keys);
 
         keys.stream().forEach((key) -> {
@@ -883,8 +873,8 @@ public class Operation implements Runnable {
             }
 
             kmlString = StringUtils.replaceEach(kmlString,
-                    new String[]{"&lt;", "&gt;", "&amp;"},
-                    new String[]{"<", ">", ""});
+                    new String[]{"&lt;", "&gt;"},
+                    new String[]{"<", ">"});
 
             if (mOptions.isLogKml()) {
                 mListener.onOperationLog("\n");
@@ -938,9 +928,9 @@ public class Operation implements Runnable {
     }
 
     private void scanForFolderRemoval(Folder folder) {
-        for (Feature feature : folder.getFeature()) {
+        for (var feature : folder.getFeature()) {
             if (feature instanceof Folder) {
-                Folder subFolder = (Folder) feature;
+                var subFolder = (Folder) feature;
                 if (subFolder.getFeature().isEmpty()) {
                     mPolygonRemovals.put(subFolder, folder);
                 } else {
