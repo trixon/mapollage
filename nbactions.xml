@@ -10,8 +10,11 @@
             <goal>org.codehaus.mojo:exec-maven-plugin:1.2.1:exec</goal>
         </goals>
         <properties>
-            <exec.args>-Duser.language=en -classpath %classpath se.trixon.mapollage.AppStart</exec.args>
+            <exec.args>${exec.vmArgs} -classpath %classpath ${exec.mainClass} ${exec.appArgs}</exec.args>
             <exec.executable>java</exec.executable>
+            <exec.vmArgs>-Duser.language=en --add-opens=java.base/java.io=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED</exec.vmArgs>
+            <exec.appArgs></exec.appArgs>
+            <exec.mainClass>se.trixon.mapollage.AppStart</exec.mainClass>
         </properties>
     </action>
     <action>
@@ -24,9 +27,12 @@
             <goal>org.codehaus.mojo:exec-maven-plugin:1.2.1:exec</goal>
         </goals>
         <properties>
-            <exec.args>-agentlib:jdwp=transport=dt_socket,server=n,address=${jpda.address} -Duser.language=en -classpath %classpath se.trixon.mapollage.AppStart</exec.args>
+            <exec.args>${exec.vmArgs} -classpath %classpath ${exec.mainClass} ${exec.appArgs}</exec.args>
             <exec.executable>java</exec.executable>
             <jpda.listen>true</jpda.listen>
+            <exec.vmArgs>-Duser.language=en --add-opens=java.base/java.io=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED -agentlib:jdwp=transport=dt_socket,server=n,address=${jpda.address}</exec.vmArgs>
+            <exec.appArgs></exec.appArgs>
+            <exec.mainClass>se.trixon.mapollage.AppStart</exec.mainClass>
         </properties>
     </action>
     <action>
@@ -39,8 +45,11 @@
             <goal>org.codehaus.mojo:exec-maven-plugin:1.2.1:exec</goal>
         </goals>
         <properties>
-            <exec.args>-Duser.language=en -classpath %classpath se.trixon.mapollage.AppStart</exec.args>
+            <exec.args>${exec.vmArgs} -classpath %classpath ${exec.mainClass} ${exec.appArgs}</exec.args>
             <exec.executable>java</exec.executable>
+            <exec.vmArgs>-Duser.language=en --add-opens=java.base/java.io=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED</exec.vmArgs>
+            <exec.appArgs></exec.appArgs>
+            <exec.mainClass>se.trixon.mapollage.AppStart</exec.mainClass>
         </properties>
     </action>
 </actions>
