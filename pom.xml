@@ -8,19 +8,19 @@
     <name>mapollage</name>
     <description>Mapollage is a photo kml generator for Google Earth</description>
     <url>https://trixon.se/</url>
-    
+
     <licenses>
         <license>
             <name>The Apache Software License, Version 2.0</name>
             <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
         </license>
     </licenses>
-    
+
     <organization>
         <name>Patrik Karlström</name>
         <url>https://trixon.se</url>
     </organization>
-    
+
     <developers>
         <developer>
             <id>trixon</id>
@@ -33,7 +33,7 @@
             <timezone>+1</timezone>
         </developer>
     </developers>
-    
+
     <scm>
         <url>https://github.com/trixon/mapollage</url>
         <connection>scm:git:git://github.com/trixon/mapollage.git</connection>
@@ -51,7 +51,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>3.2.2</version>
+                <version>3.3.0</version>
                 <configuration>
                     <archive>
                         <manifest>
@@ -66,7 +66,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.3.0</version>
+                <version>3.4.1</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -123,7 +123,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-release-plugin</artifactId>
-                <version>3.0.0-M6</version>
+                <version>3.0.0-M7</version>
                 <configuration>
                     <tagNameFormat>v@{project.version}</tagNameFormat>
                 </configuration>
@@ -154,7 +154,7 @@
             <plugin>
                 <groupId>com.akathist.maven.plugins.launch4j</groupId>
                 <artifactId>launch4j-maven-plugin</artifactId>
-                <version>2.1.2</version>
+                <version>2.2.0</version>
                 <executions>
                     <execution>
                         <id>l4j-gui</id>
@@ -164,7 +164,7 @@
                         </goals>
                         <configuration>
                             <headerType>gui</headerType>
-                            <dontWrapJar>false</dontWrapJar>
+                            <dontWrapJar>true</dontWrapJar>
                             <jar>target/${project.name}-${project.version}.jar</jar>
                             <outfile>target/${project.name}.exe</outfile>
                             <errTitle>Java not found</errTitle>
@@ -176,11 +176,10 @@
                             <icon>${project.name}.ico</icon>
 
                             <jre>
-                                <bundledJre64Bit>false</bundledJre64Bit>
-                                <bundledJreAsFallback>false</bundledJreAsFallback>
-                                <minVersion>11.0.0</minVersion>
-                                <jdkPreference>preferJre</jdkPreference>
-                                <runtimeBits>64/32</runtimeBits>
+                                <minVersion>17</minVersion>
+                                <requiresJdk>false</requiresJdk>
+                                <requires64Bit>false</requires64Bit>
+                                <path>.</path>
                             </jre>
 
                             <singleInstance>
@@ -206,6 +205,9 @@
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>3.4.2</version>
+                <goals>
+                    <goal>single</goal>
+                </goals>
                 <configuration>
                     <descriptors>
                         <descriptor>src/assembly/dep.xml</descriptor>
@@ -225,7 +227,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>versions-maven-plugin</artifactId>
-                <version>2.11.0</version>
+                <version>2.13.0</version>
                 <configuration>
                     <generateBackupPoms>false</generateBackupPoms>
                 </configuration>
@@ -378,12 +380,12 @@
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
-            <version>2.9.0</version>
+            <version>2.10</version>
         </dependency>
         <dependency>
             <groupId>org.controlsfx</groupId>
             <artifactId>controlsfx</artifactId>
-            <version>11.1.1</version>
+            <version>11.1.2</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.openjfx</groupId>
@@ -409,12 +411,12 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jxr-plugin</artifactId>
-                <version>3.2.0</version>
+                <version>3.3.0</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>3.1.2</version>
+                <version>3.2.0</version>
                 <configuration>
                     <!--<configLocation>config/sun_checks.xml</configLocation>-->
                 </configuration>
@@ -426,12 +428,12 @@
         <repository>
             <id>mapton</id>
             <url>https://mapton.org/repo/maven/</url>
-        </repository>    
+        </repository>
     </repositories>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <javafx.version>18.0.2</javafx.version>
+        <javafx.version>19</javafx.version>
         <netbeans.hint.license>apache20</netbeans.hint.license>
         <copyright>(c) 2022 Patrik Karlström</copyright>
         <exeVersion>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}.0</exeVersion>
