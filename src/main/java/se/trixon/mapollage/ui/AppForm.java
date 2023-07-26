@@ -26,7 +26,7 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.beans.binding.BooleanBinding;
+import javafx.beans.binding.Bindings;
 import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -195,7 +195,8 @@ public class AppForm extends BorderPane {
         FxHelper.setTooltip(mAddAction, new KeyCodeCombination(KeyCode.N, KeyCombination.SHORTCUT_DOWN));
         mAddAction.disabledProperty().bind(mRunManager.runningProperty());
 
-        BooleanBinding profileBooleanBinding = mRunManager.profileProperty().isNull().or(mRunManager.runningProperty());
+        var profileBooleanBinding = mRunManager.profileProperty().isNull().or(mRunManager.runningProperty());
+        var emptySelectionBooleanBinding = Bindings.isEmpty(mListView.getSelectionModel().getSelectedItems());
 
         mRunAction = new Action(Dict.RUN.toString(), actionEvent -> {
             profileRun(getSelectedProfile());
@@ -208,7 +209,7 @@ public class AppForm extends BorderPane {
             mOperationThread.interrupt();
         });
         FxHelper.setTooltip(mCancelAction, new KeyCodeCombination(KeyCode.ESCAPE));
-        mCancelAction.disabledProperty().bind(profileBooleanBinding.not());
+        mCancelAction.disabledProperty().bind(profileBooleanBinding.not().or(emptySelectionBooleanBinding));
 
         mEditAction = new Action(Dict.EDIT.toString(), actionEvent -> {
             profileEdit(getSelectedProfile());

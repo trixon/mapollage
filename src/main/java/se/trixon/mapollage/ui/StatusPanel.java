@@ -102,7 +102,7 @@ public class StatusPanel extends BorderPane {
 
         FxHelper.undecorateButton(mOpenButton);
         mOpenButton.setTooltip(new Tooltip(Dict.OPEN.toString()));
-        mOpenButton.setGraphic(mFontAwesome.create(FontAwesome.Glyph.GLOBE).size(ICON_SIZE_TOOLBAR / 2));
+        mOpenButton.setGraphic(mFontAwesome.create(FontAwesome.Glyph.GLOBE).size(ICON_SIZE_TOOLBAR / 1));
         mOpenButton.disableProperty().bind(mRunManager.runningProperty().or(mRunManager.runStatusProperty().isNotEqualTo(RunStatus.FINISHED)));
         mOpenButton.setOnAction(actionEvent -> {
             mRunManager.openDestination();
