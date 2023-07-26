@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+OpenIDE-Module-Install: se/trixon/mapollage/boot/Installer.class
+OpenIDE-Module-Layer: se/trixon/mapollage/layer.xml
+OpenIDE-Module-Localizing-Bundle: se/trixon/mapollage/Bundle.properties
+OpenIDE-Module-Requires: org.openide.windows.WindowManager
+
