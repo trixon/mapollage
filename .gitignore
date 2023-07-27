@@ -63,3 +63,4 @@ hs_err_pid*
 !/branding/src/main/nbm-branding/modules/org-netbeans-core.jar/
 
 # End of https://www.gitignore.io/api/java,linux,maven,netbeans
+!/branding/src/main/nbm-branding/core/core.jar/

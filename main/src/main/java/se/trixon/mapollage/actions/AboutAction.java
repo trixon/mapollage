@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2023 Patrik Karlström <patrik@trixon.se>.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -32,7 +32,7 @@ public final class AboutAction implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        var aboutModel = new AboutModel(SystemHelper.getBundle(Mapollage.class, "about"), SystemHelper.getResourceAsImageIcon(Mapollage.class, "logo.png"));
+        var aboutModel = new AboutModel(SystemHelper.getBundle(Mapollage.class, "about"), SystemHelper.getResourceAsImageIcon(Mapollage.class, "about_logo.png"));
         aboutModel.setAppDate(ModuleHelper.getBuildTime(Mapollage.class));
 
         new NbAbout(aboutModel).display();
