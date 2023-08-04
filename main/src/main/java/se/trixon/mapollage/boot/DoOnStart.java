@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2023 Patrik Karlström <patrik@trixon.se>.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -40,7 +40,7 @@ public class DoOnStart implements Runnable {
 
         try {
             var key = "laf";
-            var defaultLAF = !SystemUtils.IS_OS_MAC ? "com.formdev.flatlaf.FlatDarkLaf" : "com.formdev.flatlaf.themes.FlatMacDarkLaf";
+            var defaultLAF = !SystemUtils.IS_OS_MAC ? "com.formdev.flatlaf.FlatLightLaf" : "com.formdev.flatlaf.themes.FlatMacLightLaf";
             var preferences = NbPreferences.root().node("laf");
             PrefsHelper.putIfAbsent(preferences, key, defaultLAF);
             mOptions.setNightMode(StringUtils.containsIgnoreCase(preferences.get(key, ""), "dark"));
