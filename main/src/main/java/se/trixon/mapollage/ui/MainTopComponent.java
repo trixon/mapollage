@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2023 Patrik Karlström <patrik@trixon.se>.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -54,7 +54,8 @@ public final class MainTopComponent extends FxTopComponent {
 
     @Override
     protected void initFX() {
-        setScene(new Scene(new MainPane()));
+        var taskListEditor = new TaskListEditor();
+        setScene(new Scene(taskListEditor.getEditableList()));
     }
 
     void writeProperties(java.util.Properties p) {
