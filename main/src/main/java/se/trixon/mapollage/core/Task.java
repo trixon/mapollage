@@ -26,12 +26,13 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.fx.control.editable_list.EditableListItem;
 
 /**
  *
  * @author Patrik Karlström <patrik@trixon.se>
  */
-public class Task implements Runnable {
+public class Task implements Runnable, EditableListItem {
 
     public static final DownloadListener DEFAULT_DOWNLOAD_LISTENER = new DownloadListener() {
 
