@@ -19,6 +19,7 @@ import java.awt.BorderLayout;
 import javafx.scene.Scene;
 import javax.swing.JPanel;
 import se.trixon.almond.nbp.fx.FxPanel;
+import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.mapollage.Options;
 
 final class MainPanel extends JPanel {
@@ -26,7 +27,7 @@ final class MainPanel extends JPanel {
     private final MainPanelController mController;
     private final FxPanel mFxPanel;
     private final Options mOptions = Options.getInstance();
-    private final OptionsPanel mOptionsPanel = new OptionsPanel();
+    private OptionsPanel mOptionsPanel;
 
     MainPanel(MainPanelController controller) {
         mController = controller;
@@ -34,10 +35,13 @@ final class MainPanel extends JPanel {
 
             @Override
             protected void fxConstructor() {
+                mOptionsPanel = new OptionsPanel();
+                mOptionsPanel.setPadding(FxHelper.getUIScaledInsets(8));
                 var scene = new Scene(mOptionsPanel);
                 setScene(scene);
             }
         };
+
         mFxPanel.initFx(null);
         mFxPanel.setPreferredSize(null);
 

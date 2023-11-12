@@ -65,9 +65,8 @@ public class OptionsPanel extends GridPane {
         var cleanLabel = new Label(mBundle.getString("OptionsPanel.cleanLabel"));
         var defaultCoordinateLabel = new Label(mBundle.getString("OptionsPanel.coordinateLabel"));
 
-        var defaultFont = Font.getDefault();
-        var fontFamily = defaultFont.getFamily();
-        var fontSize = defaultFont.getSize();
+        var fontFamily = Font.getDefault().getFamily();
+        var fontSize = FxHelper.getUIScaled(Font.getDefault().getSize());
         var font = Font.font(fontFamily, FontPosture.ITALIC, fontSize * 1.3);
 
         placemarkLabel.setFont(font);

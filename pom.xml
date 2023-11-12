@@ -95,7 +95,7 @@
     </modules>
 
     <properties>
-        <netbeans.version>RELEASE180</netbeans.version>
+        <netbeans.version>RELEASE190</netbeans.version>
         <almond.version>17.0.0-SNAPSHOT</almond.version>
         <brandingToken>mapollage</brandingToken>
     </properties>
