@@ -39,22 +39,23 @@ public class TaskListCell extends EditableListCell<Task> {
     }
 
     @Override
-    protected void updateItem(Task item, boolean empty) {
-        super.updateItem(item, empty);
-        if (item == null || empty) {
+    protected void updateItem(Task task, boolean empty) {
+        super.updateItem(task, empty);
+        if (task == null || empty) {
             clearContent();
         } else {
-            addContent(item);
+            addContent(task);
         }
     }
 
-    private void addContent(Task item) {
+    private void addContent(Task task) {
         setText(null);
-        mNameLabel.setText(item.getName());
-        mDescLabel.setText(item.getDescription());
+        mNameLabel.setText(task.getName());
+        mDescLabel.setText(task.getDescriptionString());
         mRoot.getChildren().setAll(mNameLabel, mDescLabel);
         mRoot.setOnMouseClicked(mouseEvent -> {
             if (mouseEvent.getButton() == MouseButton.PRIMARY && mouseEvent.getClickCount() == 2) {
+                //ExecutorManager.getInstance().requestStart(task);
             }
         });
         setGraphic(mRoot);

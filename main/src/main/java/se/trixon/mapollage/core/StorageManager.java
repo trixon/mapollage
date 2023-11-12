@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2023 Patrik Karlström <patrik@trixon.se>.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,14 +15,22 @@
  */
 package se.trixon.mapollage.core;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
+import com.google.gson.annotations.SerializedName;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import javafx.collections.ObservableMap;
 import org.apache.commons.io.FileUtils;
 import org.openide.modules.Places;
 import org.openide.util.Exceptions;
+import se.trixon.almond.util.fx.FxHelper;
+import se.trixon.almond.util.gson_adapter.FileAdapter;
 
 /**
  *
@@ -30,12 +38,19 @@ import org.openide.util.Exceptions;
  */
 public class StorageManager {
 
+    public static final Gson GSON = new GsonBuilder()
+            .setVersion(1.0)
+            .serializeNulls()
+            .setPrettyPrinting()
+            .registerTypeAdapter(File.class, new FileAdapter())
+            .create();
+
     private final File mHistoryFile;
     private final File mLogFile;
-    private final File mProfilesBackupFile;
-    private final File mProfilesFile;
     private Storage mStorage = new Storage();
     private final TaskManager mTaskManager = TaskManager.getInstance();
+    private final File mTasksBackupFile;
+    private final File mTasksFile;
     private final File mUserDirectory;
 
     public static StorageManager getInstance() {
@@ -53,8 +68,8 @@ public class StorageManager {
     private StorageManager() {
         mUserDirectory = Places.getUserDirectory();
 
-        mProfilesFile = new File(mUserDirectory, "config.json");
-        mProfilesBackupFile = new File(mUserDirectory, "config.bak");
+        mTasksFile = new File(mUserDirectory, "tasks.json");
+        mTasksBackupFile = new File(mUserDirectory, "tasks.bak");
         mHistoryFile = new File(mUserDirectory, "var/history");
         mLogFile = new File(mUserDirectory, "var/mapollage.log");
     }
@@ -71,12 +86,12 @@ public class StorageManager {
         return mLogFile;
     }
 
-    public File getProfilesFile() {
-        return mProfilesFile;
-    }
-
     public TaskManager getTaskManager() {
         return mTaskManager;
+    }
+
+    public File getTasksFile() {
+        return mTasksFile;
     }
 
     public File getUserDirectory() {
@@ -84,8 +99,8 @@ public class StorageManager {
     }
 
     public void load() throws IOException {
-        if (mProfilesFile.exists()) {
-            mStorage = Storage.open(mProfilesFile);
+        if (mTasksFile.exists()) {
+            mStorage = Storage.open(mTasksFile);
 
             var taskItems = mTaskManager.getIdToItem();
             taskItems.clear();
@@ -97,15 +112,67 @@ public class StorageManager {
 
     private void saveToFile() throws IOException {
         mStorage.setTasks(mTaskManager.getIdToItem());
-        String json = mStorage.save(mProfilesFile);
+        String json = mStorage.save(mTasksFile);
         String tag = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        FileUtils.writeStringToFile(mProfilesBackupFile, String.format("%s=%s\n", tag, json), Charset.defaultCharset(), true);
+        FileUtils.writeStringToFile(mTasksBackupFile, String.format("%s=%s\n", tag, json), Charset.defaultCharset(), true);
 
-        load(); //This will refresh and sort ListViews
+        try {
+            FxHelper.runLater(() -> {
+                try {
+                    load();
+                } catch (IOException ex) {
+                    Exceptions.printStackTrace(ex);
+                }
+            });
+        } catch (IllegalStateException e) {
+            //nvm - probably started from console w/o fx
+        }
     }
 
     private static class Holder {
 
         private static final StorageManager INSTANCE = new StorageManager();
+    }
+
+    public class Storage {
+
+        private static final int FILE_FORMAT_VERSION = 1;
+        @SerializedName("fileFormatVersion")
+        private int mFileFormatVersion;
+        @SerializedName("tasks")
+        private final HashMap<String, Task> mTasks = new HashMap<>();
+
+        public static Storage open(File file) throws IOException, JsonSyntaxException {
+            String json = FileUtils.readFileToString(file, Charset.defaultCharset());
+
+            var storage = GSON.fromJson(json, Storage.class);
+
+            if (storage.mFileFormatVersion != FILE_FORMAT_VERSION) {
+                //TODO Handle file format version change
+            }
+
+            return storage;
+        }
+
+        public int getFileFormatVersion() {
+            return mFileFormatVersion;
+        }
+
+        public HashMap<String, Task> getTasks() {
+            return mTasks;
+        }
+
+        public String save(File file) throws IOException {
+            mFileFormatVersion = FILE_FORMAT_VERSION;
+            var json = GSON.toJson(this);
+            FileUtils.writeStringToFile(file, json, Charset.defaultCharset());
+
+            return json;
+        }
+
+        void setTasks(ObservableMap<String, Task> tasks) {
+            mTasks.clear();
+            mTasks.putAll(tasks);
+        }
     }
 }

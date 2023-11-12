@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2023 Patrik Karlström <patrik@trixon.se>.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,16 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.trixon.mapollage.core;
+package se.trixon.mapollage.ui.task;
 
-import java.io.File;
-import java.io.IOException;
+/**
+ *
+ * @author Patrik Karlström <patrik@trixon.se>
+ */
+public class Dummy {
 
-public interface DownloadListener {
-
-    void onDownloadFailed(Task task, IOException ex);
-
-    void onDownloadFinished(Task task, File destFile);
-
-    void onDownloadStarted(Task task);
 }

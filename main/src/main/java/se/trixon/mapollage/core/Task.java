@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Patrik Karlström <patrik@trixon.se>.
+ * Copyright 2022 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,203 +15,295 @@
  */
 package se.trixon.mapollage.core;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
 import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.UUID;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
-import org.openide.util.Exceptions;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.apache.commons.lang3.StringUtils;
+import se.trixon.almond.util.BooleanHelper;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.control.editable_list.EditableListItem;
+import se.trixon.mapollage.ui.options.OptionsPanel;
 
 /**
  *
- * @author Patrik Karlström <patrik@trixon.se>
+ * @author Patrik Karlström
  */
-public class Task implements Runnable, EditableListItem {
+public class Task extends TaskBase implements Comparable<Task>, Cloneable, EditableListItem {
 
-    public static final DownloadListener DEFAULT_DOWNLOAD_LISTENER = new DownloadListener() {
+    private static final Gson GSON = new GsonBuilder()
+            .setVersion(1.0)
+            .serializeNulls()
+            .setPrettyPrinting()
+            .create();
 
-        @Override
-        public void onDownloadFailed(Task task, IOException ex) {
-        }
-
-        @Override
-        public void onDownloadFinished(Task task, File destFile) {
-        }
-
-        @Override
-        public void onDownloadStarted(Task task) {
-        }
-    };
-    @SerializedName("cron")
-    private String mCron = "0 * * * *";
     @SerializedName("description")
-    private String mDescription;
-    @SerializedName("destination")
-    private String mDestination;
-    private transient DownloadListener mDownloadListener = DEFAULT_DOWNLOAD_LISTENER;
-    @SerializedName("enabled")
-    private boolean mEnabled = true;
-    @SerializedName("uuid")
-    private String mId = UUID.randomUUID().toString();
+    private TaskDescription mDescription = new TaskDescription(this);
+    @SerializedName("descriptionString")
+    private String mDescriptionString;
+    private transient File mDestinationFile;
+    @SerializedName("folder")
+    private TaskFolder mFolder = new TaskFolder(this);
+    @SerializedName("last_run")
+    private long mLastRun;
     @SerializedName("name")
     private String mName;
-    private final transient TaskManager mTaskManager = TaskManager.getInstance();
-    @SerializedName("url")
-    private String mUrl;
+    @SerializedName("path")
+    private TaskPath mPath = new TaskPath(this);
+    @SerializedName("photo")
+    private TaskPhoto mPhoto = new TaskPhoto(this);
+    @SerializedName("placemark")
+    private TaskPlacemark mPlacemark = new TaskPlacemark(this);
+    @SerializedName("source")
+    private TaskSource mSource = new TaskSource(this);
+    @SerializedName("uuid")
+    private String mId = UUID.randomUUID().toString();
 
     public Task() {
     }
 
-    public String getCron() {
-        return mCron;
+    @Override
+    public Task clone() {
+        try {
+            super.clone();
+            String json = GSON.toJson(this);
+            return GSON.fromJson(json, Task.class);
+        } catch (CloneNotSupportedException ex) {
+            Logger.getLogger(Task.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
     }
 
-    public String getDescription() {
+    @Override
+    public int compareTo(Task o) {
+        return mName.compareTo(o.getName());
+    }
+
+    public TaskDescription getDescription() {
         return mDescription;
     }
 
-    public String getDestination() {
-        return mDestination;
+    public String getDescriptionString() {
+        return mDescriptionString;
+    }
+
+    public File getDestinationFile() {
+        return mDestinationFile;
+    }
+
+    public TaskFolder getFolder() {
+        return mFolder;
     }
 
     public String getId() {
         return mId;
     }
 
+    public long getLastRun() {
+        return mLastRun;
+    }
+
+    @Override
     public String getName() {
         return mName;
     }
 
-    public String getUrl() {
-        return mUrl;
+    public TaskPath getPath() {
+        return mPath;
     }
 
-    public boolean isEnabled() {
-        return mEnabled;
+    public TaskPhoto getPhoto() {
+        return mPhoto;
     }
 
-    public boolean isValid() {
-        return !getName().isEmpty() && !getUrl().isEmpty() && !getDestination().isEmpty();
+    public TaskPlacemark getPlacemark() {
+        return mPlacemark;
+    }
+
+    public TaskSource getSource() {
+        return mSource;
     }
 
     @Override
-    public void run() {
-//        if (!isActive()) {
-//            return;
-//        }
+    public String getTitle() {
+        return Dict.PROFILE.toString();
+    }
 
-        new Thread(() -> {
-            mDownloadListener.onDownloadStarted(this);
+    public String getValidationError() {
+        return sValidationErrorBuilder.toString();
+    }
+
+    public boolean hasValidRelativeSourceDest() {
+        boolean valid = true;
+
+        if (mDescription.hasPhotoStaticOrDynamic() && mPhoto.getReference() == TaskPhoto.Reference.RELATIVE) {
             try {
-                var url = new URL(getUrl());
-                var destFile = getDestPath();
-                FileUtils.copyURLToFile(url, destFile, 15000, 15000);
-
-                String message = String.format("%s: %s", Dict.DOWNLOAD_COMPLETED.toString(), destFile.getAbsolutePath());
-                logToFile(message);
-                message = String.format("%s (%s)", message, mName);
-                mTaskManager.log(message);
-
-                mDownloadListener.onDownloadFinished(this, destFile);
-            } catch (IOException ex) {
-                String message = String.format("%s: %s", Dict.DOWNLOAD_FAILED.toString(), ex.getLocalizedMessage());
-                logToFile(message);
-                message = String.format("%s (%s)", message, mName);
-                mTaskManager.log(message);
-
-                mDownloadListener.onDownloadFailed(this, ex);
+                Path path = mDestinationFile.toPath().relativize(mSource.getDir().toPath());
+            } catch (IllegalArgumentException e) {
+                valid = false;
             }
-        }).start();
+        }
+
+        return valid;
     }
 
-    public void setCron(String cron) {
-        mCron = cron;
+    @Override
+    public boolean isValid() {
+        sValidationErrorBuilder = new StringBuilder();
+
+        mSource.isValid();
+        mFolder.isValid();
+        mPlacemark.isValid();
+        mPhoto.isValid();
+        mPath.isValid();
+
+        return sValidationErrorBuilder.length() == 0;
     }
 
-    public void setDescription(String description) {
+    public void setDescription(TaskDescription description) {
         mDescription = description;
     }
 
-    public void setDestination(String destination) {
-        mDestination = destination;
+    public void setDescriptionString(String descriptionString) {
+        this.mDescriptionString = descriptionString;
     }
 
-    public void setDownloadListener(DownloadListener downloadListener) {
-        mDownloadListener = downloadListener;
+    public void setDestinationFile(File destinationFile) {
+        mDestinationFile = destinationFile;
     }
 
-    public void setEnabled(boolean enabled) {
-        mEnabled = enabled;
+    public void setFolder(TaskFolder folder) {
+        mFolder = folder;
     }
 
     public void setId(String id) {
-        mId = id;
+        this.mId = id;
+    }
+
+    public void setLastRun(long lastRun) {
+        mLastRun = lastRun;
     }
 
     public void setName(String name) {
         mName = name;
     }
 
-    public void setUrl(String url) {
-        mUrl = url;
+    public void setPath(TaskPath path) {
+        mPath = path;
+    }
+
+    public void setPhoto(TaskPhoto photo) {
+        mPhoto = photo;
+    }
+
+    public void setPlacemark(TaskPlacemark placemark) {
+        mPlacemark = placemark;
+    }
+
+    public void setSource(TaskSource source) {
+        mSource = source;
+    }
+
+    @Override
+    public String toDebugString() {
+        ArrayList<TaskInfo> profileInfos = new ArrayList<>();
+        profileInfos.add(mSource.getProfileInfo());
+        profileInfos.add(mFolder.getProfileInfo());
+        profileInfos.add(mPath.getProfileInfo());
+        profileInfos.add(mPlacemark.getProfileInfo());
+        profileInfos.add(mDescription.getProfileInfo());
+        profileInfos.add(mPhoto.getProfileInfo());
+        profileInfos.add(getProfileInfo());
+
+        int maxLength = Integer.MIN_VALUE;
+        for (TaskInfo profileInfo : profileInfos) {
+            maxLength = Math.max(maxLength, profileInfo.getMaxLength());
+        }
+        maxLength = maxLength + 3;
+
+        String separator = " : ";
+        StringBuilder builder = new StringBuilder("\n");
+        builder.append(StringUtils.leftPad(Dict.PROFILE.toString(), maxLength)).append(separator).append(mName).append("\n");
+        builder.append(StringUtils.leftPad("", maxLength)).append(separator).append(mDescriptionString).append("\n");
+
+        for (TaskInfo profileInfo : profileInfos) {
+            builder.append(profileInfo.getTitle()).append("\n");
+
+            for (Map.Entry<String, String> entry : profileInfo.getValues().entrySet()) {
+                String key = entry.getKey();
+                String value = entry.getValue();
+                builder.append(StringUtils.leftPad(key, maxLength)).append(separator).append(value).append("\n");
+            }
+
+            builder.append("\n");
+        }
+
+        return builder.toString();
+    }
+
+    public String toInfoString() {
+        ArrayList<TaskInfo> profileInfos = new ArrayList<>();
+        profileInfos.add(mSource.getProfileInfo());
+        profileInfos.add(mFolder.getProfileInfo());
+        profileInfos.add(mPath.getProfileInfo());
+        profileInfos.add(mPlacemark.getProfileInfo());
+        profileInfos.add(mDescription.getProfileInfo());
+        profileInfos.add(mPhoto.getProfileInfo());
+        profileInfos.add(getProfileInfo());
+
+        int maxLength = Integer.MIN_VALUE;
+        for (TaskInfo profileInfo : profileInfos) {
+            maxLength = Math.max(maxLength, profileInfo.getMaxLength());
+        }
+        maxLength = maxLength + 3;
+
+        String separator = " : ";
+        StringBuilder builder = new StringBuilder();
+        for (TaskInfo profileInfo : profileInfos) {
+            builder.append(profileInfo.getTitle()).append("\n");
+
+            for (Map.Entry<String, String> entry : profileInfo.getValues().entrySet()) {
+                String key = entry.getKey();
+                String value = entry.getValue();
+                builder.append(StringUtils.leftPad(key, maxLength)).append(separator).append(value).append("\n");
+            }
+
+            builder.append("\n");
+        }
+
+        return builder.toString().trim();
     }
 
     @Override
     public String toString() {
-        String fmt;
-
-        if (mEnabled) {
-            fmt = "<html><b>%s</b><br />%s</html>";
-        } else {
-            fmt = "<html><i>%s<br />%s</i></html>";
-        }
-
-        return String.format(fmt, mName, mDescription);
+        return mName;
     }
 
-    private File getDestPath() {
-        var destPath = new File(getDestination());
-        String ext = FilenameUtils.getExtension(destPath.getAbsolutePath());
-        String baseName = FilenameUtils.getBaseName(destPath.getAbsolutePath());
-        String timeStamp = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date(System.currentTimeMillis()));
+    @Override
+    protected TaskInfo getProfileInfo() {
+        ResourceBundle bundle = SystemHelper.getBundle(OptionsPanel.class, "Bundle");
+        TaskInfo profileInfo = new TaskInfo();
+        LinkedHashMap<String, String> values = new LinkedHashMap<>();
 
-        String filename;
-        if (ext.isEmpty()) {
-            filename = String.format("%s_%s", baseName, timeStamp);
-        } else {
-            filename = String.format("%s_%s.%s", baseName, timeStamp, ext);
+        values.put(Dict.CALENDAR_LANGUAGE.toString(), mOptions.getLocale().getDisplayName());
+        values.put(Dict.THUMBNAIL.toString(), String.valueOf(mOptions.getThumbnailSize()));
+        values.put(Dict.BORDER_SIZE.toString(), String.valueOf(mOptions.getThumbnailBorderSize()));
+        values.put(String.format("%s %s", Dict.DEFAULT.toString(), Dict.LATITUDE.toString()), String.valueOf(mOptions.getDefaultLat()));
+        values.put(String.format("%s %s", Dict.DEFAULT.toString(), Dict.LONGITUDE.toString()), String.valueOf(mOptions.getDefaultLon()));
+        values.put(bundle.getString("ProgressPanel.autoOpenCheckBox"), BooleanHelper.asYesNo(mOptions.isAutoOpen()));
 
-        }
+        profileInfo.setTitle(Dict.OPTIONS.toString());
+        profileInfo.setValues(values);
 
-        return new File(destPath.getParent(), filename);
+        return profileInfo;
     }
-
-    private synchronized void logToFile(String message) {
-        var dir = new File(mDestination).getParentFile();
-        String basename = FilenameUtils.getBaseName(mDestination);
-        String ext = FilenameUtils.getExtension(mDestination);
-        if (ext.equalsIgnoreCase("log")) {
-            ext = "log.log";
-        } else {
-            ext = "log";
-        }
-
-        var logFile = new File(dir, String.format("%s.%s", basename, ext));
-        String timeStamp = new SimpleDateFormat("yyyy-MM-dd HH.mm.ss").format(new Date(System.currentTimeMillis()));
-
-        message = String.format("%s %s%s", timeStamp, message, System.lineSeparator());
-
-        try {
-            FileUtils.writeStringToFile(logFile, message, true);
-        } catch (IOException ex) {
-            Exceptions.printStackTrace(ex);
-        }
-    }
-
 }

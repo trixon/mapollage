@@ -27,7 +27,6 @@ import org.controlsfx.validation.ValidationSupport;
 import org.controlsfx.validation.Validator;
 import org.openide.DialogDescriptor;
 import se.trixon.almond.util.Dict;
-import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.control.FileChooserPane;
 import se.trixon.mapollage.core.StorageManager;
 import se.trixon.mapollage.core.Task;
@@ -46,7 +45,6 @@ public class TaskEditor extends BorderPane {
     private Task mItem;
     private final TextField mNameTextField = new TextField();
     private final TaskManager mTaskManager = TaskManager.getInstance();
-    private final CronEditor mCronEditor = new CronEditor();
 
     public TaskEditor() {
         createUI();
@@ -60,17 +58,16 @@ public class TaskEditor extends BorderPane {
         mItem = item;
         mDialogDescriptor = dialogDescriptor;
         mNameTextField.setText(item.getName());
-        mDescTextField.setText(item.getDescription());
-        mDirDestFileChooser.setPath(item.getDestination());
-        mCronEditor.load(item);
+        mDescTextField.setText(item.getDescriptionString());
+        mDirDestFileChooser.setPath(item.getDestinationFile());
     }
 
     public Task save() {
         mTaskManager.getIdToItem().put(mItem.getId(), mItem);
 
         mItem.setName(mNameTextField.getText());
-        mItem.setDescription(mDescTextField.getText());
-        mItem.setDestination(mDirDestFileChooser.getPathAsString());
+        mItem.setDescriptionString(mDescTextField.getText());
+        mItem.setDestinationFile(mDirDestFileChooser.getPath());
 
         StorageManager.save();
 
@@ -96,9 +93,6 @@ public class TaskEditor extends BorderPane {
         );
 
         setTop(vbox);
-        setCenter(mCronEditor);
-
-        FxHelper.setPadding(FxHelper.getUIScaledInsets(8, 0, 0, 0), descLabel, mCronEditor);
     }
 
     private void initValidation() {
