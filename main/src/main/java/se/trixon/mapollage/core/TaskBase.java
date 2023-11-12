@@ -20,7 +20,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.openide.util.NbBundle;
 import se.trixon.mapollage.Mapollage;
 import se.trixon.mapollage.Options;
-import se.trixon.mapollage.ui.task.Dummy;
+import se.trixon.mapollage.ui.task.BaseTab;
 
 /**
  *
@@ -30,7 +30,7 @@ public abstract class TaskBase {
 
     protected static StringBuilder sValidationErrorBuilder;
     protected static final ResourceBundle BUNDLE = NbBundle.getBundle(Mapollage.class);
-    protected static final ResourceBundle BUNDLE_UI = NbBundle.getBundle(Dummy.class);
+    protected static final ResourceBundle BUNDLE_UI = NbBundle.getBundle(BaseTab.class);
     protected static final Options mOptions = Options.getInstance();
 
     public TaskBase() {

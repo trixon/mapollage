@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Patrik Karlström <patrik@trixon.se>.
+ * Copyright 2022 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,113 +15,126 @@
  */
 package se.trixon.mapollage.ui;
 
-import java.util.function.Predicate;
-import javafx.application.Platform;
-import javafx.scene.control.Label;
-import javafx.scene.control.SelectionMode;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.VBox;
-import org.apache.commons.lang3.StringUtils;
+import java.util.ArrayList;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
+import javafx.scene.control.Button;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
+import javafx.scene.layout.Region;
+import org.controlsfx.validation.ValidationResult;
 import org.controlsfx.validation.ValidationSupport;
-import org.controlsfx.validation.Validator;
 import org.openide.DialogDescriptor;
-import se.trixon.almond.util.Dict;
-import se.trixon.almond.util.fx.control.FileChooserPane;
 import se.trixon.mapollage.core.StorageManager;
 import se.trixon.mapollage.core.Task;
 import se.trixon.mapollage.core.TaskManager;
+import se.trixon.mapollage.ui.task.BaseTab;
+import se.trixon.mapollage.ui.task.DescriptionTab;
+import se.trixon.mapollage.ui.task.FoldersTab;
+import se.trixon.mapollage.ui.task.PathTab;
+import se.trixon.mapollage.ui.task.PhotoTab;
+import se.trixon.mapollage.ui.task.PlacemarkTab;
+import se.trixon.mapollage.ui.task.SourceTab;
 
 /**
  *
- * @author Patrik Karlström <patrik@trixon.se>
+ * @author Patrik Karlström
  */
-public class TaskEditor extends BorderPane {
+public class TaskEditor extends TabPane {
 
-    protected final ValidationSupport mValidationSupport = new ValidationSupport();
-    private final TextField mDescTextField = new TextField();
-    private DialogDescriptor mDialogDescriptor;
-    private FileChooserPane mDirDestFileChooser;
-    private Task mItem;
-    private final TextField mNameTextField = new TextField();
+    private DescriptionTab mDescriptionTab;
     private final TaskManager mTaskManager = TaskManager.getInstance();
+    private DialogDescriptor mDialogDescriptor;
+
+    private FoldersTab mFoldersTab;
+    private Button mOkButton;
+    private PathTab mPathTab;
+    private PhotoTab mPhotoTab;
+    private PlacemarkTab mPlacemarkTab;
+    private Task mTask;
+    private SourceTab mSourceTab;
+    private final ArrayList<BaseTab> mTabs = new ArrayList<>();
+    private final ValidationSupport mValidationSupport = new ValidationSupport();
 
     public TaskEditor() {
         createUI();
-        initValidation();
     }
 
-    public void load(Task item, DialogDescriptor dialogDescriptor) {
-        if (item == null) {
-            item = new Task();
-        }
-        mItem = item;
-        mDialogDescriptor = dialogDescriptor;
-        mNameTextField.setText(item.getName());
-        mDescTextField.setText(item.getDescriptionString());
-        mDirDestFileChooser.setPath(item.getDestinationFile());
+    public TaskEditor(Tab... tabs) {
+        super(tabs);
+        createUI();
     }
 
+//    public TaskEditor(Task profile) {
+//        mTask = profile;
+//        createUI();
+//    }
     public Task save() {
-        mTaskManager.getIdToItem().put(mItem.getId(), mItem);
-
-        mItem.setName(mNameTextField.getText());
-        mItem.setDescriptionString(mDescTextField.getText());
-        mItem.setDestinationFile(mDirDestFileChooser.getPath());
+        mTaskManager.getIdToItem().put(mTask.getId(), mTask);
+        mTabs.forEach((tab) -> {
+            tab.save();
+        });
 
         StorageManager.save();
 
-        return mItem;
+        return mTask;
+    }
+
+    public void setOkButton(Button button) {
+        mOkButton = button;
+    }
+
+    void load(Task task, DialogDescriptor dialogDescriptor) {
+        if (task == null) {
+            task = new Task();
+        }
+
+        mDialogDescriptor = dialogDescriptor;
+        mTask = task;
     }
 
     private void createUI() {
-        var nameLabel = new Label(Dict.NAME.toString());
-        var descLabel = new Label(Dict.DESCRIPTION.toString());
-        var sourceTitle = Dict.SOURCE.toString();
-        var destTitle = Dict.DESTINATION.toString();
-        var selectionMode = SelectionMode.SINGLE;
-        var objectMode = FileChooserPane.ObjectMode.FILE;
+        final double TAB_SIZE = BaseTab.ICON_SIZE * 1.5;
+        setTabMaxHeight(TAB_SIZE);
+        setTabMinHeight(TAB_SIZE);
+        setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
 
-        mDirDestFileChooser = new FileChooserPane(destTitle, destTitle, objectMode, selectionMode);
+        BaseTab.setValidationSupport(mValidationSupport);
 
-        var vbox = new VBox(
-                nameLabel,
-                mNameTextField,
-                descLabel,
-                mDescTextField,
-                mDirDestFileChooser
-        );
+        mSourceTab = new SourceTab();
+        mFoldersTab = new FoldersTab();
+        mPathTab = new PathTab();
+        mPlacemarkTab = new PlacemarkTab();
+        mDescriptionTab = new DescriptionTab();
+        mPhotoTab = new PhotoTab();
 
-        setTop(vbox);
-    }
+        final ObservableList<Tab> tabs = getTabs();
+        tabs.add(mSourceTab);
+        tabs.add(mFoldersTab);
+        tabs.add(mPathTab);
+        tabs.add(mPlacemarkTab);
+        tabs.add(mDescriptionTab);
+        tabs.add(mPhotoTab);
 
-    private void initValidation() {
-        mValidationSupport.validationResultProperty().addListener((p, o, n) -> {
-            mDialogDescriptor.setValid(!mValidationSupport.isInvalid());
+        tabs.forEach((tab) -> {
+            mTabs.add((BaseTab) tab);
+        });
+
+        final int size = 8;
+        Insets insets = new Insets(size, size, size, size);
+        mTabs.forEach((tab) -> {
+            try {
+                Region region = (Region) tab.getContent();
+                region.setPadding(insets);
+            } catch (Exception e) {
+            }
+        });
+
+        mValidationSupport.validationResultProperty().addListener((ObservableValue<? extends ValidationResult> observable, ValidationResult oldValue, ValidationResult newValue) -> {
+//            mOkButton.setDisable(mValidationSupport.isInvalid());
         });
 
         mValidationSupport.initInitialDecoration();
-
-        final String textRequired = "Text is required";
-        final String textUnique = "Text has to be unique";
-
-        Predicate uniqueNamePredicate = (Predicate) (Object o) -> {
-            var newName = mNameTextField.getText();
-            if (!mTaskManager.exists(newName)) {
-                return true;
-            } else {
-                return StringUtils.equalsIgnoreCase(newName, mItem.getName());
-            }
-        };
-
-        Platform.runLater(() -> {
-            mValidationSupport.registerValidator(mNameTextField, true, Validator.combine(
-                    Validator.createEmptyValidator(textRequired),
-                    Validator.createPredicateValidator(uniqueNamePredicate, textUnique)
-            ));
-            mValidationSupport.registerValidator(mDescTextField, true, Validator.createEmptyValidator(textRequired));
-            mValidationSupport.registerValidator(mDirDestFileChooser.getTextField(), true, Validator.createEmptyValidator(textRequired));
-        });
     }
-
 }

@@ -51,7 +51,6 @@ public class TaskListEditor {
     }
 
     private void editTask(String title, Task task) {
-
         var editor = new TaskEditor();
         editor.setPadding(FxHelper.getUIScaledInsets(8, 8, 0, 8));
         var dialogPanel = new FxDialogPanel() {

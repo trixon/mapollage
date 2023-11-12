@@ -65,6 +65,18 @@ public class TaskManager {
         return getIdToItem().get(id);
     }
 
+    public Task getByName(String name) {
+        for (var task : getItems()) {
+            if (task.getName().equalsIgnoreCase(name)) {
+                return task;
+            }
+        }
+
+        System.out.println("TASK NOT FOUND: " + name);
+
+        return null;
+    }
+
     public final ObservableMap<String, Task> getIdToItem() {
         return mIdToItemProperty.get();
     }
@@ -88,6 +100,16 @@ public class TaskManager {
 
     public boolean hasActiveTasks() {
         return false;
+    }
+
+    public boolean isValid(String oldName, String newName) {
+        if (StringUtils.isBlank(newName)) {
+            return false;
+        }
+
+        var taskByName = getByName(newName.trim());
+
+        return taskByName == null || taskByName == getByName(oldName);
     }
 
     public ObjectProperty<ObservableList<Task>> itemsProperty() {

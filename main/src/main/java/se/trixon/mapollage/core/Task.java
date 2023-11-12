@@ -28,9 +28,9 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.lang3.StringUtils;
+import org.openide.util.NbBundle;
 import se.trixon.almond.util.BooleanHelper;
 import se.trixon.almond.util.Dict;
-import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.control.editable_list.EditableListItem;
 import se.trixon.mapollage.ui.options.OptionsPanel;
 
@@ -290,7 +290,7 @@ public class Task extends TaskBase implements Comparable<Task>, Cloneable, Edita
 
     @Override
     protected TaskInfo getProfileInfo() {
-        ResourceBundle bundle = SystemHelper.getBundle(OptionsPanel.class, "Bundle");
+        ResourceBundle bundle = NbBundle.getBundle(OptionsPanel.class);
         TaskInfo profileInfo = new TaskInfo();
         LinkedHashMap<String, String> values = new LinkedHashMap<>();
 
