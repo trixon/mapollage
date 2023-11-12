@@ -20,9 +20,11 @@ import java.awt.event.ActionListener;
 import org.openide.awt.ActionID;
 import se.trixon.almond.nbp.core.ModuleHelper;
 import se.trixon.almond.nbp.dialogs.NbAbout;
+import se.trixon.almond.util.PomInfo;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.swing.AboutModel;
 import se.trixon.mapollage.Mapollage;
+import se.trixon.mapollage.core.Task;
 
 @ActionID(
         category = "Help",
@@ -32,8 +34,10 @@ public final class AboutAction implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        var pomInfo = new PomInfo(Task.class, "se.trixon.mapollage", "main");
         var aboutModel = new AboutModel(SystemHelper.getBundle(Mapollage.class, "about"), SystemHelper.getResourceAsImageIcon(Mapollage.class, "about_logo.png"));
         aboutModel.setAppDate(ModuleHelper.getBuildTime(Mapollage.class));
+        aboutModel.setAppVersion(pomInfo.getVersion());
 
         new NbAbout(aboutModel).display();
     }

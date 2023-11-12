@@ -23,6 +23,7 @@ import org.openide.util.NbPreferences;
 import se.trixon.almond.nbp.dialogs.NbOptionalDialog;
 import se.trixon.almond.util.PrefsHelper;
 import se.trixon.almond.util.fx.FxHelper;
+import se.trixon.almond.util.icons.material.MaterialIcon;
 import se.trixon.mapollage.Options;
 
 /**
@@ -43,8 +44,15 @@ public class DoOnStart implements Runnable {
             var defaultLAF = !SystemUtils.IS_OS_MAC ? "com.formdev.flatlaf.FlatLightLaf" : "com.formdev.flatlaf.themes.FlatMacLightLaf";
             var preferences = NbPreferences.root().node("laf");
             PrefsHelper.putIfAbsent(preferences, key, defaultLAF);
-            mOptions.setNightMode(StringUtils.containsIgnoreCase(preferences.get(key, ""), "dark"));
-            FxHelper.setDarkThemeEnabled(mOptions.isNightMode());
+
+            var nightMode = StringUtils.containsIgnoreCase(preferences.get(key, ""), "dark");
+            if (nightMode) {
+                FxHelper.setDarkThemeEnabled(nightMode);
+                MaterialIcon.setDefaultColor(FxHelper.getFillColorForDarkTheme());
+            }
+
+            preferences = NbPreferences.root().node("org/netbeans/swing/laf/flatlaf");
+            PrefsHelper.putIfAbsent(preferences, "accentColor", "#ff453a");
         } catch (BackingStoreException ex) {
             //Exceptions.printStackTrace(ex);
         }

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2023 Patrik Karlström <patrik@trixon.se>.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 package se.trixon.mapollage.boot;
 
 import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
 import org.openide.awt.HtmlBrowser;
 import org.openide.util.Exceptions;
 import org.openide.windows.IOContainer;
@@ -36,7 +36,7 @@ public class DoOnShowing implements Runnable {
     public void run() {
         SystemHelper.setDesktopBrowser(url -> {
             try {
-                HtmlBrowser.URLDisplayer.getDefault().showURL(new URL(url));
+                HtmlBrowser.URLDisplayer.getDefault().showURL(URI.create(url).toURL());
             } catch (MalformedURLException ex) {
                 Exceptions.printStackTrace(ex);
             }
