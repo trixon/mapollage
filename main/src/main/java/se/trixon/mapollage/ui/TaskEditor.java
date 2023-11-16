@@ -15,17 +15,15 @@
  */
 package se.trixon.mapollage.ui;
 
-import java.util.ArrayList;
+import java.util.stream.Stream;
+import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.ObservableList;
-import javafx.geometry.Insets;
-import javafx.scene.control.Button;
-import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.Region;
 import org.controlsfx.validation.ValidationResult;
 import org.controlsfx.validation.ValidationSupport;
 import org.openide.DialogDescriptor;
+import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.mapollage.core.StorageManager;
 import se.trixon.mapollage.core.Task;
 import se.trixon.mapollage.core.TaskManager;
@@ -44,35 +42,42 @@ import se.trixon.mapollage.ui.task.SourceTab;
 public class TaskEditor extends TabPane {
 
     private DescriptionTab mDescriptionTab;
-    private final TaskManager mTaskManager = TaskManager.getInstance();
     private DialogDescriptor mDialogDescriptor;
-
     private FoldersTab mFoldersTab;
-    private Button mOkButton;
     private PathTab mPathTab;
     private PhotoTab mPhotoTab;
     private PlacemarkTab mPlacemarkTab;
-    private Task mTask;
     private SourceTab mSourceTab;
-    private final ArrayList<BaseTab> mTabs = new ArrayList<>();
+    private Task mTask;
+    private final TaskManager mTaskManager = TaskManager.getInstance();
     private final ValidationSupport mValidationSupport = new ValidationSupport();
 
     public TaskEditor() {
         createUI();
+
+        Platform.runLater(() -> {
+            initValidation();
+//            mNameTextField.requestFocus();
+        });
     }
 
-    public TaskEditor(Tab... tabs) {
-        super(tabs);
-        createUI();
+    public void load(Task task, DialogDescriptor dialogDescriptor) {
+        if (task == null) {
+            task = new Task();
+        }
+
+        mDialogDescriptor = dialogDescriptor;
+        mTask = task;
+
+        getBaseTabs().forEachOrdered(tab -> {
+            tab.load(mTask);
+        });
     }
 
-//    public TaskEditor(Task profile) {
-//        mTask = profile;
-//        createUI();
-//    }
     public Task save() {
         mTaskManager.getIdToItem().put(mTask.getId(), mTask);
-        mTabs.forEach((tab) -> {
+
+        getBaseTabs().forEachOrdered(tab -> {
             tab.save();
         });
 
@@ -81,23 +86,10 @@ public class TaskEditor extends TabPane {
         return mTask;
     }
 
-    public void setOkButton(Button button) {
-        mOkButton = button;
-    }
-
-    void load(Task task, DialogDescriptor dialogDescriptor) {
-        if (task == null) {
-            task = new Task();
-        }
-
-        mDialogDescriptor = dialogDescriptor;
-        mTask = task;
-    }
-
     private void createUI() {
-        final double TAB_SIZE = BaseTab.ICON_SIZE * 1.5;
-        setTabMaxHeight(TAB_SIZE);
-        setTabMinHeight(TAB_SIZE);
+        var tabHeight = BaseTab.ICON_SIZE * 1.5;
+        setTabMaxHeight(tabHeight);
+        setTabMinHeight(tabHeight);
         setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
 
         BaseTab.setValidationSupport(mValidationSupport);
@@ -109,32 +101,36 @@ public class TaskEditor extends TabPane {
         mDescriptionTab = new DescriptionTab();
         mPhotoTab = new PhotoTab();
 
-        final ObservableList<Tab> tabs = getTabs();
-        tabs.add(mSourceTab);
-        tabs.add(mFoldersTab);
-        tabs.add(mPathTab);
-        tabs.add(mPlacemarkTab);
-        tabs.add(mDescriptionTab);
-        tabs.add(mPhotoTab);
+        getTabs().setAll(
+                mSourceTab,
+                mFoldersTab,
+                mPathTab,
+                mPlacemarkTab,
+                mDescriptionTab,
+                mPhotoTab
+        );
 
-        tabs.forEach((tab) -> {
-            mTabs.add((BaseTab) tab);
-        });
+        var insets = FxHelper.getUIScaledInsets(8);
+        getBaseTabs()
+                .filter(tab -> tab.getContent() instanceof Region)
+                .map(tab -> (Region) tab.getContent())
+                .forEachOrdered(region -> {
+                    region.setPadding(insets);
+                });
 
-        final int size = 8;
-        Insets insets = new Insets(size, size, size, size);
-        mTabs.forEach((tab) -> {
-            try {
-                Region region = (Region) tab.getContent();
-                region.setPadding(insets);
-            } catch (Exception e) {
-            }
-        });
+    }
 
+    private void initValidation() {
         mValidationSupport.validationResultProperty().addListener((ObservableValue<? extends ValidationResult> observable, ValidationResult oldValue, ValidationResult newValue) -> {
-//            mOkButton.setDisable(mValidationSupport.isInvalid());
+            mDialogDescriptor.setValid(!mValidationSupport.isInvalid());
         });
 
         mValidationSupport.initInitialDecoration();
+    }
+
+    private Stream<BaseTab> getBaseTabs() {
+        return getTabs().stream()
+                .filter(tab -> tab instanceof BaseTab)
+                .map(tab -> (BaseTab) tab);
     }
 }

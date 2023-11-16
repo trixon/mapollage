@@ -59,10 +59,9 @@ public class TaskListEditor {
                 setScene(new Scene(editor));
             }
         };
-        dialogPanel.setPreferredSize(SwingHelper.getUIScaledDim(600, 480));
+        dialogPanel.setPreferredSize(SwingHelper.getUIScaledDim(640, 480));
 
         SwingUtilities.invokeLater(() -> {
-            editor.setPrefSize(FxHelper.getUIScaled(600), FxHelper.getUIScaled(660));
             var d = new DialogDescriptor(dialogPanel, title);
             d.setValid(false);
             dialogPanel.setNotifyDescriptor(d);

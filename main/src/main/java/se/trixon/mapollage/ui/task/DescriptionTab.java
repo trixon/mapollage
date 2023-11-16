@@ -15,9 +15,7 @@
  */
 package se.trixon.mapollage.ui.task;
 
-import javafx.beans.property.BooleanProperty;
 import javafx.event.ActionEvent;
-import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.RadioButton;
@@ -30,6 +28,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import org.controlsfx.glyphfont.FontAwesome;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.mapollage.core.Task;
 import se.trixon.mapollage.core.TaskDescription;
 import se.trixon.mapollage.core.TaskDescription.DescriptionMode;
@@ -68,74 +67,70 @@ public class DescriptionTab extends BaseTab {
     @Override
     public void load(Task task) {
         mTask = task;
-        TaskDescription p = mTask.getDescription();
+        var taskDescription = mTask.getDescription();
 
-        switch (p.getMode()) {
-            case STATIC:
+        switch (taskDescription.getMode()) {
+            case STATIC ->
                 mStaticRadioButton.setSelected(true);
-                break;
 
-            case CUSTOM:
+            case CUSTOM ->
                 mCustomRadioButton.setSelected(true);
-                break;
 
-            case EXTERNAL:
+            case EXTERNAL ->
                 mExternalRadioButton.setSelected(true);
-                break;
 
-            default:
+            default ->
                 throw new AssertionError();
         }
 
-        if (p.getDefaultMode() == DescriptionMode.CUSTOM) {
+        if (taskDescription.getDefaultMode() == DescriptionMode.CUSTOM) {
             mExternalCustomRadioButton.setSelected(true);
         } else {
             mExternalStaticRadioButton.setSelected(true);
         }
 
-        mStaticAltitudeCheckBox.setSelected(p.hasAltitude());
-        mStaticBearingCheckBox.setSelected(p.hasBearing());
-        mStaticCoordinateCheckBox.setSelected(p.hasCoordinate());
-        mStaticDateCheckBox.setSelected(p.hasDate());
-        mStaticFilenameCheckBox.setSelected(p.hasFilename());
-        mStaticPhotoCheckBox.setSelected(p.hasPhoto());
+        mStaticAltitudeCheckBox.setSelected(taskDescription.hasAltitude());
+        mStaticBearingCheckBox.setSelected(taskDescription.hasBearing());
+        mStaticCoordinateCheckBox.setSelected(taskDescription.hasCoordinate());
+        mStaticDateCheckBox.setSelected(taskDescription.hasDate());
+        mStaticFilenameCheckBox.setSelected(taskDescription.hasFilename());
+        mStaticPhotoCheckBox.setSelected(taskDescription.hasPhoto());
 
-        mCustomTextArea.setText(p.getCustomValue());
-        mExternalTextField.setText(p.getExternalFileValue());
-        mExternalDefaultCheckBox.setSelected(p.isDefaultTo());
+        mCustomTextArea.setText(taskDescription.getCustomValue());
+        mExternalTextField.setText(taskDescription.getExternalFileValue());
+        mExternalDefaultCheckBox.setSelected(taskDescription.isDefaultTo());
     }
 
     @Override
     public void save() {
-        TaskDescription p = mTask.getDescription();
-
-        p.setAltitude(mStaticAltitudeCheckBox.isSelected());
-        p.setBearing(mStaticBearingCheckBox.isSelected());
-        p.setCoordinate(mStaticCoordinateCheckBox.isSelected());
-        p.setFilename(mStaticFilenameCheckBox.isSelected());
-        p.setPhoto(mStaticPhotoCheckBox.isSelected());
-        p.setDate(mStaticDateCheckBox.isSelected());
-        p.setCustomValue(mCustomTextArea.getText());
-        p.setDefaultTo(mExternalDefaultCheckBox.isSelected());
+        var taskDescription = mTask.getDescription();
+        taskDescription.setAltitude(mStaticAltitudeCheckBox.isSelected());
+        taskDescription.setBearing(mStaticBearingCheckBox.isSelected());
+        taskDescription.setCoordinate(mStaticCoordinateCheckBox.isSelected());
+        taskDescription.setFilename(mStaticFilenameCheckBox.isSelected());
+        taskDescription.setPhoto(mStaticPhotoCheckBox.isSelected());
+        taskDescription.setDate(mStaticDateCheckBox.isSelected());
+        taskDescription.setCustomValue(mCustomTextArea.getText());
+        taskDescription.setDefaultTo(mExternalDefaultCheckBox.isSelected());
 
         if (mStaticRadioButton.isSelected()) {
-            p.setMode(DescriptionMode.STATIC);
+            taskDescription.setMode(DescriptionMode.STATIC);
         } else if (mCustomRadioButton.isSelected()) {
-            p.setMode(DescriptionMode.CUSTOM);
+            taskDescription.setMode(DescriptionMode.CUSTOM);
         } else if (mExternalRadioButton.isSelected()) {
-            p.setMode(DescriptionMode.EXTERNAL);
+            taskDescription.setMode(DescriptionMode.EXTERNAL);
         }
 
         if (mExternalCustomRadioButton.isSelected()) {
-            p.setDefaultMode(DescriptionMode.CUSTOM);
+            taskDescription.setDefaultMode(DescriptionMode.CUSTOM);
         } else {
-            p.setDefaultMode(DescriptionMode.STATIC);
+            taskDescription.setDefaultMode(DescriptionMode.STATIC);
         }
     }
 
     private void createUI() {
-        VBox staticBox = new VBox(8);
-        GridPane gp = new GridPane();
+        var staticBox = new VBox(FxHelper.getUIScaled(8));
+        var gp = new GridPane();
         setContent(gp);
 
         mStaticRadioButton.setToggleGroup(mSourceToggleGroup);
@@ -154,19 +149,17 @@ public class DescriptionTab extends BaseTab {
                 mStaticPhotoCheckBox
         );
 
-        BooleanProperty staticSelect = mStaticRadioButton.selectedProperty();
-        staticBox.disableProperty().bind(staticSelect.not());
+        staticBox.disableProperty().bind(mStaticRadioButton.selectedProperty().not());
+        mCustomResetButton.disableProperty().bind(mCustomRadioButton.selectedProperty().not());
+        mCustomTextArea.disableProperty().bind(mCustomRadioButton.selectedProperty().not());
 
-        BooleanProperty customSelect = mCustomRadioButton.selectedProperty();
-        mCustomResetButton.disableProperty().bind(customSelect.not());
-        mCustomTextArea.disableProperty().bind(customSelect.not());
+        var externalSelectedProperty = mExternalRadioButton.selectedProperty();
+        mExternalDefaultCheckBox.disableProperty().bind(externalSelectedProperty.not());
+        mExternalTextField.disableProperty().bind(externalSelectedProperty.not());
 
-        BooleanProperty externalSelect = mExternalRadioButton.selectedProperty();
-        mExternalDefaultCheckBox.disableProperty().bind(externalSelect.not());
-        mExternalTextField.disableProperty().bind(externalSelect.not());
-        BooleanProperty externalDefault = mExternalDefaultCheckBox.selectedProperty();
-        mExternalCustomRadioButton.disableProperty().bind(externalSelect.not().or(externalDefault.not()));
-        mExternalStaticRadioButton.disableProperty().bind(externalSelect.not().or(externalDefault.not()));
+        var externalDefaultProperty = mExternalDefaultCheckBox.selectedProperty();
+        mExternalCustomRadioButton.disableProperty().bind(externalSelectedProperty.not().or(externalDefaultProperty.not()));
+        mExternalStaticRadioButton.disableProperty().bind(externalSelectedProperty.not().or(externalDefaultProperty.not()));
 
         int col = 0;
         int row = 0;
@@ -183,12 +176,12 @@ public class DescriptionTab extends BaseTab {
         GridPane.setVgrow(mCustomTextArea, Priority.ALWAYS);
         GridPane.setFillHeight(mCustomTextArea, true);
 
-        Insets topInsets = new Insets(8, 0, 0, 0);
+        var topInsets = FxHelper.getUIScaledInsets(8, 0, 0, 0);
         GridPane.setMargin(mCustomTextArea, topInsets);
         GridPane.setMargin(mExternalTextField, topInsets);
         GridPane.setMargin(mExternalDefaultCheckBox, topInsets);
         GridPane.setMargin(mCustomResetButton, topInsets);
-        GridPane.setMargin(mExternalStaticRadioButton, new Insets(0, 8, 0, 8));
+        GridPane.setMargin(mExternalStaticRadioButton, FxHelper.getUIScaledInsets(0, 8, 0, 8));
 
         addTopPadding(
                 staticBox,

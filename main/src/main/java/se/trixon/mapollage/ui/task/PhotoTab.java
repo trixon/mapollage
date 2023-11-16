@@ -15,7 +15,6 @@
  */
 package se.trixon.mapollage.ui.task;
 
-import javafx.geometry.Insets;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
@@ -58,62 +57,57 @@ public class PhotoTab extends BaseTab {
     @Override
     public void load(Task task) {
         mTask = task;
-        TaskPhoto p = mTask.getPhoto();
 
-        mMaxWidthCheckBox.setSelected(p.isLimitWidth());
-        mMaxWidthSpinner.getValueFactory().setValue(p.getWidthLimit());
-        mMaxHeightCheckBox.setSelected(p.isLimitHeight());
-        mMaxHeightSpinner.getValueFactory().setValue(p.getHeightLimit());
+        var taskPhoto = mTask.getPhoto();
+        mMaxWidthCheckBox.setSelected(taskPhoto.isLimitWidth());
+        mMaxWidthSpinner.getValueFactory().setValue(taskPhoto.getWidthLimit());
+        mMaxHeightCheckBox.setSelected(taskPhoto.isLimitHeight());
+        mMaxHeightSpinner.getValueFactory().setValue(taskPhoto.getHeightLimit());
 
-        switch (p.getReference()) {
-            case ABSOLUTE:
+        switch (taskPhoto.getReference()) {
+            case ABSOLUTE ->
                 mRefAbsoluteRadioButton.setSelected(true);
-                break;
 
-            case ABSOLUTE_PATH:
+            case ABSOLUTE_PATH ->
                 mRefAbsolutePathRadioButton.setSelected(true);
-                break;
 
-            case RELATIVE:
+            case RELATIVE ->
                 mRefRelativeRadioButton.setSelected(true);
-                break;
 
-            case THUMBNAIL:
+            case THUMBNAIL ->
                 mRefThumbnailRadioButton.setSelected(true);
-                break;
 
-            default:
+            default ->
                 throw new AssertionError();
         }
 
-        mRefAbsolutePathTextField.setText(p.getBaseUrlValue());
-        mLowerCaseExtCheckBox.setSelected(p.isForceLowerCaseExtension());
+        mRefAbsolutePathTextField.setText(taskPhoto.getBaseUrlValue());
+        mLowerCaseExtCheckBox.setSelected(taskPhoto.isForceLowerCaseExtension());
     }
 
     @Override
     public void save() {
-        TaskPhoto p = mTask.getPhoto();
-
-        p.setBaseUrlValue(mRefAbsolutePathTextField.getText());
-        p.setForceLowerCaseExtension(mLowerCaseExtCheckBox.isSelected());
-        p.setHeightLimit(mMaxHeightSpinner.getValue());
-        p.setWidthLimit(mMaxWidthSpinner.getValue());
-        p.setLimitHeight(mMaxHeightCheckBox.isSelected());
-        p.setLimitWidth(mMaxWidthCheckBox.isSelected());
+        var taskPhoto = mTask.getPhoto();
+        taskPhoto.setBaseUrlValue(mRefAbsolutePathTextField.getText());
+        taskPhoto.setForceLowerCaseExtension(mLowerCaseExtCheckBox.isSelected());
+        taskPhoto.setHeightLimit(mMaxHeightSpinner.getValue());
+        taskPhoto.setWidthLimit(mMaxWidthSpinner.getValue());
+        taskPhoto.setLimitHeight(mMaxHeightCheckBox.isSelected());
+        taskPhoto.setLimitWidth(mMaxWidthCheckBox.isSelected());
 
         if (mRefAbsolutePathRadioButton.isSelected()) {
-            p.setReference(TaskPhoto.Reference.ABSOLUTE_PATH);
+            taskPhoto.setReference(TaskPhoto.Reference.ABSOLUTE_PATH);
         } else if (mRefAbsoluteRadioButton.isSelected()) {
-            p.setReference(TaskPhoto.Reference.ABSOLUTE);
+            taskPhoto.setReference(TaskPhoto.Reference.ABSOLUTE);
         } else if (mRefRelativeRadioButton.isSelected()) {
-            p.setReference(TaskPhoto.Reference.RELATIVE);
+            taskPhoto.setReference(TaskPhoto.Reference.RELATIVE);
         } else if (mRefThumbnailRadioButton.isSelected()) {
-            p.setReference(TaskPhoto.Reference.THUMBNAIL);
+            taskPhoto.setReference(TaskPhoto.Reference.THUMBNAIL);
         }
     }
 
     private void createUI() {
-        GridPane gp = new GridPane();
+        var gp = new GridPane();
         setContent(gp);
 
         mMaxHeightSpinner.setEditable(true);
@@ -126,7 +120,7 @@ public class PhotoTab extends BaseTab {
         mRefThumbnailRadioButton.setToggleGroup(mToggleGroup);
         mLowerCaseExtCheckBox.setTooltip(new Tooltip(mBundle.getString("PhotoTab.lowerCaseExtCheckBox.toolTip")));
 
-        Label referenceLabel = new Label(Dict.FILE_REFERENCE.toString());
+        var referenceLabel = new Label(Dict.FILE_REFERENCE.toString());
 
         gp.addColumn(0,
                 mMaxWidthCheckBox,
@@ -158,12 +152,11 @@ public class PhotoTab extends BaseTab {
 
         addTopPadding(referenceLabel);
 
-        Insets leftInsets = new Insets(0, 0, 0, 24);
+        var leftInsets = FxHelper.getUIScaledInsets(0, 0, 0, 24);
         GridPane.setMargin(mRefAbsolutePathTextField, leftInsets);
 
         mMaxHeightSpinner.disableProperty().bind(mMaxHeightCheckBox.selectedProperty().not());
         mMaxWidthSpinner.disableProperty().bind(mMaxWidthCheckBox.selectedProperty().not());
         mRefAbsolutePathTextField.disableProperty().bind(mRefAbsolutePathRadioButton.selectedProperty().not());
     }
-
 }

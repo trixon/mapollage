@@ -22,7 +22,6 @@ import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import javafx.collections.FXCollections;
-import javafx.geometry.Insets;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
@@ -38,9 +37,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.glyphfont.FontAwesome;
 import org.controlsfx.validation.Validator;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.UriLabel;
 import se.trixon.mapollage.core.Task;
-import se.trixon.mapollage.core.TaskFolder;
 import se.trixon.mapollage.core.TaskFolder.FolderBy;
 
 /**
@@ -71,46 +70,38 @@ public class FoldersTab extends BaseTab {
     @Override
     public void load(Task task) {
         mTask = task;
-        TaskFolder p = mTask.getFolder();
 
-        mRootNameTextField.setText(p.getRootName());
-        mRootDescTextArea.setText(p.getRootDescription());
-        mDatePatternComboBox.setValue(p.getDatePattern());
-        mRegexTextField.setText(p.getRegex());
-        mRegexDefaultTextField.setText(p.getRegexDefault());
+        var taskFolder = mTask.getFolder();
+        mRootNameTextField.setText(taskFolder.getRootName());
+        mRootDescTextArea.setText(taskFolder.getRootDescription());
+        mDatePatternComboBox.setValue(taskFolder.getDatePattern());
+        mRegexTextField.setText(taskFolder.getRegex());
+        mRegexDefaultTextField.setText(taskFolder.getRegexDefault());
 
         RadioButton folderByRadioButton;
 
-        switch (p.getFoldersBy()) {
-            case DIR:
-                folderByRadioButton = mFolderByDirectoryRadioButton;
-                break;
-
-            case DATE:
-                folderByRadioButton = mFolderByDateRadioButton;
-                break;
-
-            case REGEX:
-                folderByRadioButton = mFolderByRegexRadioButton;
-                break;
-
-            default:
-                folderByRadioButton = mFolderByNoneRadioButton;
-                break;
-        }
+        folderByRadioButton = switch (taskFolder.getFoldersBy()) {
+            case DIR ->
+                mFolderByDirectoryRadioButton;
+            case DATE ->
+                mFolderByDateRadioButton;
+            case REGEX ->
+                mFolderByRegexRadioButton;
+            default ->
+                mFolderByNoneRadioButton;
+        };
 
         mToggleGroup.selectToggle(folderByRadioButton);
     }
 
     @Override
     public void save() {
-        TaskFolder p = mTask.getFolder();
-
-        p.setRootName(mRootNameTextField.getText());
-        p.setRootDescription(mRootDescTextArea.getText());
-        p.setDatePattern(mDatePatternComboBox.getValue());
-        p.setRegex(mRegexTextField.getText());
-        p.setRegexDefault(mRegexDefaultTextField.getText());
+        var taskFolder = mTask.getFolder();
+        taskFolder.setRootName(mRootNameTextField.getText());
+        taskFolder.setRootDescription(mRootDescTextArea.getText());
+        taskFolder.setDatePattern(mDatePatternComboBox.getValue());
+        taskFolder.setRegex(mRegexTextField.getText());
+        taskFolder.setRegexDefault(mRegexDefaultTextField.getText());
 
         FolderBy folderBy = null;
         Toggle t = mToggleGroup.getSelectedToggle();
@@ -124,20 +115,20 @@ public class FoldersTab extends BaseTab {
             folderBy = FolderBy.NONE;
         }
 
-        p.setFoldersBy(folderBy);
+        taskFolder.setFoldersBy(folderBy);
     }
 
     private void createUI() {
         mDateFormatUriLabel.setUri("https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/text/SimpleDateFormat.html");
-        VBox leftBox = new VBox();
-        VBox rightBox = new VBox();
+        var leftBox = new VBox();
+        var rightBox = new VBox();
 
         setContent(leftBox);
 
         //Left Pane
-        Label rootNameLabel = new Label(mBundle.getString("FoldersTab.rootNameLabel"));
-        Label rootDescLabel = new Label(mBundle.getString("FoldersTab.rootDescriptionLabel"));
-        Label regexLabel = new Label(Dict.DEFAULT_VALUE.toString());
+        var rootNameLabel = new Label(mBundle.getString("FoldersTab.rootNameLabel"));
+        var rootDescLabel = new Label(mBundle.getString("FoldersTab.rootDescriptionLabel"));
+        var regexLabel = new Label(Dict.DEFAULT_VALUE.toString());
 
         leftBox.getChildren().addAll(
                 rootNameLabel,
@@ -159,11 +150,11 @@ public class FoldersTab extends BaseTab {
         mDatePatternComboBox.setEditable(true);
         mDatePatternComboBox.setItems(FXCollections.observableList(Arrays.asList(mBundle.getString("dateFormats").split(";"))));
 
-        Label label = new Label(mBundle.getString("FoldersTab.folderByLabel"));
+        var label = new Label(mBundle.getString("FoldersTab.folderByLabel"));
         rightBox.getChildren().addAll(
                 label,
                 mFolderByDirectoryRadioButton,
-                new HBox(8, mFolderByDateRadioButton, mDateFormatUriLabel),
+                new HBox(FxHelper.getUIScaled(8), mFolderByDateRadioButton, mDateFormatUriLabel),
                 mDatePatternComboBox,
                 mFolderByRegexRadioButton,
                 mRegexTextField,
@@ -183,7 +174,7 @@ public class FoldersTab extends BaseTab {
                 rightBox
         );
 
-        Insets leftInsets = new Insets(0, 0, 0, 24);
+        var leftInsets = FxHelper.getUIScaledInsets(0, 0, 0, 24);
         VBox.setMargin(mDatePatternComboBox, leftInsets);
         VBox.setMargin(mRegexTextField, leftInsets);
         VBox.setMargin(mRegexDefaultTextField, leftInsets);
@@ -211,33 +202,31 @@ public class FoldersTab extends BaseTab {
         final String message = "Text is required";
         boolean indicateRequired = false;
 
-        Predicate datePredicate = (Predicate) (Object o) -> {
+        var datePredicate = (Predicate<String>) s -> {
             if (!mFolderByDateRadioButton.isSelected()) {
                 return true;
             } else {
-                return !StringUtils.isBlank((String) o) && previewDateFormat();
+                return !StringUtils.isBlank(s) && previewDateFormat();
             }
         };
 
-        Predicate regexPredicate = (Predicate) (Object o) -> {
+        var regexPredicate = (Predicate<String>) s -> {
             if (!mFolderByRegexRadioButton.isSelected()) {
                 return true;
             } else {
                 try {
-                    final String s = (String) o;
-                    Pattern p = Pattern.compile(s);
+                    Pattern.compile(s);
                     return !StringUtils.isBlank(s);
                 } catch (PatternSyntaxException e) {
+                    return false;
                 }
-                return false;
             }
         };
 
-        Predicate regexDefaultPredicate = (Predicate) (Object o) -> {
+        var regexDefaultPredicate = (Predicate<String>) s -> {
             if (!mFolderByRegexRadioButton.isSelected()) {
                 return true;
             } else {
-                final String s = (String) o;
                 return !StringUtils.isBlank(s);
             }
         };
@@ -253,14 +242,14 @@ public class FoldersTab extends BaseTab {
         String datePreview;
 
         try {
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(mDatePatternComboBox.getValue(), mOptions.getLocale());
+            var simpleDateFormat = new SimpleDateFormat(mDatePatternComboBox.getValue(), mOptions.getLocale());
             datePreview = simpleDateFormat.format(new Date(System.currentTimeMillis()));
         } catch (IllegalArgumentException ex) {
             datePreview = Dict.Dialog.ERROR.toString();
             validFormat = false;
         }
 
-        String dateLabel = String.format("%s (%s)", Dict.DATE_PATTERN.toString(), datePreview);
+        var dateLabel = String.format("%s (%s)", Dict.DATE_PATTERN.toString(), datePreview);
         mFolderByDateRadioButton.setText(dateLabel);
         mFolderByDateRadioButton.setTooltip(new Tooltip(datePreview));
 

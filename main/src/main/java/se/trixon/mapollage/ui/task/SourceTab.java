@@ -28,7 +28,6 @@ import org.controlsfx.validation.Validator;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.control.FileChooserPane;
 import se.trixon.mapollage.core.Task;
-import se.trixon.mapollage.core.TaskSource;
 
 /**
  *
@@ -52,47 +51,46 @@ public class SourceTab extends BaseTab {
         setGraphic(FontAwesome.Glyph.FILE_IMAGE_ALT.getChar());
 
         createUI();
-        initValidation();
     }
 
     @Override
     public void load(Task task) {
         mTask = task;
-        TaskSource p = mTask.getSource();
+        initValidation();
+        var taskSource = mTask.getSource();
 
         mNameTextField.setText(mTask.getName());
         mDescTextField.setText(mTask.getDescriptionString());
 
-        mSourceChooser.setPath(p.getDir());
-        mExcludeTextField.setText(p.getExcludePattern());
-        mFilePatternField.setText(p.getFilePattern());
+        mSourceChooser.setPath(taskSource.getDir());
+        mExcludeTextField.setText(taskSource.getExcludePattern());
+        mFilePatternField.setText(taskSource.getFilePattern());
 
-        mRecursiveCheckBox.setSelected(p.isRecursive());
-        mLinksCheckBox.setSelected(p.isFollowLinks());
-        mIncludeCheckBox.setSelected(p.isIncludeNullCoordinate());
+        mRecursiveCheckBox.setSelected(taskSource.isRecursive());
+        mLinksCheckBox.setSelected(taskSource.isFollowLinks());
+        mIncludeCheckBox.setSelected(taskSource.isIncludeNullCoordinate());
     }
 
     @Override
     public void save() {
-        TaskSource p = mTask.getSource();
-
         mTask.setName(mNameTextField.getText());
         mTask.setDescriptionString(mDescTextField.getText());
 
-        p.setDir(mSourceChooser.getPath());
-        p.setExcludePattern(mExcludeTextField.getText());
-        p.setFilePattern(mFilePatternField.getText());
+        var taskSource = mTask.getSource();
+        taskSource.setDir(mSourceChooser.getPath());
+        taskSource.setExcludePattern(mExcludeTextField.getText());
+        taskSource.setFilePattern(mFilePatternField.getText());
 
-        p.setRecursive(mRecursiveCheckBox.isSelected());
-        p.setFollowLinks(mLinksCheckBox.isSelected());
-        p.setIncludeNullCoordinate(mIncludeCheckBox.isSelected());
+        taskSource.setRecursive(mRecursiveCheckBox.isSelected());
+        taskSource.setFollowLinks(mLinksCheckBox.isSelected());
+        taskSource.setIncludeNullCoordinate(mIncludeCheckBox.isSelected());
     }
 
     private void createUI() {
-        Label nameLabel = new Label(Dict.NAME.toString());
-        Label descLabel = new Label(Dict.DESCRIPTION.toString());
-        Label filePatternLabel = new Label(Dict.FILE_PATTERN.toString());
-        Label excludeLabel = new Label(mBundle.getString("SourceTab.excludeLabel"));
+        var nameLabel = new Label(Dict.NAME.toString());
+        var descLabel = new Label(Dict.DESCRIPTION.toString());
+        var filePatternLabel = new Label(Dict.FILE_PATTERN.toString());
+        var excludeLabel = new Label(mBundle.getString("SourceTab.excludeLabel"));
 
         mExcludeTextField.setTooltip(new Tooltip(mBundle.getString("SourceTab.excludeTextField.toolTip")));
 
@@ -126,8 +124,8 @@ public class SourceTab extends BaseTab {
         final String message = "Text is required";
         boolean indicateRequired = false;
 
-        Predicate namePredicate = (Predicate) (Object o) -> {
-            return mTaskManager.isValid(mTask.getName(), (String) o);
+        var namePredicate = (Predicate<String>) s -> {
+            return mTaskManager.isValid(mTask.getName(), s);
         };
 
         sValidationSupport.registerValidator(mNameTextField, indicateRequired, Validator.createEmptyValidator(message));

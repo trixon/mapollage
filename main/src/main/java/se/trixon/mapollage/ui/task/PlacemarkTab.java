@@ -17,13 +17,11 @@ package se.trixon.mapollage.ui.task;
 
 import java.util.Arrays;
 import javafx.collections.FXCollections;
-import javafx.geometry.Insets;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.Spinner;
-import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -32,7 +30,6 @@ import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.UriLabel;
 import se.trixon.mapollage.core.Task;
-import se.trixon.mapollage.core.TaskPlacemark;
 import se.trixon.mapollage.core.TaskPlacemark.NameBy;
 import se.trixon.mapollage.core.TaskPlacemark.SymbolAs;
 
@@ -64,44 +61,39 @@ public class PlacemarkTab extends BaseTab {
     @Override
     public void load(Task task) {
         mTask = task;
-        TaskPlacemark p = mTask.getPlacemark();
 
-        mDatePatternComboBox.setValue(p.getDatePattern());
-        mScaleSpinner.getValueFactory().setValue(p.getScale());
-        mZoomSpinner.getValueFactory().setValue(p.getZoom());
-        mTimestampCheckBox.setSelected(p.isTimestamp());
+        var taskPlacemark = mTask.getPlacemark();
+        mDatePatternComboBox.setValue(taskPlacemark.getDatePattern());
+        mScaleSpinner.getValueFactory().setValue(taskPlacemark.getScale());
+        mZoomSpinner.getValueFactory().setValue(taskPlacemark.getZoom());
+        mTimestampCheckBox.setSelected(taskPlacemark.isTimestamp());
 
         RadioButton nameByRadioButton;
-        switch (p.getNameBy()) {
-            case FILE:
+        switch (taskPlacemark.getNameBy()) {
+            case FILE ->
                 nameByRadioButton = mNameByFileRadioButton;
-                break;
 
-            case DATE:
+            case DATE ->
                 nameByRadioButton = mNameByDateRadioButton;
-                break;
 
-            case NONE:
+            case NONE ->
                 nameByRadioButton = mNameByNoRadioButton;
-                break;
 
-            default:
+            default ->
                 throw new AssertionError();
         }
 
         nameByRadioButton.setSelected(true);
 
         RadioButton symboAsRadioButton;
-        switch (p.getSymbolAs()) {
-            case PHOTO:
+        switch (taskPlacemark.getSymbolAs()) {
+            case PHOTO ->
                 symboAsRadioButton = mSymbolAsPhotoRadioButton;
-                break;
 
-            case PIN:
+            case PIN ->
                 symboAsRadioButton = mSymbolAsPinRadioButton;
-                break;
 
-            default:
+            default ->
                 throw new AssertionError();
         }
 
@@ -110,15 +102,14 @@ public class PlacemarkTab extends BaseTab {
 
     @Override
     public void save() {
-        TaskPlacemark p = mTask.getPlacemark();
-
-        p.setDatePattern(mDatePatternComboBox.getValue());
-        p.setScale(mScaleSpinner.getValue());
-        p.setZoom(mZoomSpinner.getValue());
-        p.setTimestamp(mTimestampCheckBox.isSelected());
+        var taskPlacemark = mTask.getPlacemark();
+        taskPlacemark.setDatePattern(mDatePatternComboBox.getValue());
+        taskPlacemark.setScale(mScaleSpinner.getValue());
+        taskPlacemark.setZoom(mZoomSpinner.getValue());
+        taskPlacemark.setTimestamp(mTimestampCheckBox.isSelected());
 
         NameBy nameBy = null;
-        Toggle nameToggle = mNameByToggleGroup.getSelectedToggle();
+        var nameToggle = mNameByToggleGroup.getSelectedToggle();
 
         if (nameToggle == mNameByFileRadioButton) {
             nameBy = NameBy.FILE;
@@ -128,10 +119,10 @@ public class PlacemarkTab extends BaseTab {
             nameBy = NameBy.NONE;
         }
 
-        p.setNameBy(nameBy);
+        taskPlacemark.setNameBy(nameBy);
 
         SymbolAs symbolAs = null;
-        Toggle symbolToggle = mSymbolToggleGroup.getSelectedToggle();
+        var symbolToggle = mSymbolToggleGroup.getSelectedToggle();
 
         if (symbolToggle == mSymbolAsPhotoRadioButton) {
             symbolAs = SymbolAs.PHOTO;
@@ -139,15 +130,14 @@ public class PlacemarkTab extends BaseTab {
             symbolAs = SymbolAs.PIN;
         }
 
-        p.setSymbolAs(symbolAs);
+        taskPlacemark.setSymbolAs(symbolAs);
     }
 
     private void createUI() {
         mDateFormatUriLabel.setUri("https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/text/SimpleDateFormat.html");
-        VBox vBox = new VBox();
-        VBox leftBox = new VBox();
-        VBox rightBox = new VBox();
-        vBox.getChildren().addAll(leftBox, rightBox);
+        var leftBox = new VBox();
+        var rightBox = new VBox();
+        var vBox = new VBox(leftBox, rightBox);
         setContent(vBox);
 
         mScaleSpinner.setEditable(true);
@@ -162,23 +152,23 @@ public class PlacemarkTab extends BaseTab {
         mDatePatternComboBox.setEditable(true);
         mDatePatternComboBox.setItems(FXCollections.observableList(Arrays.asList(mBundle.getString("dateFormats").split(";"))));
 
-        Insets leftInsets = new Insets(0, 0, 0, 24);
+        var leftInsets = FxHelper.getUIScaledInsets(0, 0, 0, 24);
         VBox.setMargin(mDatePatternComboBox, leftInsets);
 
         leftBox.getChildren().addAll(
                 new Label(mBundle.getString("PlacemarkTab.nameByLabel")),
                 mNameByFileRadioButton,
-                new HBox(8, mNameByDateRadioButton, mDateFormatUriLabel),
+                new HBox(FxHelper.getUIScaled(8), mNameByDateRadioButton, mDateFormatUriLabel),
                 mDatePatternComboBox,
                 mNameByNoRadioButton
         );
 
         mSymbolAsPhotoRadioButton.setToggleGroup(mSymbolToggleGroup);
         mSymbolAsPinRadioButton.setToggleGroup(mSymbolToggleGroup);
-        Label scaleLabel = new Label(Dict.SCALE.toString());
-        Label zoomLabel = new Label(Dict.ZOOM.toString());
+        var scaleLabel = new Label(Dict.SCALE.toString());
+        var zoomLabel = new Label(Dict.ZOOM.toString());
 
-        Insets topInsets = new Insets(8, 0, 0, 0);
+        var topInsets = FxHelper.getUIScaledInsets(8, 0, 0, 0);
         VBox.setMargin(mTimestampCheckBox, topInsets);
 
         rightBox.getChildren().addAll(
@@ -205,7 +195,5 @@ public class PlacemarkTab extends BaseTab {
         );
 
         mDatePatternComboBox.disableProperty().bind(mNameByDateRadioButton.selectedProperty().not());
-
     }
-
 }

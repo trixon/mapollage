@@ -22,10 +22,12 @@ import javafx.geometry.Insets;
 import javafx.scene.control.Tab;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
+import javafx.scene.paint.Color;
 import org.controlsfx.glyphfont.GlyphFont;
 import org.controlsfx.glyphfont.GlyphFontRegistry;
 import org.controlsfx.validation.ValidationSupport;
 import org.openide.util.NbBundle;
+import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.mapollage.Options;
 import se.trixon.mapollage.core.Task;
 import se.trixon.mapollage.core.TaskManager;
@@ -36,11 +38,11 @@ import se.trixon.mapollage.core.TaskManager;
  */
 public abstract class BaseTab extends Tab {
 
-    public static final int ICON_SIZE = 32;
+    public static final int ICON_SIZE = FxHelper.getUIScaled(22);
     public static final String MULTILINE_DIVIDER = "* * * * *";
     protected static ValidationSupport sValidationSupport;
     private final GlyphFont mFontAwesome = GlyphFontRegistry.font("FontAwesome");
-    private final Insets mTopInsets = new Insets(8, 0, 0, 0);
+    private final Insets mTopInsets = FxHelper.getUIScaledInsets(8, 0, 0, 0);
     protected final ResourceBundle mBundle = NbBundle.getBundle(BaseTab.class);
     protected final String mHeaderPrefix = " + ";
     protected final Options mOptions = Options.getInstance();
@@ -53,8 +55,8 @@ public abstract class BaseTab extends Tab {
     }
 
     public BaseTab() {
-        mOptions.getPreferences().addPreferenceChangeListener((PreferenceChangeEvent evt) -> {
-            onPreferenceChange(evt);
+        mOptions.getPreferences().addPreferenceChangeListener(pce -> {
+            onPreferenceChange(pce);
         });
     }
 
@@ -78,13 +80,13 @@ public abstract class BaseTab extends Tab {
     }
 
     protected void addTopMargin(Region... regions) {
-        for (Region region : regions) {
+        for (var region : regions) {
             GridPane.setMargin(region, mTopInsets);
         }
     }
 
     protected void addTopPadding(Region... regions) {
-        for (Region region : regions) {
+        for (var region : regions) {
             region.setPadding(mTopInsets);
         }
     }
@@ -104,10 +106,9 @@ public abstract class BaseTab extends Tab {
     }
 
     protected void setGraphic(char c) {
-        //TODO
-//        var glyph = mFontAwesome.create(c).size(ICON_SIZE).color(mOptions.isNightMode() ? Color.LIGHTGRAY : Color.BLACK);
-//        glyph.setPadding(new Insets(8));
-//        setGraphic(glyph);
+        var glyph = mFontAwesome.create(c).size(ICON_SIZE).color(FxHelper.isDarkThemeEnabled() ? Color.LIGHTGRAY : Color.BLACK);
+        glyph.setPadding(FxHelper.getUIScaledInsets(8));
+        setGraphic(glyph);
     }
 
 }

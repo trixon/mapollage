@@ -19,14 +19,12 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.Spinner;
-import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.VBox;
 import org.controlsfx.glyphfont.FontAwesome;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.mapollage.core.Task;
-import se.trixon.mapollage.core.TaskPath;
 import se.trixon.mapollage.core.TaskPath.SplitBy;
 
 /**
@@ -55,40 +53,34 @@ public class PathTab extends BaseTab {
     @Override
     public void load(Task task) {
         mTask = task;
-        TaskPath p = mTask.getPath();
 
-        mDrawPolygonCheckBox.setSelected(p.isDrawPolygon());
-        mDrawPathCheckBox.setSelected(p.isDrawPath());
-        mWidthSpinner.getValueFactory().setValue(p.getWidth());
+        var taskPath = mTask.getPath();
+        mDrawPolygonCheckBox.setSelected(taskPath.isDrawPolygon());
+        mDrawPathCheckBox.setSelected(taskPath.isDrawPath());
+        mWidthSpinner.getValueFactory().setValue(taskPath.getWidth());
 
         RadioButton splitByRadioButton;
 
-        switch (p.getSplitBy()) {
-            case HOUR:
+        switch (taskPath.getSplitBy()) {
+            case HOUR ->
                 splitByRadioButton = mSplitByHourRadioButton;
-                break;
 
-            case DAY:
+            case DAY ->
                 splitByRadioButton = mSplitByDayRadioButton;
-                break;
 
-            case WEEK:
+            case WEEK ->
                 splitByRadioButton = mSplitByWeekRadioButton;
-                break;
 
-            case MONTH:
+            case MONTH ->
                 splitByRadioButton = mSplitByMonthRadioButton;
-                break;
 
-            case YEAR:
+            case YEAR ->
                 splitByRadioButton = mSplitByYearRadioButton;
-                break;
 
-            case NONE:
+            case NONE ->
                 splitByRadioButton = mSplitByNoneRadioButton;
-                break;
 
-            default:
+            default ->
                 throw new AssertionError();
         }
 
@@ -97,39 +89,38 @@ public class PathTab extends BaseTab {
 
     @Override
     public void save() {
-        TaskPath p = mTask.getPath();
-
-        p.setDrawPolygon(mDrawPolygonCheckBox.isSelected());
-        p.setDrawPath(mDrawPathCheckBox.isSelected());
-        p.setWidth(mWidthSpinner.getValue());
+        var taskPath = mTask.getPath();
+        taskPath.setDrawPolygon(mDrawPolygonCheckBox.isSelected());
+        taskPath.setDrawPath(mDrawPathCheckBox.isSelected());
+        taskPath.setWidth(mWidthSpinner.getValue());
 
         SplitBy splitBy = null;
-        Toggle t = mToggleGroup.getSelectedToggle();
+        var toggle = mToggleGroup.getSelectedToggle();
 
-        if (t == mSplitByHourRadioButton) {
+        if (toggle == mSplitByHourRadioButton) {
             splitBy = SplitBy.HOUR;
-        } else if (t == mSplitByDayRadioButton) {
+        } else if (toggle == mSplitByDayRadioButton) {
             splitBy = SplitBy.DAY;
-        } else if (t == mSplitByWeekRadioButton) {
+        } else if (toggle == mSplitByWeekRadioButton) {
             splitBy = SplitBy.WEEK;
-        } else if (t == mSplitByMonthRadioButton) {
+        } else if (toggle == mSplitByMonthRadioButton) {
             splitBy = SplitBy.MONTH;
-        } else if (t == mSplitByYearRadioButton) {
+        } else if (toggle == mSplitByYearRadioButton) {
             splitBy = SplitBy.YEAR;
-        } else if (t == mSplitByNoneRadioButton) {
+        } else if (toggle == mSplitByNoneRadioButton) {
             splitBy = SplitBy.NONE;
         }
 
-        p.setSplitBy(splitBy);
+        taskPath.setSplitBy(splitBy);
     }
 
     private void createUI() {
-        VBox vbox = new VBox();
-        VBox pathBox = new VBox();
+        var vbox = new VBox();
+        var pathBox = new VBox();
 
         setContent(vbox);
-        Label widthLabel = new Label(Dict.Geometry.WIDTH.toString());
-        Label splitByLabel = new Label(Dict.SPLIT_BY.toString());
+        var widthLabel = new Label(Dict.Geometry.WIDTH.toString());
+        var splitByLabel = new Label(Dict.SPLIT_BY.toString());
 
         mWidthSpinner.setEditable(true);
         FxHelper.autoCommitSpinners(mWidthSpinner);
@@ -172,5 +163,4 @@ public class PathTab extends BaseTab {
                 mSplitByNoneRadioButton
         );
     }
-
 }
