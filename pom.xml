@@ -2,6 +2,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>se.trixon.netbeans-platform</groupId>
+        <artifactId>parent</artifactId>
+        <version>0.1-SNAPSHOT</version>
+    </parent>
 
     <groupId>se.trixon.mapollage</groupId>
     <artifactId>parent</artifactId>
@@ -10,84 +15,6 @@
 
     <name>parent</name>
 
-    <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.netbeans.utilities</groupId>
-                    <artifactId>nbm-maven-plugin</artifactId>
-                    <version>4.8</version>
-                    <extensions>true</extensions>
-                    <configuration>
-                        <brandingToken>${brandingToken}</brandingToken>
-                        <cluster>${brandingToken}</cluster>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.11.0</version>
-                    <configuration>
-                        <source>17</source>
-                        <target>17</target>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-jar-plugin</artifactId>
-                    <version>3.3.0</version>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <showDeprecation>true</showDeprecation>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.netbeans.cluster</groupId>
-                <artifactId>platform</artifactId>
-                <version>${netbeans.version}</version>
-                <type>pom</type>
-            </dependency>
-
-            <!-- Trixon -->
-            <dependency>
-                <groupId>se.trixon.almond</groupId>
-                <artifactId>almond-util</artifactId>
-                <version>${almond.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>se.trixon.almond</groupId>
-                <artifactId>almond-nbp-core</artifactId>
-                <version>${almond.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>se.trixon.almond</groupId>
-                <artifactId>almond-nbp</artifactId>
-                <version>${almond.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>se.trixon.almond</groupId>
-                <artifactId>almond-nbp-actions</artifactId>
-                <version>${almond.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>se.trixon.almond</groupId>
-                <artifactId>almond-nbp-actions-osx</artifactId>
-                <version>${almond.version}</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-
     <modules>
         <module>branding</module>
         <module>application</module>
@@ -95,8 +22,6 @@
     </modules>
 
     <properties>
-        <netbeans.version>RELEASE190</netbeans.version>
-        <almond.version>17.0.0-SNAPSHOT</almond.version>
         <brandingToken>mapollage</brandingToken>
     </properties>
 </project>
