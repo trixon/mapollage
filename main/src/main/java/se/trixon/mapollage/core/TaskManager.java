@@ -15,7 +15,6 @@
  */
 package se.trixon.mapollage.core;
 
-import it.sauronsoftware.cron4j.Scheduler;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.beans.property.ObjectProperty;
@@ -34,8 +33,6 @@ public class TaskManager {
 
     private final ObjectProperty<ObservableMap<String, Task>> mIdToItemProperty = new SimpleObjectProperty<>();
     private final ObjectProperty<ObservableList<Task>> mItemsProperty = new SimpleObjectProperty<>();
-
-    private Scheduler mScheduler = new Scheduler();
 
     public static TaskManager getInstance() {
         return Holder.INSTANCE;

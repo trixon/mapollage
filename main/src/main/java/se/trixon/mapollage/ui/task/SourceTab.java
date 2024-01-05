@@ -18,15 +18,16 @@ package se.trixon.mapollage.ui.task;
 import java.util.function.Predicate;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javax.swing.JFileChooser;
 import org.controlsfx.glyphfont.FontAwesome;
 import org.controlsfx.validation.Validator;
+import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.util.Dict;
-import se.trixon.almond.util.fx.control.FileChooserPane;
+import se.trixon.almond.util.fx.control.FileChooserPaneSwingFx;
 import se.trixon.mapollage.core.Task;
 
 /**
@@ -42,7 +43,7 @@ public class SourceTab extends BaseTab {
     private final CheckBox mLinksCheckBox = new CheckBox(Dict.FOLLOW_LINKS.toString());
     private final TextField mNameTextField = new TextField();
     private final CheckBox mRecursiveCheckBox = new CheckBox(Dict.SUBDIRECTORIES.toString());
-    private final FileChooserPane mSourceChooser = new FileChooserPane(Dict.SELECT.toString(), Dict.IMAGE_DIRECTORY.toString(), FileChooserPane.ObjectMode.DIRECTORY, SelectionMode.SINGLE);
+    private final FileChooserPaneSwingFx mSourceChooser = new FileChooserPaneSwingFx(Dict.SELECT.toString(), Dict.IMAGE_DIRECTORY.toString(), Almond.getFrame(), JFileChooser.DIRECTORIES_ONLY);
     private final HBox mhBox = new HBox(8);
     private final VBox mvBox = new VBox();
 
