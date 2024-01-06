@@ -21,6 +21,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import se.trixon.almond.util.fx.control.editable_list.EditableListCell;
+import se.trixon.mapollage.core.ExecutorManager;
 import se.trixon.mapollage.core.Task;
 
 /**
@@ -55,7 +56,7 @@ public class TaskListCell extends EditableListCell<Task> {
         mRoot.getChildren().setAll(mNameLabel, mDescLabel);
         mRoot.setOnMouseClicked(mouseEvent -> {
             if (mouseEvent.getButton() == MouseButton.PRIMARY && mouseEvent.getClickCount() == 2) {
-                //ExecutorManager.getInstance().requestStart(task);
+                ExecutorManager.getInstance().requestStart(task);
             }
         });
         setGraphic(mRoot);

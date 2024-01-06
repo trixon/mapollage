@@ -28,6 +28,7 @@ import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.control.editable_list.EditableList;
 import se.trixon.almond.util.swing.SwingHelper;
+import se.trixon.mapollage.core.ExecutorManager;
 import se.trixon.mapollage.core.StorageManager;
 import static se.trixon.mapollage.core.StorageManager.GSON;
 import se.trixon.mapollage.core.Task;
@@ -41,6 +42,7 @@ public class TaskListEditor {
 
     private EditableList<Task> mEditableList;
     private final TaskManager mTaskManager = TaskManager.getInstance();
+    private final ExecutorManager mExecutorManager = ExecutorManager.getInstance();
 
     public TaskListEditor() {
         init();
@@ -109,7 +111,7 @@ public class TaskListEditor {
                     return mTaskManager.getById(uuid);
                 })
                 .setOnStart(task -> {
-                    //mExecutorManager.requestStart(task);
+                    mExecutorManager.requestStart(task);
                 })
                 .build();
 
