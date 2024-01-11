@@ -15,11 +15,9 @@
  */
 package se.trixon.mapollage.core;
 
-import java.io.IOException;
 import org.netbeans.api.progress.ProgressHandle;
 import org.openide.awt.StatusDisplayer;
 import org.openide.util.Cancellable;
-import org.openide.util.Exceptions;
 import org.openide.windows.FoldHandle;
 import org.openide.windows.IOFolding;
 import org.openide.windows.IOProvider;
@@ -37,11 +35,11 @@ public class Executor implements Runnable {
     private final boolean mDryRun;
 
     private String mDryRunIndicator = "";
+    private Thread mExecutorThread;
     private final InputOutput mInputOutput;
     private boolean mInterrupted;
     private long mLastRun;
     private FoldHandle mMainFoldHandle;
-    private Thread mOperationThread;
     private OutputHelper mOutputHelper;
     private ProgressHandle mProgressHandle;
     private final StatusDisplayer mStatusDisplayer = StatusDisplayer.getDefault();
@@ -50,11 +48,6 @@ public class Executor implements Runnable {
     public Executor(Task task, boolean dryRun) {
         mTask = task;
         mDryRun = dryRun;
-//        mPrinter = new Printer(IOProvider.getDefault().getIO(mTask.getName(), false));
-//
-//        if (mDryRun) {
-//            mDryRunIndicator = String.format(" (%s)", Dict.DRY_RUN.toString());
-//        }
         mInputOutput = IOProvider.getDefault().getIO(mTask.getName(), false);
         mInputOutput.select();
 
@@ -62,11 +55,8 @@ public class Executor implements Runnable {
             mDryRunIndicator = String.format(" (%s)", Dict.DRY_RUN.toString());
         }
 
-        try {
-            mInputOutput.getOut().reset();
-        } catch (IOException ex) {
-            Exceptions.printStackTrace(ex);
-        }
+        mOutputHelper = new OutputHelper(mTask.getName(), mInputOutput, mDryRun);
+        mOutputHelper.reset();
 
 //        task.setOperation(task.getCommand().ordinal());
     }
@@ -74,20 +64,21 @@ public class Executor implements Runnable {
     @Override
     public void run() {
         var allowToCancel = (Cancellable) () -> {
-            mOperationThread.interrupt();
+            mExecutorThread.interrupt();
+            mInterrupted = true;
             mProgressHandle.finish();
             ExecutorManager.getInstance().getExecutors().remove(mTask.getId());
+            jobEnded(OutputLineMode.WARNING, Dict.CANCELED.toString());
 
             return true;
         };
 
-        mOutputHelper = new OutputHelper(mTask.getName(), mInputOutput, mDryRun);
         mLastRun = System.currentTimeMillis();
         mProgressHandle = ProgressHandle.createHandle(mTask.getName(), allowToCancel);
         mProgressHandle.start();
         mProgressHandle.switchToIndeterminate();
 
-        mOperationThread = new Thread(() -> {
+        mExecutorThread = new Thread(() -> {
             mOutputHelper.start();
             mOutputHelper.printSectionHeader(OutputLineMode.INFO, Dict.START.toString(), Dict.TASK.toLower(), mTask.getName());
             mMainFoldHandle = IOFolding.startFold(mInputOutput, true);
@@ -125,15 +116,15 @@ public class Executor implements Runnable {
 //            }
             mProgressHandle.finish();
             ExecutorManager.getInstance().getExecutors().remove(mTask.getId());
-        }, "Operation");
-        mOperationThread.start();
+        }, "Executor");
 
+        mExecutorThread.start();
     }
 
-    private void jobEnded(OutputLineMode outputLineMode, String type) {
+    private void jobEnded(OutputLineMode outputLineMode, String action) {
         mMainFoldHandle.finish();
-        mStatusDisplayer.setStatusText(type);
-        mOutputHelper.printSummary(outputLineMode, type);
+        mStatusDisplayer.setStatusText(action);
+        mOutputHelper.printSummary(outputLineMode, action, Dict.TASK.toString());
     }
 
 }
