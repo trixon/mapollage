@@ -40,6 +40,7 @@ public class Executor implements Runnable {
     private boolean mInterrupted;
     private long mLastRun;
     private FoldHandle mMainFoldHandle;
+    private final Operation mOperation;
     private OutputHelper mOutputHelper;
     private ProgressHandle mProgressHandle;
     private final StatusDisplayer mStatusDisplayer = StatusDisplayer.getDefault();
@@ -57,8 +58,7 @@ public class Executor implements Runnable {
 
         mOutputHelper = new OutputHelper(mTask.getName(), mInputOutput, mDryRun);
         mOutputHelper.reset();
-
-//        task.setOperation(task.getCommand().ordinal());
+        mOperation = new Operation(mTask, mInputOutput, mOutputHelper);
     }
 
     @Override
@@ -83,7 +83,7 @@ public class Executor implements Runnable {
             mOutputHelper.printSectionHeader(OutputLineMode.INFO, Dict.START.toString(), Dict.TASK.toLower(), mTask.getName());
             mMainFoldHandle = IOFolding.startFold(mInputOutput, true);
 
-            if (!mTask.isValid()) {
+            if (!mTask.isValid()) {//and dest dir too
                 mInputOutput.getErr().println(mTask.getValidationError());
                 jobEnded(OutputLineMode.ERROR, Dict.FAILED.toString());
                 mInputOutput.getErr().println(String.format("\n\n%s", Dict.JOB_FAILED.toString()));
@@ -91,29 +91,12 @@ public class Executor implements Runnable {
                 return;
             }
 
+            mInterrupted = mOperation.start();
+
             if (!mInterrupted) {
                 jobEnded(OutputLineMode.OK, Dict.DONE.toString());
             }
 
-//            var operation = new Operation(mTask, mPrinter, mProgressHandle);
-//            operation.start();
-//
-//            if (operation.isInterrupted()) {
-//                mPrinter.errln("");
-//                mPrinter.errln("%s %s".formatted(now(), Dict.TASK_ABORTED.toString()));
-//            } else {
-//                long millis = System.currentTimeMillis() - startTime;
-//                long min = TimeUnit.MILLISECONDS.toMinutes(millis);
-//                long sec = TimeUnit.MILLISECONDS.toSeconds(millis) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis));
-//                var status = String.format("%s (%d %s, %d %s)", Dict.TASK_COMPLETED.toString(), min, Dict.TIME_MIN.toString(), sec, Dict.TIME_SEC.toString());
-//                mPrinter.outln("");
-//                mPrinter.outln("%s %s".formatted(now(), status));
-//
-//                if (!mTask.isDryRun()) {
-//                    mTask.setLastRun(System.currentTimeMillis());
-//                    StorageManager.save();
-//                }
-//            }
             mProgressHandle.finish();
             ExecutorManager.getInstance().getExecutors().remove(mTask.getId());
         }, "Executor");

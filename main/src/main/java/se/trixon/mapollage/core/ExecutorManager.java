@@ -46,6 +46,17 @@ public class ExecutorManager {
         return mExecutors;
     }
 
+    /*
+    TODO
+    Request dest file
+            if (!Files.isWritable(mDestinationFile.getParentFile().toPath())) {
+            mListener.onOperationLog(String.format(mBundle.getString("insufficient_privileges"), mDestinationFile.getAbsolutePath()));
+            Thread.currentThread().interrupt();
+            mListener.onOperationInterrupted();
+            return;
+        }
+
+     */
     public void requestStart(Task task) {
         if (mExecutors.containsKey(task.getId())) {
             NbMessage.error(Dict.Dialog.TITLE_TASK_RUNNING.toString(), Dict.Dialog.MESSAGE_TASK_RUNNING.toString());
