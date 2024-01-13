@@ -40,8 +40,8 @@ public class Executor implements Runnable {
     private boolean mInterrupted;
     private long mLastRun;
     private FoldHandle mMainFoldHandle;
-    private final Operation mOperation;
-    private OutputHelper mOutputHelper;
+    private DocumentGenerator mOperation;
+    private final OutputHelper mOutputHelper;
     private ProgressHandle mProgressHandle;
     private final StatusDisplayer mStatusDisplayer = StatusDisplayer.getDefault();
     private final Task mTask;
@@ -58,7 +58,6 @@ public class Executor implements Runnable {
 
         mOutputHelper = new OutputHelper(mTask.getName(), mInputOutput, mDryRun);
         mOutputHelper.reset();
-        mOperation = new Operation(mTask, mInputOutput, mOutputHelper);
     }
 
     @Override
@@ -77,6 +76,8 @@ public class Executor implements Runnable {
         mProgressHandle = ProgressHandle.createHandle(mTask.getName(), allowToCancel);
         mProgressHandle.start();
         mProgressHandle.switchToIndeterminate();
+
+        mOperation = new DocumentGenerator(mTask, mProgressHandle, mInputOutput, mOutputHelper);
 
         mExecutorThread = new Thread(() -> {
             mOutputHelper.start();

@@ -66,6 +66,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOCase;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
+import org.netbeans.api.progress.ProgressHandle;
 import org.openide.util.NbBundle;
 import org.openide.windows.InputOutput;
 import se.trixon.almond.nbp.output.OutputHelper;
@@ -80,11 +81,11 @@ import se.trixon.mapollage.core.TaskDescription.DescriptionSegment;
  *
  * @author Patrik Karlström
  */
-public class Operation {
+public class DocumentGenerator {
 
     private final BalloonStyle mBalloonStyle;
     private final Snippet mBlankSnippet = new Snippet();
-    private final ResourceBundle mBundle = NbBundle.getBundle(Operation.class);
+    private final ResourceBundle mBundle = NbBundle.getBundle(DocumentGenerator.class);
     private final DateFormat mDateFormatDate = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM);
     private final File mDestinationFile;
     private final HashMap<String, Properties> mDirToDesc = new HashMap<>();
@@ -119,9 +120,11 @@ public class Operation {
     private final SimpleDateFormat mTimeStampDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
     private final InputOutput mInputOutput;
     private final OutputHelper mOutputHelper;
+    private final ProgressHandle mProgressHandle;
 
-    public Operation(Task task, InputOutput inputOutput, OutputHelper outputHelper) {
+    public DocumentGenerator(Task task, ProgressHandle progressHandle, InputOutput inputOutput, OutputHelper outputHelper) {
         mTask = task;
+        mProgressHandle = progressHandle;
         mInputOutput = inputOutput;
         mOutputHelper = outputHelper;
 
@@ -131,8 +134,8 @@ public class Operation {
         mTaskPlacemark = mTask.getPlacemark();
         mTaskDescription = mTask.getDescription();
         mTaskPhoto = mTask.getPhoto();
-        mDestinationFile = mTask.getDestinationFile();
-
+//        mDestinationFile = mTask.getDestinationFile();
+        mDestinationFile = new File(FileUtils.getTempDirectory(), "mapollage-dest");
         mFolderByRegexPattern = Pattern.compile(mTaskFolder.getRegex());
 
         mDocument = mKml.createAndSetDocument().withOpen(true);
@@ -165,13 +168,14 @@ public class Operation {
             mInputOutput.getErr().println(ex.getMessage());
         }
 
-        return mInterrupted;
-    }
-
-    public void run() {
-        String status;
-
         if (!mInterrupted && !mFiles.isEmpty()) {
+            mOutputHelper.println(OutputLineMode.INFO, mBundle.getString("found_count").formatted(mFiles.size()));
+            mInputOutput.getOut().println("");
+            mOutputHelper.printSectionHeader(OutputLineMode.INFO, Dict.PROCESSING.toString(), null, null);
+
+            mProgressHandle.switchToDeterminate(mFiles.size());
+            int progress = 0;
+
             if (isUsingThumbnails()) {
                 mThumbsDir = new File(mDestinationFile.getParent() + String.format("/%s-thumbnails", FilenameUtils.getBaseName(mDestinationFile.getAbsolutePath())));
                 try {
@@ -183,11 +187,14 @@ public class Operation {
 
 //            mListener.onOperationLog(String.format(mBundle.getString("found_count"), mFiles.size()));
 //            mListener.onOperationLog("");
-            int progress = 0;
-            for (File file : mFiles) {
-//                mListener.onOperationProgress(file.getAbsolutePath());
-//                mListener.onOperationProgress(++progress, mFiles.size());
-
+            for (var file : mFiles) {
+                mProgressHandle.progress(file.getName());
+                try {
+                    TimeUnit.MILLISECONDS.sleep(1000);
+                } catch (InterruptedException ex) {
+                    mInterrupted = true;
+                    break;
+                }
                 try {
                     addPhoto(file);
                 } catch (ImageProcessingException ex) {
@@ -200,6 +207,7 @@ public class Operation {
                     mInterrupted = true;
                     break;
                 }
+                mProgressHandle.progress(++progress);
             }
 
             if (mTaskPath.isDrawPath() && mLineNodes.size() > 1) {
@@ -208,7 +216,7 @@ public class Operation {
         }
 
         if (mInterrupted) {
-            status = Dict.TASK_ABORTED.toString();
+//            status = Dict.TASK_ABORTED.toString();
 //            mListener.onOperationLog("\n" + status);
 //            mListener.onOperationInterrupted();
         } else if (!mFiles.isEmpty()) {
@@ -222,6 +230,7 @@ public class Operation {
 //        if (mNumOfErrors > 0) {
 //            logError(mBundle.getString("error_description"));
 //        }
+        return mInterrupted;
     }
 
     HashMap<String, Properties> getDirToDesc() {
@@ -245,13 +254,12 @@ public class Operation {
         mPathFolder = KmlFactory.createFolder().withName(Dict.Geometry.PATH.toString());
         mPathGapFolder = KmlFactory.createFolder().withName(Dict.Geometry.PATH_GAP.toString());
 
-        String pattern = getPattern(mTaskPath.getSplitBy());
-        SimpleDateFormat dateFormat = new SimpleDateFormat(pattern);
+        var pattern = getPattern(mTaskPath.getSplitBy());
+        var dateFormat = new SimpleDateFormat(pattern);
+        var map = new TreeMap<String, ArrayList<LineNode>>();
 
-        TreeMap<String, ArrayList<LineNode>> map = new TreeMap<>();
-
-        mLineNodes.forEach((node) -> {
-            String key = dateFormat.format(node.getDate());
+        mLineNodes.forEach(node -> {
+            var key = dateFormat.format(node.getDate());
             if (!map.containsKey(key)) {
                 map.put(key, new ArrayList<>());
             }
@@ -261,9 +269,9 @@ public class Operation {
         //Add paths
         for (var nodes : map.values()) {
             if (nodes.size() > 1) {
-                var pathPlacemark = mPathFolder.createAndAddPlacemark()
+                var pathPlacemark = mPathFolder
+                        .createAndAddPlacemark()
                         .withName(LineNode.getName(nodes));
-
                 var pathStyle = pathPlacemark.createAndAddStyle();
                 pathStyle.createAndSetLineStyle()
                         .withColor("ff0000ff")
@@ -274,7 +282,7 @@ public class Operation {
                         .withExtrude(false)
                         .withTessellate(true);
 
-                nodes.forEach((node) -> {
+                nodes.forEach(node -> {
                     line.addToCoordinates(node.getLon(), node.getLat());
                 });
             }
@@ -297,12 +305,13 @@ public class Operation {
                         .withExtrude(false)
                         .withTessellate(true);
 
-                LineNode prevLast = previousNodes.get(previousNodes.size() - 1);
-                LineNode currentFirst = nodes.get(0);
+                var prevLast = previousNodes.get(previousNodes.size() - 1);
+                var currentFirst = nodes.get(0);
 
                 line.addToCoordinates(prevLast.getLon(), prevLast.getLat());
                 line.addToCoordinates(currentFirst.getLon(), currentFirst.getLat());
             }
+
             previousNodes = nodes;
         }
     }
@@ -338,10 +347,10 @@ public class Operation {
         if (hasLocation || mTaskSource.isIncludeNullCoordinate()) {
             var folder = getFolder(file, exifDate);
 
-            String imageId = String.format("%08x", FileUtils.checksumCRC32(file));
-            String styleNormalId = String.format("s_%s", imageId);
-            String styleHighlightId = String.format("s_%s_hl", imageId);
-            String styleMapId = String.format("m_%s", imageId);
+            var imageId = String.format("%08x", FileUtils.checksumCRC32(file));
+            var styleNormalId = String.format("s_%s", imageId);
+            var styleHighlightId = String.format("s_%s_hl", imageId);
+            var styleMapId = String.format("m_%s", imageId);
 
             var normalStyle = mDocument
                     .createAndAddStyle()
@@ -391,7 +400,7 @@ public class Operation {
                     .withSnippet(mBlankSnippet)
                     .withStyleUrl("#" + styleMapId);
 
-            String desc = getPlacemarkDescription(file, mPhotoInfo, exifDate);
+            var desc = getPlacemarkDescription(file, mPhotoInfo, exifDate);
             if (!StringUtils.isBlank(desc)) {
                 placemark.setDescription(desc);
             }
@@ -413,8 +422,8 @@ public class Operation {
     }
 
     private void addPolygon(String name, ArrayList<Coordinate> coordinates, Folder polygonFolder) {
-        List<Point2D.Double> inputs = new ArrayList<>();
-        coordinates.forEach((coordinate) -> {
+        var inputs = new ArrayList<Point2D.Double>();
+        coordinates.forEach(coordinate -> {
             inputs.add(new Point2D.Double(coordinate.getLongitude(), coordinate.getLatitude()));
         });
 
@@ -437,7 +446,7 @@ public class Operation {
             var boundary = polygon.createAndSetOuterBoundaryIs();
             var linearRing = boundary.createAndSetLinearRing();
 
-            convexHull.forEach((node) -> {
+            convexHull.forEach(node -> {
                 linearRing.addToCoordinates(node.x, node.y);
 
             });
@@ -447,7 +456,9 @@ public class Operation {
     }
 
     private void addPolygons() {
-        mPolygonFolder = KmlFactory.createFolder().withName(Dict.POLYGON.toString()).withOpen(false);
+        mPolygonFolder = KmlFactory.createFolder()
+                .withName(Dict.POLYGON.toString())
+                .withOpen(false);
         addPolygons(mPolygonFolder, mRootFolder.getFeature());
 
         scanForFolderRemoval(mPolygonFolder);
@@ -465,9 +476,7 @@ public class Operation {
 
     private void addPolygons(Folder polygonParent, List<Feature> features) {
         for (var feature : features) {
-            if (feature instanceof Folder) {
-                var folder = (Folder) feature;
-
+            if (feature instanceof Folder folder) {
                 if (folder != mPathFolder && folder != mPathGapFolder && folder != mPolygonFolder) {
                     var polygonFolder = polygonParent.createAndAddFolder().withName(folder.getName()).withOpen(true);
                     mFolderPolygonInputs.put(polygonFolder, new ArrayList<>());
@@ -479,11 +488,9 @@ public class Operation {
                 }
             }
 
-            if (feature instanceof Placemark) {
-                var placemark = (Placemark) feature;
+            if (feature instanceof Placemark placemark) {
                 var point = (Point) placemark.getGeometry();
-                ArrayList<Coordinate> coordinates = mFolderPolygonInputs.computeIfAbsent(polygonParent, k -> new ArrayList<>());
-                coordinates.addAll(point.getCoordinates());
+                mFolderPolygonInputs.computeIfAbsent(polygonParent, k -> new ArrayList<>()).addAll(point.getCoordinates());
             }
         }
 
@@ -551,7 +558,7 @@ public class Operation {
         }
 
         var newDimension = scaler.getDimension();
-        String imageTagFormat = "<p><img src='%s' width='%d' height='%d'></p>";
+        var imageTagFormat = "<p><img src='%s' width='%d' height='%d'></p>";
 
         int width = portrait ? newDimension.height : newDimension.width;
         int height = portrait ? newDimension.width : newDimension.height;
@@ -562,8 +569,8 @@ public class Operation {
     }
 
     private String getExternalDescription(File file) {
-        Properties p = mDirToDesc.get(file.getParent());
-        final String key = FilenameUtils.getBaseName(file.getName());
+        var p = mDirToDesc.get(file.getParent());
+        var key = FilenameUtils.getBaseName(file.getName());
         String desc = p.getProperty(key);
         if (desc == null) {
             if (mTaskDescription.isDefaultTo()) {
@@ -585,29 +592,28 @@ public class Operation {
         Folder folder = null;
 
         switch (mTaskFolder.getFoldersBy()) {
-            case DIR:
+            case DIR -> {
                 Path relativePath = mTaskSource.getDir().toPath().relativize(file.getParentFile().toPath());
                 key = relativePath.toString();
                 folder = getFolder(key);
-                break;
+            }
 
-            case DATE:
+            case DATE -> {
                 key = mTaskFolder.getFolderDateFormat().format(date);
                 folder = getFolder(key);
-                break;
+            }
 
-            case REGEX:
+            case REGEX -> {
                 key = mTaskFolder.getRegexDefault();
                 Matcher matcher = mFolderByRegexPattern.matcher(file.getParent());
                 if (matcher.find()) {
                     key = matcher.group();
                 }
                 folder = getFolder(key);
-                break;
+            }
 
-            case NONE:
+            case NONE ->
                 folder = mRootFolder;
-                break;
         }
 
         return folder;
@@ -634,7 +640,7 @@ public class Operation {
 
     private Folder getFolder(String key, Folder parent, String name) {
         if (!mFolders.containsKey(key)) {
-            Folder folder = parent.createAndAddFolder().withName(getSafeXmlString(name));
+            var folder = parent.createAndAddFolder().withName(getSafeXmlString(name));
             mFolders.put(key, folder);
         }
 
@@ -645,25 +651,23 @@ public class Operation {
         String imageSrc;
 
         switch (mTaskPhoto.getReference()) {
-            case ABSOLUTE:
+            case ABSOLUTE ->
                 imageSrc = String.format("file:///%s", file.getAbsolutePath());
-                break;
 
-            case ABSOLUTE_PATH:
+            case ABSOLUTE_PATH ->
                 imageSrc = String.format("%s%s", mTaskPhoto.getBaseUrlValue(), file.getName());
-                break;
 
-            case RELATIVE:
+            case RELATIVE -> {
                 var relativePath = mDestinationFile.toPath().relativize(file.toPath());
                 imageSrc = StringUtils.replace(relativePath.toString(), "..", ".", 1);
-                break;
+            }
 
-            case THUMBNAIL:
+            case THUMBNAIL -> {
                 var thumbPath = mDestinationFile.toPath().relativize(mFileThumbMap.get(file).toPath());
                 imageSrc = StringUtils.replace(thumbPath.toString(), "..", ".", 1);
-                break;
+            }
 
-            default:
+            default ->
                 throw new AssertionError();
         }
 
@@ -683,22 +687,22 @@ public class Operation {
     }
 
     private String getPattern(TaskPath.SplitBy splitBy) {
-        switch (splitBy) {
-            case NONE:
-                return "'NO_SPLIT'";
-            case HOUR:
-                return "yyyyMMddHH";
-            case DAY:
-                return "yyyyMMdd";
-            case WEEK:
-                return "yyyyww";
-            case MONTH:
-                return "yyyyMM";
-            case YEAR:
-                return "yyyy";
-            default:
-                return null;
-        }
+        return switch (splitBy) {
+            case NONE ->
+                "'NO_SPLIT'";
+            case HOUR ->
+                "yyyyMMddHH";
+            case DAY ->
+                "yyyyMMdd";
+            case WEEK ->
+                "yyyyww";
+            case MONTH ->
+                "yyyyMM";
+            case YEAR ->
+                "yyyy";
+            default ->
+                null;
+        };
     }
 
     private String getPlacemarkDescription(File file, PhotoInfo photoInfo, Date exifDate) throws IOException {
@@ -710,21 +714,17 @@ public class Operation {
 
         String desc = "";
         switch (mTaskDescription.getMode()) {
-            case CUSTOM:
+            case CUSTOM ->
                 desc = mTaskDescription.getCustomValue();
-                break;
 
-            case EXTERNAL:
+            case EXTERNAL ->
                 desc = getExternalDescription(file);
-                break;
 
-            case NONE:
-                //Do nothing
-                break;
+            case NONE -> {
+            }
 
-            case STATIC:
+            case STATIC ->
                 desc = getStaticDescription();
-                break;
         }
 
         if (mTaskDescription.getMode() != TaskDescription.DescriptionMode.NONE) {
@@ -757,7 +757,7 @@ public class Operation {
         String name;
 
         switch (mTaskPlacemark.getNameBy()) {
-            case DATE:
+            case DATE -> {
                 try {
                     name = mTaskPlacemark.getDateFormat().format(exifDate);
                 } catch (IllegalArgumentException ex) {
@@ -766,17 +766,15 @@ public class Operation {
                     name = "invalid exif date";
                     mInputOutput.getErr().println(file.getAbsolutePath());
                 }
-                break;
+            }
 
-            case FILE:
+            case FILE ->
                 name = FilenameUtils.getBaseName(file.getAbsolutePath());
-                break;
 
-            case NONE:
+            case NONE ->
                 name = "";
-                break;
 
-            default:
+            default ->
                 throw new AssertionError();
         }
 
@@ -792,7 +790,7 @@ public class Operation {
     }
 
     private String getStaticDescription() {
-        StringBuilder builder = new StringBuilder();
+        var builder = new StringBuilder();
 
         if (mTaskDescription.hasPhoto()) {
             builder.append(DescriptionSegment.PHOTO.toHtml());
@@ -830,7 +828,7 @@ public class Operation {
         var keys = new ArrayList(mRootFolders.keySet());
         Collections.sort(keys);
 
-        keys.stream().forEach((key) -> {
+        keys.stream().forEach(key -> {
             mRootFolder.getFeature().add(mRootFolders.get((String) key));
         });
 
@@ -847,9 +845,9 @@ public class Operation {
         }
 
         try {
-            StringWriter stringWriter = new StringWriter();
+            var stringWriter = new StringWriter();
             mKml.marshal(stringWriter);
-            String kmlString = stringWriter.toString();
+            var kmlString = stringWriter.toString();
 
             if (mOptions.isCleanNS2()) {
 //                mListener.onOperationLog(mBundle.getString("clean_ns2"));
@@ -869,9 +867,9 @@ public class Operation {
                     new String[]{"<", ">"});
 
             if (mOptions.isLogKml()) {
-//                mListener.onOperationLog("\n");
-//                mListener.onOperationLog(kmlString);
-//                mListener.onOperationLog("\n");
+                mInputOutput.getOut().println();
+                mInputOutput.getOut().println(kmlString);
+                mInputOutput.getOut().println();
             }
 
 //            mListener.onOperationLog(String.format(Dict.SAVING.toString(), mDestinationFile.getAbsolutePath()));
@@ -893,7 +891,7 @@ public class Operation {
             rightPad++;
 
             int leftPad = 8;
-            StringBuilder summaryBuilder = new StringBuilder("\n");
+            var summaryBuilder = new StringBuilder("\n");
 
             String filesValue = String.valueOf(mFiles.size());
             summaryBuilder.append(StringUtils.rightPad(files, rightPad)).append(":").append(StringUtils.leftPad(filesValue, leftPad)).append("\n");
