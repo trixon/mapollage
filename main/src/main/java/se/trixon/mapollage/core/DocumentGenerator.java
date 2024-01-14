@@ -33,44 +33,32 @@ import de.micromata.opengis.kml.v_2_2_0.StyleState;
 import java.awt.Dimension;
 import java.awt.geom.Point2D;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.StringWriter;
-import java.nio.charset.Charset;
-import java.nio.file.FileVisitOption;
-import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.PathMatcher;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.TreeMap;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOCase;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.netbeans.api.progress.ProgressHandle;
 import org.openide.util.NbBundle;
 import org.openide.windows.InputOutput;
 import se.trixon.almond.nbp.output.OutputHelper;
-import se.trixon.almond.nbp.output.OutputLineMode;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.Scaler;
 import se.trixon.almond.util.ext.GrahamScan;
@@ -91,22 +79,25 @@ public class DocumentGenerator {
     private final HashMap<String, Properties> mDirToDesc = new HashMap<>();
     private final Document mDocument;
     private final HashMap<File, File> mFileThumbMap = new HashMap<>();
-    private final List<File> mFiles = new ArrayList<>();
     private final Pattern mFolderByRegexPattern;
     private final HashMap<Folder, ArrayList<Coordinate>> mFolderPolygonInputs = new HashMap<>();
     private final Map<String, Folder> mFolders = new HashMap<>();
-    private boolean mInterrupted = false;
+    private final InputOutput mInputOutput;
     private final Kml mKml = new Kml();
     private final ArrayList<LineNode> mLineNodes = new ArrayList<>();
     private int mNumOfExif;
     private int mNumOfGps;
     private int mNumOfPlacemarks;
     private final Options mOptions = Options.getInstance();
+    private final OutputHelper mOutputHelper;
     private Folder mPathFolder;
     private Folder mPathGapFolder;
     private PhotoInfo mPhotoInfo;
     private Folder mPolygonFolder;
     private final HashMap<Folder, Folder> mPolygonRemovals = new HashMap<>();
+    private final ProgressHandle mProgressHandle;
+    private Folder mRootFolder;
+    private final Map<String, Folder> mRootFolders = new HashMap<>();
     private final Task mTask;
     private final TaskDescription mTaskDescription;
     private final TaskFolder mTaskFolder;
@@ -114,13 +105,8 @@ public class DocumentGenerator {
     private final TaskPhoto mTaskPhoto;
     private final TaskPlacemark mTaskPlacemark;
     private final TaskSource mTaskSource;
-    private Folder mRootFolder;
-    private final Map<String, Folder> mRootFolders = new HashMap<>();
     private File mThumbsDir;
     private final SimpleDateFormat mTimeStampDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
-    private final InputOutput mInputOutput;
-    private final OutputHelper mOutputHelper;
-    private final ProgressHandle mProgressHandle;
 
     public DocumentGenerator(Task task, ProgressHandle progressHandle, InputOutput inputOutput, OutputHelper outputHelper) {
         mTask = task;
@@ -135,7 +121,7 @@ public class DocumentGenerator {
         mTaskDescription = mTask.getDescription();
         mTaskPhoto = mTask.getPhoto();
 //        mDestinationFile = mTask.getDestinationFile();
-        mDestinationFile = new File(FileUtils.getTempDirectory(), "mapollage-dest");
+        mDestinationFile = new File(FileUtils.getTempDirectory(), "mapollage-dest/out.kml");
         mFolderByRegexPattern = Pattern.compile(mTaskFolder.getRegex());
 
         mDocument = mKml.createAndSetDocument().withOpen(true);
@@ -150,105 +136,7 @@ public class DocumentGenerator {
 //        mListener.onOperationLog(dateFormat.format(date));
     }
 
-    public boolean start() {
-        mRootFolder = mDocument.createAndAddFolder().withName(getSafeXmlString(mTaskFolder.getRootName())).withOpen(true);
-
-        var href = "<a href=\"https://trixon.se/mapollage/\">Mapollage</a>";
-        var description = "<p>%s %s, %s</p>%s".formatted(
-                Dict.MADE_WITH.toString(),
-                href,
-                LocalDateTime.now().toString(),
-                mTaskFolder.getRootDescription().replaceAll("\\n", "<br />"));
-        mRootFolder.setDescription(getSafeXmlString(description));
-
-//        mListener.onOperationProcessingStarted();
-        try {
-            mInterrupted = !generateFileList();
-        } catch (IOException ex) {
-            mInputOutput.getErr().println(ex.getMessage());
-        }
-
-        if (!mInterrupted && !mFiles.isEmpty()) {
-            mOutputHelper.println(OutputLineMode.INFO, mBundle.getString("found_count").formatted(mFiles.size()));
-            mInputOutput.getOut().println("");
-            mOutputHelper.printSectionHeader(OutputLineMode.INFO, Dict.PROCESSING.toString(), null, null);
-
-            mProgressHandle.switchToDeterminate(mFiles.size());
-            int progress = 0;
-
-            if (isUsingThumbnails()) {
-                mThumbsDir = new File(mDestinationFile.getParent() + String.format("/%s-thumbnails", FilenameUtils.getBaseName(mDestinationFile.getAbsolutePath())));
-                try {
-                    FileUtils.forceMkdir(mThumbsDir);
-                } catch (IOException ex) {
-                    mInputOutput.getErr().println(ex.getMessage());
-                }
-            }
-
-//            mListener.onOperationLog(String.format(mBundle.getString("found_count"), mFiles.size()));
-//            mListener.onOperationLog("");
-            for (var file : mFiles) {
-                mProgressHandle.progress(file.getName());
-                try {
-                    TimeUnit.MILLISECONDS.sleep(1000);
-                } catch (InterruptedException ex) {
-                    mInterrupted = true;
-                    break;
-                }
-                try {
-                    addPhoto(file);
-                } catch (ImageProcessingException ex) {
-                    mInputOutput.getErr().println(ex.getMessage());
-                } catch (IOException ex) {
-                    mInputOutput.getErr().println(file.getAbsolutePath());
-                }
-
-                if (Thread.interrupted()) {
-                    mInterrupted = true;
-                    break;
-                }
-                mProgressHandle.progress(++progress);
-            }
-
-            if (mTaskPath.isDrawPath() && mLineNodes.size() > 1) {
-                addPath();
-            }
-        }
-
-        if (mInterrupted) {
-//            status = Dict.TASK_ABORTED.toString();
-//            mListener.onOperationLog("\n" + status);
-//            mListener.onOperationInterrupted();
-        } else if (!mFiles.isEmpty()) {
-            if (mTaskPath.isDrawPolygon()) {
-                addPolygons();
-            }
-            saveToFile();
-            mTask.setLastRun(System.currentTimeMillis());
-        }
-
-//        if (mNumOfErrors > 0) {
-//            logError(mBundle.getString("error_description"));
-//        }
-        return mInterrupted;
-    }
-
-    HashMap<String, Properties> getDirToDesc() {
-        return mDirToDesc;
-    }
-
-    String getExcludePattern() {
-        return mTaskSource.getExcludePattern();
-    }
-
-//    OperationListener getListener() {
-//        return mListener;
-//    }
-    TaskDescription getTaskDescription() {
-        return mTaskDescription;
-    }
-
-    private void addPath() {
+    public void addPath() {
         Collections.sort(mLineNodes, (LineNode o1, LineNode o2) -> o1.getDate().compareTo(o2.getDate()));
 
         mPathFolder = KmlFactory.createFolder().withName(Dict.Geometry.PATH.toString());
@@ -316,7 +204,7 @@ public class DocumentGenerator {
         }
     }
 
-    private void addPhoto(File file) throws ImageProcessingException, IOException {
+    public void addPhoto(File file) throws ImageProcessingException, IOException {
         mPhotoInfo = new PhotoInfo(file, mTaskSource.isIncludeNullCoordinate());
         try {
             mPhotoInfo.init();
@@ -421,6 +309,145 @@ public class DocumentGenerator {
 //        mListener.onOperationLog(file.getAbsolutePath());
     }
 
+    public void addPolygons() {
+        mPolygonFolder = KmlFactory.createFolder()
+                .withName(Dict.POLYGON.toString())
+                .withOpen(false);
+        addPolygons(mPolygonFolder, mRootFolder.getFeature());
+
+        scanForFolderRemoval(mPolygonFolder);
+//        while (scanForFolderRemoval(mPolygonFolder, false)) {
+//            //
+//        }
+
+        for (var folder : mPolygonRemovals.keySet()) {
+            var parentFolder = mPolygonRemovals.get(folder);
+            parentFolder.getFeature().remove(folder);
+        }
+
+        mRootFolder.getFeature().add(mPolygonFolder);
+    }
+
+    public HashMap<String, Properties> getDirToDesc() {
+        return mDirToDesc;
+    }
+
+    public boolean hasPaths() {
+        return mLineNodes.size() > 1;
+    }
+
+    public void saveToFile() {
+//        mListener.onOperationLog("");
+        var keys = new ArrayList(mRootFolders.keySet());
+        Collections.sort(keys);
+
+        keys.stream().forEach(key -> {
+            mRootFolder.getFeature().add(mRootFolders.get((String) key));
+        });
+
+        if (mPathFolder != null && !mPathFolder.getFeature().isEmpty()) {
+            mRootFolder.getFeature().add(mPathFolder);
+        }
+
+        if (mPathGapFolder != null && !mPathGapFolder.getFeature().isEmpty()) {
+            mRootFolder.getFeature().add(mPathGapFolder);
+        }
+
+        if (isUsingThumbnails()) {
+//            mListener.onOperationLog("\n" + String.format(mBundle.getString("stored_thumbnails"), mThumbsDir.getAbsolutePath()));
+        }
+
+        try {
+            var stringWriter = new StringWriter();
+            mKml.marshal(stringWriter);
+            var kmlString = stringWriter.toString();
+
+            if (mOptions.isCleanNS2()) {
+//                mListener.onOperationLog(mBundle.getString("clean_ns2"));
+                kmlString = StringUtils.replace(kmlString, "xmlns:ns2=", "xmlns=");
+                kmlString = StringUtils.replace(kmlString, "<ns2:", "<");
+                kmlString = StringUtils.replace(kmlString, "</ns2:", "</");
+            }
+
+            if (mOptions.isCleanSpace()) {
+//                mListener.onOperationLog(mBundle.getString("clean_space"));
+                kmlString = StringUtils.replace(kmlString, "        ", "\t");
+                kmlString = StringUtils.replace(kmlString, "    ", "\t");
+            }
+
+            kmlString = StringUtils.replaceEach(kmlString,
+                    new String[]{"&lt;", "&gt;"},
+                    new String[]{"<", ">"});
+
+            if (mOptions.isLogKml()) {
+                mInputOutput.getOut().println();
+                mInputOutput.getOut().println(kmlString);
+                mInputOutput.getOut().println();
+            }
+
+//            mListener.onOperationLog(String.format(Dict.SAVING.toString(), mDestinationFile.getAbsolutePath()));
+            FileUtils.writeStringToFile(mDestinationFile, kmlString, "utf-8");
+
+            String files = mBundle.getString("status_files");
+            String exif = mBundle.getString("status_exif");
+            String coordinate = mBundle.getString("status_coordinate");
+            String time = mBundle.getString("status_time");
+            String error = " " + Dict.Dialog.ERRORS.toString().toLowerCase();
+            String placemarks = mBundle.getString("status_placemarks");
+
+            int rightPad = files.length();
+            rightPad = Math.max(rightPad, exif.length());
+            rightPad = Math.max(rightPad, coordinate.length());
+            rightPad = Math.max(rightPad, time.length());
+            rightPad = Math.max(rightPad, error.length());
+            rightPad = Math.max(rightPad, placemarks.length());
+            rightPad++;
+
+            int leftPad = 8;
+            var summaryBuilder = new StringBuilder("\n");
+
+            String filesValue = "TODO";//String.valueOf(mFiles.size());
+            summaryBuilder.append(StringUtils.rightPad(files, rightPad)).append(":").append(StringUtils.leftPad(filesValue, leftPad)).append("\n");
+
+            String exifValue = String.valueOf(mNumOfExif);
+            summaryBuilder.append(StringUtils.rightPad(exif, rightPad)).append(":").append(StringUtils.leftPad(exifValue, leftPad)).append("\n");
+
+            String coordinateValue = String.valueOf(mNumOfGps);
+            summaryBuilder.append(StringUtils.rightPad(coordinate, rightPad)).append(":").append(StringUtils.leftPad(coordinateValue, leftPad)).append("\n");
+
+            String placemarksValue = String.valueOf(mNumOfPlacemarks);
+            summaryBuilder.append(StringUtils.rightPad(placemarks, rightPad)).append(":").append(StringUtils.leftPad(placemarksValue, leftPad)).append("\n");
+
+//            String errorValue = String.valueOf(mNumOfErrors);
+//            summaryBuilder.append(StringUtils.rightPad(error, rightPad)).append(":").append(StringUtils.leftPad(errorValue, leftPad)).append("\n");
+//            mListener.onOperationFinished(summaryBuilder.toString(), mFiles.size());
+        } catch (IOException ex) {
+//            mListener.onOperationFailed(ex.getLocalizedMessage());
+        }
+    }
+
+    public void start() {
+        if (isUsingThumbnails()) {
+            mThumbsDir = new File(mDestinationFile.getParent() + String.format("/%s-thumbnails", FilenameUtils.getBaseName(mDestinationFile.getAbsolutePath())));
+            try {
+                FileUtils.forceMkdir(mThumbsDir);
+            } catch (IOException ex) {
+                mInputOutput.getErr().println(ex.getMessage());
+            }
+        }
+        mRootFolder = mDocument.createAndAddFolder().withName(getSafeXmlString(mTaskFolder.getRootName())).withOpen(true);
+
+        var href = "<a href=\"https://trixon.se/mapollage/\">Mapollage</a>";
+        var description = "<p>%s %s, %s</p>%s".formatted(
+                Dict.MADE_WITH.toString(),
+                href,
+                LocalDateTime.now().toString(),
+                mTaskFolder.getRootDescription().replaceAll("\\n", "<br />"));
+        mRootFolder.setDescription(getSafeXmlString(description));
+
+//        mListener.onOperationProcessingStarted();
+    }
+
     private void addPolygon(String name, ArrayList<Coordinate> coordinates, Folder polygonFolder) {
         var inputs = new ArrayList<Point2D.Double>();
         coordinates.forEach(coordinate -> {
@@ -455,25 +482,6 @@ public class DocumentGenerator {
         }
     }
 
-    private void addPolygons() {
-        mPolygonFolder = KmlFactory.createFolder()
-                .withName(Dict.POLYGON.toString())
-                .withOpen(false);
-        addPolygons(mPolygonFolder, mRootFolder.getFeature());
-
-        scanForFolderRemoval(mPolygonFolder);
-//        while (scanForFolderRemoval(mPolygonFolder, false)) {
-//            //
-//        }
-
-        for (var folder : mPolygonRemovals.keySet()) {
-            var parentFolder = mPolygonRemovals.get(folder);
-            parentFolder.getFeature().remove(folder);
-        }
-
-        mRootFolder.getFeature().add(mPolygonFolder);
-    }
-
     private void addPolygons(Folder polygonParent, List<Feature> features) {
         for (var feature : features) {
             if (feature instanceof Folder folder) {
@@ -498,48 +506,6 @@ public class DocumentGenerator {
         if (polygonParent == mPolygonFolder && rootCoordinates != null) {
             addPolygon(mPolygonFolder.getName(), rootCoordinates, polygonParent);
         }
-    }
-
-    private boolean generateFileList() throws IOException {
-        mInputOutput.getOut().println();
-        mOutputHelper.printSectionHeader(OutputLineMode.INFO, Dict.GENERATING_FILELIST.toString(), "", mTaskSource.getDir().getAbsolutePath());
-
-        var pathMatcher = mTaskSource.getPathMatcher();
-
-        EnumSet<FileVisitOption> fileVisitOptions;
-        if (mTaskSource.isFollowLinks()) {
-            fileVisitOptions = EnumSet.of(FileVisitOption.FOLLOW_LINKS);
-        } else {
-            fileVisitOptions = EnumSet.noneOf(FileVisitOption.class);
-        }
-
-        var file = mTaskSource.getDir();
-        if (file.isDirectory()) {
-            var fileVisitor = new FileVisitor();
-            try {
-                if (mTaskSource.isRecursive()) {
-                    Files.walkFileTree(file.toPath(), fileVisitOptions, Integer.MAX_VALUE, fileVisitor);
-                } else {
-                    Files.walkFileTree(file.toPath(), fileVisitOptions, 1, fileVisitor);
-                }
-
-                if (fileVisitor.isInterrupted()) {
-                    return false;
-                }
-            } catch (IOException ex) {
-                mInputOutput.getErr().println(ex.getMessage());
-            }
-        } else if (file.isFile() && pathMatcher.matches(file.toPath().getFileName())) {
-            mFiles.add(file);
-        }
-
-        if (mFiles.isEmpty()) {
-            mInputOutput.getOut().println(Dict.FILELIST_EMPTY.toString());
-        } else {
-            Collections.sort(mFiles);
-        }
-
-        return true;
     }
 
     private String getDescPhoto(File sourceFile, int orientation) throws IOException {
@@ -823,96 +789,6 @@ public class DocumentGenerator {
         return mTaskPlacemark.isSymbolAsPhoto() || mTaskPhoto.getReference() == TaskPhoto.Reference.THUMBNAIL;
     }
 
-    private void saveToFile() {
-//        mListener.onOperationLog("");
-        var keys = new ArrayList(mRootFolders.keySet());
-        Collections.sort(keys);
-
-        keys.stream().forEach(key -> {
-            mRootFolder.getFeature().add(mRootFolders.get((String) key));
-        });
-
-        if (mPathFolder != null && !mPathFolder.getFeature().isEmpty()) {
-            mRootFolder.getFeature().add(mPathFolder);
-        }
-
-        if (mPathGapFolder != null && !mPathGapFolder.getFeature().isEmpty()) {
-            mRootFolder.getFeature().add(mPathGapFolder);
-        }
-
-        if (isUsingThumbnails()) {
-//            mListener.onOperationLog("\n" + String.format(mBundle.getString("stored_thumbnails"), mThumbsDir.getAbsolutePath()));
-        }
-
-        try {
-            var stringWriter = new StringWriter();
-            mKml.marshal(stringWriter);
-            var kmlString = stringWriter.toString();
-
-            if (mOptions.isCleanNS2()) {
-//                mListener.onOperationLog(mBundle.getString("clean_ns2"));
-                kmlString = StringUtils.replace(kmlString, "xmlns:ns2=", "xmlns=");
-                kmlString = StringUtils.replace(kmlString, "<ns2:", "<");
-                kmlString = StringUtils.replace(kmlString, "</ns2:", "</");
-            }
-
-            if (mOptions.isCleanSpace()) {
-//                mListener.onOperationLog(mBundle.getString("clean_space"));
-                kmlString = StringUtils.replace(kmlString, "        ", "\t");
-                kmlString = StringUtils.replace(kmlString, "    ", "\t");
-            }
-
-            kmlString = StringUtils.replaceEach(kmlString,
-                    new String[]{"&lt;", "&gt;"},
-                    new String[]{"<", ">"});
-
-            if (mOptions.isLogKml()) {
-                mInputOutput.getOut().println();
-                mInputOutput.getOut().println(kmlString);
-                mInputOutput.getOut().println();
-            }
-
-//            mListener.onOperationLog(String.format(Dict.SAVING.toString(), mDestinationFile.getAbsolutePath()));
-            FileUtils.writeStringToFile(mDestinationFile, kmlString, "utf-8");
-
-            String files = mBundle.getString("status_files");
-            String exif = mBundle.getString("status_exif");
-            String coordinate = mBundle.getString("status_coordinate");
-            String time = mBundle.getString("status_time");
-            String error = " " + Dict.Dialog.ERRORS.toString().toLowerCase();
-            String placemarks = mBundle.getString("status_placemarks");
-
-            int rightPad = files.length();
-            rightPad = Math.max(rightPad, exif.length());
-            rightPad = Math.max(rightPad, coordinate.length());
-            rightPad = Math.max(rightPad, time.length());
-            rightPad = Math.max(rightPad, error.length());
-            rightPad = Math.max(rightPad, placemarks.length());
-            rightPad++;
-
-            int leftPad = 8;
-            var summaryBuilder = new StringBuilder("\n");
-
-            String filesValue = String.valueOf(mFiles.size());
-            summaryBuilder.append(StringUtils.rightPad(files, rightPad)).append(":").append(StringUtils.leftPad(filesValue, leftPad)).append("\n");
-
-            String exifValue = String.valueOf(mNumOfExif);
-            summaryBuilder.append(StringUtils.rightPad(exif, rightPad)).append(":").append(StringUtils.leftPad(exifValue, leftPad)).append("\n");
-
-            String coordinateValue = String.valueOf(mNumOfGps);
-            summaryBuilder.append(StringUtils.rightPad(coordinate, rightPad)).append(":").append(StringUtils.leftPad(coordinateValue, leftPad)).append("\n");
-
-            String placemarksValue = String.valueOf(mNumOfPlacemarks);
-            summaryBuilder.append(StringUtils.rightPad(placemarks, rightPad)).append(":").append(StringUtils.leftPad(placemarksValue, leftPad)).append("\n");
-
-//            String errorValue = String.valueOf(mNumOfErrors);
-//            summaryBuilder.append(StringUtils.rightPad(error, rightPad)).append(":").append(StringUtils.leftPad(errorValue, leftPad)).append("\n");
-//            mListener.onOperationFinished(summaryBuilder.toString(), mFiles.size());
-        } catch (IOException ex) {
-//            mListener.onOperationFailed(ex.getLocalizedMessage());
-        }
-    }
-
     private void scanForFolderRemoval(Folder folder) {
         for (var feature : folder.getFeature()) {
             if (feature instanceof Folder subFolder) {
@@ -925,110 +801,4 @@ public class DocumentGenerator {
         }
     }
 
-    public class FileVisitor extends SimpleFileVisitor<Path> {
-
-        private final Properties mDefaultDescProperties = new Properties();
-        private final HashMap<String, Properties> mDirToDesc;
-        private final String[] mExcludePatterns;
-        private final String mExternalFileValue;
-        private boolean mInterrupted;
-        private final PathMatcher mPathMatcher;
-        private final boolean mUseExternalDescription;
-
-        public FileVisitor() {
-            mPathMatcher = mTaskSource.getPathMatcher();
-            mExcludePatterns = StringUtils.split(getExcludePattern(), "::");
-            mDirToDesc = getDirToDesc();
-
-            var mode = getTaskDescription().getMode();
-            mUseExternalDescription = mode == TaskDescription.DescriptionMode.EXTERNAL;
-            mExternalFileValue = getTaskDescription().getExternalFileValue();
-
-            if (mode == TaskDescription.DescriptionMode.EXTERNAL) {
-                try {
-                    var file = new File(mTaskSource.getDir(), mExternalFileValue);
-                    if (file.isFile()) {
-                        mDefaultDescProperties.load(new InputStreamReader(new FileInputStream(file), Charset.defaultCharset()));
-                    }
-                } catch (IOException ex) {
-                    // nvm
-                }
-            }
-        }
-
-        public boolean isInterrupted() {
-            return mInterrupted;
-        }
-
-        @Override
-        public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
-            if (mExcludePatterns != null) {
-                for (var excludePattern : mExcludePatterns) {
-                    if (IOCase.SYSTEM.isCaseSensitive()) {
-                        if (StringUtils.contains(dir.toString(), excludePattern)) {
-                            return FileVisitResult.SKIP_SUBTREE;
-                        }
-                    } else {
-                        if (StringUtils.containsIgnoreCase(dir.toString(), excludePattern)) {
-                            return FileVisitResult.SKIP_SUBTREE;
-                        }
-                    }
-                }
-            }
-
-            String[] filePaths = dir.toFile().list();
-            mInputOutput.getOut().println(dir.toString());
-            if (filePaths != null && filePaths.length > 0) {
-                if (mUseExternalDescription) {
-                    var p = new Properties(mDefaultDescProperties);
-
-                    try {
-                        var file = new File(dir.toFile(), mExternalFileValue);
-                        if (file.isFile()) {
-                            p.load(new InputStreamReader(new FileInputStream(file), Charset.defaultCharset()));
-                        }
-                    } catch (IOException ex) {
-                        // nvm
-                    }
-
-                    mDirToDesc.put(dir.toFile().getAbsolutePath(), p);
-                }
-
-                for (var fileName : filePaths) {
-                    try {
-                        TimeUnit.NANOSECONDS.sleep(1);
-                    } catch (InterruptedException ex) {
-                        mInterrupted = true;
-                        return FileVisitResult.TERMINATE;
-                    }
-
-                    var file = new File(dir.toFile(), fileName);
-                    if (file.isFile() && mPathMatcher.matches(file.toPath().getFileName())) {
-                        boolean exclude = false;
-                        if (mExcludePatterns != null) {
-                            for (String excludePattern : mExcludePatterns) {
-                                if (StringUtils.contains(file.getAbsolutePath(), excludePattern)) {
-                                    exclude = true;
-                                    break;
-                                }
-                            }
-                        }
-
-                        if (!exclude) {
-                            mFiles.add(file);
-                        }
-                    }
-                }
-            }
-
-            return FileVisitResult.CONTINUE;
-        }
-
-        @Override
-        public FileVisitResult visitFileFailed(Path file, IOException exception) {
-            mInputOutput.getErr().println(file.toString());
-
-            return FileVisitResult.CONTINUE;
-        }
-    }
 }

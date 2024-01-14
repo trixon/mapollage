@@ -15,9 +15,33 @@
  */
 package se.trixon.mapollage.core;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
+import java.nio.file.FileVisitOption;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.PathMatcher;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Properties;
+import java.util.ResourceBundle;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import org.apache.commons.io.IOCase;
+import org.apache.commons.lang3.StringUtils;
 import org.netbeans.api.progress.ProgressHandle;
 import org.openide.awt.StatusDisplayer;
 import org.openide.util.Cancellable;
+import org.openide.util.NbBundle;
 import org.openide.windows.FoldHandle;
 import org.openide.windows.IOFolding;
 import org.openide.windows.IOProvider;
@@ -32,39 +56,36 @@ import se.trixon.almond.util.Dict;
  */
 public class Executor implements Runnable {
 
-    private final boolean mDryRun;
-
-    private String mDryRunIndicator = "";
+    private final ResourceBundle mBundle = NbBundle.getBundle(DocumentGenerator.class);
+    private DocumentGenerator mDocumentGenerator;
     private Thread mExecutorThread;
+    private final List<File> mFiles = new ArrayList<>();
     private final InputOutput mInputOutput;
-    private boolean mInterrupted;
+//    private boolean mInterrupted;
     private long mLastRun;
     private FoldHandle mMainFoldHandle;
-    private DocumentGenerator mOperation;
     private final OutputHelper mOutputHelper;
     private ProgressHandle mProgressHandle;
+    private final AtomicBoolean mRunning = new AtomicBoolean(false);
     private final StatusDisplayer mStatusDisplayer = StatusDisplayer.getDefault();
     private final Task mTask;
 
-    public Executor(Task task, boolean dryRun) {
+    public Executor(Task task) {
         mTask = task;
-        mDryRun = dryRun;
         mInputOutput = IOProvider.getDefault().getIO(mTask.getName(), false);
         mInputOutput.select();
 
-        if (mDryRun) {
-            mDryRunIndicator = String.format(" (%s)", Dict.DRY_RUN.toString());
-        }
-
-        mOutputHelper = new OutputHelper(mTask.getName(), mInputOutput, mDryRun);
+        mOutputHelper = new OutputHelper(mTask.getName(), mInputOutput, false);
         mOutputHelper.reset();
     }
 
     @Override
     public void run() {
+        mRunning.set(true);
         var allowToCancel = (Cancellable) () -> {
             mExecutorThread.interrupt();
-            mInterrupted = true;
+            mRunning.set(false);
+//            mInterrupted = true;
             mProgressHandle.finish();
             ExecutorManager.getInstance().getExecutors().remove(mTask.getId());
             jobEnded(OutputLineMode.WARNING, Dict.CANCELED.toString());
@@ -77,7 +98,7 @@ public class Executor implements Runnable {
         mProgressHandle.start();
         mProgressHandle.switchToIndeterminate();
 
-        mOperation = new DocumentGenerator(mTask, mProgressHandle, mInputOutput, mOutputHelper);
+        mDocumentGenerator = new DocumentGenerator(mTask, mProgressHandle, mInputOutput, mOutputHelper);
 
         mExecutorThread = new Thread(() -> {
             mOutputHelper.start();
@@ -92,9 +113,60 @@ public class Executor implements Runnable {
                 return;
             }
 
-            mInterrupted = mOperation.start();
+            generateFileList();
+//            mRunning.set(generateFileList());
+//            mInterrupted = !generateFileList();
 
-            if (!mInterrupted) {
+            if (mRunning.get() && !mFiles.isEmpty()) {
+//            if (!mInterrupted && !mFiles.isEmpty()) {
+                mOutputHelper.println(OutputLineMode.INFO, mBundle.getString("found_count").formatted(mFiles.size()));
+                mInputOutput.getOut().println("");
+                mOutputHelper.printSectionHeader(OutputLineMode.INFO, Dict.PROCESSING.toString(), null, null);
+
+                mProgressHandle.switchToDeterminate(mFiles.size());
+                int progress = 0;
+
+                for (var file : mFiles) {
+                    mProgressHandle.progress(file.getName());
+                    try {
+                        TimeUnit.MILLISECONDS.sleep(1000);
+                    } catch (InterruptedException ex) {
+//                        mInterrupted = true;
+//                        mRunning.set(false);
+                        break;
+                    }
+
+//                    try {
+//                        mDocumentGenerator.addPhoto(file);
+//                    } catch (ImageProcessingException ex) {
+//                        mInputOutput.getErr().println(ex.getMessage());
+//                    } catch (IOException ex) {
+//                        mInputOutput.getErr().println(file.getAbsolutePath());
+//                    }
+                    if (Thread.interrupted()) {
+//                        mInterrupted = true;
+                        break;
+                    }
+                    mProgressHandle.progress(++progress);
+                }
+
+                if (mTask.getPath().isDrawPath() && mDocumentGenerator.hasPaths()) {
+                    mDocumentGenerator.addPath();
+                }
+            }
+
+            if (mRunning.get() && !mFiles.isEmpty()) {
+                if (mTask.getPath().isDrawPolygon()) {
+                    mDocumentGenerator.addPolygons();
+                }
+                mDocumentGenerator.saveToFile();
+                mTask.setLastRun(System.currentTimeMillis());
+            }
+
+//        if (mNumOfErrors > 0) {
+//            logError(mBundle.getString("error_description"));
+//        }
+            if (mRunning.get()) {
                 jobEnded(OutputLineMode.OK, Dict.DONE.toString());
             }
 
@@ -105,10 +177,154 @@ public class Executor implements Runnable {
         mExecutorThread.start();
     }
 
+    private void generateFileList() {
+        var source = mTask.getSource();
+        mInputOutput.getOut().println();
+        mOutputHelper.printSectionHeader(OutputLineMode.INFO, Dict.GENERATING_FILELIST.toString(), "", source.getDir().getAbsolutePath());
+
+        var pathMatcher = source.getPathMatcher();
+        var fileVisitOptions = source.isFollowLinks() ? EnumSet.of(FileVisitOption.FOLLOW_LINKS) : EnumSet.noneOf(FileVisitOption.class);
+        var sourceDir = source.getDir();
+
+        if (sourceDir.isDirectory()) {
+            var fileVisitor = new FileVisitor();
+            try {
+                if (source.isRecursive()) {
+                    Files.walkFileTree(sourceDir.toPath(), fileVisitOptions, Integer.MAX_VALUE, fileVisitor);
+                } else {
+                    Files.walkFileTree(sourceDir.toPath(), fileVisitOptions, 1, fileVisitor);
+                }
+
+//                if (fileVisitor.isInterrupted()) {
+//                    return false;
+//                }
+            } catch (IOException ex) {
+                mInputOutput.getErr().println(ex.getMessage());
+            }
+        } else if (sourceDir.isFile() && pathMatcher.matches(sourceDir.toPath().getFileName())) {
+            mFiles.add(sourceDir);
+        }
+
+        if (mFiles.isEmpty()) {
+            mInputOutput.getOut().println(Dict.FILELIST_EMPTY.toString());
+        } else {
+            Collections.sort(mFiles);
+        }
+
+//        return true;
+    }
+
     private void jobEnded(OutputLineMode outputLineMode, String action) {
         mMainFoldHandle.finish();
         mStatusDisplayer.setStatusText(action);
         mOutputHelper.printSummary(outputLineMode, action, Dict.TASK.toString());
+    }
+
+    public class FileVisitor extends SimpleFileVisitor<Path> {
+
+        private final Properties mDefaultDescProperties = new Properties();
+        private final HashMap<String, Properties> mDirToDesc;
+        private final String[] mExcludePatterns;
+        private final String mExternalFileValue;
+//        private boolean mInterrupted;
+        private final PathMatcher mPathMatcher;
+        private final boolean mUseExternalDescription;
+
+        public FileVisitor() {
+            mPathMatcher = mTask.getSource().getPathMatcher();
+            mExcludePatterns = StringUtils.split(mTask.getSource().getExcludePattern(), "::");
+            mDirToDesc = mDocumentGenerator.getDirToDesc();
+
+            var mode = mTask.getDescription().getMode();
+            mUseExternalDescription = mode == TaskDescription.DescriptionMode.EXTERNAL;
+            mExternalFileValue = mTask.getDescription().getExternalFileValue();
+
+            if (mode == TaskDescription.DescriptionMode.EXTERNAL) {
+                try {
+                    var file = new File(mTask.getSource().getDir(), mExternalFileValue);
+                    if (file.isFile()) {
+                        mDefaultDescProperties.load(new InputStreamReader(new FileInputStream(file), Charset.defaultCharset()));
+                    }
+                } catch (IOException ex) {
+                    // nvm
+                }
+            }
+        }
+
+//        public boolean isInterrupted() {
+//            return mInterrupted;
+//        }
+        @Override
+        public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
+            if (mExcludePatterns != null) {
+                for (var excludePattern : mExcludePatterns) {
+                    if (IOCase.SYSTEM.isCaseSensitive()) {
+                        if (StringUtils.contains(dir.toString(), excludePattern)) {
+                            return FileVisitResult.SKIP_SUBTREE;
+                        }
+                    } else {
+                        if (StringUtils.containsIgnoreCase(dir.toString(), excludePattern)) {
+                            return FileVisitResult.SKIP_SUBTREE;
+                        }
+                    }
+                }
+            }
+
+            String[] filePaths = dir.toFile().list();
+            mInputOutput.getOut().println(dir.toString());
+            if (filePaths != null && filePaths.length > 0) {
+                if (mUseExternalDescription) {
+                    var p = new Properties(mDefaultDescProperties);
+
+                    try {
+                        var file = new File(dir.toFile(), mExternalFileValue);
+                        if (file.isFile()) {
+                            p.load(new InputStreamReader(new FileInputStream(file), Charset.defaultCharset()));
+                        }
+                    } catch (IOException ex) {
+                        // nvm
+                    }
+
+                    mDirToDesc.put(dir.toFile().getAbsolutePath(), p);
+                }
+
+                for (var fileName : filePaths) {
+                    try {
+                        TimeUnit.NANOSECONDS.sleep(1);
+                        TimeUnit.MILLISECONDS.sleep(1000);
+                    } catch (InterruptedException ex) {
+//                        mInterrupted = true;
+                        return FileVisitResult.TERMINATE;
+                    }
+
+                    var file = new File(dir.toFile(), fileName);
+                    if (file.isFile() && mPathMatcher.matches(file.toPath().getFileName())) {
+                        boolean exclude = false;
+                        if (mExcludePatterns != null) {
+                            for (String excludePattern : mExcludePatterns) {
+                                if (StringUtils.contains(file.getAbsolutePath(), excludePattern)) {
+                                    exclude = true;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (!exclude) {
+                            mFiles.add(file);
+                        }
+                    }
+                }
+            }
+
+            return FileVisitResult.CONTINUE;
+        }
+
+        @Override
+        public FileVisitResult visitFileFailed(Path file, IOException exception) {
+            mInputOutput.getErr().println(file.toString());
+
+            return FileVisitResult.CONTINUE;
+        }
     }
 
 }

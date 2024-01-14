@@ -74,13 +74,13 @@ public class ExecutorManager {
 
             SwingUtilities.invokeLater(() -> {
                 var title = Dict.Dialog.TITLE_TASK_RUN_S.toString().formatted(task.getName());
-                var dryRunButton = new JButton(Dict.DRY_RUN.toString());
+                var runButton = new JButton(Dict.RUN.toString());
                 var d = new DialogDescriptor(
                         dialogPanel,
                         title,
                         true,
-                        new Object[]{Dict.CANCEL.toString(), Dict.RUN.toString(), dryRunButton},
-                        dryRunButton,
+                        new Object[]{Dict.CANCEL.toString(), runButton},
+                        runButton,
                         0,
                         null,
                         null
@@ -89,20 +89,18 @@ public class ExecutorManager {
                 d.setValid(false);
                 dialogPanel.setNotifyDescriptor(d);
                 dialogPanel.initFx(null);
-                SwingHelper.runLaterDelayed(100, () -> dryRunButton.requestFocus());
+                SwingHelper.runLaterDelayed(100, () -> runButton.requestFocus());
                 var result = DialogDisplayer.getDefault().notify(d);
 
-                if (result == Dict.RUN.toString()) {
-                    start(task, false);
-                } else if (result == dryRunButton) {
-                    start(task, true);
+                if (result == runButton) {
+                    start(task);
                 }
             });
         }
     }
 
-    public void start(Task task, boolean dryRun) {
-        var executor = new Executor(task, dryRun);
+    public void start(Task task) {
+        var executor = new Executor(task);
         mExecutors.put(task.getId(), executor);
         executor.run();
     }
