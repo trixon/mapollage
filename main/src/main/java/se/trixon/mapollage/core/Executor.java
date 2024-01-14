@@ -61,7 +61,6 @@ public class Executor implements Runnable {
     private Thread mExecutorThread;
     private final List<File> mFiles = new ArrayList<>();
     private final InputOutput mInputOutput;
-//    private boolean mInterrupted;
     private long mLastRun;
     private FoldHandle mMainFoldHandle;
     private final OutputHelper mOutputHelper;
@@ -83,9 +82,8 @@ public class Executor implements Runnable {
     public void run() {
         mRunning.set(true);
         var allowToCancel = (Cancellable) () -> {
-            mExecutorThread.interrupt();
             mRunning.set(false);
-//            mInterrupted = true;
+            mExecutorThread.interrupt();
             mProgressHandle.finish();
             ExecutorManager.getInstance().getExecutors().remove(mTask.getId());
             jobEnded(OutputLineMode.WARNING, Dict.CANCELED.toString());
@@ -105,7 +103,7 @@ public class Executor implements Runnable {
             mOutputHelper.printSectionHeader(OutputLineMode.INFO, Dict.START.toString(), Dict.TASK.toLower(), mTask.getName());
             mMainFoldHandle = IOFolding.startFold(mInputOutput, true);
 
-            if (!mTask.isValid()) {//and dest dir too
+            if (!mTask.isValid()) {//TODO and dest dir too
                 mInputOutput.getErr().println(mTask.getValidationError());
                 jobEnded(OutputLineMode.ERROR, Dict.FAILED.toString());
                 mInputOutput.getErr().println(String.format("\n\n%s", Dict.JOB_FAILED.toString()));
@@ -114,11 +112,8 @@ public class Executor implements Runnable {
             }
 
             generateFileList();
-//            mRunning.set(generateFileList());
-//            mInterrupted = !generateFileList();
 
             if (mRunning.get() && !mFiles.isEmpty()) {
-//            if (!mInterrupted && !mFiles.isEmpty()) {
                 mOutputHelper.println(OutputLineMode.INFO, mBundle.getString("found_count").formatted(mFiles.size()));
                 mInputOutput.getOut().println("");
                 mOutputHelper.printSectionHeader(OutputLineMode.INFO, Dict.PROCESSING.toString(), null, null);
@@ -131,8 +126,6 @@ public class Executor implements Runnable {
                     try {
                         TimeUnit.MILLISECONDS.sleep(1000);
                     } catch (InterruptedException ex) {
-//                        mInterrupted = true;
-//                        mRunning.set(false);
                         break;
                     }
 
@@ -144,7 +137,6 @@ public class Executor implements Runnable {
 //                        mInputOutput.getErr().println(file.getAbsolutePath());
 //                    }
                     if (Thread.interrupted()) {
-//                        mInterrupted = true;
                         break;
                     }
                     mProgressHandle.progress(++progress);
@@ -194,10 +186,6 @@ public class Executor implements Runnable {
                 } else {
                     Files.walkFileTree(sourceDir.toPath(), fileVisitOptions, 1, fileVisitor);
                 }
-
-//                if (fileVisitor.isInterrupted()) {
-//                    return false;
-//                }
             } catch (IOException ex) {
                 mInputOutput.getErr().println(ex.getMessage());
             }
@@ -210,8 +198,6 @@ public class Executor implements Runnable {
         } else {
             Collections.sort(mFiles);
         }
-
-//        return true;
     }
 
     private void jobEnded(OutputLineMode outputLineMode, String action) {
@@ -226,7 +212,6 @@ public class Executor implements Runnable {
         private final HashMap<String, Properties> mDirToDesc;
         private final String[] mExcludePatterns;
         private final String mExternalFileValue;
-//        private boolean mInterrupted;
         private final PathMatcher mPathMatcher;
         private final boolean mUseExternalDescription;
 
@@ -251,9 +236,6 @@ public class Executor implements Runnable {
             }
         }
 
-//        public boolean isInterrupted() {
-//            return mInterrupted;
-//        }
         @Override
         public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
             if (mExcludePatterns != null) {
@@ -291,9 +273,7 @@ public class Executor implements Runnable {
                 for (var fileName : filePaths) {
                     try {
                         TimeUnit.NANOSECONDS.sleep(1);
-                        TimeUnit.MILLISECONDS.sleep(1000);
                     } catch (InterruptedException ex) {
-//                        mInterrupted = true;
                         return FileVisitResult.TERMINATE;
                     }
 
