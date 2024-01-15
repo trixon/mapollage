@@ -120,8 +120,7 @@ public class DocumentGenerator {
         mTaskPlacemark = mTask.getPlacemark();
         mTaskDescription = mTask.getDescription();
         mTaskPhoto = mTask.getPhoto();
-//        mDestinationFile = mTask.getDestinationFile();
-        mDestinationFile = new File(FileUtils.getTempDirectory(), "mapollage-dest/out.kml");
+        mDestinationFile = mTask.getDestinationFile();
         mFolderByRegexPattern = Pattern.compile(mTaskFolder.getRegex());
 
         mDocument = mKml.createAndSetDocument().withOpen(true);

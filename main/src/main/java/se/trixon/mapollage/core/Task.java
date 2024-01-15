@@ -15,8 +15,6 @@
  */
 package se.trixon.mapollage.core;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
 import java.io.File;
 import java.nio.file.Path;
@@ -25,8 +23,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.commons.lang3.StringUtils;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.BooleanHelper;
@@ -38,21 +34,18 @@ import se.trixon.mapollage.ui.options.OptionsPanel;
  *
  * @author Patrik Karlström
  */
-public class Task extends TaskBase implements Comparable<Task>, Cloneable, EditableListItem {
-
-    private static final Gson GSON = new GsonBuilder()
-            .setVersion(1.0)
-            .serializeNulls()
-            .setPrettyPrinting()
-            .create();
+public class Task extends TaskBase implements EditableListItem {
 
     @SerializedName("description")
     private TaskDescription mDescription = new TaskDescription(this);
     @SerializedName("descriptionString")
     private String mDescriptionString;
-    private transient File mDestinationFile;
+    @SerializedName("destinationFile")
+    private File mDestinationFile;
     @SerializedName("folder")
     private TaskFolder mFolder = new TaskFolder(this);
+    @SerializedName("uuid")
+    private String mId = UUID.randomUUID().toString();
     @SerializedName("last_run")
     private long mLastRun;
     @SerializedName("name")
@@ -65,27 +58,8 @@ public class Task extends TaskBase implements Comparable<Task>, Cloneable, Edita
     private TaskPlacemark mPlacemark = new TaskPlacemark(this);
     @SerializedName("source")
     private TaskSource mSource = new TaskSource(this);
-    @SerializedName("uuid")
-    private String mId = UUID.randomUUID().toString();
 
     public Task() {
-    }
-
-    @Override
-    public Task clone() {
-        try {
-            super.clone();
-            String json = GSON.toJson(this);
-            return GSON.fromJson(json, Task.class);
-        } catch (CloneNotSupportedException ex) {
-            Logger.getLogger(Task.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
-        }
-    }
-
-    @Override
-    public int compareTo(Task o) {
-        return mName.compareTo(o.getName());
     }
 
     public TaskDescription getDescription() {

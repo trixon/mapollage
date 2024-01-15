@@ -15,6 +15,7 @@
  */
 package se.trixon.mapollage.core;
 
+import com.drew.imaging.ImageProcessingException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -61,7 +62,6 @@ public class Executor implements Runnable {
     private Thread mExecutorThread;
     private final List<File> mFiles = new ArrayList<>();
     private final InputOutput mInputOutput;
-    private long mLastRun;
     private FoldHandle mMainFoldHandle;
     private final OutputHelper mOutputHelper;
     private ProgressHandle mProgressHandle;
@@ -91,7 +91,6 @@ public class Executor implements Runnable {
             return true;
         };
 
-        mLastRun = System.currentTimeMillis();
         mProgressHandle = ProgressHandle.createHandle(mTask.getName(), allowToCancel);
         mProgressHandle.start();
         mProgressHandle.switchToIndeterminate();
@@ -121,21 +120,23 @@ public class Executor implements Runnable {
                 mProgressHandle.switchToDeterminate(mFiles.size());
                 int progress = 0;
 
+                mDocumentGenerator.start();
+
                 for (var file : mFiles) {
                     mProgressHandle.progress(file.getName());
                     try {
-                        TimeUnit.MILLISECONDS.sleep(1000);
+                        TimeUnit.NANOSECONDS.sleep(1);
                     } catch (InterruptedException ex) {
                         break;
                     }
 
-//                    try {
-//                        mDocumentGenerator.addPhoto(file);
-//                    } catch (ImageProcessingException ex) {
-//                        mInputOutput.getErr().println(ex.getMessage());
-//                    } catch (IOException ex) {
-//                        mInputOutput.getErr().println(file.getAbsolutePath());
-//                    }
+                    try {
+                        mDocumentGenerator.addPhoto(file);
+                    } catch (ImageProcessingException ex) {
+                        mInputOutput.getErr().println(ex.getMessage());
+                    } catch (IOException ex) {
+                        mInputOutput.getErr().println(file.getAbsolutePath());
+                    }
                     if (Thread.interrupted()) {
                         break;
                     }
@@ -145,6 +146,8 @@ public class Executor implements Runnable {
                 if (mTask.getPath().isDrawPath() && mDocumentGenerator.hasPaths()) {
                     mDocumentGenerator.addPath();
                 }
+
+                mDocumentGenerator.saveToFile();
             }
 
             if (mRunning.get() && !mFiles.isEmpty()) {
@@ -153,6 +156,7 @@ public class Executor implements Runnable {
                 }
                 mDocumentGenerator.saveToFile();
                 mTask.setLastRun(System.currentTimeMillis());
+                StorageManager.save();
             }
 
 //        if (mNumOfErrors > 0) {

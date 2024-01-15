@@ -113,6 +113,18 @@ public class TaskListEditor {
                 .setOnStart(task -> {
                     mExecutorManager.requestStart(task);
                 })
+                //                .setOnSelect((Task o, Task n) -> {
+                //                    var io = IOProvider.getDefault().getIO(Dict.INFORMATION.toString(), false);
+                //                    try {
+                //                        io.getOut().reset();
+                //                    } catch (IOException ex) {
+                //                        Exceptions.printStackTrace(ex);
+                //                    }
+                //                    if (n != null) {
+                //                        io.getOut().println(n.toInfoString());
+                //                    }
+                //                    io.getOut().close();
+                //                })
                 .build();
 
         mEditableList.getListView().setCellFactory(listView -> new TaskListCell());

@@ -34,7 +34,7 @@ public class Options extends OptionsBase {
     private static final boolean DEFAULT_CLEAN_NS2 = true;
     private static final boolean DEFAULT_CLEAN_SPACE = true;
     private static final Locale DEFAULT_LOCALE = Locale.getDefault();
-    private static final boolean DEFAULT_LOG_KML = false;
+    private static final boolean DEFAULT_LOG_KML = true;
     private static final String KEY_AUTO_OPEN = "auto_open";
     private static final String KEY_CLEAN_NS2 = "clean_ns2";
     private static final String KEY_CLEAN_SPACE = "clean_space";

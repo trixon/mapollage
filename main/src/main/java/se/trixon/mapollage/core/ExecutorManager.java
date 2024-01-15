@@ -20,12 +20,18 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javax.swing.JButton;
 import javax.swing.SwingUtilities;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import org.apache.commons.io.FileUtils;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
+import org.openide.filesystems.FileChooserBuilder;
+import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.nbp.dialogs.NbMessage;
 import se.trixon.almond.nbp.fx.FxDialogPanel;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.swing.LogPanel;
 import se.trixon.almond.util.swing.SwingHelper;
+import se.trixon.almond.util.swing.dialogs.SimpleDialog;
 
 /**
  *
@@ -58,9 +64,85 @@ public class ExecutorManager {
 
      */
     public void requestStart(Task task) {
+        if (task.isValid()) {
+            requestKmlFileObject(task);
+        } else {
+            NbMessage.error(Dict.ABORTING.toString(), task.getValidationError());
+        }
+    }
+
+    private void requestKmlFileObject(Task task) {
+        var filter = new FileNameExtensionFilter("Keyhole Markup Language (*.kml)", "kml");
+        var filterAll = new FileNameExtensionFilter(Dict.ALL_FILES.toString(), "*");
+        SimpleDialog.clearFilters();
+//        SimpleDialog.addFilter(filterAll);
+        SimpleDialog.addFilter(filter);
+        SimpleDialog.setFilter(filter);
+        SimpleDialog.setParent(Almond.getFrame());
+        SimpleDialog.setTitle(String.format("%s %s", Dict.SAVE.toString(), task.getName()));
+
+        var destination = task.getDestinationFile();
+        if (destination == null) {
+            SimpleDialog.setPath(FileUtils.getUserDirectory());
+        } else {
+            SimpleDialog.setPath(destination.getParentFile());
+//            SimpleDialog.setSelectedFile(new File(""));
+            SimpleDialog.setSelectedFile(destination);
+        }
+
+        if (SimpleDialog.saveFile(new String[]{"kml"})) {
+            task.setDestinationFile(SimpleDialog.getPath());
+            task.isValid();
+
+            if (task.hasValidRelativeSourceDest()) {
+                start(task);
+//                mStatusPanel.clear();
+//                Operation operation = new Operation(mOperationListener, profile);
+//                mOperationThread = new Thread(operation);
+//                mOperationThread.start();
+            } else {
+                System.out.println("invalid");
+//                mStatusPanel.out(mBundle.getString("invalid_relative_source_dest"));
+//                mStatusPanel.out(Dict.ABORTING.toString());
+            }
+        }
+
+    }
+
+    private void requestKmlFileObject2(Task task) {
+        var title = String.format("%s %s", Dict.SAVE.toString(), task.getName());
+
+        var destFile = new FileChooserBuilder(ExecutorManager.class)
+                .setTitle(title).
+                setDefaultWorkingDirectory(FileUtils.getUserDirectory())
+                .setApproveText("Add")
+                .addFileFilter(new FileNameExtensionFilter("Keyhole Markup Language (*.kml)", "*.kml"))
+                .showSaveDialog();
+
+        if (destFile != null) {
+            task.setDestinationFile(destFile);
+//            profile.setDestinationFile(mRunManager.getDestination());
+//            profile.isValid();
+//
+//            if (profile.hasValidRelativeSourceDest()) {
+//                mStatusPanel.clear();
+//                Operation operation = new Operation(mOperationListener, profile);
+//                mOperationThread = new Thread(operation);
+//                mOperationThread.start();
+//            } else {
+//                mStatusPanel.out(mBundle.getString("invalid_relative_source_dest"));
+//                mStatusPanel.out(Dict.ABORTING.toString());
+//            }
+            start(task);
+        }
+
+    }
+
+    public void requestStart2(Task task) {
         if (mExecutors.containsKey(task.getId())) {
             NbMessage.error(Dict.Dialog.TITLE_TASK_RUNNING.toString(), Dict.Dialog.MESSAGE_TASK_RUNNING.toString());
         } else {
+            var logPanel = new LogPanel();
 //            var taskSummary = new TaskSummary(task);
             var taskSummary = new Label("asdf");
 
@@ -70,13 +152,14 @@ public class ExecutorManager {
                     setScene(new Scene(taskSummary));
                 }
             };
-            dialogPanel.setPreferredSize(SwingHelper.getUIScaledDim(640, 300));
-
+            logPanel.setPreferredSize(SwingHelper.getUIScaledDim(600, 720));
+            logPanel.println(task.toInfoString());
+            logPanel.scrollToTop();
             SwingUtilities.invokeLater(() -> {
                 var title = Dict.Dialog.TITLE_TASK_RUN_S.toString().formatted(task.getName());
                 var runButton = new JButton(Dict.RUN.toString());
                 var d = new DialogDescriptor(
-                        dialogPanel,
+                        logPanel,
                         title,
                         true,
                         new Object[]{Dict.CANCEL.toString(), runButton},
