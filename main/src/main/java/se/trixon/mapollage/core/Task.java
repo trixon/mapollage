@@ -18,14 +18,13 @@ package se.trixon.mapollage.core;
 import com.google.gson.annotations.SerializedName;
 import java.io.File;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.List;
+import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.UUID;
 import org.apache.commons.lang3.StringUtils;
 import org.openide.util.NbBundle;
-import se.trixon.almond.util.BooleanHelper;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.control.editable_list.EditableListItem;
 import se.trixon.mapollage.ui.options.OptionsPanel;
@@ -189,32 +188,33 @@ public class Task extends TaskBase implements EditableListItem {
 
     @Override
     public String toDebugString() {
-        ArrayList<TaskInfo> profileInfos = new ArrayList<>();
-        profileInfos.add(mSource.getProfileInfo());
-        profileInfos.add(mFolder.getProfileInfo());
-        profileInfos.add(mPath.getProfileInfo());
-        profileInfos.add(mPlacemark.getProfileInfo());
-        profileInfos.add(mDescription.getProfileInfo());
-        profileInfos.add(mPhoto.getProfileInfo());
-        profileInfos.add(getProfileInfo());
+        var taskInfos = List.of(
+                mSource.getProfileInfo(),
+                mFolder.getProfileInfo(),
+                mPath.getProfileInfo(),
+                mPlacemark.getProfileInfo(),
+                mDescription.getProfileInfo(),
+                mPhoto.getProfileInfo(),
+                getProfileInfo()
+        );
 
         int maxLength = Integer.MIN_VALUE;
-        for (TaskInfo profileInfo : profileInfos) {
-            maxLength = Math.max(maxLength, profileInfo.getMaxLength());
+        for (var taskInfo : taskInfos) {
+            maxLength = Math.max(maxLength, taskInfo.getMaxLength());
         }
         maxLength = maxLength + 3;
 
         String separator = " : ";
-        StringBuilder builder = new StringBuilder("\n");
+        var builder = new StringBuilder("\n");
         builder.append(StringUtils.leftPad(Dict.PROFILE.toString(), maxLength)).append(separator).append(mName).append("\n");
         builder.append(StringUtils.leftPad("", maxLength)).append(separator).append(mDescriptionString).append("\n");
 
-        for (TaskInfo profileInfo : profileInfos) {
-            builder.append(profileInfo.getTitle()).append("\n");
+        for (var taskInfo : taskInfos) {
+            builder.append(taskInfo.getTitle()).append("\n");
 
-            for (Map.Entry<String, String> entry : profileInfo.getValues().entrySet()) {
-                String key = entry.getKey();
-                String value = entry.getValue();
+            for (var entry : taskInfo.getValues().entrySet()) {
+                var key = entry.getKey();
+                var value = entry.getValue();
                 builder.append(StringUtils.leftPad(key, maxLength)).append(separator).append(value).append("\n");
             }
 
@@ -225,29 +225,30 @@ public class Task extends TaskBase implements EditableListItem {
     }
 
     public String toInfoString() {
-        ArrayList<TaskInfo> profileInfos = new ArrayList<>();
-        profileInfos.add(mSource.getProfileInfo());
-        profileInfos.add(mFolder.getProfileInfo());
-        profileInfos.add(mPath.getProfileInfo());
-        profileInfos.add(mPlacemark.getProfileInfo());
-        profileInfos.add(mDescription.getProfileInfo());
-        profileInfos.add(mPhoto.getProfileInfo());
-        profileInfos.add(getProfileInfo());
+        var taskInfos = List.of(
+                mSource.getProfileInfo(),
+                mFolder.getProfileInfo(),
+                mPath.getProfileInfo(),
+                mPlacemark.getProfileInfo(),
+                mDescription.getProfileInfo(),
+                mPhoto.getProfileInfo(),
+                getProfileInfo()
+        );
 
         int maxLength = Integer.MIN_VALUE;
-        for (TaskInfo profileInfo : profileInfos) {
-            maxLength = Math.max(maxLength, profileInfo.getMaxLength());
+        for (var taskInfo : taskInfos) {
+            maxLength = Math.max(maxLength, taskInfo.getMaxLength());
         }
         maxLength = maxLength + 3;
 
         String separator = " : ";
-        StringBuilder builder = new StringBuilder();
-        for (TaskInfo profileInfo : profileInfos) {
-            builder.append(profileInfo.getTitle()).append("\n");
+        var builder = new StringBuilder();
+        for (var taskInfo : taskInfos) {
+            builder.append(taskInfo.getTitle().toUpperCase(Locale.ROOT)).append("\n");
 
-            for (Map.Entry<String, String> entry : profileInfo.getValues().entrySet()) {
-                String key = entry.getKey();
-                String value = entry.getValue();
+            for (var entry : taskInfo.getValues().entrySet()) {
+                var key = entry.getKey();
+                var value = entry.getValue();
                 builder.append(StringUtils.leftPad(key, maxLength)).append(separator).append(value).append("\n");
             }
 
@@ -273,7 +274,6 @@ public class Task extends TaskBase implements EditableListItem {
         values.put(Dict.BORDER_SIZE.toString(), String.valueOf(mOptions.getThumbnailBorderSize()));
         values.put(String.format("%s %s", Dict.DEFAULT.toString(), Dict.LATITUDE.toString()), String.valueOf(mOptions.getDefaultLat()));
         values.put(String.format("%s %s", Dict.DEFAULT.toString(), Dict.LONGITUDE.toString()), String.valueOf(mOptions.getDefaultLon()));
-        values.put(bundle.getString("ProgressPanel.autoOpenCheckBox"), BooleanHelper.asYesNo(mOptions.isAutoOpen()));
 
         profileInfo.setTitle(Dict.OPTIONS.toString());
         profileInfo.setValues(values);

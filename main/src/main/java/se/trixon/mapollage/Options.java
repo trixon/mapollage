@@ -35,7 +35,6 @@ public class Options extends OptionsBase {
     private static final boolean DEFAULT_CLEAN_SPACE = true;
     private static final Locale DEFAULT_LOCALE = Locale.getDefault();
     private static final boolean DEFAULT_LOG_KML = true;
-    private static final String KEY_AUTO_OPEN = "auto_open";
     private static final String KEY_CLEAN_NS2 = "clean_ns2";
     private static final String KEY_CLEAN_SPACE = "clean_space";
     private static final String KEY_DEFAULT_LAT = "deflat";
@@ -44,12 +43,10 @@ public class Options extends OptionsBase {
     private static final String KEY_LOG_KML = "log_kml";
     private static final String KEY_THUMBNAIL_BORDER_SIZE = "thumbnail_border_size";
     private static final String KEY_THUMBNAIL_SIZE = "thumbnail_size";
-    private final boolean DEFAULT_AUTO_OPEN = true;
     private final Double DEFAULT_LAT = 57.6;
     private final Double DEFAULT_LON = 11.3;
     private final int DEFAULT_THUMBNAIL_BORDER_SIZE = 3;
     private final int DEFAULT_THUMBNAIL_SIZE = 1000;
-    private final BooleanProperty mAutoOpenProperty = new SimpleBooleanProperty();
     private final BooleanProperty mCleanNS2Property = new SimpleBooleanProperty();
     private final BooleanProperty mCleanSpaceProperty = new SimpleBooleanProperty();
     private final Property<Double> mDefaultLatProperty = new SimpleObjectProperty<>();
@@ -66,7 +63,6 @@ public class Options extends OptionsBase {
     private Options() {
         mPreferences = NbPreferences.forModule(getClass());
 
-        mAutoOpenProperty.set(is(KEY_AUTO_OPEN, DEFAULT_AUTO_OPEN));
         mLogKmlProperty.set(is(KEY_LOG_KML, DEFAULT_LOG_KML));
         mCleanNS2Property.set(is(KEY_CLEAN_NS2, DEFAULT_CLEAN_NS2));
         mCleanSpaceProperty.set(is(KEY_CLEAN_SPACE, DEFAULT_CLEAN_SPACE));
@@ -79,10 +75,6 @@ public class Options extends OptionsBase {
         mLocaleProperty.set(Locale.forLanguageTag(get(KEY_LOCALE, DEFAULT_LOCALE.toLanguageTag())));
 
         initListeners();
-    }
-
-    public BooleanProperty autoOpenProperty() {
-        return mAutoOpenProperty;
     }
 
     public BooleanProperty cleanNS2Property() {
@@ -121,10 +113,6 @@ public class Options extends OptionsBase {
         return mThumbnailSizeProperty.getValue();
     }
 
-    public boolean isAutoOpen() {
-        return mAutoOpenProperty.get();
-    }
-
     public boolean isCleanNS2() {
         return mCleanNS2Property.get();
     }
@@ -143,10 +131,6 @@ public class Options extends OptionsBase {
 
     public BooleanProperty logKmlProperty() {
         return mLogKmlProperty;
-    }
-
-    public void setAutoOpen(boolean value) {
-        mAutoOpenProperty.set(value);
     }
 
     public void setCleanNS2(boolean value) {
@@ -194,7 +178,6 @@ public class Options extends OptionsBase {
             save();
         };
 
-        mAutoOpenProperty.addListener(changeListener);
         mLogKmlProperty.addListener(changeListener);
         mCleanNS2Property.addListener(changeListener);
         mCleanSpaceProperty.addListener(changeListener);
@@ -206,7 +189,6 @@ public class Options extends OptionsBase {
     }
 
     private void save() {
-        put(KEY_AUTO_OPEN, isAutoOpen());
         put(KEY_LOG_KML, isLogKml());
         put(KEY_CLEAN_NS2, isCleanNS2());
         put(KEY_CLEAN_SPACE, isCleanSpace());

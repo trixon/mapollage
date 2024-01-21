@@ -15,6 +15,7 @@
  */
 package se.trixon.mapollage.ui;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.UUID;
 import javafx.application.Platform;
@@ -22,6 +23,8 @@ import javafx.scene.Scene;
 import javax.swing.SwingUtilities;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
+import org.openide.util.Exceptions;
+import org.openide.windows.IOProvider;
 import se.trixon.almond.nbp.fx.FxDialogPanel;
 import se.trixon.almond.nbp.fx.NbEditableList;
 import se.trixon.almond.util.Dict;
@@ -113,21 +116,20 @@ public class TaskListEditor {
 
                     return mTaskManager.getById(uuid);
                 })
+                .setOnInfo(task -> {
+                    var io = IOProvider.getDefault().getIO(task.getName(), false);
+                    io.select();
+                    try {
+                        io.getOut().reset();
+                    } catch (IOException ex) {
+                        Exceptions.printStackTrace(ex);
+                    }
+                    io.getOut().println(task.toInfoString());
+                    io.getOut().close();
+                })
                 .setOnStart(task -> {
                     mExecutorManager.requestStart(task);
                 })
-                //                .setOnSelect((Task o, Task n) -> {
-                //                    var io = IOProvider.getDefault().getIO(Dict.INFORMATION.toString(), false);
-                //                    try {
-                //                        io.getOut().reset();
-                //                    } catch (IOException ex) {
-                //                        Exceptions.printStackTrace(ex);
-                //                    }
-                //                    if (n != null) {
-                //                        io.getOut().println(n.toInfoString());
-                //                    }
-                //                    io.getOut().close();
-                //                })
                 .build();
 
         mEditableList.getListView().setCellFactory(listView -> new TaskListCell());
