@@ -16,6 +16,7 @@
 package se.trixon.mapollage.core;
 
 import com.drew.imaging.ImageProcessingException;
+import java.awt.Color;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -42,14 +43,19 @@ import org.apache.commons.lang3.StringUtils;
 import org.netbeans.api.progress.ProgressHandle;
 import org.openide.awt.StatusDisplayer;
 import org.openide.util.Cancellable;
+import org.openide.util.Exceptions;
 import org.openide.util.NbBundle;
 import org.openide.windows.FoldHandle;
+import org.openide.windows.IOColorPrint;
 import org.openide.windows.IOFolding;
 import org.openide.windows.IOProvider;
 import org.openide.windows.InputOutput;
+import org.openide.windows.OutputEvent;
+import org.openide.windows.OutputListener;
 import se.trixon.almond.nbp.output.OutputHelper;
 import se.trixon.almond.nbp.output.OutputLineMode;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.SystemHelper;
 
 /**
  *
@@ -164,6 +170,26 @@ public class Executor implements Runnable {
 //        }
             if (mRunning.get()) {
                 jobEnded(OutputLineMode.OK, Dict.DONE.toString());
+                mInputOutput.getOut().print("\n%s ".formatted(Dict.OPEN.toString()));
+                try {
+                    IOColorPrint.print(mInputOutput, mTask.getDestinationFile().getAbsolutePath(), new OutputListener() {
+                        @Override
+                        public void outputLineAction(OutputEvent ev) {
+                            SystemHelper.desktopOpenOrElseParent(mTask.getDestinationFile());
+                        }
+
+                        @Override
+                        public void outputLineCleared(OutputEvent ev) {
+                        }
+
+                        @Override
+                        public void outputLineSelected(OutputEvent ev) {
+                        }
+                    }, false, Color.MAGENTA);
+                    mInputOutput.getOut().println(".");
+                } catch (IOException ex) {
+                    Exceptions.printStackTrace(ex);
+                }
             }
 
             mProgressHandle.finish();
