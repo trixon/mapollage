@@ -43,9 +43,24 @@ public class TaskListEditor {
     private EditableList<Task> mEditableList;
     private final TaskManager mTaskManager = TaskManager.getInstance();
     private final ExecutorManager mExecutorManager = ExecutorManager.getInstance();
+    private final TaskEditor mTaskEditor;
+    private final FxDialogPanel mDialogPanel;
 
     public TaskListEditor() {
         init();
+
+        mTaskEditor = new TaskEditor();
+        mTaskEditor.setPadding(FxHelper.getUIScaledInsets(8, 8, 0, 8));
+
+        mDialogPanel = new FxDialogPanel() {
+            @Override
+            protected void fxConstructor() {
+                setScene(new Scene(mTaskEditor));
+            }
+        };
+
+        mDialogPanel.setPreferredSize(SwingHelper.getUIScaledDim(640, 480));
+        mDialogPanel.initFx();
     }
 
     public EditableList<Task> getEditableList() {
@@ -53,27 +68,15 @@ public class TaskListEditor {
     }
 
     private void editTask(String title, Task task) {
-        var editor = new TaskEditor();
-        editor.setPadding(FxHelper.getUIScaledInsets(8, 8, 0, 8));
-        var dialogPanel = new FxDialogPanel() {
-            @Override
-            protected void fxConstructor() {
-                setScene(new Scene(editor));
-            }
-        };
-        dialogPanel.setPreferredSize(SwingHelper.getUIScaledDim(640, 480));
+        var d = new DialogDescriptor(mDialogPanel, title);
+        d.setValid(false);
+        mDialogPanel.setNotifyDescriptor(d);
+        mTaskEditor.load(task, d);
 
         SwingUtilities.invokeLater(() -> {
-            var d = new DialogDescriptor(dialogPanel, title);
-            d.setValid(false);
-            dialogPanel.setNotifyDescriptor(d);
-            dialogPanel.initFx(() -> {
-                editor.load(task, d);
-            });
-
             if (DialogDescriptor.OK_OPTION == DialogDisplayer.getDefault().notify(d)) {
                 Platform.runLater(() -> {
-                    var editedItem = editor.save();
+                    var editedItem = mTaskEditor.save();
                     postEdit(mTaskManager.getById(editedItem.getId()));
                 });
             }
