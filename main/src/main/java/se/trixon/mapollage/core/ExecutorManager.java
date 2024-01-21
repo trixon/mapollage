@@ -15,11 +15,17 @@
  */
 package se.trixon.mapollage.core;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.HashMap;
+import java.util.ResourceBundle;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import org.apache.commons.io.FileUtils;
+import org.openide.util.Exceptions;
+import org.openide.util.NbBundle;
+import org.openide.windows.IOProvider;
+import org.openide.windows.InputOutput;
 import se.trixon.almond.nbp.Almond;
-import se.trixon.almond.nbp.dialogs.NbMessage;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.swing.dialogs.SimpleDialog;
 
@@ -29,7 +35,10 @@ import se.trixon.almond.util.swing.dialogs.SimpleDialog;
  */
 public class ExecutorManager {
 
+    private final ResourceBundle mBundle = NbBundle.getBundle(ExecutorManager.class);
     private final HashMap<String, Executor> mExecutors = new HashMap<>();
+    private InputOutput mInputOutput;
+    private boolean mNoErrors = true;
 
     public static ExecutorManager getInstance() {
         return Holder.INSTANCE;
@@ -43,14 +52,14 @@ public class ExecutorManager {
     }
 
     public void requestStart(Task task) {
-        if (task.isValid()) {
-            requestKmlFileObject(task);
-        } else {
-            NbMessage.error(Dict.ABORTING.toString(), task.getValidationError());
+        if (mInputOutput != null) {
+            try {
+                mInputOutput.getOut().reset();
+            } catch (IOException ex) {
+                Exceptions.printStackTrace(ex);
+            }
         }
-    }
 
-    private void requestKmlFileObject(Task task) {
         var filter = new FileNameExtensionFilter("Keyhole Markup Language (*.kml)", "kml");
         SimpleDialog.clearFilters();
         SimpleDialog.addFilter(filter);
@@ -66,36 +75,42 @@ public class ExecutorManager {
             SimpleDialog.setSelectedFile(destination);
         }
 
-        /*
-    TODO
-    Request dest file
-            if (!Files.isWritable(mDestinationFile.getParentFile().toPath())) {
-            mListener.onOperationLog(String.format(mBundle.getString("insufficient_privileges"), mDestinationFile.getAbsolutePath()));
-            Thread.currentThread().interrupt();
-            mListener.onOperationInterrupted();
-            return;
-        }
-
-         */
         if (SimpleDialog.saveFile()) {
-            task.setDestinationFile(SimpleDialog.getPath());
-            task.isValid();
+            var file = SimpleDialog.getPath();
+            task.setDestinationFile(file);
 
-            if (task.hasValidRelativeSourceDest()) {
-                start(task);
+            mNoErrors = task.isValid();
+            if (!mNoErrors) {
+                printErr(task, task.getValidationError());
+            }
+
+            if (!Files.isWritable(file.getParentFile().toPath())) {
+                printErr(task, mBundle.getString("insufficient_privileges").formatted(file.getAbsolutePath()));
+            }
+
+            if (!task.hasValidRelativeSourceDest()) {
+                printErr(task, mBundle.getString("invalid_relative_source_dest"));
+            }
+
+            if (mNoErrors) {
+                var executor = new Executor(task);
+                mExecutors.put(task.getId(), executor);
+                executor.run();
             } else {
-                System.out.println("invalid");
-//                mStatusPanel.out(mBundle.getString("invalid_relative_source_dest"));
-//                mStatusPanel.out(Dict.ABORTING.toString());
+                printErr(task, Dict.ABORTING.toString());
             }
         }
-
     }
 
-    public void start(Task task) {
-        var executor = new Executor(task);
-        mExecutors.put(task.getId(), executor);
-        executor.run();
+    private void printErr(Task task, String s) {
+        if (mInputOutput == null) {
+            mInputOutput = IOProvider.getDefault().getIO(task.getName(), false);
+            mInputOutput.select();
+        }
+
+        mInputOutput.getErr().println(s);
+
+        mNoErrors = false;
     }
 
     private static class Holder {
