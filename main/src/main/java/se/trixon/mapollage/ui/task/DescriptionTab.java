@@ -168,8 +168,8 @@ public class DescriptionTab extends BaseTab {
         gp.add(staticBox, col, ++row, GridPane.REMAINING, 1);
         gp.addRow(++row, new HBox(8, mCustomRadioButton, mCustomResetButton));
         gp.add(mCustomTextArea, col, ++row, GridPane.REMAINING, 1);
-        gp.addRow(++row, mExternalRadioButton, mExternalDefaultCheckBox, mExternalStaticRadioButton, mExternalCustomRadioButton);
-        gp.add(mExternalTextField, col, ++row, GridPane.REMAINING, 1);
+//        gp.addRow(++row, mExternalRadioButton, mExternalDefaultCheckBox, mExternalStaticRadioButton, mExternalCustomRadioButton);
+//        gp.add(mExternalTextField, col, ++row, GridPane.REMAINING, 1);
         mExternalRadioButton.setDisable(true);
         //gp.setBackground(FxHelper.createBackground(Color.BISQUE));
         GridPane.setHgrow(mExternalRadioButton, Priority.ALWAYS);
