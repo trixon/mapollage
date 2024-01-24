@@ -31,12 +31,8 @@ import se.trixon.almond.util.OptionsBase;
  */
 public class Options extends OptionsBase {
 
-    private static final boolean DEFAULT_CLEAN_NS2 = true;
-    private static final boolean DEFAULT_CLEAN_SPACE = true;
     private static final Locale DEFAULT_LOCALE = Locale.getDefault();
     private static final boolean DEFAULT_LOG_KML = true;
-    private static final String KEY_CLEAN_NS2 = "clean_ns2";
-    private static final String KEY_CLEAN_SPACE = "clean_space";
     private static final String KEY_DEFAULT_LAT = "deflat";
     private static final String KEY_DEFAULT_LON = "deflon";
     private static final String KEY_LOCALE = "locale";
@@ -47,8 +43,6 @@ public class Options extends OptionsBase {
     private final Double DEFAULT_LON = 11.3;
     private final int DEFAULT_THUMBNAIL_BORDER_SIZE = 3;
     private final int DEFAULT_THUMBNAIL_SIZE = 1000;
-    private final BooleanProperty mCleanNS2Property = new SimpleBooleanProperty();
-    private final BooleanProperty mCleanSpaceProperty = new SimpleBooleanProperty();
     private final Property<Double> mDefaultLatProperty = new SimpleObjectProperty<>();
     private final Property<Double> mDefaultLonProperty = new SimpleObjectProperty<>();
     private final ObjectProperty<Locale> mLocaleProperty = new SimpleObjectProperty<>();
@@ -64,8 +58,6 @@ public class Options extends OptionsBase {
         mPreferences = NbPreferences.forModule(getClass());
 
         mLogKmlProperty.set(is(KEY_LOG_KML, DEFAULT_LOG_KML));
-        mCleanNS2Property.set(is(KEY_CLEAN_NS2, DEFAULT_CLEAN_NS2));
-        mCleanSpaceProperty.set(is(KEY_CLEAN_SPACE, DEFAULT_CLEAN_SPACE));
 
         mDefaultLatProperty.setValue(getDouble(KEY_DEFAULT_LAT, DEFAULT_LAT));
         mDefaultLonProperty.setValue(getDouble(KEY_DEFAULT_LON, DEFAULT_LON));
@@ -75,14 +67,6 @@ public class Options extends OptionsBase {
         mLocaleProperty.set(Locale.forLanguageTag(get(KEY_LOCALE, DEFAULT_LOCALE.toLanguageTag())));
 
         initListeners();
-    }
-
-    public BooleanProperty cleanNS2Property() {
-        return mCleanNS2Property;
-    }
-
-    public BooleanProperty cleanSpaceProperty() {
-        return mCleanSpaceProperty;
     }
 
     public Property<Double> defaultLatProperty() {
@@ -113,14 +97,6 @@ public class Options extends OptionsBase {
         return mThumbnailSizeProperty.getValue();
     }
 
-    public boolean isCleanNS2() {
-        return mCleanNS2Property.get();
-    }
-
-    public boolean isCleanSpace() {
-        return mCleanSpaceProperty.get();
-    }
-
     public boolean isLogKml() {
         return mLogKmlProperty.get();
     }
@@ -131,14 +107,6 @@ public class Options extends OptionsBase {
 
     public BooleanProperty logKmlProperty() {
         return mLogKmlProperty;
-    }
-
-    public void setCleanNS2(boolean value) {
-        mCleanNS2Property.set(value);
-    }
-
-    public void setCleanSpace(boolean value) {
-        mCleanSpaceProperty.set(value);
     }
 
     public void setDefaultLat(Double value) {
@@ -179,8 +147,6 @@ public class Options extends OptionsBase {
         };
 
         mLogKmlProperty.addListener(changeListener);
-        mCleanNS2Property.addListener(changeListener);
-        mCleanSpaceProperty.addListener(changeListener);
         mDefaultLatProperty.addListener(changeListener);
         mDefaultLonProperty.addListener(changeListener);
         mThumbnailBorderSizeProperty.addListener(changeListener);
@@ -190,8 +156,6 @@ public class Options extends OptionsBase {
 
     private void save() {
         put(KEY_LOG_KML, isLogKml());
-        put(KEY_CLEAN_NS2, isCleanNS2());
-        put(KEY_CLEAN_SPACE, isCleanSpace());
         put(KEY_DEFAULT_LAT, getDefaultLat());
         put(KEY_DEFAULT_LON, getDefaultLon());
         put(KEY_THUMBNAIL_BORDER_SIZE, getThumbnailBorderSize());

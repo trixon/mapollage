@@ -36,12 +36,12 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -49,13 +49,11 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.TreeMap;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
-import org.netbeans.api.progress.ProgressHandle;
 import org.openide.util.NbBundle;
 import org.openide.windows.InputOutput;
 import se.trixon.almond.nbp.output.OutputHelper;
@@ -82,6 +80,7 @@ public class DocumentGenerator {
     private final Pattern mFolderByRegexPattern;
     private final HashMap<Folder, ArrayList<Coordinate>> mFolderPolygonInputs = new HashMap<>();
     private final Map<String, Folder> mFolders = new HashMap<>();
+    private Folder mImageRootFolder;
     private final InputOutput mInputOutput;
     private final Kml mKml = new Kml();
     private final ArrayList<LineNode> mLineNodes = new ArrayList<>();
@@ -95,9 +94,7 @@ public class DocumentGenerator {
     private PhotoInfo mPhotoInfo;
     private Folder mPolygonFolder;
     private final HashMap<Folder, Folder> mPolygonRemovals = new HashMap<>();
-    private final ProgressHandle mProgressHandle;
     private Folder mRootFolder;
-    private final Map<String, Folder> mRootFolders = new HashMap<>();
     private final Task mTask;
     private final TaskDescription mTaskDescription;
     private final TaskFolder mTaskFolder;
@@ -108,9 +105,8 @@ public class DocumentGenerator {
     private File mThumbsDir;
     private final SimpleDateFormat mTimeStampDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
 
-    public DocumentGenerator(Task task, ProgressHandle progressHandle, InputOutput inputOutput, OutputHelper outputHelper) {
+    public DocumentGenerator(Task task, InputOutput inputOutput, OutputHelper outputHelper) {
         mTask = task;
-        mProgressHandle = progressHandle;
         mInputOutput = inputOutput;
         mOutputHelper = outputHelper;
 
@@ -133,74 +129,6 @@ public class DocumentGenerator {
 
 //        mListener.onOperationStarted();
 //        mListener.onOperationLog(dateFormat.format(date));
-    }
-
-    public void addPath() {
-        Collections.sort(mLineNodes, (LineNode o1, LineNode o2) -> o1.getDate().compareTo(o2.getDate()));
-
-        mPathFolder = KmlFactory.createFolder().withName(Dict.Geometry.PATH.toString());
-        mPathGapFolder = KmlFactory.createFolder().withName(Dict.Geometry.PATH_GAP.toString());
-
-        var pattern = getPattern(mTaskPath.getSplitBy());
-        var dateFormat = new SimpleDateFormat(pattern);
-        var map = new TreeMap<String, ArrayList<LineNode>>();
-
-        mLineNodes.forEach(node -> {
-            var key = dateFormat.format(node.getDate());
-            if (!map.containsKey(key)) {
-                map.put(key, new ArrayList<>());
-            }
-            map.get(key).add(node);
-        });
-
-        //Add paths
-        for (var nodes : map.values()) {
-            if (nodes.size() > 1) {
-                var pathPlacemark = mPathFolder
-                        .createAndAddPlacemark()
-                        .withName(LineNode.getName(nodes));
-                var pathStyle = pathPlacemark.createAndAddStyle();
-                pathStyle.createAndSetLineStyle()
-                        .withColor("ff0000ff")
-                        .withWidth(mTaskPath.getWidth());
-
-                var line = pathPlacemark
-                        .createAndSetLineString()
-                        .withExtrude(false)
-                        .withTessellate(true);
-
-                nodes.forEach(node -> {
-                    line.addToCoordinates(node.getLon(), node.getLat());
-                });
-            }
-        }
-
-        //Add path gap
-        ArrayList<LineNode> previousNodes = null;
-        for (var nodes : map.values()) {
-            if (previousNodes != null) {
-                var pathPlacemark = mPathGapFolder.createAndAddPlacemark()
-                        .withName(LineNode.getName(previousNodes, nodes));
-
-                var pathStyle = pathPlacemark.createAndAddStyle();
-                pathStyle.createAndSetLineStyle()
-                        .withColor("ff00ffff")
-                        .withWidth(mTaskPath.getWidth());
-
-                var line = pathPlacemark
-                        .createAndSetLineString()
-                        .withExtrude(false)
-                        .withTessellate(true);
-
-                var prevLast = previousNodes.get(previousNodes.size() - 1);
-                var currentFirst = nodes.get(0);
-
-                line.addToCoordinates(prevLast.getLon(), prevLast.getLat());
-                line.addToCoordinates(currentFirst.getLon(), currentFirst.getLat());
-            }
-
-            previousNodes = nodes;
-        }
     }
 
     public void addPhoto(File file) throws ImageProcessingException, IOException {
@@ -331,25 +259,29 @@ public class DocumentGenerator {
         return mDirToDesc;
     }
 
-    public boolean hasPaths() {
-        return mLineNodes.size() > 1;
+    private void dd(int id) {
+        System.out.println(id);
+        mRootFolder.getFeature().forEach(f -> {
+            System.out.println(f.getName());
+        });
+
     }
 
     public void saveToFile() {
-//        mListener.onOperationLog("");
-        var keys = new ArrayList(mRootFolders.keySet());
-        Collections.sort(keys);
+        dd(1);
+        if (mTask.getPath().isDrawPath() && hasPaths()) {
+            addPath();
+            dd(2);
 
-        keys.stream().forEach(key -> {
-            mRootFolder.getFeature().add(mRootFolders.get((String) key));
-        });
+            if (mPathFolder != null && !mPathFolder.getFeature().isEmpty()) {
+                mRootFolder.getFeature().add(mPathFolder);
+                dd(3);
+            }
 
-        if (mPathFolder != null && !mPathFolder.getFeature().isEmpty()) {
-            mRootFolder.getFeature().add(mPathFolder);
-        }
-
-        if (mPathGapFolder != null && !mPathGapFolder.getFeature().isEmpty()) {
-            mRootFolder.getFeature().add(mPathGapFolder);
+            if (mPathGapFolder != null && !mPathGapFolder.getFeature().isEmpty()) {
+                mRootFolder.getFeature().add(mPathGapFolder);
+                dd(4);
+            }
         }
 
         if (isUsingThumbnails()) {
@@ -361,19 +293,6 @@ public class DocumentGenerator {
             mKml.marshal(stringWriter);
             var kmlString = stringWriter.toString();
 
-            if (mOptions.isCleanNS2()) {
-//                mListener.onOperationLog(mBundle.getString("clean_ns2"));
-                kmlString = StringUtils.replace(kmlString, "xmlns:ns2=", "xmlns=");
-                kmlString = StringUtils.replace(kmlString, "<ns2:", "<");
-                kmlString = StringUtils.replace(kmlString, "</ns2:", "</");
-            }
-
-            if (mOptions.isCleanSpace()) {
-//                mListener.onOperationLog(mBundle.getString("clean_space"));
-                kmlString = StringUtils.replace(kmlString, "        ", "\t");
-                kmlString = StringUtils.replace(kmlString, "    ", "\t");
-            }
-
             kmlString = StringUtils.replaceEach(kmlString,
                     new String[]{"&lt;", "&gt;"},
                     new String[]{"<", ">"});
@@ -384,7 +303,6 @@ public class DocumentGenerator {
                 mInputOutput.getOut().println();
             }
 
-//            mListener.onOperationLog(String.format(Dict.SAVING.toString(), mDestinationFile.getAbsolutePath()));
             FileUtils.writeStringToFile(mDestinationFile, kmlString, "utf-8");
 
             String files = mBundle.getString("status_files");
@@ -435,6 +353,7 @@ public class DocumentGenerator {
             }
         }
         mRootFolder = mDocument.createAndAddFolder().withName(getSafeXmlString(mTaskFolder.getRootName())).withOpen(true);
+        mImageRootFolder = mRootFolder.createAndAddFolder().withName(Dict.IMAGES.toString());
 
         var href = "<a href=\"https://trixon.se/mapollage/\">Mapollage</a>";
         var description = "<p>%s %s, %s</p>%s".formatted(
@@ -445,6 +364,71 @@ public class DocumentGenerator {
         mRootFolder.setDescription(getSafeXmlString(description));
 
 //        mListener.onOperationProcessingStarted();
+    }
+
+    private void addPath() {
+        Collections.sort(mLineNodes, Comparator.comparing(LineNode::getDate));
+
+        mPathFolder = KmlFactory.createFolder().withName(Dict.Geometry.PATH.toString());
+        mPathGapFolder = KmlFactory.createFolder().withName(Dict.Geometry.PATH_GAP.toString());
+
+        var pattern = getPattern(mTaskPath.getSplitBy());
+        var dateFormat = new SimpleDateFormat(pattern);
+        var map = new TreeMap<String, ArrayList<LineNode>>();
+
+        mLineNodes.forEach(node -> {
+            var key = dateFormat.format(node.getDate());
+            map.computeIfAbsent(key, k -> new ArrayList<>()).add(node);
+        });
+
+        //Add paths
+        for (var nodes : map.values()) {
+            if (nodes.size() > 1) {
+                var pathPlacemark = mPathFolder
+                        .createAndAddPlacemark()
+                        .withName(LineNode.getName(nodes));
+                var pathStyle = pathPlacemark.createAndAddStyle();
+                pathStyle.createAndSetLineStyle()
+                        .withColor("ff0000ff")
+                        .withWidth(mTaskPath.getWidth());
+
+                var line = pathPlacemark
+                        .createAndSetLineString()
+                        .withExtrude(false)
+                        .withTessellate(true);
+
+                nodes.forEach(node -> {
+                    line.addToCoordinates(node.getLon(), node.getLat());
+                });
+            }
+        }
+
+        //Add path gap
+        ArrayList<LineNode> previousNodes = null;
+        for (var nodes : map.values()) {
+            if (previousNodes != null) {
+                var pathPlacemark = mPathGapFolder.createAndAddPlacemark()
+                        .withName(LineNode.getName(previousNodes, nodes));
+
+                var pathStyle = pathPlacemark.createAndAddStyle();
+                pathStyle.createAndSetLineStyle()
+                        .withColor("ff00ffff")
+                        .withWidth(mTaskPath.getWidth());
+
+                var line = pathPlacemark
+                        .createAndSetLineString()
+                        .withExtrude(false)
+                        .withTessellate(true);
+
+                var prevLast = previousNodes.get(previousNodes.size() - 1);
+                var currentFirst = nodes.get(0);
+
+                line.addToCoordinates(prevLast.getLon(), prevLast.getLat());
+                line.addToCoordinates(currentFirst.getLon(), currentFirst.getLat());
+            }
+
+            previousNodes = nodes;
+        }
     }
 
     private void addPolygon(String name, ArrayList<Coordinate> coordinates, Folder polygonFolder) {
@@ -558,7 +542,7 @@ public class DocumentGenerator {
 
         switch (mTaskFolder.getFoldersBy()) {
             case DIR -> {
-                Path relativePath = mTaskSource.getDir().toPath().relativize(file.getParentFile().toPath());
+                var relativePath = mTaskSource.getDir().toPath().relativize(file.getParentFile().toPath());
                 key = relativePath.toString();
                 folder = getFolder(key);
             }
@@ -570,7 +554,7 @@ public class DocumentGenerator {
 
             case REGEX -> {
                 key = mTaskFolder.getRegexDefault();
-                Matcher matcher = mFolderByRegexPattern.matcher(file.getParent());
+                var matcher = mFolderByRegexPattern.matcher(file.getParent());
                 if (matcher.find()) {
                     key = matcher.group();
                 }
@@ -578,7 +562,7 @@ public class DocumentGenerator {
             }
 
             case NONE ->
-                folder = mRootFolder;
+                folder = mImageRootFolder;
         }
 
         return folder;
@@ -586,9 +570,9 @@ public class DocumentGenerator {
 
     private Folder getFolder(String key) {
         key = StringUtils.replace(key, "\\", "/");
-        String[] levels = StringUtils.split(key, "/");
+        var levels = StringUtils.split(key, "/");
 
-        var parent = mRootFolder;
+        var parent = mImageRootFolder;
         String path = "";
 
         for (int i = 0; i < levels.length; i++) {
@@ -604,12 +588,7 @@ public class DocumentGenerator {
     }
 
     private Folder getFolder(String key, Folder parent, String name) {
-        if (!mFolders.containsKey(key)) {
-            var folder = parent.createAndAddFolder().withName(getSafeXmlString(name));
-            mFolders.put(key, folder);
-        }
-
-        return mFolders.get(key);
+        return mFolders.computeIfAbsent(key, k -> parent.createAndAddFolder().withName(getSafeXmlString(name)));
     }
 
     private String getImagePath(File file) {
@@ -782,6 +761,10 @@ public class DocumentGenerator {
         }
 
         return builder.toString();
+    }
+
+    private boolean hasPaths() {
+        return mLineNodes.size() > 1;
     }
 
     private boolean isUsingThumbnails() {

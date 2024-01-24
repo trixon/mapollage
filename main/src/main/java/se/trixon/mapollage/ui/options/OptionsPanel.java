@@ -23,7 +23,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
-import org.controlsfx.control.ToggleSwitch;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
@@ -37,8 +36,6 @@ import se.trixon.mapollage.Options;
 public class OptionsPanel extends GridPane {
 
     private final ResourceBundle mBundle = NbBundle.getBundle(OptionsPanel.class);
-    private final ToggleSwitch mCleanNs2ToggleSwitch = new ToggleSwitch(mBundle.getString("OptionsPanel.cleanNs2ToggleSwitch"));
-    private final ToggleSwitch mCleanSpaceToggleSwitch = new ToggleSwitch(mBundle.getString("OptionsPanel.cleanSpaceToggleSwitch"));
     private final Spinner<Double> mDefaultLatitudeSpinner = new Spinner(-90, 90, 0, 0.01);
     private final Spinner<Double> mDefaultLongitudeSpinner = new Spinner(-180, 180, 0, 0.01);
     private final LocaleComboBox mLocaleComboBox = new LocaleComboBox();
@@ -62,7 +59,6 @@ public class OptionsPanel extends GridPane {
         var latitudeLabel = new Label(Dict.LATITUDE.toString());
         var longitudeLabel = new Label(Dict.LONGITUDE.toString());
         var borderSizeLabel = new Label(mBundle.getString("OptionsPanel.borderSizeLabel"));
-        var cleanLabel = new Label(mBundle.getString("OptionsPanel.cleanLabel"));
         var defaultCoordinateLabel = new Label(mBundle.getString("OptionsPanel.coordinateLabel"));
 
         var fontFamily = Font.getDefault().getFamily();
@@ -71,7 +67,6 @@ public class OptionsPanel extends GridPane {
 
         placemarkLabel.setFont(font);
         defaultCoordinateLabel.setFont(font);
-        cleanLabel.setFont(font);
 
         int row = 0;
         add(calendarLanguageLabel, 0, row++, REMAINING, 1);
@@ -86,14 +81,10 @@ public class OptionsPanel extends GridPane {
         add(longitudeLabel, 1, row++, 1, 1);
         add(mDefaultLatitudeSpinner, 0, row, 1, 1);
         add(mDefaultLongitudeSpinner, 1, row++, 1, 1);
-        add(cleanLabel, 0, row++, REMAINING, 1);
-        add(mCleanNs2ToggleSwitch, 0, row, 1, 1);
-        add(mCleanSpaceToggleSwitch, 1, row++, 1, 1);
 
         FxHelper.setPadding(new Insets(8, 0, 0, 0),
                 placemarkLabel,
-                defaultCoordinateLabel,
-                cleanLabel
+                defaultCoordinateLabel
         );
 
 //        FxHelper.setPadding(new Insets(28, 0, 0, 0),
@@ -123,8 +114,6 @@ public class OptionsPanel extends GridPane {
         mDefaultLongitudeSpinner.setMaxWidth(Double.MAX_VALUE);
         mThumbnailSizeSpinner.setMaxWidth(Double.MAX_VALUE);
         mThumbnailBorderSizeSpinner.setMaxWidth(Double.MAX_VALUE);
-        mCleanNs2ToggleSwitch.setMaxWidth(Double.MAX_VALUE);
-        mCleanSpaceToggleSwitch.setMaxWidth(Double.MAX_VALUE);
 
 //        mLocaleComboBox.valueProperty().bindBidirectional(mOptions.localeProperty());
 //        mDefaultLatitudeSpinner.valueFactoryProperty().getValue().valueProperty().bindBidirectional(mOptions.defaultLatProperty());

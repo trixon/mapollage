@@ -101,7 +101,7 @@ public class Executor implements Runnable {
         mProgressHandle.start();
         mProgressHandle.switchToIndeterminate();
 
-        mDocumentGenerator = new DocumentGenerator(mTask, mProgressHandle, mInputOutput, mOutputHelper);
+        mDocumentGenerator = new DocumentGenerator(mTask, mInputOutput, mOutputHelper);
 
         mExecutorThread = new Thread(() -> {
             mOutputHelper.start();
@@ -148,18 +148,9 @@ public class Executor implements Runnable {
                     }
                     mProgressHandle.progress(++progress);
                 }
-
-                if (mTask.getPath().isDrawPath() && mDocumentGenerator.hasPaths()) {
-                    mDocumentGenerator.addPath();
-                }
-
-                mDocumentGenerator.saveToFile();
             }
 
             if (mRunning.get() && !mFiles.isEmpty()) {
-                if (mTask.getPath().isDrawPolygon()) {
-                    mDocumentGenerator.addPolygons();
-                }
                 mDocumentGenerator.saveToFile();
                 mTask.setLastRun(System.currentTimeMillis());
                 StorageManager.save();
