@@ -16,10 +16,8 @@
 package se.trixon.mapollage;
 
 import java.util.Locale;
-import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.Property;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import org.openide.util.NbPreferences;
@@ -32,11 +30,9 @@ import se.trixon.almond.util.OptionsBase;
 public class Options extends OptionsBase {
 
     private static final Locale DEFAULT_LOCALE = Locale.getDefault();
-    private static final boolean DEFAULT_LOG_KML = true;
     private static final String KEY_DEFAULT_LAT = "deflat";
     private static final String KEY_DEFAULT_LON = "deflon";
     private static final String KEY_LOCALE = "locale";
-    private static final String KEY_LOG_KML = "log_kml";
     private static final String KEY_THUMBNAIL_BORDER_SIZE = "thumbnail_border_size";
     private static final String KEY_THUMBNAIL_SIZE = "thumbnail_size";
     private final Double DEFAULT_LAT = 57.6;
@@ -46,7 +42,6 @@ public class Options extends OptionsBase {
     private final Property<Double> mDefaultLatProperty = new SimpleObjectProperty<>();
     private final Property<Double> mDefaultLonProperty = new SimpleObjectProperty<>();
     private final ObjectProperty<Locale> mLocaleProperty = new SimpleObjectProperty<>();
-    private final BooleanProperty mLogKmlProperty = new SimpleBooleanProperty();
     private final Property<Integer> mThumbnailBorderSizeProperty = new SimpleObjectProperty<>();
     private final Property<Integer> mThumbnailSizeProperty = new SimpleObjectProperty<>();
 
@@ -56,8 +51,6 @@ public class Options extends OptionsBase {
 
     private Options() {
         mPreferences = NbPreferences.forModule(getClass());
-
-        mLogKmlProperty.set(is(KEY_LOG_KML, DEFAULT_LOG_KML));
 
         mDefaultLatProperty.setValue(getDouble(KEY_DEFAULT_LAT, DEFAULT_LAT));
         mDefaultLonProperty.setValue(getDouble(KEY_DEFAULT_LON, DEFAULT_LON));
@@ -97,16 +90,8 @@ public class Options extends OptionsBase {
         return mThumbnailSizeProperty.getValue();
     }
 
-    public boolean isLogKml() {
-        return mLogKmlProperty.get();
-    }
-
     public ObjectProperty<Locale> localeProperty() {
         return mLocaleProperty;
-    }
-
-    public BooleanProperty logKmlProperty() {
-        return mLogKmlProperty;
     }
 
     public void setDefaultLat(Double value) {
@@ -119,10 +104,6 @@ public class Options extends OptionsBase {
 
     public void setLocale(Locale locale) {
         mLocaleProperty.set(locale);
-    }
-
-    public void setLogKml(boolean value) {
-        mLogKmlProperty.set(value);
     }
 
     public void setThumbnailBorderSize(int size) {
@@ -146,7 +127,6 @@ public class Options extends OptionsBase {
             save();
         };
 
-        mLogKmlProperty.addListener(changeListener);
         mDefaultLatProperty.addListener(changeListener);
         mDefaultLonProperty.addListener(changeListener);
         mThumbnailBorderSizeProperty.addListener(changeListener);
@@ -155,7 +135,6 @@ public class Options extends OptionsBase {
     }
 
     private void save() {
-        put(KEY_LOG_KML, isLogKml());
         put(KEY_DEFAULT_LAT, getDefaultLat());
         put(KEY_DEFAULT_LON, getDefaultLon());
         put(KEY_THUMBNAIL_BORDER_SIZE, getThumbnailBorderSize());

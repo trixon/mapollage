@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2023 Patrik Karlström <patrik@trixon.se>.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,10 +16,12 @@
 package se.trixon.mapollage;
 
 import java.io.IOException;
-import java.util.Locale;
 import org.openide.util.Exceptions;
 import org.openide.windows.IOProvider;
+import se.trixon.almond.nbp.output.OutputHelper;
+import se.trixon.almond.nbp.output.OutputLineMode;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.GlobalState;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.FxHelper;
 
@@ -29,27 +31,35 @@ import se.trixon.almond.util.fx.FxHelper;
  */
 public class Mapollage {
 
+    public static final String KEY_INFO = "info";
     private static final int ICON_SIZE_TOOLBAR = 32;
+    private static final GlobalState sGlobalState = new GlobalState();
 
-    public static int getIconSizeToolBar() {
-        return FxHelper.getUIScaled(ICON_SIZE_TOOLBAR);
+    static {
+        sGlobalState.addListener(gsce -> {
+            var io = IOProvider.getDefault().getIO(Dict.INFORMATION.toString(), false);
+            var outputHelper = new OutputHelper(Dict.INFORMATION.toString(), io, false);
+
+            io.select();
+            try (var out = io.getOut()) {
+                out.reset();
+                outputHelper.println(OutputLineMode.INFO, gsce.getValue());
+            } catch (IOException ex) {
+                Exceptions.printStackTrace(ex);
+            }
+        }, KEY_INFO);
     }
 
     public static void displaySystemInformation() {
-        String s = "%s\n%s".formatted(
-                Dict.SYSTEM.toString().toUpperCase(Locale.ENGLISH),
-                SystemHelper.getSystemInfo()
-        );
+        sGlobalState.put(KEY_INFO, SystemHelper.getSystemInfo());
+    }
 
-        var io = IOProvider.getDefault().getIO(Dict.INFORMATION.toString(), false);
-        try {
-            io.getOut().reset();
-        } catch (IOException ex) {
-            Exceptions.printStackTrace(ex);
-        }
+    public static GlobalState getGlobalState() {
+        return sGlobalState;
+    }
 
-        io.getOut().println(s);
-        io.getOut().close();
+    public static int getIconSizeToolBar() {
+        return FxHelper.getUIScaled(ICON_SIZE_TOOLBAR);
     }
 
 }

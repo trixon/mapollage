@@ -51,7 +51,7 @@ import org.openide.windows.IOFolding;
 import org.openide.windows.IOProvider;
 import org.openide.windows.InputOutput;
 import org.openide.windows.OutputEvent;
-import org.openide.windows.OutputListener;
+import se.trixon.almond.nbp.output.OutputAdapter;
 import se.trixon.almond.nbp.output.OutputHelper;
 import se.trixon.almond.nbp.output.OutputLineMode;
 import se.trixon.almond.util.Dict;
@@ -161,26 +161,29 @@ public class Executor implements Runnable {
 //        }
             if (mRunning.get()) {
                 jobEnded(OutputLineMode.OK, Dict.DONE.toString());
+
+                try {
+                    mInputOutput.getOut().println();
+                    mInputOutput.getOut().println(mBundle.getString("displayKml"), null, true);
+                } catch (IOException ex) {
+                    Exceptions.printStackTrace(ex);
+                }
+                var foldHandle = IOFolding.startFold(mInputOutput, false);
+                mOutputHelper.println(OutputLineMode.INFO, mDocumentGenerator.getKmlString());
+                foldHandle.finish();
+
                 mInputOutput.getOut().print("\n%s ".formatted(Dict.OPEN.toString()));
                 try {
-                    IOColorPrint.print(mInputOutput, mTask.getDestinationFile().getAbsolutePath(), new OutputListener() {
+                    IOColorPrint.print(mInputOutput, mTask.getDestinationFile().getAbsolutePath(), new OutputAdapter() {
                         @Override
                         public void outputLineAction(OutputEvent ev) {
                             SystemHelper.desktopOpenOrElseParent(mTask.getDestinationFile());
                         }
-
-                        @Override
-                        public void outputLineCleared(OutputEvent ev) {
-                        }
-
-                        @Override
-                        public void outputLineSelected(OutputEvent ev) {
-                        }
                     }, false, Color.MAGENTA);
-                    mInputOutput.getOut().println(".");
                 } catch (IOException ex) {
                     Exceptions.printStackTrace(ex);
                 }
+                mInputOutput.getOut().println(".");
             }
 
             mProgressHandle.finish();

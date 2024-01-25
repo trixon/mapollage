@@ -15,7 +15,6 @@
  */
 package se.trixon.mapollage.ui;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.UUID;
 import javafx.application.Platform;
@@ -23,14 +22,14 @@ import javafx.scene.Scene;
 import javax.swing.SwingUtilities;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
-import org.openide.util.Exceptions;
-import org.openide.windows.IOProvider;
 import se.trixon.almond.nbp.fx.FxDialogPanel;
 import se.trixon.almond.nbp.fx.NbEditableList;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.control.editable_list.EditableList;
 import se.trixon.almond.util.swing.SwingHelper;
+import se.trixon.mapollage.Mapollage;
+import static se.trixon.mapollage.Mapollage.KEY_INFO;
 import se.trixon.mapollage.core.ExecutorManager;
 import se.trixon.mapollage.core.StorageManager;
 import static se.trixon.mapollage.core.StorageManager.GSON;
@@ -117,15 +116,7 @@ public class TaskListEditor {
                     return mTaskManager.getById(uuid);
                 })
                 .setOnInfo(task -> {
-                    var io = IOProvider.getDefault().getIO(task.getName(), false);
-                    io.select();
-                    try {
-                        io.getOut().reset();
-                    } catch (IOException ex) {
-                        Exceptions.printStackTrace(ex);
-                    }
-                    io.getOut().println(task.toInfoString());
-                    io.getOut().close();
+                    Mapollage.getGlobalState().put(KEY_INFO, task.toInfoString());
                 })
                 .setOnStart(task -> {
                     mExecutorManager.requestStart(task);

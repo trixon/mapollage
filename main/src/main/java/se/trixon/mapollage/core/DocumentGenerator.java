@@ -83,6 +83,7 @@ public class DocumentGenerator {
     private Folder mImageRootFolder;
     private final InputOutput mInputOutput;
     private final Kml mKml = new Kml();
+    private String mKmlString;
     private final ArrayList<LineNode> mLineNodes = new ArrayList<>();
     private int mNumOfExif;
     private int mNumOfGps;
@@ -259,28 +260,20 @@ public class DocumentGenerator {
         return mDirToDesc;
     }
 
-    private void dd(int id) {
-        System.out.println(id);
-        mRootFolder.getFeature().forEach(f -> {
-            System.out.println(f.getName());
-        });
-
+    public String getKmlString() {
+        return mKmlString;
     }
 
     public void saveToFile() {
-        dd(1);
         if (mTask.getPath().isDrawPath() && hasPaths()) {
             addPath();
-            dd(2);
 
             if (mPathFolder != null && !mPathFolder.getFeature().isEmpty()) {
                 mRootFolder.getFeature().add(mPathFolder);
-                dd(3);
             }
 
             if (mPathGapFolder != null && !mPathGapFolder.getFeature().isEmpty()) {
                 mRootFolder.getFeature().add(mPathGapFolder);
-                dd(4);
             }
         }
 
@@ -291,19 +284,13 @@ public class DocumentGenerator {
         try {
             var stringWriter = new StringWriter();
             mKml.marshal(stringWriter);
-            var kmlString = stringWriter.toString();
+            mKmlString = stringWriter.toString();
 
-            kmlString = StringUtils.replaceEach(kmlString,
+            mKmlString = StringUtils.replaceEach(mKmlString,
                     new String[]{"&lt;", "&gt;"},
                     new String[]{"<", ">"});
 
-            if (mOptions.isLogKml()) {
-                mInputOutput.getOut().println();
-                mInputOutput.getOut().println(kmlString);
-                mInputOutput.getOut().println();
-            }
-
-            FileUtils.writeStringToFile(mDestinationFile, kmlString, "utf-8");
+            FileUtils.writeStringToFile(mDestinationFile, mKmlString, "utf-8");
 
             String files = mBundle.getString("status_files");
             String exif = mBundle.getString("status_exif");
