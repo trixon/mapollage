@@ -87,9 +87,6 @@ public class OptionsPanel extends GridPane {
                 defaultCoordinateLabel
         );
 
-//        FxHelper.setPadding(new Insets(28, 0, 0, 0),
-//                mNightModeToggleSwitch
-//        );
         for (var columnConstraint : getColumnConstraints()) {
             columnConstraint.setFillWidth(true);
             columnConstraint.setHgrow(Priority.ALWAYS);
@@ -115,13 +112,11 @@ public class OptionsPanel extends GridPane {
         mThumbnailSizeSpinner.setMaxWidth(Double.MAX_VALUE);
         mThumbnailBorderSizeSpinner.setMaxWidth(Double.MAX_VALUE);
 
-//        mLocaleComboBox.valueProperty().bindBidirectional(mOptions.localeProperty());
-//        mDefaultLatitudeSpinner.valueFactoryProperty().getValue().valueProperty().bindBidirectional(mOptions.defaultLatProperty());
-//        mDefaultLongitudeSpinner.valueFactoryProperty().getValue().valueProperty().bindBidirectional(mOptions.defaultLonProperty());
-//        mThumbnailBorderSizeSpinner.valueFactoryProperty().getValue().valueProperty().bindBidirectional(mOptions.thumbnailBorderSizeProperty());
-//        mThumbnailSizeSpinner.valueFactoryProperty().getValue().valueProperty().bindBidirectional(mOptions.thumbnailSizeProperty());
-//        mCleanNs2ToggleSwitch.selectedProperty().bindBidirectional(mOptions.cleanNS2Property());
-//        mCleanSpaceToggleSwitch.selectedProperty().bindBidirectional(mOptions.cleanSpaceProperty());
+        mLocaleComboBox.valueProperty().bindBidirectional(mOptions.localeProperty());
+        mDefaultLatitudeSpinner.valueFactoryProperty().getValue().valueProperty().bindBidirectional(mOptions.defaultLatProperty());
+        mDefaultLongitudeSpinner.valueFactoryProperty().getValue().valueProperty().bindBidirectional(mOptions.defaultLonProperty());
+        mThumbnailBorderSizeSpinner.valueFactoryProperty().getValue().valueProperty().bindBidirectional(mOptions.thumbnailBorderSizeProperty());
+        mThumbnailSizeSpinner.valueFactoryProperty().getValue().valueProperty().bindBidirectional(mOptions.thumbnailSizeProperty());
     }
 
 }
