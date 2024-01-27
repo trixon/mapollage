@@ -264,7 +264,7 @@ public class DocumentGenerator {
         return mKmlString;
     }
 
-    public void saveToFile() {
+    public void saveToFile(int numOfFiles) {
         if (mTask.getPath().isDrawPath() && hasPaths()) {
             addPath();
 
@@ -308,25 +308,27 @@ public class DocumentGenerator {
             rightPad++;
 
             int leftPad = 8;
-            var summaryBuilder = new StringBuilder("\n");
+            var sb = new StringBuilder("\n");
 
-            String filesValue = "TODO";//String.valueOf(mFiles.size());
-            summaryBuilder.append(StringUtils.rightPad(files, rightPad)).append(":").append(StringUtils.leftPad(filesValue, leftPad)).append("\n");
+            var filesValue = String.valueOf(numOfFiles);
+            sb.append(StringUtils.rightPad(files, rightPad)).append(":").append(StringUtils.leftPad(filesValue, leftPad)).append("\n");
 
-            String exifValue = String.valueOf(mNumOfExif);
-            summaryBuilder.append(StringUtils.rightPad(exif, rightPad)).append(":").append(StringUtils.leftPad(exifValue, leftPad)).append("\n");
+            var exifValue = String.valueOf(mNumOfExif);
+            sb.append(StringUtils.rightPad(exif, rightPad)).append(":").append(StringUtils.leftPad(exifValue, leftPad)).append("\n");
 
-            String coordinateValue = String.valueOf(mNumOfGps);
-            summaryBuilder.append(StringUtils.rightPad(coordinate, rightPad)).append(":").append(StringUtils.leftPad(coordinateValue, leftPad)).append("\n");
+            var coordinateValue = String.valueOf(mNumOfGps);
+            sb.append(StringUtils.rightPad(coordinate, rightPad)).append(":").append(StringUtils.leftPad(coordinateValue, leftPad)).append("\n");
 
-            String placemarksValue = String.valueOf(mNumOfPlacemarks);
-            summaryBuilder.append(StringUtils.rightPad(placemarks, rightPad)).append(":").append(StringUtils.leftPad(placemarksValue, leftPad)).append("\n");
+            var placemarksValue = String.valueOf(mNumOfPlacemarks);
+            sb.append(StringUtils.rightPad(placemarks, rightPad)).append(":").append(StringUtils.leftPad(placemarksValue, leftPad)).append("\n");
 
 //            String errorValue = String.valueOf(mNumOfErrors);
 //            summaryBuilder.append(StringUtils.rightPad(error, rightPad)).append(":").append(StringUtils.leftPad(errorValue, leftPad)).append("\n");
 //            mListener.onOperationFinished(summaryBuilder.toString(), mFiles.size());
+            mInputOutput.getOut().println(sb.toString());
+
         } catch (IOException ex) {
-//            mListener.onOperationFailed(ex.getLocalizedMessage());
+            mInputOutput.getErr().println(ex.getMessage());
         }
     }
 

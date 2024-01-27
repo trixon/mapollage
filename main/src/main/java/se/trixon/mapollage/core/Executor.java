@@ -65,6 +65,8 @@ public class Executor implements Runnable {
 
     private final ResourceBundle mBundle = NbBundle.getBundle(DocumentGenerator.class);
     private DocumentGenerator mDocumentGenerator;
+    private final ArrayList<String> mErrorsIO = new ArrayList<>();
+    private final ArrayList<String> mErrorsImageProcessing = new ArrayList<>();
     private Thread mExecutorThread;
     private final List<File> mFiles = new ArrayList<>();
     private final InputOutput mInputOutput;
@@ -120,6 +122,10 @@ public class Executor implements Runnable {
 
             if (mRunning.get() && !mFiles.isEmpty()) {
                 mOutputHelper.println(OutputLineMode.INFO, mBundle.getString("found_count").formatted(mFiles.size()));
+                var foldHandle = mMainFoldHandle.startFold(false);
+                mOutputHelper.println(OutputLineMode.STANDARD, String.join("\n", mFiles.stream().map(f -> f.getAbsolutePath()).toList()));
+                foldHandle.finish();
+
                 mInputOutput.getOut().println("");
                 mOutputHelper.printSectionHeader(OutputLineMode.INFO, Dict.PROCESSING.toString(), null, null);
 
@@ -139,26 +145,33 @@ public class Executor implements Runnable {
                     try {
                         mDocumentGenerator.addPhoto(file);
                     } catch (ImageProcessingException ex) {
-                        mInputOutput.getErr().println(ex.getMessage());
+                        mErrorsImageProcessing.add(ex.getMessage());
                     } catch (IOException ex) {
-                        mInputOutput.getErr().println(file.getAbsolutePath());
+                        mErrorsIO.add(file.getAbsolutePath());
                     }
+
                     if (Thread.interrupted()) {
                         break;
                     }
+
                     mProgressHandle.progress(++progress);
                 }
             }
 
+            logErrors(mBundle.getString("title_error_io"), mErrorsIO);
+            logErrors(mBundle.getString("title_error_image"), mErrorsImageProcessing);
+
+            if (!mErrorsIO.isEmpty() || !mErrorsImageProcessing.isEmpty()) {
+                mInputOutput.getOut().println(mBundle.getString("error_description"));
+            }
+            mMainFoldHandle.silentFinish();
+
             if (mRunning.get() && !mFiles.isEmpty()) {
-                mDocumentGenerator.saveToFile();
+                mDocumentGenerator.saveToFile(mFiles.size());
                 mTask.setLastRun(System.currentTimeMillis());
                 StorageManager.save();
             }
 
-//        if (mNumOfErrors > 0) {
-//            logError(mBundle.getString("error_description"));
-//        }
             if (mRunning.get()) {
                 jobEnded(OutputLineMode.OK, Dict.DONE.toString());
 
@@ -225,9 +238,20 @@ public class Executor implements Runnable {
     }
 
     private void jobEnded(OutputLineMode outputLineMode, String action) {
-        mMainFoldHandle.finish();
+        mMainFoldHandle.silentFinish();
         mStatusDisplayer.setStatusText(action);
         mOutputHelper.printSummary(outputLineMode, action, Dict.TASK.toString());
+    }
+
+    private void logErrors(String title, ArrayList<String> list) {
+        if (list.isEmpty()) {
+            return;
+        }
+
+        mOutputHelper.println(OutputLineMode.ERROR, title);
+        var foldHandle = mMainFoldHandle.startFold(false);
+        mOutputHelper.println(OutputLineMode.STANDARD, String.join("\n", list));
+        foldHandle.finish();
     }
 
     public class FileVisitor extends SimpleFileVisitor<Path> {
