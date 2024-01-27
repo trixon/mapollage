@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2022 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,6 +20,7 @@ import java.io.File;
 import java.nio.file.FileSystems;
 import java.nio.file.PathMatcher;
 import java.util.LinkedHashMap;
+import java.util.Locale;
 import org.apache.commons.lang3.SystemUtils;
 import se.trixon.almond.util.BooleanHelper;
 import se.trixon.almond.util.Dict;
@@ -35,7 +36,7 @@ public class TaskSource extends TaskBase {
     @SerializedName("exclude_pattern")
     private String mExcludePattern = "";
     @SerializedName("file_pattern")
-    private String mFilePattern = "{*.jpg,*.JPG}";
+    private String mFilePattern = "*.jpg";
     @SerializedName("follow_links")
     private boolean mFollowLinks = true;
     @SerializedName("include_null_coordinates")
@@ -85,7 +86,7 @@ public class TaskSource extends TaskBase {
     @Override
     public boolean isValid() {
         try {
-            mPathMatcher = FileSystems.getDefault().getPathMatcher("glob:" + mFilePattern);
+            mPathMatcher = FileSystems.getDefault().getPathMatcher("glob:" + mFilePattern.toLowerCase(Locale.ROOT));
         } catch (Exception e) {
             addValidationError("invalid file pattern: " + mFilePattern);
         }

@@ -34,6 +34,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.concurrent.TimeUnit;
@@ -326,7 +327,7 @@ public class Executor implements Runnable {
                     }
 
                     var file = new File(dir.toFile(), fileName);
-                    if (file.isFile() && mPathMatcher.matches(file.toPath().getFileName())) {
+                    if (file.isFile() && mPathMatcher.matches(new File(file.getAbsolutePath().toLowerCase(Locale.ROOT)).toPath().getFileName())) {
                         boolean exclude = false;
                         if (mExcludePatterns != null) {
                             for (String excludePattern : mExcludePatterns) {
