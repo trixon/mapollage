@@ -33,7 +33,7 @@ import se.trixon.almond.nbp.fx.FxTopComponent;
 @TopComponent.Description(
         preferredID = "MainTopComponent",
         //iconBase="SET/PATH/TO/ICON/HERE",
-        persistenceType = TopComponent.PERSISTENCE_ALWAYS
+        persistenceType = TopComponent.PERSISTENCE_NEVER
 )
 @TopComponent.Registration(mode = "explorer", openAtStartup = true)
 @ActionID(category = "Window", id = "se.trixon.mapollage.ui.MainTopComponent")
