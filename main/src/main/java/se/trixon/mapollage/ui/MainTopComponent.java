@@ -33,17 +33,16 @@ import se.trixon.almond.nbp.fx.FxTopComponent;
 @TopComponent.Description(
         preferredID = "MainTopComponent",
         //iconBase="SET/PATH/TO/ICON/HERE",
-        persistenceType = TopComponent.PERSISTENCE_NEVER
+        persistenceType = TopComponent.PERSISTENCE_ONLY_OPENED
 )
 @TopComponent.Registration(mode = "explorer", openAtStartup = true)
 @ActionID(category = "Window", id = "se.trixon.mapollage.ui.MainTopComponent")
 @ActionReference(path = "Menu/Window" /*, position = 333 */)
 @TopComponent.OpenActionRegistration(
-        displayName = "#CTL_MainAction",
+        displayName = "#CTL_MainTopComponent",
         preferredID = "MainTopComponent"
 )
 @Messages({
-    "CTL_MainAction=Main",
     "CTL_MainTopComponent=Tasks"
 })
 public final class MainTopComponent extends FxTopComponent {
