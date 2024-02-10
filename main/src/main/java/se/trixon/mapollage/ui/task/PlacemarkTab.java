@@ -135,10 +135,9 @@ public class PlacemarkTab extends BaseTab {
 
     private void createUI() {
         mDateFormatUriLabel.setUri("https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/text/SimpleDateFormat.html");
-        var leftBox = new VBox();
-        var rightBox = new VBox();
-        var vBox = new VBox(leftBox, rightBox);
-        setContent(vBox);
+//        var leftBox = new VBox();
+//        var rightBox = new VBox();
+//        var vBox = new VBox();
 
         mScaleSpinner.setEditable(true);
         mZoomSpinner.setEditable(true);
@@ -154,25 +153,17 @@ public class PlacemarkTab extends BaseTab {
 
         var leftInsets = FxHelper.getUIScaledInsets(0, 0, 0, 24);
         VBox.setMargin(mDatePatternComboBox, leftInsets);
+        var symbolLabel = new Label(Dict.SYMBOL.toString());
+        var scaleLabel = new Label(Dict.SCALE.toString());
+        var zoomLabel = new Label(Dict.ZOOM.toString());
 
-        leftBox.getChildren().addAll(
+        var vBox = new VBox(
                 new Label(mBundle.getString("PlacemarkTab.nameByLabel")),
                 mNameByFileRadioButton,
                 new HBox(FxHelper.getUIScaled(8), mNameByDateRadioButton, mDateFormatUriLabel),
                 mDatePatternComboBox,
-                mNameByNoRadioButton
-        );
-
-        mSymbolAsPhotoRadioButton.setToggleGroup(mSymbolToggleGroup);
-        mSymbolAsPinRadioButton.setToggleGroup(mSymbolToggleGroup);
-        var scaleLabel = new Label(Dict.SCALE.toString());
-        var zoomLabel = new Label(Dict.ZOOM.toString());
-
-        var topInsets = FxHelper.getUIScaledInsets(8, 0, 0, 0);
-        VBox.setMargin(mTimestampCheckBox, topInsets);
-
-        rightBox.getChildren().addAll(
-                new Label(Dict.SYMBOL.toString()),
+                mNameByNoRadioButton,
+                symbolLabel,
                 mSymbolAsPhotoRadioButton,
                 mSymbolAsPinRadioButton,
                 scaleLabel,
@@ -182,18 +173,41 @@ public class PlacemarkTab extends BaseTab {
                 mTimestampCheckBox
         );
 
+        mSymbolAsPhotoRadioButton.setToggleGroup(mSymbolToggleGroup);
+        mSymbolAsPinRadioButton.setToggleGroup(mSymbolToggleGroup);
+
+        var topInsets = FxHelper.getUIScaledInsets(8, 0, 0, 0);
+        VBox.setMargin(mTimestampCheckBox, topInsets);
+
+//        rightBox.getChildren().addAll(
+//                symbolLabel,
+//                mSymbolAsPhotoRadioButton,
+//                mSymbolAsPinRadioButton,
+//                scaleLabel,
+//                mScaleSpinner,
+//                zoomLabel,
+//                mZoomSpinner,
+//                mTimestampCheckBox
+//        );
         addTopPadding(
                 mNameByFileRadioButton,
                 mNameByDateRadioButton,
                 mDateFormatUriLabel,
                 mNameByNoRadioButton,
-                rightBox,
+                //                rightBox,
                 mSymbolAsPhotoRadioButton,
-                mSymbolAsPinRadioButton,
+                mSymbolAsPinRadioButton
+        );
+
+        FxHelper.setPadding(FxHelper.getUIScaledInsets(16, 0, 0, 0),
+                symbolLabel,
                 scaleLabel,
-                zoomLabel
+                zoomLabel,
+                mTimestampCheckBox
         );
 
         mDatePatternComboBox.disableProperty().bind(mNameByDateRadioButton.selectedProperty().not());
+
+        setContent(vBox);
     }
 }

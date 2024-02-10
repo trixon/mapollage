@@ -35,7 +35,6 @@ public class TaskPlacemark extends TaskBase {
     private String mDatePattern = "yyyy-MM-dd HH.mm";
     @SerializedName("name_by")
     private NameBy mNameBy = NameBy.NONE;
-    private transient final Task mProfile;
     @SerializedName("scale")
     private Double mScale = 3.0;
     @SerializedName("symbol_as")
@@ -45,8 +44,7 @@ public class TaskPlacemark extends TaskBase {
     @SerializedName("zoom")
     private Double mZoom = 4.0;
 
-    public TaskPlacemark(Task profile) {
-        mProfile = profile;
+    public TaskPlacemark() {
     }
 
 //    public TaskPlacemark(final Task profile, CommandLine commandLine) {
@@ -144,9 +142,9 @@ public class TaskPlacemark extends TaskBase {
     }
 
     @Override
-    protected TaskInfo getProfileInfo() {
-        TaskInfo profileInfo = new TaskInfo();
-        LinkedHashMap<String, String> values = new LinkedHashMap<>();
+    protected TaskInfo getTaskInfo() {
+        var taskInfo = new TaskInfo();
+        var values = new LinkedHashMap<String, String>();
 
         String nameBy = BUNDLE_UI.getString("PlacemarkTab.nameByNoRadioButton");
 
@@ -165,10 +163,10 @@ public class TaskPlacemark extends TaskBase {
         values.put(Dict.SCALE.toString(), String.valueOf(mScale));
         values.put(Dict.ZOOM.toString(), String.valueOf(mZoom));
 
-        profileInfo.setTitle(getTitle());
-        profileInfo.setValues(values);
+        taskInfo.setTitle(getTitle());
+        taskInfo.setValues(values);
 
-        return profileInfo;
+        return taskInfo;
     }
 
     public enum NameBy {

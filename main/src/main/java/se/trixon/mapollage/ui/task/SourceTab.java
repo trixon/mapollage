@@ -18,15 +18,19 @@ package se.trixon.mapollage.ui.task;
 import java.util.function.Predicate;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javax.swing.JFileChooser;
 import org.controlsfx.glyphfont.FontAwesome;
 import org.controlsfx.validation.Validator;
 import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.control.FileChooserPaneSwingFx;
 import se.trixon.mapollage.core.Task;
 
@@ -36,7 +40,8 @@ import se.trixon.mapollage.core.Task;
  */
 public class SourceTab extends BaseTab {
 
-    private final TextField mDescTextField = new TextField();
+    private final TextArea mDescTextArea = new TextArea();
+
     private final TextField mExcludeTextField = new TextField();
     private final TextField mFilePatternField = new TextField();
     private final CheckBox mIncludeCheckBox = new CheckBox(mBundle.getString("SourceTab.includeNullCoordinateCheckBox"));
@@ -44,8 +49,6 @@ public class SourceTab extends BaseTab {
     private final TextField mNameTextField = new TextField();
     private final CheckBox mRecursiveCheckBox = new CheckBox(Dict.SUBDIRECTORIES.toString());
     private final FileChooserPaneSwingFx mSourceChooser = new FileChooserPaneSwingFx(Dict.SELECT.toString(), Dict.IMAGE_DIRECTORY.toString(), Almond.getFrame(), JFileChooser.DIRECTORIES_ONLY);
-    private final HBox mhBox = new HBox(8);
-    private final VBox mvBox = new VBox();
 
     public SourceTab() {
         setText(Dict.SOURCE.toString());
@@ -61,7 +64,7 @@ public class SourceTab extends BaseTab {
         var taskSource = mTask.getSource();
 
         mNameTextField.setText(mTask.getName());
-        mDescTextField.setText(mTask.getDescriptionString());
+        mDescTextArea.setText(mTask.getDescriptionString());
 
         mSourceChooser.setPath(taskSource.getDir());
         mExcludeTextField.setText(taskSource.getExcludePattern());
@@ -70,12 +73,14 @@ public class SourceTab extends BaseTab {
         mRecursiveCheckBox.setSelected(taskSource.isRecursive());
         mLinksCheckBox.setSelected(taskSource.isFollowLinks());
         mIncludeCheckBox.setSelected(taskSource.isIncludeNullCoordinate());
+
+        mNameTextField.requestFocus();
     }
 
     @Override
     public void save() {
         mTask.setName(mNameTextField.getText());
-        mTask.setDescriptionString(mDescTextField.getText());
+        mTask.setDescriptionString(mDescTextArea.getText());
 
         var taskSource = mTask.getSource();
         taskSource.setDir(mSourceChooser.getPath());
@@ -95,30 +100,34 @@ public class SourceTab extends BaseTab {
 
         mExcludeTextField.setTooltip(new Tooltip(mBundle.getString("SourceTab.excludeTextField.toolTip")));
 
-        mhBox.getChildren().addAll(mRecursiveCheckBox, mLinksCheckBox, mIncludeCheckBox);
+        var hBox = new HBox(FxHelper.getUIScaled(8), mRecursiveCheckBox, mLinksCheckBox, mIncludeCheckBox);
 
+        var gp = new GridPane(FxHelper.getUIScaled(8), FxHelper.getUIScaled(2));
         addTopPadding(
                 descLabel,
                 mSourceChooser,
-                filePatternLabel,
-                excludeLabel,
-                mhBox
+                gp
         );
 
-        mvBox.getChildren().addAll(
+        FxHelper.setPadding(FxHelper.getUIScaledInsets(16, 0, 0, 0), hBox);
+
+        gp.addRow(0, filePatternLabel, excludeLabel);
+        gp.addRow(1, mFilePatternField, mExcludeTextField);
+
+        var vBox = new VBox(
                 nameLabel,
                 mNameTextField,
                 descLabel,
-                mDescTextField,
+                mDescTextArea,
                 mSourceChooser,
-                filePatternLabel,
-                mFilePatternField,
-                excludeLabel,
-                mExcludeTextField,
-                mhBox
+                gp,
+                hBox
         );
 
-        setContent(mvBox);
+        FxHelper.autoSizeColumn(gp, 2);
+        VBox.setVgrow(mDescTextArea, Priority.ALWAYS);
+
+        setContent(vBox);
     }
 
     private void initValidation() {
@@ -131,7 +140,7 @@ public class SourceTab extends BaseTab {
 
         sValidationSupport.registerValidator(mNameTextField, indicateRequired, Validator.createEmptyValidator(message));
         sValidationSupport.registerValidator(mNameTextField, indicateRequired, Validator.createPredicateValidator(namePredicate, message));
-        sValidationSupport.registerValidator(mDescTextField, indicateRequired, Validator.createEmptyValidator(message));
+        sValidationSupport.registerValidator(mDescTextArea, indicateRequired, Validator.createEmptyValidator(message));
         sValidationSupport.registerValidator(mSourceChooser.getTextField(), indicateRequired, Validator.createEmptyValidator(message));
         sValidationSupport.registerValidator(mFilePatternField, indicateRequired, Validator.createEmptyValidator(message));
     }

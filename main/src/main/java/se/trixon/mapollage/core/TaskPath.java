@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2022 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,14 +30,12 @@ public class TaskPath extends TaskBase {
     private boolean mDrawPath = true;
     @SerializedName("draw_polygon")
     private boolean mDrawPolygon = true;
-    private transient final Task mProfile;
     @SerializedName("split_by")
     private SplitBy mSplitBy = SplitBy.MONTH;
     @SerializedName("width")
     private Double mWidth = 2.0;
 
-    public TaskPath(Task profile) {
-        mProfile = profile;
+    public TaskPath() {
     }
 
     public SplitBy getSplitBy() {
@@ -82,6 +80,22 @@ public class TaskPath extends TaskBase {
         mWidth = width;
     }
 
+    @Override
+    protected TaskInfo getTaskInfo() {
+        var taskInfo = new TaskInfo();
+        var values = new LinkedHashMap<String, String>();
+        values.put(BUNDLE_UI.getString("PathTab.drawPolygonCheckBox"), BooleanHelper.asYesNo(mDrawPolygon));
+        values.put(BUNDLE_UI.getString("PathTab.drawPathCheckBox"), BooleanHelper.asYesNo(mDrawPath));
+        values.put(Dict.Geometry.WIDTH.toString(), String.valueOf(mWidth));
+
+        values.put(Dict.SPLIT_BY.toString(), getLabel(mSplitBy));
+
+        taskInfo.setTitle(getTitle());
+        taskInfo.setValues(values);
+
+        return taskInfo;
+    }
+
     private String getLabel(SplitBy splitBy) {
         switch (splitBy) {
             case NONE:
@@ -99,22 +113,6 @@ public class TaskPath extends TaskBase {
             default:
                 return null;
         }
-    }
-
-    @Override
-    protected TaskInfo getProfileInfo() {
-        TaskInfo profileInfo = new TaskInfo();
-        LinkedHashMap<String, String> values = new LinkedHashMap<>();
-        values.put(BUNDLE_UI.getString("PathTab.drawPolygonCheckBox"), BooleanHelper.asYesNo(mDrawPolygon));
-        values.put(BUNDLE_UI.getString("PathTab.drawPathCheckBox"), BooleanHelper.asYesNo(mDrawPath));
-        values.put(Dict.Geometry.WIDTH.toString(), String.valueOf(mWidth));
-
-        values.put(Dict.SPLIT_BY.toString(), getLabel(mSplitBy));
-
-        profileInfo.setTitle(getTitle());
-        profileInfo.setValues(values);
-
-        return profileInfo;
     }
 
     public enum SplitBy {

@@ -28,28 +28,37 @@ import se.trixon.mapollage.ui.task.BaseTab;
  */
 public abstract class TaskBase {
 
-    protected static StringBuilder sValidationErrorBuilder;
     protected static final ResourceBundle BUNDLE = NbBundle.getBundle(Mapollage.class);
     protected static final ResourceBundle BUNDLE_UI = NbBundle.getBundle(BaseTab.class);
     protected static final Options mOptions = Options.getInstance();
+    protected static StringBuilder sValidationErrorBuilder;
+    private transient Task mTask;
 
     public TaskBase() {
+    }
+
+    public Task getTask() {
+        return mTask;
     }
 
     public abstract String getTitle();
 
     public abstract boolean isValid();
 
+    public void setTask(Task task) {
+        mTask = task;
+    }
+
     public String toDebugString() {
-        TaskInfo profileInfo = getProfileInfo();
-        int maxLength = profileInfo.getMaxLength() + 3;
+        var taskInfo = getTaskInfo();
+        int maxLength = taskInfo.getMaxLength() + 3;
 
         String separator = " : ";
         StringBuilder builder = new StringBuilder("\n");
 
-        builder.append(profileInfo.getTitle()).append("\n");
+        builder.append(taskInfo.getTitle()).append("\n");
 
-        profileInfo.getValues().entrySet().forEach((entry) -> {
+        taskInfo.getValues().entrySet().forEach((entry) -> {
             String key = entry.getKey();
             String value = entry.getValue();
             builder.append(StringUtils.leftPad(key, maxLength)).append(separator).append(value).append("\n");
@@ -62,5 +71,5 @@ public abstract class TaskBase {
         sValidationErrorBuilder.append(string).append("\n");
     }
 
-    protected abstract TaskInfo getProfileInfo();
+    protected abstract TaskInfo getTaskInfo();
 }

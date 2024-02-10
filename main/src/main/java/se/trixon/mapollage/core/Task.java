@@ -36,13 +36,13 @@ import se.trixon.mapollage.ui.options.OptionsPanel;
 public class Task extends TaskBase implements EditableListItem {
 
     @SerializedName("description")
-    private TaskDescription mDescription = new TaskDescription(this);
+    private TaskDescription mDescription = new TaskDescription();
     @SerializedName("descriptionString")
     private String mDescriptionString;
     @SerializedName("destinationFile")
     private File mDestinationFile;
     @SerializedName("folder")
-    private TaskFolder mFolder = new TaskFolder(this);
+    private TaskFolder mFolder = new TaskFolder();
     @SerializedName("uuid")
     private String mId = UUID.randomUUID().toString();
     @SerializedName("last_run")
@@ -50,13 +50,13 @@ public class Task extends TaskBase implements EditableListItem {
     @SerializedName("name")
     private String mName;
     @SerializedName("path")
-    private TaskPath mPath = new TaskPath(this);
+    private TaskPath mPath = new TaskPath();
     @SerializedName("photo")
-    private TaskPhoto mPhoto = new TaskPhoto(this);
+    private TaskPhoto mPhoto = new TaskPhoto();
     @SerializedName("placemark")
-    private TaskPlacemark mPlacemark = new TaskPlacemark(this);
+    private TaskPlacemark mPlacemark = new TaskPlacemark();
     @SerializedName("source")
-    private TaskSource mSource = new TaskSource(this);
+    private TaskSource mSource = new TaskSource();
 
     public Task() {
     }
@@ -142,6 +142,15 @@ public class Task extends TaskBase implements EditableListItem {
         return sValidationErrorBuilder.length() == 0;
     }
 
+    public void postLoad() {
+        mDescription.setTask(this);
+        mFolder.setTask(this);
+        mPath.setTask(this);
+        mPhoto.setTask(this);
+        mPlacemark.setTask(this);
+        mSource.setTask(this);
+    }
+
     public void setDescription(TaskDescription description) {
         mDescription = description;
     }
@@ -189,13 +198,13 @@ public class Task extends TaskBase implements EditableListItem {
     @Override
     public String toDebugString() {
         var taskInfos = List.of(
-                mSource.getProfileInfo(),
-                mFolder.getProfileInfo(),
-                mPath.getProfileInfo(),
-                mPlacemark.getProfileInfo(),
-                mDescription.getProfileInfo(),
-                mPhoto.getProfileInfo(),
-                getProfileInfo()
+                mSource.getTaskInfo(),
+                mFolder.getTaskInfo(),
+                mPath.getTaskInfo(),
+                mPlacemark.getTaskInfo(),
+                mDescription.getTaskInfo(),
+                mPhoto.getTaskInfo(),
+                getTaskInfo()
         );
 
         int maxLength = Integer.MIN_VALUE;
@@ -226,13 +235,13 @@ public class Task extends TaskBase implements EditableListItem {
 
     public String toInfoString() {
         var taskInfos = List.of(
-                mSource.getProfileInfo(),
-                mFolder.getProfileInfo(),
-                mPath.getProfileInfo(),
-                mPlacemark.getProfileInfo(),
-                mDescription.getProfileInfo(),
-                mPhoto.getProfileInfo(),
-                getProfileInfo()
+                mSource.getTaskInfo(),
+                mFolder.getTaskInfo(),
+                mPath.getTaskInfo(),
+                mPlacemark.getTaskInfo(),
+                mDescription.getTaskInfo(),
+                mPhoto.getTaskInfo(),
+                getTaskInfo()
         );
 
         int maxLength = Integer.MIN_VALUE;
@@ -264,10 +273,10 @@ public class Task extends TaskBase implements EditableListItem {
     }
 
     @Override
-    protected TaskInfo getProfileInfo() {
+    protected TaskInfo getTaskInfo() {
         ResourceBundle bundle = NbBundle.getBundle(OptionsPanel.class);
-        TaskInfo profileInfo = new TaskInfo();
-        LinkedHashMap<String, String> values = new LinkedHashMap<>();
+        var taskInfo = new TaskInfo();
+        var values = new LinkedHashMap<String, String>();
 
         values.put(Dict.CALENDAR_LANGUAGE.toString(), mOptions.getLocale().getDisplayName());
         values.put(Dict.THUMBNAIL.toString(), String.valueOf(mOptions.getThumbnailSize()));
@@ -275,9 +284,9 @@ public class Task extends TaskBase implements EditableListItem {
         values.put(String.format("%s %s", Dict.DEFAULT.toString(), Dict.LATITUDE.toString()), String.valueOf(mOptions.getDefaultLat()));
         values.put(String.format("%s %s", Dict.DEFAULT.toString(), Dict.LONGITUDE.toString()), String.valueOf(mOptions.getDefaultLon()));
 
-        profileInfo.setTitle(Dict.OPTIONS.toString());
-        profileInfo.setValues(values);
+        taskInfo.setTitle(Dict.OPTIONS.toString());
+        taskInfo.setValues(values);
 
-        return profileInfo;
+        return taskInfo;
     }
 }

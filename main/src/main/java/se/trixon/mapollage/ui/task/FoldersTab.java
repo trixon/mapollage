@@ -25,13 +25,11 @@ import javafx.collections.FXCollections;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import org.apache.commons.lang3.StringUtils;
 import org.controlsfx.glyphfont.FontAwesome;
@@ -56,8 +54,6 @@ public class FoldersTab extends BaseTab {
     private final RadioButton mFolderByRegexRadioButton = new RadioButton(mBundle.getString("FoldersTab.folderByRegexRadioButton"));
     private final TextField mRegexDefaultTextField = new TextField();
     private final TextField mRegexTextField = new TextField();
-    private final TextArea mRootDescTextArea = new TextArea();
-    private final TextField mRootNameTextField = new TextField();
     private final ToggleGroup mToggleGroup = new ToggleGroup();
 
     public FoldersTab() {
@@ -72,8 +68,6 @@ public class FoldersTab extends BaseTab {
         mTask = task;
 
         var taskFolder = mTask.getFolder();
-        mRootNameTextField.setText(taskFolder.getRootName());
-        mRootDescTextArea.setText(taskFolder.getRootDescription());
         mDatePatternComboBox.setValue(taskFolder.getDatePattern());
         mRegexTextField.setText(taskFolder.getRegex());
         mRegexDefaultTextField.setText(taskFolder.getRegexDefault());
@@ -97,8 +91,6 @@ public class FoldersTab extends BaseTab {
     @Override
     public void save() {
         var taskFolder = mTask.getFolder();
-        taskFolder.setRootName(mRootNameTextField.getText());
-        taskFolder.setRootDescription(mRootDescTextArea.getText());
         taskFolder.setDatePattern(mDatePatternComboBox.getValue());
         taskFolder.setRegex(mRegexTextField.getText());
         taskFolder.setRegexDefault(mRegexDefaultTextField.getText());
@@ -120,27 +112,12 @@ public class FoldersTab extends BaseTab {
 
     private void createUI() {
         mDateFormatUriLabel.setUri("https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/text/SimpleDateFormat.html");
-        var leftBox = new VBox();
-        var rightBox = new VBox();
+        var vBox = new VBox();
 
-        setContent(leftBox);
+        setContent(vBox);
 
-        //Left Pane
-        var rootNameLabel = new Label(mBundle.getString("FoldersTab.rootNameLabel"));
-        var rootDescLabel = new Label(mBundle.getString("FoldersTab.rootDescriptionLabel"));
         var regexLabel = new Label(Dict.DEFAULT_VALUE.toString());
 
-        leftBox.getChildren().addAll(
-                rootNameLabel,
-                mRootNameTextField,
-                rootDescLabel,
-                mRootDescTextArea,
-                rightBox
-        );
-
-        VBox.setVgrow(mRootDescTextArea, Priority.ALWAYS);
-
-        //Right Pane
         mFolderByDirectoryRadioButton.setToggleGroup(mToggleGroup);
         mFolderByDateRadioButton.setToggleGroup(mToggleGroup);
         mFolderByRegexRadioButton.setToggleGroup(mToggleGroup);
@@ -151,7 +128,7 @@ public class FoldersTab extends BaseTab {
         mDatePatternComboBox.setItems(FXCollections.observableList(Arrays.asList(mBundle.getString("dateFormats").split(";"))));
 
         var label = new Label(mBundle.getString("FoldersTab.folderByLabel"));
-        rightBox.getChildren().addAll(
+        vBox.getChildren().addAll(
                 label,
                 mFolderByDirectoryRadioButton,
                 new HBox(FxHelper.getUIScaled(8), mFolderByDateRadioButton, mDateFormatUriLabel),
@@ -164,14 +141,12 @@ public class FoldersTab extends BaseTab {
         );
 
         addTopPadding(
-                rootDescLabel,
                 mFolderByDirectoryRadioButton,
                 mFolderByDateRadioButton,
                 mDateFormatUriLabel,
                 mFolderByRegexRadioButton,
                 regexLabel,
-                mFolderByNoneRadioButton,
-                rightBox
+                mFolderByNoneRadioButton
         );
 
         var leftInsets = FxHelper.getUIScaledInsets(0, 0, 0, 24);
@@ -231,7 +206,6 @@ public class FoldersTab extends BaseTab {
             }
         };
 
-        sValidationSupport.registerValidator(mRootNameTextField, indicateRequired, Validator.createEmptyValidator(message));
         sValidationSupport.registerValidator(mDatePatternComboBox, indicateRequired, Validator.createPredicateValidator(datePredicate, message));
         sValidationSupport.registerValidator(mRegexTextField, indicateRequired, Validator.createPredicateValidator(regexPredicate, message));
         sValidationSupport.registerValidator(mRegexDefaultTextField, indicateRequired, Validator.createPredicateValidator(regexDefaultPredicate, message));

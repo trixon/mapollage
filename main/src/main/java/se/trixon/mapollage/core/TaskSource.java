@@ -42,12 +42,10 @@ public class TaskSource extends TaskBase {
     @SerializedName("include_null_coordinates")
     private boolean mIncludeNullCoordinate = false;
     private transient PathMatcher mPathMatcher;
-    private transient final Task mProfile;
     @SerializedName("recursive")
     private boolean mRecursive = true;
 
-    public TaskSource(Task profile) {
-        mProfile = profile;
+    public TaskSource() {
     }
 
     public File getDir() {
@@ -119,9 +117,9 @@ public class TaskSource extends TaskBase {
     }
 
     @Override
-    protected TaskInfo getProfileInfo() {
-        TaskInfo profileInfo = new TaskInfo();
-        LinkedHashMap<String, String> values = new LinkedHashMap<>();
+    protected TaskInfo getTaskInfo() {
+        var taskInfo = new TaskInfo();
+        var values = new LinkedHashMap<String, String>();
         values.put(BUNDLE_UI.getString("SourceTab.sourceChooserPanel.header"), mDir.getAbsolutePath());
         values.put(Dict.FILE_PATTERN.toString(), mFilePattern);
         values.put(Dict.SUBDIRECTORIES.toString(), BooleanHelper.asYesNo(mRecursive));
@@ -129,9 +127,9 @@ public class TaskSource extends TaskBase {
         values.put(BUNDLE_UI.getString("SourceTab.includeNullCoordinateCheckBox"), BooleanHelper.asYesNo(mIncludeNullCoordinate));
         values.put(BUNDLE_UI.getString("SourceTab.excludeLabel"), mExcludePattern);
 
-        profileInfo.setTitle(getTitle());
-        profileInfo.setValues(values);
+        taskInfo.setTitle(getTitle());
+        taskInfo.setValues(values);
 
-        return profileInfo;
+        return taskInfo;
     }
 }

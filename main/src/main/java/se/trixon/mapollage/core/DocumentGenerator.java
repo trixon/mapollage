@@ -39,6 +39,7 @@ import java.nio.file.Files;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -60,7 +61,6 @@ import se.trixon.almond.nbp.output.OutputHelper;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.Scaler;
 import se.trixon.almond.util.ext.GrahamScan;
-import se.trixon.mapollage.Options;
 import se.trixon.mapollage.core.TaskDescription.DescriptionSegment;
 
 /**
@@ -88,7 +88,6 @@ public class DocumentGenerator {
     private int mNumOfExif;
     private int mNumOfGps;
     private int mNumOfPlacemarks;
-    private final Options mOptions = Options.getInstance();
     private final OutputHelper mOutputHelper;
     private Folder mPathFolder;
     private Folder mPathGapFolder;
@@ -127,9 +126,6 @@ public class DocumentGenerator {
                 .withBgColor("ff272420")
                 .withTextColor("ffeeeeee")
                 .withText("$[description]");
-
-//        mListener.onOperationStarted();
-//        mListener.onOperationLog(dateFormat.format(date));
     }
 
     public void addPhoto(File file) throws ImageProcessingException, IOException {
@@ -341,15 +337,15 @@ public class DocumentGenerator {
                 mInputOutput.getErr().println(ex.getMessage());
             }
         }
-        mRootFolder = mDocument.createAndAddFolder().withName(getSafeXmlString(mTaskFolder.getRootName())).withOpen(true);
+        mRootFolder = mDocument.createAndAddFolder().withName(getSafeXmlString(mTask.getName())).withOpen(true);
         mImageRootFolder = mRootFolder.createAndAddFolder().withName(Dict.IMAGES.toString());
 
         var href = "<a href=\"https://trixon.se/mapollage/\">Mapollage</a>";
-        var description = "<p>%s %s, %s</p>%s".formatted(
+        var description = "%s<p>%s %s, %s</p>".formatted(
+                mTask.getDescriptionString().replaceAll("\\n", "<br />"),
                 Dict.MADE_WITH.toString(),
                 href,
-                LocalDateTime.now().toString(),
-                mTaskFolder.getRootDescription().replaceAll("\\n", "<br />"));
+                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH.mm.ss")));
         mRootFolder.setDescription(getSafeXmlString(description));
 
 //        mListener.onOperationProcessingStarted();

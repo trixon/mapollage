@@ -159,6 +159,10 @@ public class StorageManager {
         }
 
         public HashMap<String, Task> getTasks() {
+            for (var task : mTasks.values()) {
+                task.postLoad();
+            }
+
             return mTasks;
         }
 

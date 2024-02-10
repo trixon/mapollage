@@ -15,7 +15,8 @@
  */
 package se.trixon.mapollage.ui.task;
 
-import javafx.event.ActionEvent;
+import javafx.geometry.Orientation;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.RadioButton;
@@ -24,11 +25,10 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
 import org.controlsfx.glyphfont.FontAwesome;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
+import se.trixon.almond.util.fx.Spacer;
 import se.trixon.mapollage.core.Task;
 import se.trixon.mapollage.core.TaskDescription;
 import se.trixon.mapollage.core.TaskDescription.DescriptionMode;
@@ -129,7 +129,7 @@ public class DescriptionTab extends BaseTab {
     }
 
     private void createUI() {
-        var staticBox = new VBox(FxHelper.getUIScaled(8));
+        var staticBox = new HBox(FxHelper.getUIScaled(24));
         var gp = new GridPane();
         setContent(gp);
 
@@ -164,36 +164,29 @@ public class DescriptionTab extends BaseTab {
         int col = 0;
         int row = 0;
 
-        gp.add(mStaticRadioButton, col, row, GridPane.REMAINING, 1);
-        gp.add(staticBox, col, ++row, GridPane.REMAINING, 1);
-        gp.addRow(++row, new HBox(8, mCustomRadioButton, mCustomResetButton));
-        gp.add(mCustomTextArea, col, ++row, GridPane.REMAINING, 1);
+        gp.add(mStaticRadioButton, col, row++, GridPane.REMAINING, 1);
+        gp.add(staticBox, col, row++, GridPane.REMAINING, 1);
+        gp.addRow(row++, new Spacer(Orientation.VERTICAL, FxHelper.getUIScaled(16)));
+        var customHBox = new HBox(FxHelper.getUIScaled(16), mCustomRadioButton, mCustomResetButton);
+        customHBox.setAlignment(Pos.CENTER_LEFT);
+        gp.addRow(row++, customHBox);
+        gp.add(mCustomTextArea, col, row++, GridPane.REMAINING, 1);
 //        gp.addRow(++row, mExternalRadioButton, mExternalDefaultCheckBox, mExternalStaticRadioButton, mExternalCustomRadioButton);
 //        gp.add(mExternalTextField, col, ++row, GridPane.REMAINING, 1);
-        mExternalRadioButton.setDisable(true);
+//        mExternalRadioButton.setDisable(true);
         //gp.setBackground(FxHelper.createBackground(Color.BISQUE));
-        GridPane.setHgrow(mExternalRadioButton, Priority.ALWAYS);
-        GridPane.setVgrow(mCustomTextArea, Priority.ALWAYS);
-        GridPane.setFillHeight(mCustomTextArea, true);
+        mCustomTextArea.setPrefColumnCount(999);
+        mCustomTextArea.setPrefRowCount(2);
+        FxHelper.autoSizeRegionHorizontal(mCustomTextArea);
+        FxHelper.autoSizeRegionVertical(mCustomTextArea);
 
-        var topInsets = FxHelper.getUIScaledInsets(8, 0, 0, 0);
-        GridPane.setMargin(mCustomTextArea, topInsets);
-        GridPane.setMargin(mExternalTextField, topInsets);
-        GridPane.setMargin(mExternalDefaultCheckBox, topInsets);
-        GridPane.setMargin(mCustomResetButton, topInsets);
-        GridPane.setMargin(mExternalStaticRadioButton, FxHelper.getUIScaledInsets(0, 8, 0, 8));
-
-        addTopPadding(
-                staticBox,
-                mCustomRadioButton,
-                mExternalRadioButton,
-                mExternalCustomRadioButton,
-                mExternalStaticRadioButton
-        );
+        var subSectionInsets = FxHelper.getUIScaledInsets(8, 0, 0, 12);
+        FxHelper.setPadding(subSectionInsets, staticBox);
+        FxHelper.setMargin(subSectionInsets, mCustomTextArea);
     }
 
     private void initListeners() {
-        mCustomResetButton.setOnAction((ActionEvent event) -> {
+        mCustomResetButton.setOnAction(actionEvent -> {
             mCustomTextArea.setText(TaskDescription.getDefaultCustomValue());
         });
     }

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2022 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -34,18 +34,12 @@ public class TaskFolder extends TaskBase {
     private transient SimpleDateFormat mFolderDateFormat;
     @SerializedName("folders_by")
     private FolderBy mFoldersBy = FolderBy.DIR;
-    private transient final Task mProfile;
     @SerializedName("regex")
     private String mRegex = "\\d{8}";
     @SerializedName("regex_default")
     private String mRegexDefault = "12345678";
-    @SerializedName("root_description")
-    private String mRootDescription = "";
-    @SerializedName("root_name")
-    private String mRootName = "";
 
-    public TaskFolder(Task profile) {
-        mProfile = profile;
+    public TaskFolder() {
     }
 
     public String getDatePattern() {
@@ -68,14 +62,6 @@ public class TaskFolder extends TaskBase {
         return mRegexDefault;
     }
 
-    public String getRootDescription() {
-        return mRootDescription;
-    }
-
-    public String getRootName() {
-        return mRootName;
-    }
-
     @Override
     public String getTitle() {
         return Dict.FOLDERS.toString();
@@ -84,8 +70,8 @@ public class TaskFolder extends TaskBase {
     @Override
     public boolean isValid() {
         boolean valid = true;
-        if (mRootName == null) {
-            addValidationError(String.format(BUNDLE.getString("invalid_value"), ROOT_NAME, mRootName));
+        if (getTask().getName() == null) {
+            addValidationError(String.format(BUNDLE.getString("invalid_value"), ROOT_NAME, getTask().getName()));
             valid = false;
         }
 
@@ -121,42 +107,31 @@ public class TaskFolder extends TaskBase {
         mRegexDefault = regexDefault;
     }
 
-    public void setRootDescription(String rootDescription) {
-        mRootDescription = rootDescription;
-    }
-
-    public void setRootName(String rootName) {
-        mRootName = rootName;
-    }
-
     @Override
-    protected TaskInfo getProfileInfo() {
-        TaskInfo profileInfo = new TaskInfo();
-        LinkedHashMap<String, String> values = new LinkedHashMap<>();
-        values.put(BUNDLE_UI.getString("FoldersTab.rootNameLabel"), mRootName);
-        values.put(BUNDLE_UI.getString("FoldersTab.rootDescriptionLabel"), mRootDescription.replaceAll("\\n", "\\\\n"));
+    protected TaskInfo getTaskInfo() {
+        var taskInfo = new TaskInfo();
+        var values = new LinkedHashMap<String, String>();
+        values.put(BUNDLE_UI.getString("FoldersTab.rootNameLabel"), getTask().getName());
+        values.put(BUNDLE_UI.getString("FoldersTab.rootDescriptionLabel"), getTask().getDescriptionString().replaceAll("\\n", "\\\\n"));
         String foldersBy = BUNDLE_UI.getString("FoldersTab.folderByNoneRadioButton");
 
         switch (mFoldersBy) {
-            case DATE:
+            case DATE ->
                 foldersBy = mDatePattern;
-                break;
 
-            case DIR:
+            case DIR ->
                 foldersBy = BUNDLE_UI.getString("FoldersTab.folderByDirectoryRadioButton");
-                break;
 
-            case REGEX:
+            case REGEX ->
                 foldersBy = mRegex;
-                break;
         }
 
         values.put(BUNDLE_UI.getString("FoldersTab.folderByLabel"), foldersBy);
 
-        profileInfo.setTitle(getTitle());
-        profileInfo.setValues(values);
+        taskInfo.setTitle(getTitle());
+        taskInfo.setValues(values);
 
-        return profileInfo;
+        return taskInfo;
     }
 
     public enum FolderBy {

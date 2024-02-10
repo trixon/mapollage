@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2022 Patrik Karlström.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -37,14 +37,12 @@ public class TaskPhoto extends TaskBase {
     private boolean mLimitHeight = true;
     @SerializedName("limit_width")
     private boolean mLimitWidth = true;
-    private transient final Task mProfile;
     @SerializedName("reference")
     private Reference mReference = Reference.ABSOLUTE;
     @SerializedName("width_limit")
     private int mWidthLimit = 1000;
 
-    public TaskPhoto(Task profile) {
-        mProfile = profile;
+    public TaskPhoto() {
     }
 
     public String getBaseUrlValue() {
@@ -114,9 +112,9 @@ public class TaskPhoto extends TaskBase {
     }
 
     @Override
-    protected TaskInfo getProfileInfo() {
-        TaskInfo profileInfo = new TaskInfo();
-        LinkedHashMap<String, String> values = new LinkedHashMap<>();
+    protected TaskInfo getTaskInfo() {
+        var taskInfo = new TaskInfo();
+        var values = new LinkedHashMap<String, String>();
 
         values.put(Dict.MAX_WIDTH.toString(), mLimitWidth ? String.valueOf(mWidthLimit) : "-");
         values.put(Dict.MAX_HEIGHT.toString(), mLimitHeight ? String.valueOf(mHeightLimit) : "-");
@@ -144,10 +142,10 @@ public class TaskPhoto extends TaskBase {
         values.put(Dict.FILE_REFERENCE.toString(), fileReference);
         values.put(BUNDLE_UI.getString("PhotoTab.lowerCaseExtCheckBox"), BooleanHelper.asYesNo(mForceLowerCaseExtension));
 
-        profileInfo.setTitle(getTitle());
-        profileInfo.setValues(values);
+        taskInfo.setTitle(getTitle());
+        taskInfo.setValues(values);
 
-        return profileInfo;
+        return taskInfo;
     }
 
     public static enum Reference {

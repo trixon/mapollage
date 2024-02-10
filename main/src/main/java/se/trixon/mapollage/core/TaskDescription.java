@@ -52,26 +52,24 @@ public class TaskDescription extends TaskBase {
     private DescriptionMode mMode = DescriptionMode.STATIC;
     @SerializedName("photo")
     private boolean mPhoto = true;
-    private transient final Task mProfile;
 
     static {
-        StringBuilder builder = new StringBuilder();
-        builder.append(DescriptionSegment.PHOTO.toHtml())
+        var sb = new StringBuilder();
+        sb.append(DescriptionSegment.PHOTO.toHtml())
                 .append(DescriptionSegment.FILENAME.toHtml())
                 .append(DescriptionSegment.DATE.toHtml())
                 .append(DescriptionSegment.COORDINATE.toHtml())
                 .append(DescriptionSegment.ALTITUDE.toHtml())
                 .append(DescriptionSegment.BEARING.toHtml());
 
-        DEFAULT_CUSTOM_VALUE = builder.toString();
+        DEFAULT_CUSTOM_VALUE = sb.toString();
     }
 
     public static String getDefaultCustomValue() {
         return DEFAULT_CUSTOM_VALUE;
     }
 
-    public TaskDescription(final Task profile) {
-        mProfile = profile;
+    public TaskDescription() {
     }
 
     public String getCustomValue() {
@@ -191,9 +189,9 @@ public class TaskDescription extends TaskBase {
     }
 
     @Override
-    protected TaskInfo getProfileInfo() {
-        TaskInfo profileInfo = new TaskInfo();
-        LinkedHashMap<String, String> values = new LinkedHashMap<>();
+    protected TaskInfo getTaskInfo() {
+        var taskInfo = new TaskInfo();
+        var values = new LinkedHashMap<String, String>();
         String mode = null;
         if (null != mMode) {
             switch (mMode) {
@@ -245,10 +243,10 @@ public class TaskDescription extends TaskBase {
             }
         }
 
-        profileInfo.setTitle(getTitle());
-        profileInfo.setValues(values);
+        taskInfo.setTitle(getTitle());
+        taskInfo.setValues(values);
 
-        return profileInfo;
+        return taskInfo;
     }
 
     public enum DescriptionMode {

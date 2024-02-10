@@ -57,7 +57,6 @@ public class TaskEditor extends TabPane {
 
         Platform.runLater(() -> {
             initValidation();
-//            mNameTextField.requestFocus();
         });
     }
 
@@ -72,6 +71,7 @@ public class TaskEditor extends TabPane {
         getBaseTabs().forEachOrdered(tab -> {
             tab.load(mTask);
         });
+        getSelectionModel().selectFirst();
     }
 
     public Task save() {
@@ -120,17 +120,17 @@ public class TaskEditor extends TabPane {
 
     }
 
+    private Stream<BaseTab> getBaseTabs() {
+        return getTabs().stream()
+                .filter(tab -> tab instanceof BaseTab)
+                .map(tab -> (BaseTab) tab);
+    }
+
     private void initValidation() {
         mValidationSupport.validationResultProperty().addListener((ObservableValue<? extends ValidationResult> observable, ValidationResult oldValue, ValidationResult newValue) -> {
             mDialogDescriptor.setValid(!mValidationSupport.isInvalid());
         });
 
         mValidationSupport.initInitialDecoration();
-    }
-
-    private Stream<BaseTab> getBaseTabs() {
-        return getTabs().stream()
-                .filter(tab -> tab instanceof BaseTab)
-                .map(tab -> (BaseTab) tab);
     }
 }
