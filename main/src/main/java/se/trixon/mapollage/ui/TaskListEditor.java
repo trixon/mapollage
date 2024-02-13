@@ -42,27 +42,19 @@ import se.trixon.mapollage.core.TaskManager;
  */
 public class TaskListEditor {
 
+    private FxDialogPanel mDialogPanel;
     private EditableList<Task> mEditableList;
-    private final TaskManager mTaskManager = TaskManager.getInstance();
     private final ExecutorManager mExecutorManager = ExecutorManager.getInstance();
+    private final Scene mScene;
     private final TaskEditor mTaskEditor;
-    private final FxDialogPanel mDialogPanel;
+    private final TaskManager mTaskManager = TaskManager.getInstance();
 
     public TaskListEditor() {
         init();
 
         mTaskEditor = new TaskEditor();
         mTaskEditor.setPadding(FxHelper.getUIScaledInsets(8, 8, 0, 8));
-
-        mDialogPanel = new FxDialogPanel() {
-            @Override
-            protected void fxConstructor() {
-                setScene(new Scene(mTaskEditor));
-            }
-        };
-
-        mDialogPanel.setPreferredSize(SwingHelper.getUIScaledDim(700, 480));
-        mDialogPanel.initFx();
+        mScene = new Scene(mTaskEditor);
     }
 
     public EditableList<Task> getEditableList() {
@@ -70,6 +62,15 @@ public class TaskListEditor {
     }
 
     private void editTask(String title, Task task) {
+        mDialogPanel = new FxDialogPanel() {
+            @Override
+            protected void fxConstructor() {
+                setScene(mScene);
+            }
+        };
+
+        mDialogPanel.setPreferredSize(SwingHelper.getUIScaledDim(700, 480));
+        mDialogPanel.initFx();
         var d = new DialogDescriptor(mDialogPanel, title);
         d.setValid(false);
         mDialogPanel.setNotifyDescriptor(d);
