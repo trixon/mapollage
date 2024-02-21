@@ -41,7 +41,6 @@ import se.trixon.mapollage.core.Task;
 public class SourceTab extends BaseTab {
 
     private final TextArea mDescTextArea = new TextArea();
-
     private final TextField mExcludeTextField = new TextField();
     private final TextField mFilePatternField = new TextField();
     private final CheckBox mIncludeCheckBox = new CheckBox(mBundle.getString("SourceTab.includeNullCoordinateCheckBox"));
