@@ -8,5 +8,5 @@ Icon=${SNAP}/meta/gui/mapollage.png
 Terminal=false
 Categories=Graphics;
 StartupNotify=true
-StartupWMClass=se.trixon.mapollage.App
+StartupWMClass=Mapollage
 

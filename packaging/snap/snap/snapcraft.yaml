@@ -1,7 +1,7 @@
 name: mapollage
 title: Mapollage
-base: core18
-version: 2.1.0
+base: core22
+version: 'REPLACE_WITH_VERSION'
 summary: Mapollage is a photo kml generator for Google Earth
 description: |
     Put your photos on the map.
@@ -16,44 +16,31 @@ license: Apache-2.0
 
 apps:
   mapollage:
-    command: bin/launcher
-    extensions:
-        - gnome-3-34
+    command: mapollage/bin/mapollage
+    extensions: [gnome]
     plugs:
         - home
         - removable-media
+        - network
 
 parts:
   mapollage:
     plugin: dump
-    source: https://github.com/trixon/mapollage/releases/download/v$SNAPCRAFT_PROJECT_VERSION/mapollage-$SNAPCRAFT_PROJECT_VERSION-bin.zip
-    #source: /root/project/mapollage-$SNAPCRAFT_PROJECT_VERSION-bin.zip
+    #source: https://github.com/trixon/mapollage/releases/download/v$SNAPCRAFT_PROJECT_VERSION/mapollage-$SNAPCRAFT_PROJECT_VERSION-linux.zip
+    source: /root/project/mapollage-$SNAPCRAFT_PROJECT_VERSION-linux.zip
     source-type: zip
-    organize:
-      '*' : mapollage
 
-  launcher:
-    plugin: dump
-    source: snap/local
-    organize:
-      'launcher': 'bin/'
-
-  apt:
+  config:
+    after: [mapollage]
     plugin: nil
-    override-build: |
-        apt install openjdk-11-jdk -y
-
-  jlink:
-    plugin: nil
-    after: [apt]
-    override-build: |
-        rm -rf $SNAPCRAFT_PRIME/jre
-
-        jlink --no-header-files \
-            --no-man-pages \
-            --strip-debug \
-            --compress=1 \
-            --add-modules java.base,java.datatransfer,java.desktop,java.logging,java.prefs,java.sql,java.xml,jdk.jfr,jdk.unsupported,jdk.unsupported.desktop \
-            --output $SNAPCRAFT_PRIME/jre
-
-        strip -p --strip-unneeded $SNAPCRAFT_PRIME/jre/lib/server/libjvm.so
+    override-prime: |
+      snapcraftctl prime
+      sed -i 's/${HOME}\/.${APPNAME}/${SNAP_USER_COMMON}\/.mapollage/' /root/prime/mapollage/bin/mapollage
+      sed -i 's/${HOME}\/.cache\/${APPNAME}/${SNAP_USER_COMMON}\/.cache\/mapollage/' /root/prime/mapollage/bin/mapollage
+      rm -r /root/prime/mapollage/platform/modules/lib/i386
+      rm -r /root/prime/mapollage/platform/modules/lib/x86
+      rm /root/prime/mapollage/platform/lib/*.dll
+      rm /root/prime/mapollage/platform/lib/*.exe
+      
+lint:
+  ignore: [library]
