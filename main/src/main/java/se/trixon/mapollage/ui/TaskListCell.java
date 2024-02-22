@@ -18,7 +18,6 @@ package se.trixon.mapollage.ui;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.control.editable_list.EditableListCell;
 import se.trixon.mapollage.core.ExecutorManager;
@@ -30,7 +29,6 @@ import se.trixon.mapollage.core.Task;
  */
 public class TaskListCell extends EditableListCell<Task> {
 
-    private final Font mDefaultFont = Font.getDefault();
     private final Label mDescLabel = new Label();
     private final Label mNameLabel = new Label();
     private final VBox mRoot = new VBox();
