@@ -1,3 +1,4 @@
+
 /*
  * Copyright 2022 Patrik Karlström.
  *
@@ -77,7 +78,7 @@ public class TaskFolder extends TaskBase {
 
         if (mFoldersBy == FolderBy.DATE) {
             try {
-                mFolderDateFormat = new SimpleDateFormat(mDatePattern, mOptions.getLocale());
+                mFolderDateFormat = new SimpleDateFormat(mDatePattern, getTask().getLocale());
             } catch (IllegalArgumentException e) {
                 addValidationError(String.format(BUNDLE.getString("invalid_value"), FOLDER_NAME, mDatePattern));
                 valid = false;

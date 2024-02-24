@@ -105,6 +105,10 @@ public class StorageManager {
             var taskItems = mTaskManager.getIdToItem();
             taskItems.clear();
             taskItems.putAll(mStorage.getTasks());
+
+            for (var task : taskItems.values()) {
+//                task.getSource().setTask(task);
+            }
         } else {
             mStorage = new Storage();
         }

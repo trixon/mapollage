@@ -45,6 +45,8 @@ public class Task extends TaskBase implements EditableListItem {
     private TaskFolder mFolder = new TaskFolder();
     @SerializedName("uuid")
     private String mId = UUID.randomUUID().toString();
+    @SerializedName("language")
+    private String mLanguage = Locale.getDefault().toLanguageTag();
     @SerializedName("last_run")
     private long mLastRun;
     @SerializedName("name")
@@ -59,6 +61,7 @@ public class Task extends TaskBase implements EditableListItem {
     private TaskSource mSource = new TaskSource();
 
     public Task() {
+        postLoad();
     }
 
     public TaskDescription getDescription() {
@@ -81,8 +84,16 @@ public class Task extends TaskBase implements EditableListItem {
         return mId;
     }
 
+    public String getLanguage() {
+        return mLanguage;
+    }
+
     public long getLastRun() {
         return mLastRun;
+    }
+
+    public Locale getLocale() {
+        return Locale.forLanguageTag(getLanguage());
     }
 
     @Override
@@ -169,6 +180,10 @@ public class Task extends TaskBase implements EditableListItem {
 
     public void setId(String id) {
         this.mId = id;
+    }
+
+    public void setLanguage(String language) {
+        mLanguage = language;
     }
 
     public void setLastRun(long lastRun) {
@@ -278,7 +293,7 @@ public class Task extends TaskBase implements EditableListItem {
         var taskInfo = new TaskInfo();
         var values = new LinkedHashMap<String, String>();
 
-        values.put(Dict.CALENDAR_LANGUAGE.toString(), mOptions.getLocale().getDisplayName());
+        values.put(Dict.CALENDAR_LANGUAGE.toString(), getLocale().getDisplayName());
         values.put(Dict.THUMBNAIL.toString(), String.valueOf(mOptions.getThumbnailSize()));
         values.put(Dict.BORDER_SIZE.toString(), String.valueOf(mOptions.getThumbnailBorderSize()));
 

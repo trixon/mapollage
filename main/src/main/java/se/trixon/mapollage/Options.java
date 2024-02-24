@@ -15,8 +15,6 @@
  */
 package se.trixon.mapollage;
 
-import java.util.Locale;
-import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
@@ -29,13 +27,10 @@ import se.trixon.almond.util.OptionsBase;
  */
 public class Options extends OptionsBase {
 
-    private static final Locale DEFAULT_LOCALE = Locale.getDefault();
-    private static final String KEY_LOCALE = "locale";
     private static final String KEY_THUMBNAIL_BORDER_SIZE = "thumbnail_border_size";
     private static final String KEY_THUMBNAIL_SIZE = "thumbnail_size";
     private final int DEFAULT_THUMBNAIL_BORDER_SIZE = 3;
     private final int DEFAULT_THUMBNAIL_SIZE = 1000;
-    private final ObjectProperty<Locale> mLocaleProperty = new SimpleObjectProperty<>();
     private final Property<Integer> mThumbnailBorderSizeProperty = new SimpleObjectProperty<>();
     private final Property<Integer> mThumbnailSizeProperty = new SimpleObjectProperty<>();
 
@@ -48,13 +43,8 @@ public class Options extends OptionsBase {
 
         mThumbnailBorderSizeProperty.setValue(getInt(KEY_THUMBNAIL_BORDER_SIZE, DEFAULT_THUMBNAIL_BORDER_SIZE));
         mThumbnailSizeProperty.setValue(getInt(KEY_THUMBNAIL_SIZE, DEFAULT_THUMBNAIL_SIZE));
-        mLocaleProperty.set(Locale.forLanguageTag(get(KEY_LOCALE, DEFAULT_LOCALE.toLanguageTag())));
 
         initListeners();
-    }
-
-    public Locale getLocale() {
-        return localeProperty().get();
     }
 
     public int getThumbnailBorderSize() {
@@ -63,14 +53,6 @@ public class Options extends OptionsBase {
 
     public int getThumbnailSize() {
         return mThumbnailSizeProperty.getValue();
-    }
-
-    public ObjectProperty<Locale> localeProperty() {
-        return mLocaleProperty;
-    }
-
-    public void setLocale(Locale locale) {
-        mLocaleProperty.set(locale);
     }
 
     public void setThumbnailBorderSize(int size) {
@@ -96,13 +78,11 @@ public class Options extends OptionsBase {
 
         mThumbnailBorderSizeProperty.addListener(changeListener);
         mThumbnailSizeProperty.addListener(changeListener);
-        mLocaleProperty.addListener(changeListener);
     }
 
     private void save() {
         put(KEY_THUMBNAIL_BORDER_SIZE, getThumbnailBorderSize());
         put(KEY_THUMBNAIL_SIZE, getThumbnailSize());
-        put(KEY_LOCALE, getLocale().toLanguageTag());
     }
 
     private static class Holder {

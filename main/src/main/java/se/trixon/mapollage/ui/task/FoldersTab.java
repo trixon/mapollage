@@ -216,7 +216,7 @@ public class FoldersTab extends BaseTab {
         String datePreview;
 
         try {
-            var simpleDateFormat = new SimpleDateFormat(mDatePatternComboBox.getValue(), mOptions.getLocale());
+            var simpleDateFormat = new SimpleDateFormat(mDatePatternComboBox.getValue(), getLocale());
             datePreview = simpleDateFormat.format(new Date(System.currentTimeMillis()));
         } catch (IllegalArgumentException ex) {
             datePreview = Dict.Dialog.ERROR.toString();

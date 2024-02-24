@@ -16,8 +16,10 @@
 package se.trixon.mapollage.ui.task;
 
 import java.util.function.Predicate;
+import javafx.geometry.Orientation;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.Separator;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -32,6 +34,7 @@ import se.trixon.almond.nbp.Almond;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.control.FileChooserPaneSwingFx;
+import se.trixon.almond.util.fx.control.LocaleComboBox;
 import se.trixon.mapollage.core.Task;
 
 /**
@@ -47,6 +50,7 @@ public class SourceTab extends BaseTab {
     private final TextField mFilePatternField = new TextField();
     private final CheckBox mIncludeCheckBox = new CheckBox(mBundle.getString("SourceTab.includeNullCoordinateCheckBox"));
     private final CheckBox mLinksCheckBox = new CheckBox(Dict.FOLLOW_LINKS.toString());
+    private final LocaleComboBox mLocaleComboBox = new LocaleComboBox();
     private final TextField mNameTextField = new TextField();
     private final CheckBox mRecursiveCheckBox = new CheckBox(mBundle.getString("SourceTab.recursive"));
     private final FileChooserPaneSwingFx mSourceChooser = new FileChooserPaneSwingFx(Dict.SELECT.toString(), Dict.IMAGE_DIRECTORY.toString(), Almond.getFrame(), JFileChooser.DIRECTORIES_ONLY);
@@ -76,6 +80,9 @@ public class SourceTab extends BaseTab {
         mIncludeCheckBox.setSelected(taskSource.isIncludeNullCoordinate());
         mDefaultLatSpinner.getValueFactory().setValue(taskSource.getDefaultLat());
         mDefaultLonSpinner.getValueFactory().setValue(taskSource.getDefaultLon());
+
+        mLocaleComboBox.setValue(taskSource.getTask().getLocale());
+
         mNameTextField.requestFocus();
     }
 
@@ -94,6 +101,8 @@ public class SourceTab extends BaseTab {
         taskSource.setIncludeNullCoordinate(mIncludeCheckBox.isSelected());
         taskSource.setDefaultLat(mDefaultLatSpinner.getValue());
         taskSource.setDefaultLon(mDefaultLonSpinner.getValue());
+
+        taskSource.getTask().setLanguage(mLocaleComboBox.getValue().toLanguageTag());
     }
 
     private void createUI() {
@@ -112,14 +121,20 @@ public class SourceTab extends BaseTab {
         var longitudeLabel = new Label(Dict.LONGITUDE.toString());
         var latBox = new VBox(latitudeLabel, mDefaultLatSpinner);
         var lonBox = new VBox(longitudeLabel, mDefaultLonSpinner);
+        var calendarLanguageLabel = new Label(Dict.CALENDAR_LANGUAGE.toString());
+        var separator = new Separator(Orientation.HORIZONTAL);
 
+        int row = 0;
         var gp2 = new GridPane(FxHelper.getUIScaled(16), FxHelper.getUIScaled(4));
-        gp2.add(mIncludeCheckBox, 0, 0, 2, 1);
-        gp2.add(latBox, 0, 1);
-        gp2.add(lonBox, 1, 1);
-        gp2.add(mRecursiveCheckBox, 2, 0);
-        gp2.add(mLinksCheckBox, 3, 0);
-
+        gp2.add(mIncludeCheckBox, 0, row, 2, 1);
+        gp2.add(mRecursiveCheckBox, 2, row);
+        gp2.add(mLinksCheckBox, 3, row);
+        gp2.add(separator, 0, ++row, GridPane.REMAINING, 1);
+        gp2.add(latBox, 0, ++row);
+        gp2.add(lonBox, 1, row);
+        gp2.add(new VBox(calendarLanguageLabel, mLocaleComboBox), 2, row, 2, 1);
+//        gp2.setGridLinesVisible(true);
+//        gp2.setBackground(FxHelper.createBackground(Color.RED));
         latBox.disableProperty().bind(mIncludeCheckBox.selectedProperty().not());
         lonBox.disableProperty().bind(mIncludeCheckBox.selectedProperty().not());
 
@@ -130,6 +145,7 @@ public class SourceTab extends BaseTab {
         );
 
         FxHelper.setPadding(FxHelper.getUIScaledInsets(16, 0, 0, 0), gp2);
+        FxHelper.setPadding(FxHelper.getUIScaledInsets(12, 0, 10, 0), separator);
 
         var vBox = new VBox(
                 nameLabel,
@@ -143,7 +159,7 @@ public class SourceTab extends BaseTab {
 
         FxHelper.autoSizeColumn(gp1, 2);
         VBox.setVgrow(mDescTextArea, Priority.ALWAYS);
-
+        separator.prefWidthProperty().bind(vBox.widthProperty());
         FxHelper.setEditable(true,
                 mDefaultLonSpinner,
                 mDefaultLatSpinner

@@ -26,7 +26,6 @@ import javafx.scene.text.FontPosture;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
-import se.trixon.almond.util.fx.control.LocaleComboBox;
 import se.trixon.mapollage.Options;
 
 /**
@@ -36,7 +35,6 @@ import se.trixon.mapollage.Options;
 public class OptionsPanel extends GridPane {
 
     private final ResourceBundle mBundle = NbBundle.getBundle(OptionsPanel.class);
-    private final LocaleComboBox mLocaleComboBox = new LocaleComboBox();
     private final Options mOptions = Options.getInstance();
     private final Spinner<Integer> mThumbnailBorderSizeSpinner = new Spinner(0, 20, 2, 1);
     private final Spinner<Integer> mThumbnailSizeSpinner = new Spinner(100, 1200, 250, 10);
@@ -51,7 +49,6 @@ public class OptionsPanel extends GridPane {
         //setGridLinesVisible(true);
         FxHelper.autoSizeColumn(this, 2);
 
-        var calendarLanguageLabel = new Label(Dict.CALENDAR_LANGUAGE.toString());
         var placemarkLabel = new Label(Dict.PLACEMARK.toString());
         var thumbnailLabel = new Label(Dict.THUMBNAIL.toString());
         var borderSizeLabel = new Label(mBundle.getString("OptionsPanel.borderSizeLabel"));
@@ -63,8 +60,6 @@ public class OptionsPanel extends GridPane {
         placemarkLabel.setFont(font);
 
         int row = 0;
-        add(calendarLanguageLabel, 0, row++, REMAINING, 1);
-        add(mLocaleComboBox, 0, row++, REMAINING, 1);
         add(placemarkLabel, 0, row++, REMAINING, 1);
         add(thumbnailLabel, 0, row, 1, 1);
         add(borderSizeLabel, 1, row++, 1, 1);
@@ -90,11 +85,9 @@ public class OptionsPanel extends GridPane {
                 mThumbnailSizeSpinner
         );
 
-        mLocaleComboBox.setMaxWidth(Double.MAX_VALUE);
         mThumbnailSizeSpinner.setMaxWidth(Double.MAX_VALUE);
         mThumbnailBorderSizeSpinner.setMaxWidth(Double.MAX_VALUE);
 
-        mLocaleComboBox.valueProperty().bindBidirectional(mOptions.localeProperty());
         mThumbnailBorderSizeSpinner.valueFactoryProperty().getValue().valueProperty().bindBidirectional(mOptions.thumbnailBorderSizeProperty());
         mThumbnailSizeSpinner.valueFactoryProperty().getValue().valueProperty().bindBidirectional(mOptions.thumbnailSizeProperty());
     }

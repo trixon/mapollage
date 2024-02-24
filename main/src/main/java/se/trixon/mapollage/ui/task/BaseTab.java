@@ -60,8 +60,8 @@ public abstract class BaseTab extends Tab {
         });
     }
 
-    public Locale getDateFormatLocale() {
-        return mOptions.getLocale();
+    public Locale getLocale() {
+        return mTask.getLocale();
     }
 
     public String getTitle() {
