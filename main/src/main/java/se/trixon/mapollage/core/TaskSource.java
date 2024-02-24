@@ -31,6 +31,12 @@ import se.trixon.almond.util.Dict;
  */
 public class TaskSource extends TaskBase {
 
+    private final double DEFAULT_LAT = 57.6;
+    private final double DEFAULT_LON = 11.3;
+    @SerializedName("defLat")
+    private double mDefaultLat = DEFAULT_LAT;
+    @SerializedName("defLon")
+    private double mDefaultLon = DEFAULT_LON;
     @SerializedName("source")
     private File mDir = SystemUtils.getUserHome();
     @SerializedName("exclude_pattern")
@@ -46,6 +52,14 @@ public class TaskSource extends TaskBase {
     private boolean mRecursive = true;
 
     public TaskSource() {
+    }
+
+    public double getDefaultLat() {
+        return mDefaultLat;
+    }
+
+    public double getDefaultLon() {
+        return mDefaultLon;
     }
 
     public File getDir() {
@@ -92,6 +106,14 @@ public class TaskSource extends TaskBase {
         return true;
     }
 
+    public void setDefaultLat(double defaultLat) {
+        mDefaultLat = defaultLat;
+    }
+
+    public void setDefaultLon(double defaultLon) {
+        mDefaultLon = defaultLon;
+    }
+
     public void setDir(File dir) {
         mDir = dir;
     }
@@ -126,6 +148,8 @@ public class TaskSource extends TaskBase {
         values.put(Dict.FOLLOW_LINKS.toString(), BooleanHelper.asYesNo(mFollowLinks));
         values.put(BUNDLE_UI.getString("SourceTab.includeNullCoordinateCheckBox"), BooleanHelper.asYesNo(mIncludeNullCoordinate));
         values.put(BUNDLE_UI.getString("SourceTab.excludeLabel"), mExcludePattern);
+        values.put(String.format("%s %s", Dict.DEFAULT.toString(), Dict.LATITUDE.toString()), String.valueOf(mDefaultLat));
+        values.put(String.format("%s %s", Dict.DEFAULT.toString(), Dict.LONGITUDE.toString()), String.valueOf(mDefaultLon));
 
         taskInfo.setTitle(getTitle());
         taskInfo.setValues(values);

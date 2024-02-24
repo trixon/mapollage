@@ -129,7 +129,7 @@ public class DocumentGenerator {
     }
 
     public void addPhoto(File file) throws ImageProcessingException, IOException {
-        mPhotoInfo = new PhotoInfo(file, mTaskSource.isIncludeNullCoordinate());
+        mPhotoInfo = new PhotoInfo(file, mTask);
         try {
             mPhotoInfo.init();
         } catch (ImageProcessingException | IOException e) {

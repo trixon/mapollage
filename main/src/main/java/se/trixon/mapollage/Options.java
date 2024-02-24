@@ -30,17 +30,11 @@ import se.trixon.almond.util.OptionsBase;
 public class Options extends OptionsBase {
 
     private static final Locale DEFAULT_LOCALE = Locale.getDefault();
-    private static final String KEY_DEFAULT_LAT = "deflat";
-    private static final String KEY_DEFAULT_LON = "deflon";
     private static final String KEY_LOCALE = "locale";
     private static final String KEY_THUMBNAIL_BORDER_SIZE = "thumbnail_border_size";
     private static final String KEY_THUMBNAIL_SIZE = "thumbnail_size";
-    private final Double DEFAULT_LAT = 57.6;
-    private final Double DEFAULT_LON = 11.3;
     private final int DEFAULT_THUMBNAIL_BORDER_SIZE = 3;
     private final int DEFAULT_THUMBNAIL_SIZE = 1000;
-    private final Property<Double> mDefaultLatProperty = new SimpleObjectProperty<>();
-    private final Property<Double> mDefaultLonProperty = new SimpleObjectProperty<>();
     private final ObjectProperty<Locale> mLocaleProperty = new SimpleObjectProperty<>();
     private final Property<Integer> mThumbnailBorderSizeProperty = new SimpleObjectProperty<>();
     private final Property<Integer> mThumbnailSizeProperty = new SimpleObjectProperty<>();
@@ -52,30 +46,11 @@ public class Options extends OptionsBase {
     private Options() {
         mPreferences = NbPreferences.forModule(getClass());
 
-        mDefaultLatProperty.setValue(getDouble(KEY_DEFAULT_LAT, DEFAULT_LAT));
-        mDefaultLonProperty.setValue(getDouble(KEY_DEFAULT_LON, DEFAULT_LON));
-
         mThumbnailBorderSizeProperty.setValue(getInt(KEY_THUMBNAIL_BORDER_SIZE, DEFAULT_THUMBNAIL_BORDER_SIZE));
         mThumbnailSizeProperty.setValue(getInt(KEY_THUMBNAIL_SIZE, DEFAULT_THUMBNAIL_SIZE));
         mLocaleProperty.set(Locale.forLanguageTag(get(KEY_LOCALE, DEFAULT_LOCALE.toLanguageTag())));
 
         initListeners();
-    }
-
-    public Property<Double> defaultLatProperty() {
-        return mDefaultLatProperty;
-    }
-
-    public Property<Double> defaultLonProperty() {
-        return mDefaultLonProperty;
-    }
-
-    public Double getDefaultLat() {
-        return mDefaultLatProperty.getValue();
-    }
-
-    public Double getDefaultLon() {
-        return mDefaultLonProperty.getValue();
     }
 
     public Locale getLocale() {
@@ -92,14 +67,6 @@ public class Options extends OptionsBase {
 
     public ObjectProperty<Locale> localeProperty() {
         return mLocaleProperty;
-    }
-
-    public void setDefaultLat(Double value) {
-        mDefaultLatProperty.setValue(value);
-    }
-
-    public void setDefaultLon(Double value) {
-        mDefaultLonProperty.setValue(value);
     }
 
     public void setLocale(Locale locale) {
@@ -127,16 +94,12 @@ public class Options extends OptionsBase {
             save();
         };
 
-        mDefaultLatProperty.addListener(changeListener);
-        mDefaultLonProperty.addListener(changeListener);
         mThumbnailBorderSizeProperty.addListener(changeListener);
         mThumbnailSizeProperty.addListener(changeListener);
         mLocaleProperty.addListener(changeListener);
     }
 
     private void save() {
-        put(KEY_DEFAULT_LAT, getDefaultLat());
-        put(KEY_DEFAULT_LON, getDefaultLon());
         put(KEY_THUMBNAIL_BORDER_SIZE, getThumbnailBorderSize());
         put(KEY_THUMBNAIL_SIZE, getThumbnailSize());
         put(KEY_LOCALE, getLocale().toLanguageTag());

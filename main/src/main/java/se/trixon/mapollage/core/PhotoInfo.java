@@ -49,15 +49,15 @@ public class PhotoInfo {
     private GeoLocation mGeoLocation;
     private GpsDirectory mGpsDirectory;
     private final ImageScaler mImageScaler = ImageScaler.getInstance();
-    private final boolean mIncludeNullCoordinate;
     private Metadata mMetadata;
     private final Options mOptions = Options.getInstance();
     private int mOrientation;
     private Dimension mOriginalDimension = null;
+    private Task mTask;
 
-    public PhotoInfo(File file, boolean includeNullCoordinate) {
+    public PhotoInfo(File file, Task task) {
         mFile = file;
-        mIncludeNullCoordinate = includeNullCoordinate;
+        mTask = task;
     }
 
     public void createThumbnail(File dest) throws IOException {
@@ -183,13 +183,14 @@ public class PhotoInfo {
     }
 
     private GeoLocation getGeoLocation() throws ImageProcessingException {
+        var defaultGeoLocation = new GeoLocation(mTask.getSource().getDefaultLat(), mTask.getSource().getDefaultLon());
         GeoLocation geoLocation = null;
 
-        if (mIncludeNullCoordinate) {
+        if (mTask.getSource().isIncludeNullCoordinate()) {
             try {
                 geoLocation = mGpsDirectory.getGeoLocation();
                 if (geoLocation.isZero()) {
-                    geoLocation = new GeoLocation(mOptions.getDefaultLat(), mOptions.getDefaultLon());
+                    geoLocation = defaultGeoLocation;
                 }
             } catch (Exception e) {
                 //never error
@@ -204,9 +205,9 @@ public class PhotoInfo {
         }
 
         if (geoLocation == null) {
-            geoLocation = new GeoLocation(mOptions.getDefaultLat(), mOptions.getDefaultLon());
-
+            geoLocation = defaultGeoLocation;
         }
+
         return geoLocation;
     }
 }

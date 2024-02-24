@@ -18,11 +18,11 @@ package se.trixon.mapollage.ui.task;
 import java.util.function.Predicate;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.Spinner;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javax.swing.JFileChooser;
@@ -40,13 +40,15 @@ import se.trixon.mapollage.core.Task;
  */
 public class SourceTab extends BaseTab {
 
+    private final Spinner<Double> mDefaultLatSpinner = new Spinner(-90, 90, 0, 0.01);
+    private final Spinner<Double> mDefaultLonSpinner = new Spinner(-180, 180, 0, 0.01);
     private final TextArea mDescTextArea = new TextArea();
     private final TextField mExcludeTextField = new TextField();
     private final TextField mFilePatternField = new TextField();
     private final CheckBox mIncludeCheckBox = new CheckBox(mBundle.getString("SourceTab.includeNullCoordinateCheckBox"));
     private final CheckBox mLinksCheckBox = new CheckBox(Dict.FOLLOW_LINKS.toString());
     private final TextField mNameTextField = new TextField();
-    private final CheckBox mRecursiveCheckBox = new CheckBox(Dict.SUBDIRECTORIES.toString());
+    private final CheckBox mRecursiveCheckBox = new CheckBox(mBundle.getString("SourceTab.recursive"));
     private final FileChooserPaneSwingFx mSourceChooser = new FileChooserPaneSwingFx(Dict.SELECT.toString(), Dict.IMAGE_DIRECTORY.toString(), Almond.getFrame(), JFileChooser.DIRECTORIES_ONLY);
 
     public SourceTab() {
@@ -72,7 +74,8 @@ public class SourceTab extends BaseTab {
         mRecursiveCheckBox.setSelected(taskSource.isRecursive());
         mLinksCheckBox.setSelected(taskSource.isFollowLinks());
         mIncludeCheckBox.setSelected(taskSource.isIncludeNullCoordinate());
-
+        mDefaultLatSpinner.getValueFactory().setValue(taskSource.getDefaultLat());
+        mDefaultLonSpinner.getValueFactory().setValue(taskSource.getDefaultLon());
         mNameTextField.requestFocus();
     }
 
@@ -89,6 +92,8 @@ public class SourceTab extends BaseTab {
         taskSource.setRecursive(mRecursiveCheckBox.isSelected());
         taskSource.setFollowLinks(mLinksCheckBox.isSelected());
         taskSource.setIncludeNullCoordinate(mIncludeCheckBox.isSelected());
+        taskSource.setDefaultLat(mDefaultLatSpinner.getValue());
+        taskSource.setDefaultLon(mDefaultLonSpinner.getValue());
     }
 
     private void createUI() {
@@ -99,19 +104,32 @@ public class SourceTab extends BaseTab {
 
         mExcludeTextField.setTooltip(new Tooltip(mBundle.getString("SourceTab.excludeTextField.toolTip")));
 
-        var hBox = new HBox(FxHelper.getUIScaled(8), mRecursiveCheckBox, mLinksCheckBox, mIncludeCheckBox);
+        var gp1 = new GridPane(FxHelper.getUIScaled(8), FxHelper.getUIScaled(2));
+        gp1.addRow(0, filePatternLabel, excludeLabel);
+        gp1.addRow(1, mFilePatternField, mExcludeTextField);
 
-        var gp = new GridPane(FxHelper.getUIScaled(8), FxHelper.getUIScaled(2));
+        var latitudeLabel = new Label(Dict.LATITUDE.toString());
+        var longitudeLabel = new Label(Dict.LONGITUDE.toString());
+        var latBox = new VBox(latitudeLabel, mDefaultLatSpinner);
+        var lonBox = new VBox(longitudeLabel, mDefaultLonSpinner);
+
+        var gp2 = new GridPane(FxHelper.getUIScaled(16), FxHelper.getUIScaled(4));
+        gp2.add(mIncludeCheckBox, 0, 0, 2, 1);
+        gp2.add(latBox, 0, 1);
+        gp2.add(lonBox, 1, 1);
+        gp2.add(mRecursiveCheckBox, 2, 0);
+        gp2.add(mLinksCheckBox, 3, 0);
+
+        latBox.disableProperty().bind(mIncludeCheckBox.selectedProperty().not());
+        lonBox.disableProperty().bind(mIncludeCheckBox.selectedProperty().not());
+
         addTopPadding(
                 descLabel,
                 mSourceChooser,
-                gp
+                gp1
         );
 
-        FxHelper.setPadding(FxHelper.getUIScaledInsets(16, 0, 0, 0), hBox);
-
-        gp.addRow(0, filePatternLabel, excludeLabel);
-        gp.addRow(1, mFilePatternField, mExcludeTextField);
+        FxHelper.setPadding(FxHelper.getUIScaledInsets(16, 0, 0, 0), gp2);
 
         var vBox = new VBox(
                 nameLabel,
@@ -119,12 +137,22 @@ public class SourceTab extends BaseTab {
                 descLabel,
                 mDescTextArea,
                 mSourceChooser,
-                gp,
-                hBox
+                gp1,
+                gp2
         );
 
-        FxHelper.autoSizeColumn(gp, 2);
+        FxHelper.autoSizeColumn(gp1, 2);
         VBox.setVgrow(mDescTextArea, Priority.ALWAYS);
+
+        FxHelper.setEditable(true,
+                mDefaultLonSpinner,
+                mDefaultLatSpinner
+        );
+
+        FxHelper.autoCommitSpinners(
+                mDefaultLatSpinner,
+                mDefaultLonSpinner
+        );
 
         setContent(vBox);
     }

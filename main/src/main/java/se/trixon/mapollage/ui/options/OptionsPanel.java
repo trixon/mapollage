@@ -36,8 +36,6 @@ import se.trixon.mapollage.Options;
 public class OptionsPanel extends GridPane {
 
     private final ResourceBundle mBundle = NbBundle.getBundle(OptionsPanel.class);
-    private final Spinner<Double> mDefaultLatitudeSpinner = new Spinner(-90, 90, 0, 0.01);
-    private final Spinner<Double> mDefaultLongitudeSpinner = new Spinner(-180, 180, 0, 0.01);
     private final LocaleComboBox mLocaleComboBox = new LocaleComboBox();
     private final Options mOptions = Options.getInstance();
     private final Spinner<Integer> mThumbnailBorderSizeSpinner = new Spinner(0, 20, 2, 1);
@@ -56,17 +54,13 @@ public class OptionsPanel extends GridPane {
         var calendarLanguageLabel = new Label(Dict.CALENDAR_LANGUAGE.toString());
         var placemarkLabel = new Label(Dict.PLACEMARK.toString());
         var thumbnailLabel = new Label(Dict.THUMBNAIL.toString());
-        var latitudeLabel = new Label(Dict.LATITUDE.toString());
-        var longitudeLabel = new Label(Dict.LONGITUDE.toString());
         var borderSizeLabel = new Label(mBundle.getString("OptionsPanel.borderSizeLabel"));
-        var defaultCoordinateLabel = new Label(mBundle.getString("OptionsPanel.coordinateLabel"));
 
         var fontFamily = Font.getDefault().getFamily();
         var fontSize = FxHelper.getUIScaled(Font.getDefault().getSize());
         var font = Font.font(fontFamily, FontPosture.ITALIC, fontSize * 1.3);
 
         placemarkLabel.setFont(font);
-        defaultCoordinateLabel.setFont(font);
 
         int row = 0;
         add(calendarLanguageLabel, 0, row++, REMAINING, 1);
@@ -76,15 +70,9 @@ public class OptionsPanel extends GridPane {
         add(borderSizeLabel, 1, row++, 1, 1);
         add(mThumbnailSizeSpinner, 0, row, 1, 1);
         add(mThumbnailBorderSizeSpinner, 1, row++, 1, 1);
-        add(defaultCoordinateLabel, 0, row++, REMAINING, 1);
-        add(latitudeLabel, 0, row, 1, 1);
-        add(longitudeLabel, 1, row++, 1, 1);
-        add(mDefaultLatitudeSpinner, 0, row, 1, 1);
-        add(mDefaultLongitudeSpinner, 1, row++, 1, 1);
 
         FxHelper.setPadding(new Insets(8, 0, 0, 0),
-                placemarkLabel,
-                defaultCoordinateLabel
+                placemarkLabel
         );
 
         for (var columnConstraint : getColumnConstraints()) {
@@ -93,28 +81,20 @@ public class OptionsPanel extends GridPane {
         }
 
         FxHelper.setEditable(true,
-                mDefaultLongitudeSpinner,
-                mDefaultLatitudeSpinner,
                 mThumbnailSizeSpinner,
                 mThumbnailBorderSizeSpinner
         );
 
         FxHelper.autoCommitSpinners(
-                mDefaultLatitudeSpinner,
-                mDefaultLongitudeSpinner,
                 mThumbnailBorderSizeSpinner,
                 mThumbnailSizeSpinner
         );
 
         mLocaleComboBox.setMaxWidth(Double.MAX_VALUE);
-        mDefaultLatitudeSpinner.setMaxWidth(Double.MAX_VALUE);
-        mDefaultLongitudeSpinner.setMaxWidth(Double.MAX_VALUE);
         mThumbnailSizeSpinner.setMaxWidth(Double.MAX_VALUE);
         mThumbnailBorderSizeSpinner.setMaxWidth(Double.MAX_VALUE);
 
         mLocaleComboBox.valueProperty().bindBidirectional(mOptions.localeProperty());
-        mDefaultLatitudeSpinner.valueFactoryProperty().getValue().valueProperty().bindBidirectional(mOptions.defaultLatProperty());
-        mDefaultLongitudeSpinner.valueFactoryProperty().getValue().valueProperty().bindBidirectional(mOptions.defaultLonProperty());
         mThumbnailBorderSizeSpinner.valueFactoryProperty().getValue().valueProperty().bindBidirectional(mOptions.thumbnailBorderSizeProperty());
         mThumbnailSizeSpinner.valueFactoryProperty().getValue().valueProperty().bindBidirectional(mOptions.thumbnailSizeProperty());
     }
