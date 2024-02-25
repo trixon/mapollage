@@ -29,13 +29,25 @@ public class TaskPath extends TaskBase {
     @SerializedName("draw_path")
     private boolean mDrawPath = true;
     @SerializedName("draw_polygon")
-    private boolean mDrawPolygon = true;
+    private boolean mDrawPolygon = false;
+    @SerializedName("path_color")
+    private String mPathColor = "FF0000";
+    @SerializedName("path_gap_color")
+    private String mPathGapColor = "FFFF00";
     @SerializedName("split_by")
     private SplitBy mSplitBy = SplitBy.MONTH;
     @SerializedName("width")
     private Double mWidth = 2.0;
 
     public TaskPath() {
+    }
+
+    public String getPathColor() {
+        return mPathColor;
+    }
+
+    public String getPathGapColor() {
+        return mPathGapColor;
     }
 
     public SplitBy getSplitBy() {
@@ -72,6 +84,14 @@ public class TaskPath extends TaskBase {
         mDrawPolygon = drawPolygon;
     }
 
+    public void setPathColor(String pathColor) {
+        mPathColor = pathColor;
+    }
+
+    public void setPathGapColor(String pathGapColor) {
+        mPathGapColor = pathGapColor;
+    }
+
     public void setSplitBy(SplitBy splitBy) {
         mSplitBy = splitBy;
     }
@@ -97,22 +117,22 @@ public class TaskPath extends TaskBase {
     }
 
     private String getLabel(SplitBy splitBy) {
-        switch (splitBy) {
-            case NONE:
-                return Dict.DO_NOT_SPLIT.toString();
-            case HOUR:
-                return Dict.Time.HOUR.toString();
-            case DAY:
-                return Dict.Time.DAY.toString();
-            case WEEK:
-                return Dict.Time.WEEK.toString();
-            case MONTH:
-                return Dict.Time.MONTH.toString();
-            case YEAR:
-                return Dict.Time.YEAR.toString();
-            default:
-                return null;
-        }
+        return switch (splitBy) {
+            case NONE ->
+                Dict.DO_NOT_SPLIT.toString();
+            case HOUR ->
+                Dict.Time.HOUR.toString();
+            case DAY ->
+                Dict.Time.DAY.toString();
+            case WEEK ->
+                Dict.Time.WEEK.toString();
+            case MONTH ->
+                Dict.Time.MONTH.toString();
+            case YEAR ->
+                Dict.Time.YEAR.toString();
+            default ->
+                null;
+        };
     }
 
     public enum SplitBy {

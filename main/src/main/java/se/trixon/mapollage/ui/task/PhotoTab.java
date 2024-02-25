@@ -25,7 +25,6 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
-import javafx.scene.paint.Color;
 import org.controlsfx.glyphfont.FontAwesome;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
@@ -91,12 +90,8 @@ public class PhotoTab extends BaseTab {
 
         mThumbnailBorderSizeSpinner.getValueFactory().setValue(taskPhoto.getThumbnailBorderSize());
         mThumbnailSizeSpinner.getValueFactory().setValue(taskPhoto.getThumbnailSize());
-        var color = Color.YELLOW;
-        try {
-            color = FxHelper.colorFromHexRGBA(taskPhoto.getThumbnailBorderColor());
-        } catch (Exception e) {
-        }
-        mThumbnailBorderColorPicker.setValue(color);
+
+        loadColor(taskPhoto.getThumbnailBorderColor(), mThumbnailBorderColorPicker);
     }
 
     @Override
@@ -166,6 +161,7 @@ public class PhotoTab extends BaseTab {
         var thumbnailSizeLabel = new Label(mBundle.getString("PhotoTab.thumbnailSize"));
         var thumbnailBorderSizeLabel = new Label(mBundle.getString("PhotoTab.thumbnailBorderSize"));
         var thumbnailBorderColorLabel = new Label(mBundle.getString("PhotoTab.thumbnailBorderColor"));
+
         gp.addColumn(1,
                 thumbnailSizeLabel,
                 mThumbnailSizeSpinner,

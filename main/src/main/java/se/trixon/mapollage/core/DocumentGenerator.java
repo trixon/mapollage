@@ -59,6 +59,7 @@ import org.openide.util.NbBundle;
 import org.openide.windows.InputOutput;
 import se.trixon.almond.nbp.output.OutputHelper;
 import se.trixon.almond.util.Dict;
+import se.trixon.almond.util.GraphicsHelper;
 import se.trixon.almond.util.Scaler;
 import se.trixon.almond.util.ext.GrahamScan;
 import se.trixon.mapollage.core.TaskDescription.DescriptionSegment;
@@ -237,12 +238,9 @@ public class DocumentGenerator {
         mPolygonFolder = KmlFactory.createFolder()
                 .withName(Dict.POLYGON.toString())
                 .withOpen(false);
-        addPolygons(mPolygonFolder, mRootFolder.getFeature());
+        addPolygons(mPolygonFolder, mImageRootFolder.getFeature());
 
         scanForFolderRemoval(mPolygonFolder);
-//        while (scanForFolderRemoval(mPolygonFolder, false)) {
-//            //
-//        }
 
         for (var folder : mPolygonRemovals.keySet()) {
             var parentFolder = mPolygonRemovals.get(folder);
@@ -366,6 +364,9 @@ public class DocumentGenerator {
             map.computeIfAbsent(key, k -> new ArrayList<>()).add(node);
         });
 
+        var pathColor = colorConverter(mTaskPath.getPathColor());
+        var pathGapColor = colorConverter(mTaskPath.getPathGapColor());
+
         //Add paths
         for (var nodes : map.values()) {
             if (nodes.size() > 1) {
@@ -374,7 +375,7 @@ public class DocumentGenerator {
                         .withName(LineNode.getName(nodes));
                 var pathStyle = pathPlacemark.createAndAddStyle();
                 pathStyle.createAndSetLineStyle()
-                        .withColor("ff0000ff")
+                        .withColor(pathColor)
                         .withWidth(mTaskPath.getWidth());
 
                 var line = pathPlacemark
@@ -382,9 +383,7 @@ public class DocumentGenerator {
                         .withExtrude(false)
                         .withTessellate(true);
 
-                nodes.forEach(node -> {
-                    line.addToCoordinates(node.getLon(), node.getLat());
-                });
+                nodes.forEach(n -> line.addToCoordinates(n.getLon(), n.getLat()));
             }
         }
 
@@ -397,7 +396,7 @@ public class DocumentGenerator {
 
                 var pathStyle = pathPlacemark.createAndAddStyle();
                 pathStyle.createAndSetLineStyle()
-                        .withColor("ff00ffff")
+                        .withColor(pathGapColor)
                         .withWidth(mTaskPath.getWidth());
 
                 var line = pathPlacemark
@@ -474,6 +473,11 @@ public class DocumentGenerator {
         if (polygonParent == mPolygonFolder && rootCoordinates != null) {
             addPolygon(mPolygonFolder.getName(), rootCoordinates, polygonParent);
         }
+    }
+
+    private String colorConverter(String s) {
+        var c = java.awt.Color.decode("#" + s);
+        return GraphicsHelper.colorToAABBGGRR(c, "");
     }
 
     private String getDescPhoto(File sourceFile, int orientation) throws IOException {

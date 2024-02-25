@@ -18,6 +18,7 @@ package se.trixon.mapollage.ui.task;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import javafx.geometry.Insets;
+import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Tab;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
@@ -89,6 +90,14 @@ public abstract class BaseTab extends Tab {
 
     protected void invalidSettings(String message) {
         //Message.error(this, Dict.INVALID_SETTING.toString(), String.format("<html><h3>%s</h3>%s", mTitle, message));
+    }
+
+    protected void loadColor(String hex, ColorPicker colorPicker) {
+        try {
+            colorPicker.setValue(FxHelper.colorFromHexRGBA(hex));
+        } catch (Exception e) {
+            colorPicker.setValue(Color.YELLOW);
+        }
     }
 
     protected void optAppend(StringBuilder sb, boolean state, String string) {

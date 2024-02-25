@@ -16,10 +16,12 @@
 package se.trixon.mapollage.ui.task;
 
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import org.controlsfx.glyphfont.FontAwesome;
 import se.trixon.almond.util.Dict;
@@ -42,10 +44,12 @@ public class PathTab extends BaseTab {
     private final RadioButton mSplitByWeekRadioButton = new RadioButton(Dict.Time.WEEK.toString());
     private final RadioButton mSplitByYearRadioButton = new RadioButton(Dict.Time.YEAR.toString());
     private final ToggleGroup mToggleGroup = new ToggleGroup();
+    private final ColorPicker mTrackColorPicker = new ColorPicker();
+    private final ColorPicker mTrackGapColorPicker = new ColorPicker();
     private final Spinner<Double> mWidthSpinner = new Spinner(1.0, 10.0, 1.0, 0.1);
 
     public PathTab() {
-        setText(Dict.Geometry.PATH.toString());
+        setText(Dict.TRACKS.toString());
         setGraphic(FontAwesome.Glyph.CODE_FORK.getChar());
         createUI();
     }
@@ -85,6 +89,9 @@ public class PathTab extends BaseTab {
         }
 
         splitByRadioButton.setSelected(true);
+
+        loadColor(taskPath.getPathColor(), mTrackColorPicker);
+        loadColor(taskPath.getPathGapColor(), mTrackGapColorPicker);
     }
 
     @Override
@@ -93,6 +100,8 @@ public class PathTab extends BaseTab {
         taskPath.setDrawPolygon(mDrawPolygonCheckBox.isSelected());
         taskPath.setDrawPath(mDrawPathCheckBox.isSelected());
         taskPath.setWidth(mWidthSpinner.getValue());
+        taskPath.setPathColor(FxHelper.colorToHexRGB(mTrackColorPicker.getValue()));
+        taskPath.setPathGapColor(FxHelper.colorToHexRGB(mTrackGapColorPicker.getValue()));
 
         SplitBy splitBy = null;
         var toggle = mToggleGroup.getSelectedToggle();
@@ -115,12 +124,12 @@ public class PathTab extends BaseTab {
     }
 
     private void createUI() {
-        var vbox = new VBox();
-        var pathBox = new VBox();
+        var contentPane = new VBox(FxHelper.getUIScaled(4));
+        var gp = new GridPane(FxHelper.getUIScaled(8), 0);
+        var subSectionInsets = FxHelper.getUIScaledInsets(0, 0, 0, 16);
+        FxHelper.setPadding(subSectionInsets, gp);
 
-        setContent(vbox);
-        var widthLabel = new Label(Dict.Geometry.WIDTH.toString());
-        var splitByLabel = new Label(Dict.SPLIT_BY.toString());
+        setContent(contentPane);
 
         mWidthSpinner.setEditable(true);
         FxHelper.autoCommitSpinners(mWidthSpinner);
@@ -132,7 +141,12 @@ public class PathTab extends BaseTab {
         mSplitByYearRadioButton.setToggleGroup(mToggleGroup);
         mSplitByNoneRadioButton.setToggleGroup(mToggleGroup);
 
-        pathBox.getChildren().addAll(
+        var widthLabel = new Label(Dict.Geometry.WIDTH.toString());
+        var splitByLabel = new Label(Dict.SPLIT_BY.toString());
+        var trackColorLabel = new Label(mBundle.getString("PathTab.pathColor"));
+        var trackGapColorLabel = new Label(mBundle.getString("PathTab.pathGapColor"));
+
+        gp.addColumn(0,
                 widthLabel,
                 mWidthSpinner,
                 splitByLabel,
@@ -143,24 +157,35 @@ public class PathTab extends BaseTab {
                 mSplitByYearRadioButton,
                 mSplitByNoneRadioButton
         );
-        pathBox.disableProperty().bind(mDrawPathCheckBox.selectedProperty().not());
 
-        vbox.getChildren().addAll(
-                mDrawPolygonCheckBox,
+        gp.addColumn(1,
+                trackColorLabel,
+                mTrackColorPicker
+        );
+
+        gp.addColumn(2,
+                trackGapColorLabel,
+                mTrackGapColorPicker
+        );
+
+        gp.disableProperty().bind(mDrawPathCheckBox.selectedProperty().not());
+        mTrackGapColorPicker.disableProperty().bind(mSplitByNoneRadioButton.selectedProperty().or(mDrawPathCheckBox.selectedProperty().not()));
+
+        contentPane.getChildren().addAll(
                 mDrawPathCheckBox,
-                pathBox
+                gp,
+                mDrawPolygonCheckBox
         );
 
         addTopPadding(
-                mDrawPathCheckBox,
-                widthLabel,
                 splitByLabel,
                 mSplitByHourRadioButton,
                 mSplitByDayRadioButton,
                 mSplitByWeekRadioButton,
                 mSplitByMonthRadioButton,
                 mSplitByYearRadioButton,
-                mSplitByNoneRadioButton
+                mSplitByNoneRadioButton,
+                mDrawPolygonCheckBox
         );
     }
 }
