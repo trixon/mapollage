@@ -35,7 +35,6 @@ import java.util.TimeZone;
 import javax.imageio.ImageIO;
 import se.trixon.almond.util.GraphicsHelper;
 import se.trixon.almond.util.ImageScaler;
-import se.trixon.mapollage.Options;
 
 /**
  *
@@ -50,7 +49,6 @@ public class PhotoInfo {
     private GpsDirectory mGpsDirectory;
     private final ImageScaler mImageScaler = ImageScaler.getInstance();
     private Metadata mMetadata;
-    private final Options mOptions = Options.getInstance();
     private int mOrientation;
     private Dimension mOriginalDimension = null;
     private Task mTask;
@@ -62,8 +60,8 @@ public class PhotoInfo {
 
     public void createThumbnail(File dest) throws IOException {
         if (!dest.exists()) {
-            int borderSize = mOptions.getThumbnailBorderSize();
-            int thumbnailSize = mOptions.getThumbnailSize();
+            int borderSize = mTask.getPhoto().getThumbnailBorderSize();
+            int thumbnailSize = mTask.getPhoto().getThumbnailSize();
 
             var scaledImage = mImageScaler.getScaledImage(mFile, new Dimension(thumbnailSize - borderSize * 2, thumbnailSize - borderSize * 2));
             scaledImage = GraphicsHelper.rotate(scaledImage, mOrientation);

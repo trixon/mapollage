@@ -17,7 +17,6 @@ package se.trixon.mapollage.ui.task;
 
 import java.util.Locale;
 import java.util.ResourceBundle;
-import java.util.prefs.PreferenceChangeEvent;
 import javafx.geometry.Insets;
 import javafx.scene.control.Tab;
 import javafx.scene.layout.GridPane;
@@ -28,7 +27,6 @@ import org.controlsfx.glyphfont.GlyphFontRegistry;
 import org.controlsfx.validation.ValidationSupport;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.fx.FxHelper;
-import se.trixon.mapollage.Options;
 import se.trixon.mapollage.core.Task;
 import se.trixon.mapollage.core.TaskManager;
 
@@ -45,7 +43,6 @@ public abstract class BaseTab extends Tab {
     private final Insets mTopInsets = FxHelper.getUIScaledInsets(8, 0, 0, 0);
     protected final ResourceBundle mBundle = NbBundle.getBundle(BaseTab.class);
     protected final String mHeaderPrefix = " + ";
-    protected final Options mOptions = Options.getInstance();
     protected Task mTask;
     protected final TaskManager mTaskManager = TaskManager.getInstance();
     protected String mTitle;
@@ -55,9 +52,6 @@ public abstract class BaseTab extends Tab {
     }
 
     public BaseTab() {
-        mOptions.getPreferences().addPreferenceChangeListener(pce -> {
-            onPreferenceChange(pce);
-        });
     }
 
     public Locale getLocale() {
@@ -69,9 +63,6 @@ public abstract class BaseTab extends Tab {
     }
 
     public abstract void load(Task task);
-
-    public void onPreferenceChange(PreferenceChangeEvent evt) {
-    }
 
     public abstract void save();
 

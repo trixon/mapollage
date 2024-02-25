@@ -16,6 +16,7 @@
 package se.trixon.mapollage.ui.task;
 
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.Spinner;
@@ -24,6 +25,7 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
+import javafx.scene.paint.Color;
 import org.controlsfx.glyphfont.FontAwesome;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.FxHelper;
@@ -46,6 +48,9 @@ public class PhotoTab extends BaseTab {
     private final RadioButton mRefAbsoluteRadioButton = new RadioButton(Dict.ABSOLUTE.toString());
     private final RadioButton mRefRelativeRadioButton = new RadioButton(Dict.RELATIVE.toString());
     private final RadioButton mRefThumbnailRadioButton = new RadioButton(Dict.THUMBNAIL.toString());
+    private final ColorPicker mThumbnailBorderColorPicker = new ColorPicker();
+    private final Spinner<Integer> mThumbnailBorderSizeSpinner = new Spinner(0, 20, 2, 1);
+    private final Spinner<Integer> mThumbnailSizeSpinner = new Spinner(100, 1200, 250, 10);
     private final ToggleGroup mToggleGroup = new ToggleGroup();
 
     public PhotoTab() {
@@ -83,6 +88,15 @@ public class PhotoTab extends BaseTab {
 
         mRefAbsolutePathTextField.setText(taskPhoto.getBaseUrlValue());
         mLowerCaseExtCheckBox.setSelected(taskPhoto.isForceLowerCaseExtension());
+
+        mThumbnailBorderSizeSpinner.getValueFactory().setValue(taskPhoto.getThumbnailBorderSize());
+        mThumbnailSizeSpinner.getValueFactory().setValue(taskPhoto.getThumbnailSize());
+        var color = Color.YELLOW;
+        try {
+            color = FxHelper.colorFromHexRGBA(taskPhoto.getThumbnailBorderColor());
+        } catch (Exception e) {
+        }
+        mThumbnailBorderColorPicker.setValue(color);
     }
 
     @Override
@@ -94,6 +108,9 @@ public class PhotoTab extends BaseTab {
         taskPhoto.setWidthLimit(mMaxWidthSpinner.getValue());
         taskPhoto.setLimitHeight(mMaxHeightCheckBox.isSelected());
         taskPhoto.setLimitWidth(mMaxWidthCheckBox.isSelected());
+        taskPhoto.setThumbnailSize(mThumbnailSizeSpinner.getValue());
+        taskPhoto.setThumbnailBorderSize(mThumbnailBorderSizeSpinner.getValue());
+        taskPhoto.setThumbnailBorderColor(FxHelper.colorToHexRGB(mThumbnailBorderColorPicker.getValue()));
 
         if (mRefAbsolutePathRadioButton.isSelected()) {
             taskPhoto.setReference(TaskPhoto.Reference.ABSOLUTE_PATH);
@@ -110,9 +127,19 @@ public class PhotoTab extends BaseTab {
         var gp = new GridPane();
         setContent(gp);
 
-        mMaxHeightSpinner.setEditable(true);
-        mMaxWidthSpinner.setEditable(true);
-        FxHelper.autoCommitSpinners(mMaxHeightSpinner, mMaxWidthSpinner);
+        FxHelper.setEditable(true,
+                mMaxHeightSpinner,
+                mMaxWidthSpinner,
+                mThumbnailSizeSpinner,
+                mThumbnailBorderSizeSpinner
+        );
+
+        FxHelper.autoCommitSpinners(
+                mMaxHeightSpinner,
+                mMaxWidthSpinner,
+                mThumbnailBorderSizeSpinner,
+                mThumbnailSizeSpinner
+        );
 
         mRefAbsolutePathRadioButton.setToggleGroup(mToggleGroup);
         mRefAbsoluteRadioButton.setToggleGroup(mToggleGroup);
@@ -136,7 +163,17 @@ public class PhotoTab extends BaseTab {
                 mLowerCaseExtCheckBox
         );
 
-        GridPane.setHgrow(mRefAbsolutePathRadioButton, Priority.ALWAYS);
+        var thumbnailSizeLabel = new Label(mBundle.getString("PhotoTab.thumbnailSize"));
+        var thumbnailBorderSizeLabel = new Label(mBundle.getString("PhotoTab.thumbnailBorderSize"));
+        var thumbnailBorderColorLabel = new Label(mBundle.getString("PhotoTab.thumbnailBorderColor"));
+        gp.addColumn(1,
+                thumbnailSizeLabel,
+                mThumbnailSizeSpinner,
+                thumbnailBorderSizeLabel,
+                mThumbnailBorderSizeSpinner,
+                thumbnailBorderColorLabel,
+                mThumbnailBorderColorPicker
+        );
 
         addTopMargin(
                 mMaxWidthSpinner,
@@ -154,6 +191,9 @@ public class PhotoTab extends BaseTab {
 
         var leftInsets = FxHelper.getUIScaledInsets(0, 0, 0, 24);
         GridPane.setMargin(mRefAbsolutePathTextField, leftInsets);
+        GridPane.setHgrow(mRefAbsolutePathRadioButton, Priority.ALWAYS);
+        GridPane.setColumnSpan(mRefAbsolutePathTextField, GridPane.REMAINING);
+        FxHelper.autoSizeColumn(gp, 2);
 
         mMaxHeightSpinner.disableProperty().bind(mMaxHeightCheckBox.selectedProperty().not());
         mMaxWidthSpinner.disableProperty().bind(mMaxWidthCheckBox.selectedProperty().not());

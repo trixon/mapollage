@@ -21,13 +21,10 @@ import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.ResourceBundle;
 import java.util.UUID;
 import org.apache.commons.lang3.StringUtils;
-import org.openide.util.NbBundle;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.fx.control.editable_list.EditableListItem;
-import se.trixon.mapollage.ui.options.OptionsPanel;
 
 /**
  *
@@ -289,13 +286,10 @@ public class Task extends TaskBase implements EditableListItem {
 
     @Override
     protected TaskInfo getTaskInfo() {
-        ResourceBundle bundle = NbBundle.getBundle(OptionsPanel.class);
         var taskInfo = new TaskInfo();
         var values = new LinkedHashMap<String, String>();
 
         values.put(Dict.CALENDAR_LANGUAGE.toString(), getLocale().getDisplayName());
-        values.put(Dict.THUMBNAIL.toString(), String.valueOf(mOptions.getThumbnailSize()));
-        values.put(Dict.BORDER_SIZE.toString(), String.valueOf(mOptions.getThumbnailBorderSize()));
 
         taskInfo.setTitle(Dict.OPTIONS.toString());
         taskInfo.setValues(values);

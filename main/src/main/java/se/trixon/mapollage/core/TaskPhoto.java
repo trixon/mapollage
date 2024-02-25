@@ -39,6 +39,12 @@ public class TaskPhoto extends TaskBase {
     private boolean mLimitWidth = true;
     @SerializedName("reference")
     private Reference mReference = Reference.ABSOLUTE;
+    @SerializedName("thumbnail_border_color")
+    private String mThumbnailBorderColor = "FFFF00";
+    @SerializedName("thumbnail_border_size")
+    private int mThumbnailBorderSize = 3;
+    @SerializedName("thumbnail_size")
+    private int mThumbnailSize = 1000;
     @SerializedName("width_limit")
     private int mWidthLimit = 1000;
 
@@ -55,6 +61,18 @@ public class TaskPhoto extends TaskBase {
 
     public Reference getReference() {
         return mReference;
+    }
+
+    public String getThumbnailBorderColor() {
+        return mThumbnailBorderColor;
+    }
+
+    public int getThumbnailBorderSize() {
+        return mThumbnailBorderSize;
+    }
+
+    public int getThumbnailSize() {
+        return mThumbnailSize;
     }
 
     @Override
@@ -107,6 +125,18 @@ public class TaskPhoto extends TaskBase {
         mReference = reference;
     }
 
+    public void setThumbnailBorderColor(String thumbnailBorderColor) {
+        this.mThumbnailBorderColor = thumbnailBorderColor;
+    }
+
+    public void setThumbnailBorderSize(int thumbnailBorderSize) {
+        mThumbnailBorderSize = thumbnailBorderSize;
+    }
+
+    public void setThumbnailSize(int thumbnailSize) {
+        mThumbnailSize = thumbnailSize;
+    }
+
     public void setWidthLimit(int maxWidthValue) {
         mWidthLimit = maxWidthValue;
     }
@@ -118,25 +148,23 @@ public class TaskPhoto extends TaskBase {
 
         values.put(Dict.MAX_WIDTH.toString(), mLimitWidth ? String.valueOf(mWidthLimit) : "-");
         values.put(Dict.MAX_HEIGHT.toString(), mLimitHeight ? String.valueOf(mHeightLimit) : "-");
+        values.put(Dict.THUMBNAIL.toString(), String.valueOf(getTask().getPhoto().getThumbnailSize()));
+        values.put(Dict.BORDER_SIZE.toString(), String.valueOf(getTask().getPhoto().getThumbnailBorderSize()));
 
         String fileReference = null;
 
         switch (mReference) {
-            case ABSOLUTE:
+            case ABSOLUTE ->
                 fileReference = Dict.ABSOLUTE.toString();
-                break;
 
-            case ABSOLUTE_PATH:
+            case ABSOLUTE_PATH ->
                 fileReference = mBaseUrlValue;
-                break;
 
-            case RELATIVE:
+            case RELATIVE ->
                 fileReference = Dict.RELATIVE.toString();
-                break;
 
-            case THUMBNAIL:
+            case THUMBNAIL ->
                 fileReference = Dict.THUMBNAIL.toString();
-                break;
         }
 
         values.put(Dict.FILE_REFERENCE.toString(), fileReference);

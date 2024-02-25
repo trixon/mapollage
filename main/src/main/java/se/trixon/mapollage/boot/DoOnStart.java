@@ -25,7 +25,6 @@ import se.trixon.almond.nbp.output.OutputLineMode;
 import se.trixon.almond.util.PrefsHelper;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.icons.material.MaterialIcon;
-import se.trixon.mapollage.Options;
 
 /**
  *
@@ -33,8 +32,6 @@ import se.trixon.mapollage.Options;
  */
 @OnStart
 public class DoOnStart implements Runnable {
-
-    private static final Options mOptions = Options.getInstance();
 
     static {
         System.setProperty("netbeans.winsys.no_help_in_dialogs", "true");
