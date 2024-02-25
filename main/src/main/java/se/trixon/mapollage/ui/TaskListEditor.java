@@ -16,6 +16,7 @@
 package se.trixon.mapollage.ui;
 
 import java.time.LocalDate;
+import java.util.Objects;
 import java.util.UUID;
 import javafx.application.Platform;
 import javafx.scene.Scene;
@@ -61,7 +62,7 @@ public class TaskListEditor {
         return mEditableList;
     }
 
-    private void editTask(String title, Task task) {
+    void editTask(String title, Task task) {
         mDialogPanel = new FxDialogPanel() {
             @Override
             protected void fxConstructor() {
@@ -71,7 +72,7 @@ public class TaskListEditor {
 
         mDialogPanel.setPreferredSize(SwingHelper.getUIScaledDim(700, 480));
         mDialogPanel.initFx();
-        var d = new DialogDescriptor(mDialogPanel, title);
+        var d = new DialogDescriptor(mDialogPanel, Objects.toString(title, Dict.EDIT.toString()));
         d.setValid(false);
         mDialogPanel.setNotifyDescriptor(d);
         mTaskEditor.load(task, d);
@@ -124,7 +125,7 @@ public class TaskListEditor {
                 })
                 .build();
 
-        mEditableList.getListView().setCellFactory(listView -> new TaskListCell());
+        mEditableList.getListView().setCellFactory(listView -> new TaskListCell(this));
     }
 
     private void postEdit(Task task) {
