@@ -38,7 +38,7 @@ public class TaskPhoto extends TaskBase {
     @SerializedName("limit_width")
     private boolean mLimitWidth = true;
     @SerializedName("reference")
-    private Reference mReference = Reference.ABSOLUTE;
+    private Reference mReference = Reference.THUMBNAIL;
     @SerializedName("thumbnail_border_color")
     private String mThumbnailBorderColor = "FFFF00";
     @SerializedName("thumbnail_border_size")
@@ -148,8 +148,6 @@ public class TaskPhoto extends TaskBase {
 
         values.put(Dict.MAX_WIDTH.toString(), mLimitWidth ? String.valueOf(mWidthLimit) : "-");
         values.put(Dict.MAX_HEIGHT.toString(), mLimitHeight ? String.valueOf(mHeightLimit) : "-");
-        values.put(Dict.THUMBNAIL.toString(), String.valueOf(getTask().getPhoto().getThumbnailSize()));
-        values.put(Dict.BORDER_SIZE.toString(), String.valueOf(getTask().getPhoto().getThumbnailBorderSize()));
 
         String fileReference = null;
 
@@ -169,6 +167,9 @@ public class TaskPhoto extends TaskBase {
 
         values.put(Dict.FILE_REFERENCE.toString(), fileReference);
         values.put(BUNDLE_UI.getString("PhotoTab.lowerCaseExtCheckBox"), BooleanHelper.asYesNo(mForceLowerCaseExtension));
+        values.put(BUNDLE_UI.getString("PhotoTab.thumbnailSize"), String.valueOf(getTask().getPhoto().getThumbnailSize()));
+        values.put(BUNDLE_UI.getString("PhotoTab.thumbnailBorderSize"), String.valueOf(getTask().getPhoto().getThumbnailBorderSize()));
+        values.put(BUNDLE_UI.getString("PhotoTab.thumbnailBorderColor"), getTask().getPhoto().getThumbnailBorderColor());
 
         taskInfo.setTitle(getTitle());
         taskInfo.setValues(values);

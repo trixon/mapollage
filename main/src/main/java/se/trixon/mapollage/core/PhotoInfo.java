@@ -74,7 +74,7 @@ public class PhotoInfo {
             var borderedImage = new BufferedImage(borderedImageWidth, borderedImageHeight, BufferedImage.TYPE_3BYTE_BGR);
 
             var g2 = borderedImage.createGraphics();
-            g2.setColor(Color.YELLOW);
+            g2.setColor(Color.decode("#" + mTask.getPhoto().getThumbnailBorderColor()));
             g2.fillRect(0, 0, borderedImageWidth, borderedImageHeight);
             g2.drawImage(scaledImage, borderSize, borderSize, width + borderSize, height + borderSize, 0, 0, width, height, Color.YELLOW, null);
 
