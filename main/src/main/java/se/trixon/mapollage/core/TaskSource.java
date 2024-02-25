@@ -150,6 +150,7 @@ public class TaskSource extends TaskBase {
         values.put(BUNDLE_UI.getString("SourceTab.excludeLabel"), mExcludePattern);
         values.put(String.format("%s %s", Dict.DEFAULT.toString(), Dict.LATITUDE.toString()), String.valueOf(mDefaultLat));
         values.put(String.format("%s %s", Dict.DEFAULT.toString(), Dict.LONGITUDE.toString()), String.valueOf(mDefaultLon));
+        values.put(Dict.CALENDAR_LANGUAGE.toString(), getTask().getLocale().getDisplayName());
 
         taskInfo.setTitle(getTitle());
         taskInfo.setValues(values);

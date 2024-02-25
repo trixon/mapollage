@@ -111,7 +111,7 @@ public class FoldersTab extends BaseTab {
     }
 
     private void createUI() {
-        mDateFormatUriLabel.setUri("https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/text/SimpleDateFormat.html");
+        mDateFormatUriLabel.setUri(DATE_FORMAT_URL);
         var vBox = new VBox();
 
         setContent(vBox);

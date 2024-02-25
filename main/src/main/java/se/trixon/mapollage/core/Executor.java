@@ -157,6 +157,10 @@ public class Executor implements Runnable {
 
                     mProgressHandle.progress(++progress);
                 }
+
+                if (mTask.getPath().isDrawPolygon()) {
+                    mDocumentGenerator.addPolygons();
+                }
             }
 
             logErrors(mBundle.getString("title_error_io"), mErrorsIO);

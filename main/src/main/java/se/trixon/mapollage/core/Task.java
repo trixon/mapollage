@@ -18,7 +18,6 @@ package se.trixon.mapollage.core;
 import com.google.gson.annotations.SerializedName;
 import java.io.File;
 import java.nio.file.Path;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
@@ -252,8 +251,7 @@ public class Task extends TaskBase implements EditableListItem {
                 mPath.getTaskInfo(),
                 mPlacemark.getTaskInfo(),
                 mDescription.getTaskInfo(),
-                mPhoto.getTaskInfo(),
-                getTaskInfo()
+                mPhoto.getTaskInfo()
         );
 
         int maxLength = Integer.MIN_VALUE;
@@ -286,14 +284,6 @@ public class Task extends TaskBase implements EditableListItem {
 
     @Override
     protected TaskInfo getTaskInfo() {
-        var taskInfo = new TaskInfo();
-        var values = new LinkedHashMap<String, String>();
-
-        values.put(Dict.CALENDAR_LANGUAGE.toString(), getLocale().getDisplayName());
-
-        taskInfo.setTitle(Dict.OPTIONS.toString());
-        taskInfo.setValues(values);
-
-        return taskInfo;
+        return null;
     }
 }

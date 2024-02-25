@@ -134,7 +134,7 @@ public class PlacemarkTab extends BaseTab {
     }
 
     private void createUI() {
-        mDateFormatUriLabel.setUri("https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/text/SimpleDateFormat.html");
+        mDateFormatUriLabel.setUri(DATE_FORMAT_URL);
 //        var leftBox = new VBox();
 //        var rightBox = new VBox();
 //        var vBox = new VBox();

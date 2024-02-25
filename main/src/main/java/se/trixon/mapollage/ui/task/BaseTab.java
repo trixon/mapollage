@@ -36,16 +36,17 @@ import se.trixon.mapollage.core.TaskManager;
  */
 public abstract class BaseTab extends Tab {
 
+    public static final String DATE_FORMAT_URL = "https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/text/SimpleDateFormat.html";
     public static final int ICON_SIZE = FxHelper.getUIScaled(22);
     public static final String MULTILINE_DIVIDER = "* * * * *";
     protected static ValidationSupport sValidationSupport;
-    private final GlyphFont mFontAwesome = GlyphFontRegistry.font("FontAwesome");
-    private final Insets mTopInsets = FxHelper.getUIScaledInsets(8, 0, 0, 0);
     protected final ResourceBundle mBundle = NbBundle.getBundle(BaseTab.class);
     protected final String mHeaderPrefix = " + ";
     protected Task mTask;
     protected final TaskManager mTaskManager = TaskManager.getInstance();
     protected String mTitle;
+    private final GlyphFont mFontAwesome = GlyphFontRegistry.font("FontAwesome");
+    private final Insets mTopInsets = FxHelper.getUIScaledInsets(8, 0, 0, 0);
 
     public static void setValidationSupport(ValidationSupport validationSupport) {
         BaseTab.sValidationSupport = validationSupport;
