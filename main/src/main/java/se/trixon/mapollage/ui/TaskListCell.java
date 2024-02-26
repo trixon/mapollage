@@ -18,6 +18,7 @@ package se.trixon.mapollage.ui;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.VBox;
+import se.trixon.almond.util.SystemHelper;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.almond.util.fx.control.editable_list.EditableListCell;
 import se.trixon.mapollage.core.ExecutorManager;
@@ -58,6 +59,12 @@ public class TaskListCell extends EditableListCell<Task> {
             if (mouseEvent.getButton() == MouseButton.PRIMARY && mouseEvent.getClickCount() == 2) {
                 if (mouseEvent.isControlDown()) {
                     mEditor.editTask(null, task);
+                } else if (mouseEvent.isShiftDown()) {
+                    try {
+                        SystemHelper.desktopOpenOrElseParent(task.getDestinationFile());
+                    } catch (Exception e) {
+                        // nvm
+                    }
                 } else {
                     ExecutorManager.getInstance().requestStart(task);
                 }
