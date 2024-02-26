@@ -141,12 +141,12 @@ public class DescriptionTab extends BaseTab {
         mExternalStaticRadioButton.setToggleGroup(mDefaultToggleGroup);
 
         staticBox.getChildren().addAll(
-                mStaticAltitudeCheckBox,
-                mStaticBearingCheckBox,
-                mStaticCoordinateCheckBox,
-                mStaticDateCheckBox,
+                mStaticPhotoCheckBox,
                 mStaticFilenameCheckBox,
-                mStaticPhotoCheckBox
+                mStaticDateCheckBox,
+                mStaticCoordinateCheckBox,
+                mStaticAltitudeCheckBox,
+                mStaticBearingCheckBox
         );
 
         staticBox.disableProperty().bind(mStaticRadioButton.selectedProperty().not());

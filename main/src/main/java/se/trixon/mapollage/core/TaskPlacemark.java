@@ -18,7 +18,9 @@ package se.trixon.mapollage.core;
 import com.google.gson.annotations.SerializedName;
 import java.text.SimpleDateFormat;
 import java.util.LinkedHashMap;
+import se.trixon.almond.util.BooleanHelper;
 import se.trixon.almond.util.Dict;
+import static se.trixon.mapollage.core.TaskBase.BUNDLE_UI;
 
 /**
  *
@@ -149,19 +151,18 @@ public class TaskPlacemark extends TaskBase {
         String nameBy = BUNDLE_UI.getString("PlacemarkTab.nameByNoRadioButton");
 
         switch (mNameBy) {
-            case DATE:
+            case DATE ->
                 nameBy = mDatePattern;
-                break;
 
-            case FILE:
+            case FILE ->
                 nameBy = Dict.FILENAME.toString();
-                break;
         }
 
         values.put(BUNDLE_UI.getString("PlacemarkTab.nameByLabel"), nameBy);
         values.put(Dict.SYMBOL.toString(), mSymbolAs == SymbolAs.PHOTO ? Dict.PHOTO.toString() : Dict.PIN.toString());
         values.put(Dict.SCALE.toString(), String.valueOf(mScale));
         values.put(Dict.ZOOM.toString(), String.valueOf(mZoom));
+        values.put(BUNDLE_UI.getString("PlacemarkTab.timestampCheckBox"), BooleanHelper.asYesNo(mTimestamp));
 
         taskInfo.setTitle(getTitle());
         taskInfo.setValues(values);

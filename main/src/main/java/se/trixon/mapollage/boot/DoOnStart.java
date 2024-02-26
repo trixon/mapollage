@@ -51,7 +51,6 @@ public class DoOnStart implements Runnable {
                 MaterialIcon.setDefaultColor(color);
                 se.trixon.almond.util.icons.material.swing.MaterialIcon.setDefaultColor(FxHelper.colorToColor(color));
             }
-//            Options.getInstance().setNightMode(nightMode);
 
             preferences = NbPreferences.root().node("org/netbeans/swing/laf/flatlaf");
             PrefsHelper.putIfAbsent(preferences, "accentColor", "#ff453a");

@@ -58,6 +58,7 @@ import org.apache.commons.lang3.SystemUtils;
 import org.openide.util.NbBundle;
 import org.openide.windows.InputOutput;
 import se.trixon.almond.nbp.output.OutputHelper;
+import se.trixon.almond.nbp.output.OutputLineMode;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.GraphicsHelper;
 import se.trixon.almond.util.Scaler;
@@ -198,7 +199,7 @@ public class DocumentGenerator {
                 if (Files.isWritable(thumbFile.getParentFile().toPath())) {
                     mPhotoInfo.createThumbnail(thumbFile);
                 } else {
-//                    mListener.onOperationLog(String.format(mBundle.getString("insufficient_privileges"), mDestinationFile.getAbsolutePath()));
+                    mOutputHelper.println(OutputLineMode.ERROR, mBundle.getString("insufficient_privileges").formatted(mDestinationFile.getAbsolutePath()));
                     Thread.currentThread().interrupt();
                     return;
                 }
@@ -230,8 +231,6 @@ public class DocumentGenerator {
             folder.addToFeature(placemark);
             mNumOfPlacemarks++;
         }
-
-//        mListener.onOperationLog(file.getAbsolutePath());
     }
 
     public void addPolygons() {
@@ -272,7 +271,7 @@ public class DocumentGenerator {
         }
 
         if (isUsingThumbnails()) {
-//            mListener.onOperationLog("\n" + String.format(mBundle.getString("stored_thumbnails"), mThumbsDir.getAbsolutePath()));
+            mOutputHelper.println(OutputLineMode.OK, String.format(mBundle.getString("stored_thumbnails"), mThumbsDir.getAbsolutePath()));
         }
 
         try {

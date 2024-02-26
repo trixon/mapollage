@@ -142,14 +142,16 @@ public class TaskSource extends TaskBase {
     protected TaskInfo getTaskInfo() {
         var taskInfo = new TaskInfo();
         var values = new LinkedHashMap<String, String>();
-        values.put(BUNDLE_UI.getString("SourceTab.sourceChooserPanel.header"), mDir.getAbsolutePath());
+        values.put(Dict.IMAGE_DIRECTORY.toString(), mDir.getAbsolutePath());
         values.put(Dict.FILE_PATTERN.toString(), mFilePattern);
-        values.put(Dict.SUBDIRECTORIES.toString(), BooleanHelper.asYesNo(mRecursive));
+        values.put(BUNDLE_UI.getString("SourceTab.excludeLabel"), mExcludePattern);
+        values.put(BUNDLE_UI.getString("SourceTab.recursive"), BooleanHelper.asYesNo(mRecursive));
         values.put(Dict.FOLLOW_LINKS.toString(), BooleanHelper.asYesNo(mFollowLinks));
         values.put(BUNDLE_UI.getString("SourceTab.includeNullCoordinateCheckBox"), BooleanHelper.asYesNo(mIncludeNullCoordinate));
-        values.put(BUNDLE_UI.getString("SourceTab.excludeLabel"), mExcludePattern);
-        values.put(String.format("%s %s", Dict.DEFAULT.toString(), Dict.LATITUDE.toString()), String.valueOf(mDefaultLat));
-        values.put(String.format("%s %s", Dict.DEFAULT.toString(), Dict.LONGITUDE.toString()), String.valueOf(mDefaultLon));
+        if (mIncludeNullCoordinate) {
+            values.put(Dict.LATITUDE.toString(), String.valueOf(mDefaultLat));
+            values.put(Dict.LONGITUDE.toString(), String.valueOf(mDefaultLon));
+        }
         values.put(Dict.CALENDAR_LANGUAGE.toString(), getTask().getLocale().getDisplayName());
 
         taskInfo.setTitle(getTitle());

@@ -195,33 +195,29 @@ public class TaskDescription extends TaskBase {
         String mode = null;
         if (null != mMode) {
             switch (mMode) {
-                case CUSTOM:
+                case CUSTOM ->
                     mode = Dict.CUSTOMIZED.toString();
-                    break;
 
-                case EXTERNAL:
+                case EXTERNAL ->
                     mode = Dict.EXTERNAL_FILE.toString();
-                    break;
 
-                case NONE:
+                case NONE ->
                     mode = Dict.NONE.toString();
-                    break;
 
-                case STATIC:
+                case STATIC ->
                     mode = Dict.STATIC.toString();
-                    break;
             }
         }
         values.put(Dict.TYPE.toString(), mode);
 
         if (null != mMode) {
             switch (mMode) {
-                case CUSTOM:
-                    String value = mCustomValue != null ? mCustomValue.replaceAll("\\n", "\\\\n") : "";
+                case CUSTOM -> {
+                    var value = mCustomValue != null ? mCustomValue.replaceAll("\\n", "\\\\n") : "";
                     values.put(Dict.VALUE.toString(), value);
-                    break;
+                }
 
-                case EXTERNAL:
+                case EXTERNAL -> {
                     values.put(Dict.FILE.toString(), mExternalFileValue);
                     if (mDefaultTo) {
                         String defaultValue = Dict.CUSTOMIZED.toString();
@@ -230,16 +226,16 @@ public class TaskDescription extends TaskBase {
                         }
                         values.put(Dict.DEFAULT.toString(), defaultValue);
                     }
-                    break;
+                }
 
-                case STATIC:
+                case STATIC -> {
                     values.put(Dict.PHOTO.toString(), BooleanHelper.asYesNo(mPhoto));
                     values.put(Dict.FILENAME.toString(), BooleanHelper.asYesNo(mFilename));
                     values.put(Dict.DATE.toString(), BooleanHelper.asYesNo(mDate));
                     values.put(Dict.COORDINATE.toString(), BooleanHelper.asYesNo(mCoordinate));
                     values.put(Dict.ALTITUDE.toString(), BooleanHelper.asYesNo(mAltitude));
                     values.put(Dict.BEARING.toString(), BooleanHelper.asYesNo(mBearing));
-                    break;
+                }
             }
         }
 

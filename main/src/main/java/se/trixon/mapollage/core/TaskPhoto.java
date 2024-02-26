@@ -167,9 +167,10 @@ public class TaskPhoto extends TaskBase {
 
         values.put(Dict.FILE_REFERENCE.toString(), fileReference);
         values.put(BUNDLE_UI.getString("PhotoTab.lowerCaseExtCheckBox"), BooleanHelper.asYesNo(mForceLowerCaseExtension));
-        values.put(BUNDLE_UI.getString("PhotoTab.thumbnailSize"), String.valueOf(getTask().getPhoto().getThumbnailSize()));
-        values.put(BUNDLE_UI.getString("PhotoTab.thumbnailBorderSize"), String.valueOf(getTask().getPhoto().getThumbnailBorderSize()));
-        values.put(BUNDLE_UI.getString("PhotoTab.thumbnailBorderColor"), getTask().getPhoto().getThumbnailBorderColor());
+        var photo = getTask().getPhoto();
+        values.put(BUNDLE_UI.getString("PhotoTab.thumbnailSize"), String.valueOf(photo.getThumbnailSize()));
+        values.put(BUNDLE_UI.getString("PhotoTab.thumbnailBorderSize"), String.valueOf(photo.getThumbnailBorderSize()));
+        values.put(BUNDLE_UI.getString("PhotoTab.thumbnailBorderColor"), "#" + photo.getThumbnailBorderColor());
 
         taskInfo.setTitle(getTitle());
         taskInfo.setValues(values);

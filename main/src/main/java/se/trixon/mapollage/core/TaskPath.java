@@ -56,7 +56,7 @@ public class TaskPath extends TaskBase {
 
     @Override
     public String getTitle() {
-        return Dict.Geometry.PATH.toString();
+        return Dict.TRACKS.toString();
     }
 
     public Double getWidth() {
@@ -104,11 +104,14 @@ public class TaskPath extends TaskBase {
     protected TaskInfo getTaskInfo() {
         var taskInfo = new TaskInfo();
         var values = new LinkedHashMap<String, String>();
-        values.put(BUNDLE_UI.getString("PathTab.drawPolygonCheckBox"), BooleanHelper.asYesNo(mDrawPolygon));
         values.put(BUNDLE_UI.getString("PathTab.drawPathCheckBox"), BooleanHelper.asYesNo(mDrawPath));
-        values.put(Dict.Geometry.WIDTH.toString(), String.valueOf(mWidth));
-
-        values.put(Dict.SPLIT_BY.toString(), getLabel(mSplitBy));
+        if (mDrawPath) {
+            values.put(Dict.Geometry.WIDTH.toString(), String.valueOf(mWidth));
+            values.put(Dict.SPLIT_BY.toString(), getLabel(mSplitBy));
+            values.put(BUNDLE_UI.getString("PathTab.pathColor"), "#" + mPathColor);
+            values.put(BUNDLE_UI.getString("PathTab.pathGapColor"), "#" + mPathGapColor);
+        }
+        values.put(BUNDLE_UI.getString("PathTab.drawPolygonCheckBox"), BooleanHelper.asYesNo(mDrawPolygon));
 
         taskInfo.setTitle(getTitle());
         taskInfo.setValues(values);

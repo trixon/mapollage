@@ -23,6 +23,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import org.controlsfx.glyphfont.FontAwesome;
@@ -135,10 +136,6 @@ public class PlacemarkTab extends BaseTab {
 
     private void createUI() {
         mDateFormatUriLabel.setUri(DATE_FORMAT_URL);
-//        var leftBox = new VBox();
-//        var rightBox = new VBox();
-//        var vBox = new VBox();
-
         mScaleSpinner.setEditable(true);
         mZoomSpinner.setEditable(true);
         FxHelper.autoCommitSpinners(mScaleSpinner, mZoomSpinner);
@@ -173,28 +170,18 @@ public class PlacemarkTab extends BaseTab {
                 mTimestampCheckBox
         );
 
+        mSymbolAsPhotoRadioButton.setTooltip(new Tooltip(mBundle.getString("PlacemarkTab.symbolPhotoRadioButton.toolTip")));
         mSymbolAsPhotoRadioButton.setToggleGroup(mSymbolToggleGroup);
         mSymbolAsPinRadioButton.setToggleGroup(mSymbolToggleGroup);
 
         var topInsets = FxHelper.getUIScaledInsets(8, 0, 0, 0);
         VBox.setMargin(mTimestampCheckBox, topInsets);
 
-//        rightBox.getChildren().addAll(
-//                symbolLabel,
-//                mSymbolAsPhotoRadioButton,
-//                mSymbolAsPinRadioButton,
-//                scaleLabel,
-//                mScaleSpinner,
-//                zoomLabel,
-//                mZoomSpinner,
-//                mTimestampCheckBox
-//        );
         addTopPadding(
                 mNameByFileRadioButton,
                 mNameByDateRadioButton,
                 mDateFormatUriLabel,
                 mNameByNoRadioButton,
-                //                rightBox,
                 mSymbolAsPhotoRadioButton,
                 mSymbolAsPinRadioButton
         );
