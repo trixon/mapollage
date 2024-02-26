@@ -22,6 +22,7 @@ import org.openide.util.Exceptions;
 import org.openide.windows.IOContainer;
 import org.openide.windows.OnShowing;
 import org.openide.windows.WindowManager;
+import se.trixon.almond.nbp.dialogs.NbSnapHelper;
 import se.trixon.almond.util.SystemHelper;
 import se.trixon.mapollage.Mapollage;
 
@@ -58,5 +59,7 @@ public class DoOnShowing implements Runnable {
         }
 
         Mapollage.displaySystemInformation();
+
+        NbSnapHelper.checkSnapStatus(Mapollage.class, "snap", "mapollage", "home", "removable-media");
     }
 }
