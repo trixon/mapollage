@@ -15,6 +15,7 @@
  */
 package se.trixon.mapollage.ui.task;
 
+import javafx.beans.value.ChangeListener;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -32,6 +33,8 @@ import se.trixon.almond.util.fx.Spacer;
 import se.trixon.mapollage.core.Task;
 import se.trixon.mapollage.core.TaskDescription;
 import se.trixon.mapollage.core.TaskDescription.DescriptionMode;
+import static se.trixon.mapollage.ui.task.BaseTab.sNotificationLineSupport;
+import static se.trixon.mapollage.ui.task.BaseTab.sValidationSupport;
 
 /**
  *
@@ -189,6 +192,19 @@ public class DescriptionTab extends BaseTab {
         mCustomResetButton.setOnAction(actionEvent -> {
             mCustomTextArea.setText(TaskDescription.getDefaultCustomValue());
         });
+
+        ChangeListener<Boolean> focusListener = (p, o, n) -> {
+            sValidationSupport.revalidate();
+
+            if (FxHelper.isFocusedNodeOfType(mCustomTextArea.getScene(), TextArea.class)) {
+                sNotificationLineSupport.setInformationMessage("Exit text area in order to close the dialog");
+            } else {
+                sNotificationLineSupport.clearMessages();
+            }
+        };
+
+        mCustomTextArea.focusedProperty().addListener(focusListener);
+
     }
 
 }

@@ -15,16 +15,10 @@
  */
 package se.trixon.mapollage.boot;
 
-import java.util.prefs.BackingStoreException;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.SystemUtils;
 import org.openide.modules.OnStart;
 import org.openide.util.NbPreferences;
+import se.trixon.almond.nbp.NbHelper;
 import se.trixon.almond.nbp.dialogs.NbOptionalDialog;
-import se.trixon.almond.nbp.output.OutputLineMode;
-import se.trixon.almond.util.PrefsHelper;
-import se.trixon.almond.util.fx.FxHelper;
-import se.trixon.almond.util.icons.material.MaterialIcon;
 
 /**
  *
@@ -37,26 +31,9 @@ public class DoOnStart implements Runnable {
         System.setProperty("netbeans.winsys.no_help_in_dialogs", "true");
         System.setProperty("netbeans.winsys.no_toolbars", "true");
 
-        try {
-            var key = "laf";
-            var defaultLAF = !SystemUtils.IS_OS_MAC ? "com.formdev.flatlaf.FlatLightLaf" : "com.formdev.flatlaf.themes.FlatMacLightLaf";
-            var preferences = NbPreferences.root().node("laf");
-            PrefsHelper.putIfAbsent(preferences, key, defaultLAF);
-
-            var nightMode = StringUtils.containsIgnoreCase(preferences.get(key, ""), "dark");
-            OutputLineMode.setNightMode(nightMode);
-            if (nightMode) {
-                FxHelper.setDarkThemeEnabled(nightMode);
-                var color = FxHelper.getFillColorForDarkTheme();
-                MaterialIcon.setDefaultColor(color);
-                se.trixon.almond.util.icons.material.swing.MaterialIcon.setDefaultColor(FxHelper.colorToColor(color));
-            }
-
-            preferences = NbPreferences.root().node("org/netbeans/swing/laf/flatlaf");
-            PrefsHelper.putIfAbsent(preferences, "accentColor", "#ff453a");
-        } catch (BackingStoreException ex) {
-            //Exceptions.printStackTrace(ex);
-        }
+        NbHelper.setLafDefault("Light");
+        NbHelper.setLafAccentColor("#ff453a");
+        NbHelper.initNightModeIfNeeded();
 
         NbOptionalDialog.setPreferences(NbPreferences.forModule(NbOptionalDialog.class).node("optionalDialogState"));
     }

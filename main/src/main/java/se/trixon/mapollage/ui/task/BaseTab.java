@@ -26,6 +26,7 @@ import javafx.scene.paint.Color;
 import org.controlsfx.glyphfont.GlyphFont;
 import org.controlsfx.glyphfont.GlyphFontRegistry;
 import org.controlsfx.validation.ValidationSupport;
+import org.openide.NotificationLineSupport;
 import org.openide.util.NbBundle;
 import se.trixon.almond.util.fx.FxHelper;
 import se.trixon.mapollage.core.Task;
@@ -48,6 +49,11 @@ public abstract class BaseTab extends Tab {
     protected String mTitle;
     private final GlyphFont mFontAwesome = GlyphFontRegistry.font("FontAwesome");
     private final Insets mTopInsets = FxHelper.getUIScaledInsets(8, 0, 0, 0);
+    protected static NotificationLineSupport sNotificationLineSupport;
+
+    public static void setNotificationLineSupport(NotificationLineSupport notificationLineSupport) {
+        BaseTab.sNotificationLineSupport = notificationLineSupport;
+    }
 
     public static void setValidationSupport(ValidationSupport validationSupport) {
         BaseTab.sValidationSupport = validationSupport;

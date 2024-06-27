@@ -60,6 +60,6 @@ public class DoOnShowing implements Runnable {
 
         Mapollage.displaySystemInformation();
 
-        NbSnapHelper.checkSnapStatus(Mapollage.class, "snap", "mapollage", "home", "removable-media");
+        NbSnapHelper.checkSnapStatus(Mapollage.class, "snap", "mapollage", "removable-media");
     }
 }

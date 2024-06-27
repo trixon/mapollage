@@ -64,4 +64,5 @@
             <attr name="originalFile" stringvalue="Actions/Window/org-netbeans-modules-options-OptionsWindowAction.instance"/>
         </file>
     </folder>
+    <file name="Toolbars_hidden"/>
 </filesystem>

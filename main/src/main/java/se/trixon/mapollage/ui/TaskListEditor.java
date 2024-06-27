@@ -36,6 +36,7 @@ import se.trixon.mapollage.core.StorageManager;
 import static se.trixon.mapollage.core.StorageManager.GSON;
 import se.trixon.mapollage.core.Task;
 import se.trixon.mapollage.core.TaskManager;
+import se.trixon.mapollage.ui.task.BaseTab;
 
 /**
  *
@@ -74,6 +75,7 @@ public class TaskListEditor {
         mDialogPanel.initFx();
         var d = new DialogDescriptor(mDialogPanel, Objects.toString(title, Dict.EDIT.toString()));
         d.setValid(false);
+        BaseTab.setNotificationLineSupport(d.createNotificationLineSupport());
         mDialogPanel.setNotifyDescriptor(d);
         mTaskEditor.load(task, d);
 

@@ -19,6 +19,7 @@ import java.util.stream.Stream;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.TextArea;
 import javafx.scene.layout.Region;
 import org.controlsfx.validation.ValidationResult;
 import org.controlsfx.validation.ValidationSupport;
@@ -75,12 +76,11 @@ public class TaskEditor extends TabPane {
     }
 
     public Task save() {
-        mTaskManager.getIdToItem().put(mTask.getId(), mTask);
-
         getBaseTabs().forEachOrdered(tab -> {
             tab.save();
         });
 
+        mTaskManager.getIdToItem().put(mTask.getId(), mTask);
         StorageManager.save();
 
         return mTask;
@@ -128,7 +128,7 @@ public class TaskEditor extends TabPane {
 
     private void initValidation() {
         mValidationSupport.validationResultProperty().addListener((ObservableValue<? extends ValidationResult> observable, ValidationResult oldValue, ValidationResult newValue) -> {
-            mDialogDescriptor.setValid(!mValidationSupport.isInvalid());
+            mDialogDescriptor.setValid(!mValidationSupport.isInvalid() && !FxHelper.isFocusedNodeOfType(getScene(), TextArea.class));
         });
 
         mValidationSupport.initInitialDecoration();

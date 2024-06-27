@@ -34,7 +34,7 @@ parts:
     after: [mapollage]
     plugin: nil
     override-prime: |
-      snapcraftctl prime
+      craftctl default
       sed -i 's/${HOME}\/.${APPNAME}/${SNAP_USER_COMMON}\/.mapollage/' /root/prime/mapollage/bin/mapollage
       sed -i 's/${HOME}\/.cache\/${APPNAME}/${SNAP_USER_COMMON}\/.cache\/mapollage/' /root/prime/mapollage/bin/mapollage
       rm -r /root/prime/mapollage/platform/modules/lib/i386

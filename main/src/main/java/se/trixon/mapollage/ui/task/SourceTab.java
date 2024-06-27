@@ -16,6 +16,7 @@
 package se.trixon.mapollage.ui.task;
 
 import java.util.function.Predicate;
+import javafx.beans.value.ChangeListener;
 import javafx.geometry.Orientation;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
@@ -186,6 +187,18 @@ public class SourceTab extends BaseTab {
         sValidationSupport.registerValidator(mDescTextArea, indicateRequired, Validator.createEmptyValidator(message));
         sValidationSupport.registerValidator(mSourceChooser.getTextField(), indicateRequired, Validator.createEmptyValidator(message));
         sValidationSupport.registerValidator(mFilePatternField, indicateRequired, Validator.createEmptyValidator(message));
+
+        ChangeListener<Boolean> focusListener = (p, o, n) -> {
+            sValidationSupport.revalidate();
+
+            if (FxHelper.isFocusedNodeOfType(mNameTextField.getScene(), TextArea.class)) {
+                sNotificationLineSupport.setInformationMessage("Exit text area in order to close the dialog");
+            } else {
+                sNotificationLineSupport.clearMessages();
+            }
+        };
+
+        mDescTextArea.focusedProperty().addListener(focusListener);
     }
 
 }
