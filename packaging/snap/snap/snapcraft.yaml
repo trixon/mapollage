@@ -1,6 +1,6 @@
 name: mapollage
 title: Mapollage
-base: core22
+base: core24
 version: 'REPLACE_WITH_VERSION'
 summary: Mapollage is a photo kml generator for Google Earth
 description: |
@@ -9,7 +9,8 @@ description: |
     https://github.com/trixon/mapollage
 
 grade: stable
-architectures: [ amd64 ]
+platforms:
+    amd64:
 confinement: strict
 icon: snap/gui/mapollage.png
 license: Apache-2.0
@@ -37,10 +38,6 @@ parts:
       craftctl default
       sed -i 's/${HOME}\/.${APPNAME}/${SNAP_USER_COMMON}\/.mapollage/' /root/prime/mapollage/bin/mapollage
       sed -i 's/${HOME}\/.cache\/${APPNAME}/${SNAP_USER_COMMON}\/.cache\/mapollage/' /root/prime/mapollage/bin/mapollage
-      rm -r /root/prime/mapollage/platform/modules/lib/i386
-      rm -r /root/prime/mapollage/platform/modules/lib/x86
-      rm /root/prime/mapollage/platform/lib/*.dll
-      rm /root/prime/mapollage/platform/lib/*.exe
       
 lint:
   ignore: [library]
