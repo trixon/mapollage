@@ -4,7 +4,7 @@
     <parent>
         <groupId>se.trixon.mapollage</groupId>
         <artifactId>parent</artifactId>
-        <version>3.0.1-SNAPSHOT</version>
+        <version>24.10.06</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>main</artifactId>
@@ -162,7 +162,7 @@
         <dependency>
             <groupId>uk.m0nom</groupId>
             <artifactId>javaapiforkml</artifactId>
-            <version>3.0.9</version>
+            <version>3.0.10</version>
         </dependency>
     </dependencies>
 
