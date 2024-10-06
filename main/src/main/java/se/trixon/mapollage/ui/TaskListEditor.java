@@ -23,6 +23,7 @@ import javafx.scene.Scene;
 import javax.swing.SwingUtilities;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
+import org.openide.util.NbBundle;
 import se.trixon.almond.nbp.fx.FxDialogPanel;
 import se.trixon.almond.nbp.fx.NbEditableList;
 import se.trixon.almond.util.Dict;
@@ -91,8 +92,8 @@ public class TaskListEditor {
 
     private void init() {
         mEditableList = new NbEditableList.Builder<Task>()
-                .setItemSingular(Dict.TASK.toString())
-                .setItemPlural(Dict.TASKS.toString())
+                .setItemSingular(NbBundle.getMessage(TaskListEditor.class, "album"))
+                .setItemPlural(NbBundle.getMessage(TaskListEditor.class, "albums"))
                 .setItemsProperty(mTaskManager.itemsProperty())
                 .setOnEdit((title, task) -> {
                     editTask(title, task);

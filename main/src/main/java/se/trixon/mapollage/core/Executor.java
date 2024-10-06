@@ -57,6 +57,7 @@ import se.trixon.almond.nbp.output.OutputHelper;
 import se.trixon.almond.nbp.output.OutputLineMode;
 import se.trixon.almond.util.Dict;
 import se.trixon.almond.util.SystemHelper;
+import se.trixon.mapollage.ui.TaskListEditor;
 
 /**
  *
@@ -108,7 +109,8 @@ public class Executor implements Runnable {
 
         mExecutorThread = new Thread(() -> {
             mOutputHelper.start();
-            mOutputHelper.printSectionHeader(OutputLineMode.INFO, Dict.START.toString(), Dict.TASK.toLower(), mTask.getName());
+            var album = StringUtils.toRootLowerCase(NbBundle.getMessage(TaskListEditor.class, "album"));
+            mOutputHelper.printSectionHeader(OutputLineMode.INFO, Dict.START.toString(), album, mTask.getName());
             mMainFoldHandle = IOFolding.startFold(mInputOutput, true);
 
             if (!mTask.isValid()) {//TODO and dest dir too
@@ -187,21 +189,28 @@ public class Executor implements Runnable {
                     Exceptions.printStackTrace(ex);
                 }
                 var foldHandle = IOFolding.startFold(mInputOutput, false);
-                mOutputHelper.println(OutputLineMode.INFO, mDocumentGenerator.getKmlString());
+                var emptyKml = StringUtils.isBlank(mDocumentGenerator.getKmlString());
+                if (emptyKml) {
+                    mOutputHelper.println(OutputLineMode.INFO, Dict.EMPTY.toString());
+                } else {
+                    mOutputHelper.println(OutputLineMode.INFO, mDocumentGenerator.getKmlString());
+                }
                 foldHandle.finish();
 
-                mInputOutput.getOut().print("\n%s ".formatted(Dict.OPEN.toString()));
-                try {
-                    IOColorPrint.print(mInputOutput, mTask.getDestinationFile().getAbsolutePath(), new OutputAdapter() {
-                        @Override
-                        public void outputLineAction(OutputEvent ev) {
-                            SystemHelper.desktopOpenOrElseParent(mTask.getDestinationFile());
-                        }
-                    }, false, Color.MAGENTA);
-                } catch (IOException ex) {
-                    Exceptions.printStackTrace(ex);
+                if (!emptyKml) {
+                    mInputOutput.getOut().print("\n%s ".formatted(Dict.OPEN.toString()));
+                    try {
+                        IOColorPrint.print(mInputOutput, mTask.getDestinationFile().getAbsolutePath(), new OutputAdapter() {
+                            @Override
+                            public void outputLineAction(OutputEvent ev) {
+                                SystemHelper.desktopOpenOrElseParent(mTask.getDestinationFile());
+                            }
+                        }, false, Color.MAGENTA);
+                    } catch (IOException ex) {
+                        Exceptions.printStackTrace(ex);
+                    }
+                    mInputOutput.getOut().println(".");
                 }
-                mInputOutput.getOut().println(".");
             }
 
             mProgressHandle.finish();
@@ -245,7 +254,7 @@ public class Executor implements Runnable {
     private void jobEnded(OutputLineMode outputLineMode, String action) {
         mMainFoldHandle.silentFinish();
         mStatusDisplayer.setStatusText(action);
-        mOutputHelper.printSummary(outputLineMode, action, Dict.TASK.toString());
+        mOutputHelper.printSummary(outputLineMode, action, NbBundle.getMessage(TaskListEditor.class, "album"));
     }
 
     private void logErrors(String title, ArrayList<String> list) {

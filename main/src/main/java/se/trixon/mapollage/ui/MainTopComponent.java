@@ -43,7 +43,7 @@ import se.trixon.almond.nbp.fx.FxTopComponent;
         preferredID = "MainTopComponent"
 )
 @Messages({
-    "CTL_MainTopComponent=Tasks"
+    "CTL_MainTopComponent=Album"
 })
 public final class MainTopComponent extends FxTopComponent {
 
