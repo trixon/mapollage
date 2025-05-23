@@ -24,7 +24,7 @@
     <launchable type="desktop-id">se.trixon.Mapollage.desktop</launchable>
     <url type="homepage">https://trixon.se/projects/mapollage/</url>
     <url type="bugtracker">https://github.com/trixon/mapollage/issues</url>
-    <url type="donation">https://github.com/sponsors/trixon</url>
+    <url type="donation">https://buymeacoffee.com/trixon</url>
     <provides>
         <id>Mapollage.desktop</id>
     </provides>
