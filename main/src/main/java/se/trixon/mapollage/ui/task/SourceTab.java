@@ -44,8 +44,8 @@ import se.trixon.mapollage.core.Task;
  */
 public class SourceTab extends BaseTab {
 
-    private final Spinner<Double> mDefaultLatSpinner = new Spinner(-90, 90, 0, 0.01);
-    private final Spinner<Double> mDefaultLonSpinner = new Spinner(-180, 180, 0, 0.01);
+    private final Spinner<Double> mDefaultLatSpinner = new Spinner<>(-90, 90, 0, 0.01);
+    private final Spinner<Double> mDefaultLonSpinner = new Spinner<>(-180, 180, 0, 0.01);
     private final TextArea mDescTextArea = new TextArea();
     private final TextField mExcludeTextField = new TextField();
     private final TextField mFilePatternField = new TextField();

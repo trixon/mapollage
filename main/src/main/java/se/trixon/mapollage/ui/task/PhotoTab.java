@@ -39,17 +39,17 @@ public class PhotoTab extends BaseTab {
 
     private final CheckBox mLowerCaseExtCheckBox = new CheckBox(mBundle.getString("PhotoTab.lowerCaseExtCheckBox"));
     private final CheckBox mMaxHeightCheckBox = new CheckBox(Dict.MAX_HEIGHT.toString());
-    private final Spinner<Integer> mMaxHeightSpinner = new Spinner(1, Integer.MAX_VALUE, 400, 10);
+    private final Spinner<Integer> mMaxHeightSpinner = new Spinner<>(1, Integer.MAX_VALUE, 400, 10);
     private final CheckBox mMaxWidthCheckBox = new CheckBox(Dict.MAX_WIDTH.toString());
-    private final Spinner<Integer> mMaxWidthSpinner = new Spinner(1, Integer.MAX_VALUE, 400, 10);
+    private final Spinner<Integer> mMaxWidthSpinner = new Spinner<>(1, Integer.MAX_VALUE, 400, 10);
     private final RadioButton mRefAbsolutePathRadioButton = new RadioButton(mBundle.getString("PhotoTab.absolutePathRadioButton"));
     private final TextField mRefAbsolutePathTextField = new TextField();
     private final RadioButton mRefAbsoluteRadioButton = new RadioButton(Dict.ABSOLUTE.toString());
     private final RadioButton mRefRelativeRadioButton = new RadioButton(Dict.RELATIVE.toString());
     private final RadioButton mRefThumbnailRadioButton = new RadioButton(Dict.THUMBNAIL.toString());
     private final ColorPicker mThumbnailBorderColorPicker = new ColorPicker();
-    private final Spinner<Integer> mThumbnailBorderSizeSpinner = new Spinner(0, 20, 2, 1);
-    private final Spinner<Integer> mThumbnailSizeSpinner = new Spinner(100, 1200, 250, 10);
+    private final Spinner<Integer> mThumbnailBorderSizeSpinner = new Spinner<>(0, 20, 2, 1);
+    private final Spinner<Integer> mThumbnailSizeSpinner = new Spinner<>(100, 1200, 250, 10);
     private final ToggleGroup mToggleGroup = new ToggleGroup();
 
     public PhotoTab() {

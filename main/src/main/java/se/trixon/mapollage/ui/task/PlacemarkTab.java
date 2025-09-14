@@ -46,12 +46,12 @@ public class PlacemarkTab extends BaseTab {
     private final RadioButton mNameByFileRadioButton = new RadioButton(Dict.FILENAME.toString());
     private final RadioButton mNameByNoRadioButton = new RadioButton(mBundle.getString("PlacemarkTab.nameByNoRadioButton"));
     private final ToggleGroup mNameByToggleGroup = new ToggleGroup();
-    private final Spinner<Double> mScaleSpinner = new Spinner(0.5, 10.0, 1.0, 0.1);
+    private final Spinner<Double> mScaleSpinner = new Spinner<>(0.5, 10.0, 1.0, 0.1);
     private final RadioButton mSymbolAsPhotoRadioButton = new RadioButton(Dict.PHOTO.toString());
     private final RadioButton mSymbolAsPinRadioButton = new RadioButton(Dict.PIN.toString());
     private final ToggleGroup mSymbolToggleGroup = new ToggleGroup();
     private final CheckBox mTimestampCheckBox = new CheckBox(mBundle.getString("PlacemarkTab.timestampCheckBox"));
-    private final Spinner<Double> mZoomSpinner = new Spinner(1.0, 10.0, 1.0, 0.1);
+    private final Spinner<Double> mZoomSpinner = new Spinner<>(1.0, 10.0, 1.0, 0.1);
 
     public PlacemarkTab() {
         setText(Dict.PLACEMARK.toString());

@@ -54,6 +54,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.lang3.SystemUtils;
 import org.openide.util.NbBundle;
 import org.openide.windows.InputOutput;
@@ -557,7 +558,7 @@ public class DocumentGenerator {
     }
 
     private Folder getFolder(String key) {
-        key = StringUtils.replace(key, "\\", "/");
+        key = Strings.CS.replace(key, "\\", "/");
         var levels = StringUtils.split(key, "/");
 
         var parent = mImageRootFolder;
@@ -591,12 +592,12 @@ public class DocumentGenerator {
 
             case RELATIVE -> {
                 var relativePath = mDestinationFile.toPath().relativize(file.toPath());
-                imageSrc = StringUtils.replace(relativePath.toString(), "..", ".", 1);
+                imageSrc = Strings.CS.replace(relativePath.toString(), "..", ".", 1);
             }
 
             case THUMBNAIL -> {
                 var thumbPath = mDestinationFile.toPath().relativize(mFileThumbMap.get(file).toPath());
-                imageSrc = StringUtils.replace(thumbPath.toString(), "..", ".", 1);
+                imageSrc = Strings.CS.replace(thumbPath.toString(), "..", ".", 1);
             }
 
             default ->
@@ -661,22 +662,22 @@ public class DocumentGenerator {
 
         if (mTaskDescription.getMode() != TaskDescription.DescriptionMode.NONE) {
             if (StringUtils.containsIgnoreCase(desc, DescriptionSegment.PHOTO.toString())) {
-                desc = StringUtils.replace(desc, DescriptionSegment.PHOTO.toString(), getDescPhoto(file, photoInfo.getOrientation()));
+                desc = Strings.CS.replace(desc, DescriptionSegment.PHOTO.toString(), getDescPhoto(file, photoInfo.getOrientation()));
             }
 
-            desc = StringUtils.replace(desc, DescriptionSegment.FILENAME.toString(), file.getName());
-            desc = StringUtils.replace(desc, DescriptionSegment.DATE.toString(), mDateFormatDate.format(exifDate));
+            desc = Strings.CS.replace(desc, DescriptionSegment.FILENAME.toString(), file.getName());
+            desc = Strings.CS.replace(desc, DescriptionSegment.DATE.toString(), mDateFormatDate.format(exifDate));
 
             if (gpsDirectory != null && gpsDescriptor != null) {
-                desc = StringUtils.replace(desc, DescriptionSegment.ALTITUDE.toString(), gpsDescriptor.getGpsAltitudeDescription());
-                desc = StringUtils.replace(desc, DescriptionSegment.COORDINATE.toString(), gpsDescriptor.getDegreesMinutesSecondsDescription());
+                desc = Strings.CS.replace(desc, DescriptionSegment.ALTITUDE.toString(), gpsDescriptor.getGpsAltitudeDescription());
+                desc = Strings.CS.replace(desc, DescriptionSegment.COORDINATE.toString(), gpsDescriptor.getDegreesMinutesSecondsDescription());
 
                 String bearing = gpsDescriptor.getGpsDirectionDescription(GpsDirectory.TAG_DEST_BEARING);
-                desc = StringUtils.replace(desc, DescriptionSegment.BEARING.toString(), bearing == null ? "" : bearing);
+                desc = Strings.CS.replace(desc, DescriptionSegment.BEARING.toString(), bearing == null ? "" : bearing);
             } else {
-                desc = StringUtils.replace(desc, DescriptionSegment.ALTITUDE.toString(), "");
-                desc = StringUtils.replace(desc, DescriptionSegment.COORDINATE.toString(), "");
-                desc = StringUtils.replace(desc, DescriptionSegment.BEARING.toString(), "");
+                desc = Strings.CS.replace(desc, DescriptionSegment.ALTITUDE.toString(), "");
+                desc = Strings.CS.replace(desc, DescriptionSegment.COORDINATE.toString(), "");
+                desc = Strings.CS.replace(desc, DescriptionSegment.BEARING.toString(), "");
             }
 
             desc = getSafeXmlString(desc);

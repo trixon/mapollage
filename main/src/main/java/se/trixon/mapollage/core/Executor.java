@@ -41,6 +41,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.commons.io.IOCase;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.netbeans.api.progress.ProgressHandle;
 import org.openide.awt.StatusDisplayer;
 import org.openide.util.Cancellable;
@@ -303,11 +304,11 @@ public class Executor implements Runnable {
             if (mExcludePatterns != null) {
                 for (var excludePattern : mExcludePatterns) {
                     if (IOCase.SYSTEM.isCaseSensitive()) {
-                        if (StringUtils.contains(dir.toString(), excludePattern)) {
+                        if (Strings.CS.contains(dir.toString(), excludePattern)) {
                             return FileVisitResult.SKIP_SUBTREE;
                         }
                     } else {
-                        if (StringUtils.containsIgnoreCase(dir.toString(), excludePattern)) {
+                        if (Strings.CI.contains(dir.toString(), excludePattern)) {
                             return FileVisitResult.SKIP_SUBTREE;
                         }
                     }
@@ -344,7 +345,7 @@ public class Executor implements Runnable {
                         boolean exclude = false;
                         if (mExcludePatterns != null) {
                             for (String excludePattern : mExcludePatterns) {
-                                if (StringUtils.contains(file.getAbsolutePath(), excludePattern)) {
+                                if (Strings.CS.contains(file.getAbsolutePath(), excludePattern)) {
                                     exclude = true;
                                     break;
                                 }

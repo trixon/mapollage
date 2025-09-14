@@ -24,6 +24,7 @@ import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 
 /**
  *
@@ -55,7 +56,7 @@ public class TaskManager {
 
     public boolean exists(String name) {
         return getItems().stream()
-                .anyMatch(item -> (StringUtils.equalsIgnoreCase(name, item.getName())));
+                .anyMatch(item -> (Strings.CI.equals(name, item.getName())));
     }
 
     public Task getById(String id) {

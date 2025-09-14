@@ -18,6 +18,7 @@ package se.trixon.mapollage.core;
 import com.google.gson.annotations.SerializedName;
 import java.util.LinkedHashMap;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import se.trixon.almond.util.BooleanHelper;
 import se.trixon.almond.util.Dict;
 
@@ -128,7 +129,7 @@ public class TaskDescription extends TaskBase {
     }
 
     public boolean hasPhotoStaticOrDynamic() {
-        boolean hasPhoto = (mMode == DescriptionMode.CUSTOM && StringUtils.containsIgnoreCase(mCustomValue, "+photo"))
+        boolean hasPhoto = (mMode == DescriptionMode.CUSTOM && Strings.CI.contains(mCustomValue, "+photo"))
                 || (mMode != DescriptionMode.STATIC && hasPhoto())
                 || mMode == DescriptionMode.EXTERNAL;
 

@@ -46,7 +46,7 @@ public class PathTab extends BaseTab {
     private final ToggleGroup mToggleGroup = new ToggleGroup();
     private final ColorPicker mTrackColorPicker = new ColorPicker();
     private final ColorPicker mTrackGapColorPicker = new ColorPicker();
-    private final Spinner<Double> mWidthSpinner = new Spinner(1.0, 10.0, 1.0, 0.1);
+    private final Spinner<Double> mWidthSpinner = new Spinner<>(1.0, 10.0, 1.0, 0.1);
 
     public PathTab() {
         setText(Dict.TRACKS.toString());
