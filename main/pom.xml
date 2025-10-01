@@ -4,7 +4,7 @@
     <parent>
         <groupId>se.trixon.mapollage</groupId>
         <artifactId>parent</artifactId>
-        <version>25.05x</version>
+        <version>25.10</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>main</artifactId>
@@ -110,7 +110,6 @@
         <dependency>
             <groupId>org.netbeans.api</groupId>
             <artifactId>org-openide-filesystems-nb</artifactId>
-            <version>${netbeans.version}</version>
         </dependency>
 
         <!-- Trixon -->
