@@ -38,7 +38,7 @@ import se.trixon.mapollage.core.TaskManager;
  */
 public abstract class BaseTab extends Tab {
 
-    public static final String DATE_FORMAT_URL = "https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/text/SimpleDateFormat.html";
+    public static final String DATE_FORMAT_URL = "https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/text/SimpleDateFormat.html";
     public static final int ICON_SIZE = FxHelper.getUIScaled(22);
     public static final String MULTILINE_DIVIDER = "* * * * *";
     protected static ValidationSupport sValidationSupport;
