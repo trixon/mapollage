@@ -92,10 +92,6 @@
                 </exclusion>
                 <exclusion>
                     <groupId>org.netbeans.modules</groupId>
-                    <artifactId>org-openide-util-ui-svg</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.netbeans.modules</groupId>
                     <artifactId>org-netbeans-core-network</artifactId>
                 </exclusion>
                 <exclusion>
