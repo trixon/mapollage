@@ -15,7 +15,7 @@
  */
 package se.trixon.mapollage.core;
 
-import com.google.gson.annotations.SerializedName;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.LinkedHashMap;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Strings;
@@ -31,27 +31,27 @@ public class TaskDescription extends TaskBase {
     private static final String DEFAULT_CUSTOM_VALUE;
     private static final String DEFAULT_EXTERNAL_FILE = "mapollage_descriptions.txt";
 
-    @SerializedName("altitude")
+    @JsonProperty("altitude")
     private boolean mAltitude;
-    @SerializedName("bearing")
+    @JsonProperty("bearing")
     private boolean mBearing;
-    @SerializedName("coordinate")
+    @JsonProperty("coordinate")
     private boolean mCoordinate = true;
-    @SerializedName("custom_value")
+    @JsonProperty("custom_value")
     private String mCustomValue;
-    @SerializedName("date")
+    @JsonProperty("date")
     private boolean mDate = true;
-    @SerializedName("defaultMode")
+    @JsonProperty("defaultMode")
     private DescriptionMode mDefaultMode = DescriptionMode.STATIC;
-    @SerializedName("defaultTo")
+    @JsonProperty("defaultTo")
     private boolean mDefaultTo = true;
-    @SerializedName("externalFileValue")
+    @JsonProperty("externalFileValue")
     private String mExternalFileValue;
-    @SerializedName("filename")
+    @JsonProperty("filename")
     private boolean mFilename = true;
-    @SerializedName("mode")
+    @JsonProperty("mode")
     private DescriptionMode mMode = DescriptionMode.STATIC;
-    @SerializedName("photo")
+    @JsonProperty("photo")
     private boolean mPhoto = true;
 
     static {

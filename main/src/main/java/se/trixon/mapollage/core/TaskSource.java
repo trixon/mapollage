@@ -15,7 +15,7 @@
  */
 package se.trixon.mapollage.core;
 
-import com.google.gson.annotations.SerializedName;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.File;
 import java.nio.file.FileSystems;
 import java.nio.file.PathMatcher;
@@ -33,22 +33,22 @@ public class TaskSource extends TaskBase {
 
     private final double DEFAULT_LAT = 57.6;
     private final double DEFAULT_LON = 11.3;
-    @SerializedName("defLat")
+    @JsonProperty("defLat")
     private double mDefaultLat = DEFAULT_LAT;
-    @SerializedName("defLon")
+    @JsonProperty("defLon")
     private double mDefaultLon = DEFAULT_LON;
-    @SerializedName("source")
+    @JsonProperty("source")
     private File mDir = SystemUtils.getUserHome();
-    @SerializedName("exclude_pattern")
+    @JsonProperty("exclude_pattern")
     private String mExcludePattern = "";
-    @SerializedName("file_pattern")
+    @JsonProperty("file_pattern")
     private String mFilePattern = "*.jpg";
-    @SerializedName("follow_links")
+    @JsonProperty("follow_links")
     private boolean mFollowLinks = true;
-    @SerializedName("include_null_coordinates")
+    @JsonProperty("include_null_coordinates")
     private boolean mIncludeNullCoordinate = false;
     private transient PathMatcher mPathMatcher;
-    @SerializedName("recursive")
+    @JsonProperty("recursive")
     private boolean mRecursive = true;
 
     public TaskSource() {

@@ -16,7 +16,7 @@
  */
 package se.trixon.mapollage.core;
 
-import com.google.gson.annotations.SerializedName;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.text.SimpleDateFormat;
 import java.util.LinkedHashMap;
 import se.trixon.almond.util.Dict;
@@ -30,14 +30,14 @@ public class TaskFolder extends TaskBase {
     private static final String FOLDER_NAME = "folder-name";
     private static final String ROOT_NAME = "root-name";
 
-    @SerializedName("date_pattern")
+    @JsonProperty("date_pattern")
     private String mDatePattern = "yyyy-ww";
     private transient SimpleDateFormat mFolderDateFormat;
-    @SerializedName("folders_by")
+    @JsonProperty("folders_by")
     private FolderBy mFoldersBy = FolderBy.DIR;
-    @SerializedName("regex")
+    @JsonProperty("regex")
     private String mRegex = "\\d{8}";
-    @SerializedName("regex_default")
+    @JsonProperty("regex_default")
     private String mRegexDefault = "12345678";
 
     public TaskFolder() {

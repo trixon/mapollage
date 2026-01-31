@@ -15,7 +15,7 @@
  */
 package se.trixon.mapollage.core;
 
-import com.google.gson.annotations.SerializedName;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.LinkedHashMap;
 import se.trixon.almond.util.BooleanHelper;
 import se.trixon.almond.util.Dict;
@@ -26,17 +26,17 @@ import se.trixon.almond.util.Dict;
  */
 public class TaskPath extends TaskBase {
 
-    @SerializedName("draw_path")
+    @JsonProperty("draw_path")
     private boolean mDrawPath = true;
-    @SerializedName("draw_polygon")
+    @JsonProperty("draw_polygon")
     private boolean mDrawPolygon = false;
-    @SerializedName("path_color")
+    @JsonProperty("path_color")
     private String mPathColor = "FF0000";
-    @SerializedName("path_gap_color")
+    @JsonProperty("path_gap_color")
     private String mPathGapColor = "FFFF00";
-    @SerializedName("split_by")
+    @JsonProperty("split_by")
     private SplitBy mSplitBy = SplitBy.MONTH;
-    @SerializedName("width")
+    @JsonProperty("width")
     private Double mWidth = 2.0;
 
     public TaskPath() {

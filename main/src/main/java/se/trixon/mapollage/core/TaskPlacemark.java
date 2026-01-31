@@ -15,7 +15,7 @@
  */
 package se.trixon.mapollage.core;
 
-import com.google.gson.annotations.SerializedName;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.text.SimpleDateFormat;
 import java.util.LinkedHashMap;
 import se.trixon.almond.util.BooleanHelper;
@@ -33,17 +33,17 @@ public class TaskPlacemark extends TaskBase {
 
     private transient String[] mCoordinate;
     private transient SimpleDateFormat mDateFormat;
-    @SerializedName("date_pattern")
+    @JsonProperty("date_pattern")
     private String mDatePattern = "yyyy-MM-dd HH.mm";
-    @SerializedName("name_by")
+    @JsonProperty("name_by")
     private NameBy mNameBy = NameBy.NONE;
-    @SerializedName("scale")
+    @JsonProperty("scale")
     private Double mScale = 3.0;
-    @SerializedName("symbol_as")
+    @JsonProperty("symbol_as")
     private SymbolAs mSymbolAs = SymbolAs.PHOTO;
-    @SerializedName("time_stamp")
+    @JsonProperty("time_stamp")
     private boolean mTimestamp = true;
-    @SerializedName("zoom")
+    @JsonProperty("zoom")
     private Double mZoom = 4.0;
 
     public TaskPlacemark() {

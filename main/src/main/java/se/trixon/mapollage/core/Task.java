@@ -15,7 +15,7 @@
  */
 package se.trixon.mapollage.core;
 
-import com.google.gson.annotations.SerializedName;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.List;
@@ -31,29 +31,29 @@ import se.trixon.almond.util.fx.control.editable_list.EditableListItem;
  */
 public class Task extends TaskBase implements EditableListItem {
 
-    @SerializedName("description")
+    @JsonProperty("description")
     private TaskDescription mDescription = new TaskDescription();
-    @SerializedName("descriptionString")
+    @JsonProperty("descriptionString")
     private String mDescriptionString;
-    @SerializedName("destinationFile")
+    @JsonProperty("destinationFile")
     private File mDestinationFile;
-    @SerializedName("folder")
+    @JsonProperty("folder")
     private TaskFolder mFolder = new TaskFolder();
-    @SerializedName("uuid")
+    @JsonProperty("uuid")
     private String mId = UUID.randomUUID().toString();
-    @SerializedName("language")
+    @JsonProperty("language")
     private String mLanguage = Locale.getDefault().toLanguageTag();
-    @SerializedName("last_run")
+    @JsonProperty("last_run")
     private long mLastRun;
-    @SerializedName("name")
+    @JsonProperty("name")
     private String mName;
-    @SerializedName("path")
+    @JsonProperty("path")
     private TaskPath mPath = new TaskPath();
-    @SerializedName("photo")
+    @JsonProperty("photo")
     private TaskPhoto mPhoto = new TaskPhoto();
-    @SerializedName("placemark")
+    @JsonProperty("placemark")
     private TaskPlacemark mPlacemark = new TaskPlacemark();
-    @SerializedName("source")
+    @JsonProperty("source")
     private TaskSource mSource = new TaskSource();
 
     public Task() {

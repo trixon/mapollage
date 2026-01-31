@@ -15,22 +15,17 @@
  */
 package se.trixon.mapollage.core;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonSyntaxException;
-import com.google.gson.annotations.SerializedName;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
-import javafx.collections.ObservableMap;
-import org.apache.commons.io.FileUtils;
 import org.openide.modules.Places;
 import org.openide.util.Exceptions;
 import se.trixon.almond.util.fx.FxHelper;
-import se.trixon.almond.util.gson_adapter.FileAdapter;
 
 /**
  *
@@ -38,12 +33,11 @@ import se.trixon.almond.util.gson_adapter.FileAdapter;
  */
 public class StorageManager {
 
-    public static final Gson GSON = new GsonBuilder()
-            .setVersion(1.0)
-            .serializeNulls()
-            .setPrettyPrinting()
-            .registerTypeAdapter(File.class, new FileAdapter())
-            .create();
+    public final static JsonMapper JSON = JsonMapper.builder()
+            .enable(SerializationFeature.INDENT_OUTPUT)
+            .visibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE)
+            .visibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
+            .build();
 
     private final File mHistoryFile;
     private final File mLogFile;
@@ -51,7 +45,6 @@ public class StorageManager {
     private final TaskManager mTaskManager = TaskManager.getInstance();
     private final File mTasksBackupFile;
     private final File mTasksFile;
-    private final File mUserDirectory;
 
     public static StorageManager getInstance() {
         return Holder.INSTANCE;
@@ -66,12 +59,12 @@ public class StorageManager {
     }
 
     private StorageManager() {
-        mUserDirectory = Places.getUserDirectory();
+        var userDirectory = Places.getUserDirectory();
 
-        mTasksFile = new File(mUserDirectory, "tasks.json");
-        mTasksBackupFile = new File(mUserDirectory, "tasks.bak");
-        mHistoryFile = new File(mUserDirectory, "var/history");
-        mLogFile = new File(mUserDirectory, "var/mapollage.log");
+        mTasksFile = new File(userDirectory, "tasks.json");
+        mTasksBackupFile = new File(userDirectory, "tasks.bak");
+        mHistoryFile = new File(userDirectory, "var/history");
+        mLogFile = new File(userDirectory, "var/mapollage.log");
     }
 
     public int getFileFormatVersion() {
@@ -94,10 +87,6 @@ public class StorageManager {
         return mTasksFile;
     }
 
-    public File getUserDirectory() {
-        return mUserDirectory;
-    }
-
     public void load() throws IOException {
         if (mTasksFile.exists()) {
             mStorage = Storage.open(mTasksFile);
@@ -115,10 +104,8 @@ public class StorageManager {
     }
 
     private void saveToFile() throws IOException {
-        mStorage.setTasks(mTaskManager.getIdToItem());
-        String json = mStorage.save(mTasksFile);
-        String tag = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        FileUtils.writeStringToFile(mTasksBackupFile, String.format("%s=%s\n", tag, json), Charset.defaultCharset(), true);
+        mStorage.setTasks(new HashMap<>(mTaskManager.getIdToItem()));
+        mStorage.save(mTasksFile);
 
         try {
             FxHelper.runLater(() -> {
@@ -138,19 +125,16 @@ public class StorageManager {
         private static final StorageManager INSTANCE = new StorageManager();
     }
 
-    public class Storage {
+    public static class Storage {
 
         private static final int FILE_FORMAT_VERSION = 1;
-        @SerializedName("fileFormatVersion")
+        @JsonProperty("fileFormatVersion")
         private int mFileFormatVersion;
-        @SerializedName("tasks")
+        @JsonProperty("tasks")
         private final HashMap<String, Task> mTasks = new HashMap<>();
 
-        public static Storage open(File file) throws IOException, JsonSyntaxException {
-            String json = FileUtils.readFileToString(file, Charset.defaultCharset());
-
-            var storage = GSON.fromJson(json, Storage.class);
-
+        public static Storage open(File file) throws IOException {
+            var storage = JSON.readValue(file, Storage.class);
             if (storage.mFileFormatVersion != FILE_FORMAT_VERSION) {
                 //TODO Handle file format version change
             }
@@ -170,15 +154,12 @@ public class StorageManager {
             return mTasks;
         }
 
-        public String save(File file) throws IOException {
+        public void save(File file) throws IOException {
             mFileFormatVersion = FILE_FORMAT_VERSION;
-            var json = GSON.toJson(this);
-            FileUtils.writeStringToFile(file, json, Charset.defaultCharset());
-
-            return json;
+            JSON.writeValue(file, this);
         }
 
-        void setTasks(ObservableMap<String, Task> tasks) {
+        void setTasks(HashMap<String, Task> tasks) {
             mTasks.clear();
             mTasks.putAll(tasks);
         }

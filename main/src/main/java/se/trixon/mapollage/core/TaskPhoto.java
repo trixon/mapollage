@@ -15,7 +15,7 @@
  */
 package se.trixon.mapollage.core;
 
-import com.google.gson.annotations.SerializedName;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.LinkedHashMap;
 import org.apache.commons.lang3.SystemUtils;
 import se.trixon.almond.util.BooleanHelper;
@@ -27,25 +27,25 @@ import se.trixon.almond.util.Dict;
  */
 public class TaskPhoto extends TaskBase {
 
-    @SerializedName("base_url_value")
+    @JsonProperty("base_url_value")
     private String mBaseUrlValue = "https://www.domain.com/img/";
-    @SerializedName("force_lower_case_extension")
+    @JsonProperty("force_lower_case_extension")
     private boolean mForceLowerCaseExtension = SystemUtils.IS_OS_WINDOWS;
-    @SerializedName("height_limit")
+    @JsonProperty("height_limit")
     private int mHeightLimit = 800;
-    @SerializedName("limit_height")
+    @JsonProperty("limit_height")
     private boolean mLimitHeight = true;
-    @SerializedName("limit_width")
+    @JsonProperty("limit_width")
     private boolean mLimitWidth = true;
-    @SerializedName("reference")
+    @JsonProperty("reference")
     private Reference mReference = Reference.THUMBNAIL;
-    @SerializedName("thumbnail_border_color")
+    @JsonProperty("thumbnail_border_color")
     private String mThumbnailBorderColor = "FFFF00";
-    @SerializedName("thumbnail_border_size")
+    @JsonProperty("thumbnail_border_size")
     private int mThumbnailBorderSize = 3;
-    @SerializedName("thumbnail_size")
+    @JsonProperty("thumbnail_size")
     private int mThumbnailSize = 1000;
-    @SerializedName("width_limit")
+    @JsonProperty("width_limit")
     private int mWidthLimit = 1000;
 
     public TaskPhoto() {

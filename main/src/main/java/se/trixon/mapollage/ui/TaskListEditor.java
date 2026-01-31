@@ -15,6 +15,7 @@
  */
 package se.trixon.mapollage.ui;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import java.time.LocalDate;
 import java.util.Objects;
 import java.util.UUID;
@@ -23,6 +24,7 @@ import javafx.scene.Scene;
 import javax.swing.SwingUtilities;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
+import org.openide.util.Exceptions;
 import org.openide.util.NbBundle;
 import se.trixon.almond.nbp.fx.FxDialogPanel;
 import se.trixon.almond.nbp.fx.NbEditableList;
@@ -34,7 +36,7 @@ import se.trixon.mapollage.Mapollage;
 import static se.trixon.mapollage.Mapollage.KEY_INFO;
 import se.trixon.mapollage.core.ExecutorManager;
 import se.trixon.mapollage.core.StorageManager;
-import static se.trixon.mapollage.core.StorageManager.GSON;
+import static se.trixon.mapollage.core.StorageManager.JSON;
 import se.trixon.mapollage.core.Task;
 import se.trixon.mapollage.core.TaskManager;
 import se.trixon.mapollage.ui.task.BaseTab;
@@ -107,18 +109,23 @@ public class TaskListEditor {
                     StorageManager.save();
                 })
                 .setOnClone(t -> {
-                    var original = t;
-                    var json = GSON.toJson(original);
-                    var clone = GSON.fromJson(json, original.getClass());
-                    var uuid = UUID.randomUUID().toString();
-                    clone.setId(uuid);
-                    clone.setLastRun(0);
-                    clone.setName("%s %s".formatted(clone.getName(), LocalDate.now().toString()));
-                    mTaskManager.getIdToItem().put(clone.getId(), clone);
+                    try {
+                        var original = t;
+                        var json = JSON.writeValueAsString(original);
+                        var clone = JSON.readValue(json, original.getClass());
+                        var uuid = UUID.randomUUID().toString();
+                        clone.setId(uuid);
+                        clone.setLastRun(0);
+                        clone.setName("%s %s".formatted(clone.getName(), LocalDate.now().toString()));
+                        mTaskManager.getIdToItem().put(clone.getId(), clone);
 
-                    StorageManager.save();
+                        StorageManager.save();
 
-                    return mTaskManager.getById(uuid);
+                        return mTaskManager.getById(uuid);
+                    } catch (JsonProcessingException ex) {
+                        Exceptions.printStackTrace(ex);
+                        return null;
+                    }
                 })
                 .setOnInfo(task -> {
                     Mapollage.getGlobalState().put(KEY_INFO, task.toInfoString());

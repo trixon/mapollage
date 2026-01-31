@@ -70,8 +70,6 @@ public class TaskManager {
             }
         }
 
-        System.out.println("TASK NOT FOUND: " + name);
-
         return null;
     }
 
