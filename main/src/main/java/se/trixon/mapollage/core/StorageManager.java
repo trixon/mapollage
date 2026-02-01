@@ -43,7 +43,6 @@ public class StorageManager {
     private final File mLogFile;
     private Storage mStorage = new Storage();
     private final TaskManager mTaskManager = TaskManager.getInstance();
-    private final File mTasksBackupFile;
     private final File mTasksFile;
 
     public static StorageManager getInstance() {
@@ -62,7 +61,6 @@ public class StorageManager {
         var userDirectory = Places.getUserDirectory();
 
         mTasksFile = new File(userDirectory, "tasks.json");
-        mTasksBackupFile = new File(userDirectory, "tasks.bak");
         mHistoryFile = new File(userDirectory, "var/history");
         mLogFile = new File(userDirectory, "var/mapollage.log");
     }
