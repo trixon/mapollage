@@ -14,6 +14,18 @@ platforms:
 confinement: strict
 icon: snap/gui/mapollage.png
 license: Apache-2.0
+compression: lzo
+
+source-code:
+  - https://github.com/trixon/mapollage
+contact:
+  - patrik@trixon.se
+website:
+  - https://trixon.se
+issues:
+  - https://github.com/trixon/mapollage/issues
+donation:
+  - https://buymeacoffee.com/trixon
 
 apps:
   mapollage:
