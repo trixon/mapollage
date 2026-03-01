@@ -10,7 +10,7 @@
 
     <groupId>se.trixon.mapollage</groupId>
     <artifactId>parent</artifactId>
-    <version>25.10x</version>
+    <version>26.03</version>
     <packaging>pom</packaging>
 
     <name>parent</name>
