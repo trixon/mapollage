@@ -5,12 +5,12 @@
     <parent>
         <groupId>se.trixon.netbeans-platform</groupId>
         <artifactId>parent</artifactId>
-        <version>29</version>
+        <version>30</version>
     </parent>
 
     <groupId>se.trixon.mapollage</groupId>
     <artifactId>parent</artifactId>
-    <version>26.03</version>
+    <version>26.03x</version>
     <packaging>pom</packaging>
 
     <name>parent</name>
